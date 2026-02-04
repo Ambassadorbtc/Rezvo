@@ -986,6 +986,313 @@ async def update_reminder_settings(
     )
     return {"status": "updated"}
 
+# ==================== EMAIL NOTIFICATIONS ====================
+
+class EmailRequest(BaseModel):
+    recipient_email: EmailStr
+    subject: str
+    html_content: str
+
+async def send_email_async(to: str, subject: str, html: str):
+    """Send email using Resend (non-blocking)"""
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [to],
+            "subject": subject,
+            "html": html
+        }
+        email = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Email sent to {to}: {email.get('id')}")
+        return email
+    except Exception as e:
+        logger.error(f"Failed to send email to {to}: {str(e)}")
+        return None
+
+def get_booking_confirmation_html(booking: dict, business_name: str) -> str:
+    """Generate booking confirmation email HTML"""
+    booking_date = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+    return f"""
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FDFBF7; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="display: inline-block; width: 48px; height: 48px; background: #00BFA5; border-radius: 12px; line-height: 48px; color: white; font-size: 24px; font-weight: bold;">R</div>
+            <h1 style="margin: 10px 0 0; color: #0A1626; font-size: 24px;">Rezvo</h1>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <h2 style="color: #0A1626; margin: 0 0 20px;">Booking Confirmed! ✓</h2>
+            
+            <div style="background: #00BFA5; color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <p style="margin: 0 0 5px; font-size: 14px; opacity: 0.9;">{business_name}</p>
+                <p style="margin: 0; font-size: 20px; font-weight: 600;">{booking["service_name"]}</p>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; color: #627D98;">Date</td>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 500;">{booking_date.strftime('%A, %d %B %Y')}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; color: #627D98;">Time</td>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 500;">{booking_date.strftime('%H:%M')}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; color: #627D98;">Duration</td>
+                    <td style="padding: 12px 0; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 500;">{booking["duration_min"]} minutes</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 0; color: #627D98;">Total</td>
+                    <td style="padding: 12px 0; text-align: right; font-size: 20px; font-weight: 700; color: #00BFA5;">£{booking["price_pence"]/100:.2f}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <p style="text-align: center; color: #627D98; font-size: 14px; margin-top: 30px;">
+            Need to make changes? Contact {business_name} directly.
+        </p>
+        
+        <p style="text-align: center; color: #9FB3C8; font-size: 12px; margin-top: 20px;">
+            Powered by Rezvo.app
+        </p>
+    </div>
+    """
+
+def get_reminder_html(booking: dict, business_name: str, hours_until: int) -> str:
+    """Generate booking reminder email HTML"""
+    booking_date = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+    return f"""
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FDFBF7; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="display: inline-block; width: 48px; height: 48px; background: #00BFA5; border-radius: 12px; line-height: 48px; color: white; font-size: 24px; font-weight: bold;">R</div>
+        </div>
+        
+        <div style="background: white; border-radius: 16px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <h2 style="color: #0A1626; margin: 0 0 10px;">⏰ Appointment Reminder</h2>
+            <p style="color: #627D98; margin: 0 0 20px;">Your appointment is in {hours_until} hours</p>
+            
+            <div style="background: #F5F0E8; padding: 20px; border-radius: 12px;">
+                <p style="margin: 0 0 10px; font-weight: 600; color: #0A1626;">{booking["service_name"]}</p>
+                <p style="margin: 0 0 5px; color: #627D98;">📍 {business_name}</p>
+                <p style="margin: 0 0 5px; color: #627D98;">📅 {booking_date.strftime('%A, %d %B at %H:%M')}</p>
+            </div>
+        </div>
+        
+        <p style="text-align: center; color: #9FB3C8; font-size: 12px; margin-top: 30px;">
+            Powered by Rezvo.app
+        </p>
+    </div>
+    """
+
+@api_router.post("/notifications/send-confirmation")
+async def send_booking_confirmation(booking_id: str, current_user: dict = Depends(get_current_user)):
+    """Send booking confirmation email to client"""
+    booking = await db.bookings.find_one({"id": booking_id}, {"_id": 0})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    business = await db.businesses.find_one({"id": booking["business_id"]}, {"_id": 0})
+    business_name = business["name"] if business else "Your Provider"
+    
+    html = get_booking_confirmation_html(booking, business_name)
+    email = await send_email_async(
+        booking["client_email"],
+        f"Booking Confirmed - {booking['service_name']} at {business_name}",
+        html
+    )
+    
+    if email:
+        await db.bookings.update_one(
+            {"id": booking_id},
+            {"$set": {"confirmation_sent": True, "confirmation_sent_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"status": "sent", "email_id": email.get("id")}
+    
+    return {"status": "failed", "message": "Email could not be sent"}
+
+@api_router.post("/notifications/send-reminder")
+async def send_booking_reminder(booking_id: str, hours_until: int = 24):
+    """Send booking reminder email (called by scheduler)"""
+    booking = await db.bookings.find_one({"id": booking_id}, {"_id": 0})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    business = await db.businesses.find_one({"id": booking["business_id"]}, {"_id": 0})
+    business_name = business["name"] if business else "Your Provider"
+    
+    html = get_reminder_html(booking, business_name, hours_until)
+    email = await send_email_async(
+        booking["client_email"],
+        f"Reminder: {booking['service_name']} tomorrow at {business_name}",
+        html
+    )
+    
+    if email:
+        await db.bookings.update_one(
+            {"id": booking_id},
+            {"$set": {"reminder_sent": True, "reminder_sent_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"status": "sent", "email_id": email.get("id")}
+    
+    return {"status": "failed", "message": "Email could not be sent"}
+
+@api_router.post("/notifications/test-email")
+async def test_email(recipient: EmailStr, current_user: dict = Depends(get_current_user)):
+    """Send a test email"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; padding: 20px; background: #FDFBF7;">
+        <h1 style="color: #00BFA5;">Test Email from Rezvo</h1>
+        <p>This is a test email to confirm your email notifications are working.</p>
+        <p style="color: #627D98;">Sent at: {datetime.now(timezone.utc).isoformat()}</p>
+    </div>
+    """
+    email = await send_email_async(recipient, "Test Email from Rezvo", html)
+    
+    if email:
+        return {"status": "sent", "email_id": email.get("id")}
+    return {"status": "failed", "message": "Email could not be sent - check RESEND_API_KEY"}
+
+# ==================== AI SUGGESTIONS ====================
+
+@api_router.post("/ai/suggest-slots")
+async def ai_suggest_slots(
+    service_id: str,
+    preferred_days: List[str] = None,  # e.g., ["monday", "tuesday"]
+    preferred_time: str = None,  # e.g., "morning", "afternoon", "evening"
+):
+    """AI-powered slot suggestions based on availability and preferences"""
+    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    business = await db.businesses.find_one({"id": service["business_id"]}, {"_id": 0})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Get existing bookings for the next 14 days
+    now = datetime.now(timezone.utc)
+    two_weeks = now + timedelta(days=14)
+    
+    existing_bookings = await db.bookings.find({
+        "business_id": service["business_id"],
+        "status": {"$in": ["confirmed", "pending"]},
+        "datetime": {"$gte": now.isoformat(), "$lte": two_weeks.isoformat()}
+    }, {"_id": 0, "datetime": 1, "duration_min": 1}).to_list(100)
+    
+    # Build context for AI
+    availability = business.get("availability", [])
+    blocked_dates = business.get("blocked_dates", [])
+    
+    context = f"""
+    Business: {business["name"]}
+    Service: {service["name"]} ({service["duration_min"]} minutes, £{service["price_pence"]/100:.2f})
+    
+    Business availability:
+    {availability if availability else "Standard business hours (9am-6pm weekdays)"}
+    
+    Blocked dates: {blocked_dates if blocked_dates else "None"}
+    
+    Existing bookings in next 2 weeks: {len(existing_bookings)} appointments
+    
+    Client preferences:
+    - Preferred days: {preferred_days if preferred_days else "Any day"}
+    - Preferred time: {preferred_time if preferred_time else "Any time"}
+    """
+    
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"slot-suggestion-{uuid.uuid4()}",
+            system_message="""You are a smart booking assistant for Rezvo. 
+            Analyze the business availability and suggest the best 3-5 time slots for the client.
+            Consider their preferences and avoid conflicts with existing bookings.
+            Return suggestions in JSON format with fields: date (YYYY-MM-DD), time (HH:MM), reason (why this slot is good).
+            Be concise and helpful."""
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(
+            text=f"Based on this context, suggest the best available time slots:\n\n{context}\n\nReturn JSON array of suggested slots."
+        )
+        
+        response = await chat.send_message(user_message)
+        
+        # Try to parse JSON from response
+        import json
+        try:
+            # Extract JSON from response
+            json_start = response.find('[')
+            json_end = response.rfind(']') + 1
+            if json_start >= 0 and json_end > json_start:
+                suggestions = json.loads(response[json_start:json_end])
+            else:
+                suggestions = []
+        except:
+            suggestions = []
+        
+        return {
+            "suggestions": suggestions,
+            "ai_response": response,
+            "service": service["name"],
+            "business": business["name"]
+        }
+        
+    except Exception as e:
+        logger.error(f"AI suggestion error: {str(e)}")
+        # Fallback to simple slot generation
+        suggestions = []
+        for day_offset in range(1, 8):
+            slot_date = now + timedelta(days=day_offset)
+            if slot_date.weekday() < 5:  # Weekdays only
+                suggestions.append({
+                    "date": slot_date.strftime("%Y-%m-%d"),
+                    "time": "10:00",
+                    "reason": "Morning slot available"
+                })
+                if len(suggestions) >= 5:
+                    break
+        
+        return {
+            "suggestions": suggestions,
+            "ai_response": None,
+            "fallback": True,
+            "error": str(e)
+        }
+
+@api_router.post("/ai/chat")
+async def ai_chat(
+    message: str,
+    session_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """General AI chat for business assistance"""
+    if not session_id:
+        session_id = f"chat-{current_user['sub']}-{uuid.uuid4()}"
+    
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message="""You are Rezvo AI, a helpful assistant for UK micro-business owners using the Rezvo booking platform.
+            Help them with:
+            - Setting up their services and pricing
+            - Managing availability
+            - Tips for reducing no-shows
+            - Marketing their booking link
+            - General business advice
+            Be friendly, concise, and practical. Use British English."""
+        ).with_model("openai", "gpt-4o-mini")
+        
+        user_message = UserMessage(text=message)
+        response = await chat.send_message(user_message)
+        
+        return {
+            "response": response,
+            "session_id": session_id
+        }
+        
+    except Exception as e:
+        logger.error(f"AI chat error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
