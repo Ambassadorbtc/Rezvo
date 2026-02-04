@@ -20,6 +20,7 @@ import ExpoTestingPage from "./pages/ExpoTestingPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import CookiesPage from "./pages/CookiesPage";
+import FounderAdminPage from "./pages/FounderAdminPage";
 import CookieConsent from "./components/CookieConsent";
 
 import "./App.css";
