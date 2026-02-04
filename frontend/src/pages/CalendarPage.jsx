@@ -1,118 +1,139 @@
 import { useState, useEffect } from 'react';
-import api, { formatPrice, formatTime } from '../lib/api';
+import api, { formatPrice } from '../lib/api';
 import AppLayout from '../components/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Calendar } from '../components/ui/calendar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ChevronLeft, ChevronRight, Clock, Plus, X, Save, Edit2, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, User, Phone, Mail, X, Users, Settings, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, isSameDay, setHours, setMinutes } from 'date-fns';
+
+// Service colors for visual distinction
+const SERVICE_COLORS = [
+  { bg: 'bg-teal-100', border: 'border-l-teal-500', text: 'text-teal-700' },
+  { bg: 'bg-blue-100', border: 'border-l-blue-500', text: 'text-blue-700' },
+  { bg: 'bg-purple-100', border: 'border-l-purple-500', text: 'text-purple-700' },
+  { bg: 'bg-amber-100', border: 'border-l-amber-500', text: 'text-amber-700' },
+  { bg: 'bg-rose-100', border: 'border-l-rose-500', text: 'text-rose-700' },
+  { bg: 'bg-indigo-100', border: 'border-l-indigo-500', text: 'text-indigo-700' },
+  { bg: 'bg-emerald-100', border: 'border-l-emerald-500', text: 'text-emerald-700' },
+  { bg: 'bg-orange-100', border: 'border-l-orange-500', text: 'text-orange-700' },
+];
 
 const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
-  const [availability, setAvailability] = useState([]);
-  const [blockedDates, setBlockedDates] = useState([]);
-  const [view, setView] = useState('week');
-  
-  // Modal states
+  const [teamMembers, setTeamMembers] = useState([]);
   const [showAddBooking, setShowAddBooking] = useState(false);
-  const [showEditAvailability, setShowEditAvailability] = useState(false);
-  const [editingBooking, setEditingBooking] = useState(null);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
   
   // New booking form
   const [newBooking, setNewBooking] = useState({
     service_id: '',
+    team_member_id: '',
     client_name: '',
     client_email: '',
     client_phone: '',
-    date: null,
     time: '',
     notes: ''
   });
-
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   
-  const defaultAvailability = [
-    { day: 1, start: '09:00', end: '17:00', enabled: true },
-    { day: 2, start: '09:00', end: '17:00', enabled: true },
-    { day: 3, start: '09:00', end: '17:00', enabled: true },
-    { day: 4, start: '09:00', end: '17:00', enabled: true },
-    { day: 5, start: '09:00', end: '17:00', enabled: true },
-    { day: 6, start: '10:00', end: '14:00', enabled: false },
-    { day: 0, start: '10:00', end: '14:00', enabled: false },
+  // New team member form
+  const [newMember, setNewMember] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'staff',
+    color: '#00BFA5'
+  });
+
+  const MEMBER_COLORS = [
+    '#00BFA5', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', 
+    '#EC4899', '#14B8A6', '#6366F1', '#84CC16', '#F97316'
   ];
+
+  // Hours for the calendar grid (8am to 8pm)
+  const hours = Array.from({ length: 13 }, (_, i) => i + 8);
+  const HOUR_HEIGHT = 60; // pixels per hour
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedDate]);
 
   const loadData = async () => {
     try {
-      const [bookingsRes, servicesRes, businessRes] = await Promise.all([
-        api.get('/bookings'),
-        api.get('/services'),
-        api.get('/business')
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      const [bookingsRes, servicesRes, membersRes] = await Promise.all([
+        api.get(`/bookings?date=${dateStr}`).catch(() => ({ data: [] })),
+        api.get('/services').catch(() => ({ data: [] })),
+        api.get('/team-members').catch(() => ({ data: [] }))
       ]);
       setBookings(bookingsRes.data || []);
       setServices(servicesRes.data || []);
-      
-      // Load availability from business or use defaults
-      const businessAvailability = businessRes.data?.availability;
-      if (businessAvailability && businessAvailability.length > 0) {
-        setAvailability(businessAvailability);
-      } else {
-        setAvailability(defaultAvailability);
-      }
-      setBlockedDates(businessRes.data?.blocked_dates || []);
+      setTeamMembers(membersRes.data || []);
     } catch (error) {
-      toast.error('Failed to load data');
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getBookingsForDate = (date) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    return bookings.filter(b => b.datetime.startsWith(dateStr));
+  const getServiceColor = (serviceId) => {
+    const index = services.findIndex(s => s.id === serviceId);
+    return SERVICE_COLORS[index % SERVICE_COLORS.length];
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return 'bg-emerald-500';
-      case 'pending': return 'bg-amber-500';
-      case 'cancelled': return 'bg-red-500';
-      case 'completed': return 'bg-gray-400';
-      default: return 'bg-gray-300';
-    }
+  const getMemberColor = (memberId) => {
+    const member = teamMembers.find(m => m.id === memberId);
+    return member?.color || '#00BFA5';
   };
 
-  const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const getBookingsForMember = (memberId) => {
+    return bookings.filter(b => 
+      b.team_member_id === memberId || 
+      (!b.team_member_id && memberId === 'unassigned')
+    );
+  };
 
-  const timeSlots = Array.from({ length: 12 }, (_, i) => {
-    const hour = 8 + i;
-    return `${hour.toString().padStart(2, '0')}:00`;
-  });
+  const getBookingPosition = (booking) => {
+    const date = new Date(booking.datetime);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const top = (hours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
+    const height = (booking.duration_min / 60) * HOUR_HEIGHT;
+    return { top, height: Math.max(height, 30) };
+  };
+
+  const formatBookingTime = (dateStr) => {
+    return new Date(dateStr).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getWeekDates = () => {
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+  };
+
+  const weekDates = getWeekDates();
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   const handleCreateBooking = async () => {
-    if (!newBooking.service_id || !newBooking.client_name || !newBooking.client_email || !newBooking.date || !newBooking.time) {
+    if (!newBooking.service_id || !newBooking.client_name || !newBooking.client_email || !newBooking.time) {
       toast.error('Please fill in all required fields');
       return;
     }
     
     try {
       const [hours, mins] = newBooking.time.split(':').map(Number);
-      const bookingDate = setMinutes(setHours(newBooking.date, hours), mins);
+      const bookingDate = setMinutes(setHours(selectedDate, hours), mins);
       
-      await api.post('/bookings', {
+      await api.post('/bookings/with-team', {
         service_id: newBooking.service_id,
+        team_member_id: newBooking.team_member_id || null,
         client_name: newBooking.client_name,
         client_email: newBooking.client_email,
         client_phone: newBooking.client_phone,
@@ -122,537 +143,485 @@ const CalendarPage = () => {
       
       toast.success('Booking created');
       setShowAddBooking(false);
-      setNewBooking({ service_id: '', client_name: '', client_email: '', client_phone: '', date: null, time: '', notes: '' });
+      setNewBooking({ service_id: '', team_member_id: '', client_name: '', client_email: '', client_phone: '', time: '', notes: '' });
       loadData();
     } catch (error) {
       toast.error('Failed to create booking');
     }
   };
 
-  const handleUpdateBookingStatus = async (bookingId, status) => {
+  const handleAddTeamMember = async () => {
+    if (!newMember.name) {
+      toast.error('Please enter a name');
+      return;
+    }
+    
     try {
-      await api.patch(`/bookings/${bookingId}`, { status });
-      toast.success(`Booking ${status}`);
+      await api.post('/team-members', newMember);
+      toast.success('Team member added');
+      setNewMember({ name: '', email: '', phone: '', role: 'staff', color: '#00BFA5' });
       loadData();
     } catch (error) {
-      toast.error('Failed to update booking');
+      toast.error('Failed to add team member');
     }
   };
 
-  const handleDeleteBooking = async (bookingId) => {
-    if (!confirm('Are you sure you want to cancel this booking?')) return;
-    
+  const handleDeleteTeamMember = async (memberId) => {
+    if (!confirm('Remove this team member?')) return;
     try {
-      await api.post(`/bookings/${bookingId}/cancel`);
-      toast.success('Booking cancelled');
+      await api.delete(`/team-members/${memberId}`);
+      toast.success('Team member removed');
       loadData();
     } catch (error) {
-      toast.error('Failed to cancel booking');
+      toast.error('Failed to remove team member');
     }
   };
 
-  const handleSaveAvailability = async () => {
-    try {
-      await api.patch('/business', { availability });
-      toast.success('Availability saved');
-      setShowEditAvailability(false);
-    } catch (error) {
-      toast.error('Failed to save availability');
-    }
+  const changeDate = (days) => {
+    setSelectedDate(prev => addDays(prev, days));
   };
 
-  const updateAvailability = (dayIndex, field, value) => {
-    setAvailability(prev => prev.map(a => 
-      a.day === dayIndex ? { ...a, [field]: value } : a
-    ));
-  };
-
-  const toggleBlockedDate = async (date) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    const isBlocked = blockedDates.includes(dateStr);
-    
-    const newBlockedDates = isBlocked 
-      ? blockedDates.filter(d => d !== dateStr)
-      : [...blockedDates, dateStr];
-    
-    try {
-      await api.patch('/business', { blocked_dates: newBlockedDates });
-      setBlockedDates(newBlockedDates);
-      toast.success(isBlocked ? 'Date unblocked' : 'Date blocked');
-    } catch (error) {
-      toast.error('Failed to update blocked dates');
+  const timeOptions = [];
+  for (let h = 8; h <= 20; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      timeOptions.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
     }
-  };
-
-  const generateTimeOptions = () => {
-    const options = [];
-    for (let h = 8; h <= 20; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        options.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
-      }
-    }
-    return options;
-  };
+  }
 
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center h-screen">
+          <div className="w-10 h-10 border-3 border-teal-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </AppLayout>
     );
   }
 
+  // Calculate columns based on team members
+  const displayMembers = teamMembers.length > 0 ? teamMembers : [{ id: 'all', name: 'All Bookings', color: '#00BFA5' }];
+
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 lg:p-8 space-y-6" data-testid="calendar-page">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="h-[calc(100vh-64px)] flex flex-col bg-cream-50" data-testid="calendar-page">
+        {/* Top Header */}
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
           <div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-navy-900">Calendar</h1>
-            <p className="text-navy-500 mt-1">{format(selectedDate, 'MMMM yyyy')}</p>
+            <h1 className="text-2xl font-bold text-navy-900">Calendar</h1>
+            <p className="text-sm text-navy-500">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              size="sm"
-              onClick={() => setShowEditAvailability(true)}
-              className="border-gray-200 rounded-full text-navy-600"
-              data-testid="edit-availability-btn"
+              onClick={() => setShowTeamModal(true)}
+              className="border-gray-200 rounded-xl gap-2"
             >
-              <Edit2 className="w-4 h-4 mr-1" />
-              Hours
+              <Users className="w-4 h-4" />
+              Team ({teamMembers.length})
             </Button>
             <Button
-              onClick={() => {
-                setNewBooking(prev => ({ ...prev, date: selectedDate }));
-                setShowAddBooking(true);
-              }}
-              className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
+              onClick={() => setShowAddBooking(true)}
+              className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl gap-2"
               data-testid="add-booking-btn"
             >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Booking
+              <Plus className="w-4 h-4" />
+              New Booking
             </Button>
-            <div className="flex items-center gap-1 ml-2">
-              <Button
-                variant={view === 'week' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setView('week')}
-                className={view === 'week' ? 'bg-teal-500 text-white rounded-full' : 'border-gray-200 rounded-full text-navy-600'}
-              >
-                Week
-              </Button>
-              <Button
-                variant={view === 'month' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setView('month')}
-                className={view === 'month' ? 'bg-teal-500 text-white rounded-full' : 'border-gray-200 rounded-full text-navy-600'}
-              >
-                Month
-              </Button>
+          </div>
+        </div>
+
+        {/* Date Navigation */}
+        <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => changeDate(-1)}
+              className="rounded-full hover:bg-gray-100"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDate(new Date())}
+              className="rounded-full text-sm px-4"
+            >
+              Today
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => changeDate(1)}
+              className="rounded-full hover:bg-gray-100"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          {/* Week Strip */}
+          <div className="flex items-center gap-1 bg-cream-100 p-1 rounded-xl">
+            {weekDates.map((date, index) => {
+              const isSelected = isSameDay(date, selectedDate);
+              const isToday = isSameDay(date, new Date());
+              const hasBookings = bookings.some(b => 
+                new Date(b.datetime).toDateString() === date.toDateString()
+              );
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => setSelectedDate(date)}
+                  className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
+                    isSelected 
+                      ? 'bg-teal-500 text-white shadow-lg' 
+                      : isToday 
+                        ? 'bg-teal-100 text-teal-700'
+                        : 'hover:bg-white text-navy-600'
+                  }`}
+                >
+                  <span className="text-xs font-medium">{dayNames[index]}</span>
+                  <span className={`text-lg font-bold ${isSelected ? 'text-white' : ''}`}>
+                    {format(date, 'd')}
+                  </span>
+                  {hasBookings && !isSelected && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          
+          <div className="text-sm text-navy-500">
+            {bookings.length} booking{bookings.length !== 1 ? 's' : ''} today
+          </div>
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="flex-1 overflow-hidden flex">
+          {/* Time Column */}
+          <div className="w-16 border-r border-gray-200 bg-white flex-shrink-0">
+            <div className="h-14 border-b border-gray-200" /> {/* Spacer for header */}
+            <div className="relative">
+              {hours.map((hour) => (
+                <div key={hour} className="h-[60px] border-b border-gray-50 flex items-start justify-end pr-2 pt-0">
+                  <span className="text-xs text-navy-400 -mt-2">
+                    {hour.toString().padStart(2, '0')}:00
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Team Member Columns */}
+          <div className="flex-1 overflow-x-auto">
+            <div className="flex min-w-max">
+              {displayMembers.map((member) => {
+                const memberBookings = teamMembers.length > 0 
+                  ? getBookingsForMember(member.id)
+                  : bookings;
+                
+                return (
+                  <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
+                    {/* Member Header */}
+                    <div 
+                      className="h-14 border-b border-gray-200 bg-white flex items-center justify-center gap-2 px-3 sticky top-0"
+                      style={{ borderTopWidth: 3, borderTopColor: member.color }}
+                    >
+                      <div 
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                        style={{ backgroundColor: member.color }}
+                      >
+                        {member.name?.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-navy-900 truncate">{member.name}</p>
+                        <p className="text-xs text-navy-400">{member.role || 'All'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Time Grid with Bookings */}
+                    <div className="relative bg-white">
+                      {/* Hour lines */}
+                      {hours.map((hour) => (
+                        <div key={hour} className="h-[60px] border-b border-gray-50" />
+                      ))}
+                      
+                      {/* Bookings */}
+                      {memberBookings.map((booking) => {
+                        const { top, height } = getBookingPosition(booking);
+                        const colors = getServiceColor(booking.service_id);
+                        
+                        return (
+                          <div
+                            key={booking.id}
+                            className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-lg p-2 overflow-hidden cursor-pointer hover:shadow-md transition-shadow`}
+                            style={{ top: `${top}px`, height: `${height}px` }}
+                            onClick={() => toast.info(`${booking.client_name} - ${booking.service_name}`)}
+                          >
+                            <div className={`text-xs font-semibold ${colors.text}`}>
+                              {formatBookingTime(booking.datetime)}
+                            </div>
+                            <div className="text-sm font-medium text-navy-900 truncate">
+                              {booking.client_name}
+                            </div>
+                            {height > 50 && (
+                              <div className="text-xs text-navy-500 truncate">
+                                {booking.service_name}
+                              </div>
+                            )}
+                            {height > 70 && (
+                              <div className="text-xs text-navy-400 mt-1">
+                                {formatPrice(booking.price_pence)}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {view === 'month' ? (
-          <Card className="bg-white rounded-2xl shadow-card border-0">
-            <CardContent className="p-4">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                className="w-full"
-                modifiers={{
-                  hasBooking: bookings.map(b => new Date(b.datetime)),
-                  blocked: blockedDates.map(d => new Date(d))
-                }}
-                modifiersClassNames={{
-                  hasBooking: "bg-teal-100 text-teal-700 font-bold",
-                  blocked: "bg-red-100 text-red-700 line-through"
-                }}
-              />
-              <div className="mt-4 flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-teal-100 rounded" />
-                  <span className="text-navy-600">Has bookings</span>
+        {/* Add Booking Modal */}
+        <Dialog open={showAddBooking} onOpenChange={setShowAddBooking}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-navy-900">New Booking</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-navy-700">Service *</Label>
+                  <Select
+                    value={newBooking.service_id}
+                    onValueChange={(v) => setNewBooking(prev => ({ ...prev, service_id: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5 rounded-xl">
+                      <SelectValue placeholder="Select service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.name} - {formatPrice(s.price_pence)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-red-100 rounded" />
-                  <span className="text-navy-600">Blocked</span>
+                <div>
+                  <Label className="text-navy-700">Time *</Label>
+                  <Select
+                    value={newBooking.time}
+                    onValueChange={(v) => setNewBooking(prev => ({ ...prev, time: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5 rounded-xl">
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {timeOptions.map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+              
+              {teamMembers.length > 0 && (
+                <div>
+                  <Label className="text-navy-700">Assign To</Label>
+                  <Select
+                    value={newBooking.team_member_id}
+                    onValueChange={(v) => setNewBooking(prev => ({ ...prev, team_member_id: v }))}
+                  >
+                    <SelectTrigger className="mt-1.5 rounded-xl">
+                      <SelectValue placeholder="Select team member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Unassigned</SelectItem>
+                      {teamMembers.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: m.color }}
+                            />
+                            {m.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              <div>
+                <Label className="text-navy-700">Client Name *</Label>
+                <Input
+                  value={newBooking.client_name}
+                  onChange={(e) => setNewBooking(prev => ({ ...prev, client_name: e.target.value }))}
+                  className="mt-1.5 rounded-xl"
+                  placeholder="Enter client name"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-navy-700">Email *</Label>
+                  <Input
+                    type="email"
+                    value={newBooking.client_email}
+                    onChange={(e) => setNewBooking(prev => ({ ...prev, client_email: e.target.value }))}
+                    className="mt-1.5 rounded-xl"
+                    placeholder="client@email.com"
+                  />
+                </div>
+                <div>
+                  <Label className="text-navy-700">Phone</Label>
+                  <Input
+                    value={newBooking.client_phone}
+                    onChange={(e) => setNewBooking(prev => ({ ...prev, client_phone: e.target.value }))}
+                    className="mt-1.5 rounded-xl"
+                    placeholder="+44 7..."
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-navy-700">Notes</Label>
+                <Input
+                  value={newBooking.notes}
+                  onChange={(e) => setNewBooking(prev => ({ ...prev, notes: e.target.value }))}
+                  className="mt-1.5 rounded-xl"
+                  placeholder="Any special requests..."
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() => toggleBlockedDate(selectedDate)}
-                  className="ml-auto border-gray-200 rounded-full text-sm"
+                  onClick={() => setShowAddBooking(false)}
+                  className="flex-1 rounded-xl"
                 >
-                  {blockedDates.includes(format(selectedDate, 'yyyy-MM-dd')) ? 'Unblock Date' : 'Block Date'}
+                  Cancel
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="bg-white rounded-2xl shadow-card border-0 overflow-hidden">
-            <CardHeader className="pb-2 flex-row items-center justify-between border-b border-gray-100">
-              <div className="flex items-center gap-4">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedDate(addDays(selectedDate, -7))}
-                  className="text-navy-500 hover:text-navy-900"
+                  onClick={handleCreateBooking}
+                  className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
                 >
-                  <ChevronLeft className="w-5 h-5" />
-                </Button>
-                <span className="font-medium text-navy-900">
-                  {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedDate(addDays(selectedDate, 7))}
-                  className="text-navy-500 hover:text-navy-900"
-                >
-                  <ChevronRight className="w-5 h-5" />
+                  Create Booking
                 </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedDate(new Date())}
-                className="border-gray-200 rounded-full text-navy-600"
-              >
-                Today
-              </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-8 border-b border-gray-100">
-                <div className="p-2 text-center text-xs text-navy-400 border-r border-gray-100">Time</div>
-                {weekDays.map((day, i) => (
-                  <div
-                    key={i}
-                    className={`p-2 text-center border-r border-gray-100 last:border-r-0 cursor-pointer hover:bg-gray-50 ${
-                      isSameDay(day, new Date()) ? 'bg-teal-50' : ''
-                    } ${isSameDay(day, selectedDate) ? 'ring-2 ring-inset ring-teal-500' : ''}`}
-                    onClick={() => setSelectedDate(day)}
-                  >
-                    <div className="text-xs text-navy-400 uppercase">{format(day, 'EEE')}</div>
-                    <div className={`text-lg font-bold ${isSameDay(day, new Date()) ? 'text-teal-600' : 'text-navy-900'}`}>
-                      {format(day, 'd')}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-              <div className="overflow-y-auto max-h-[500px]">
-                {timeSlots.map((time) => (
-                  <div key={time} className="grid grid-cols-8 border-b border-gray-50 last:border-b-0">
-                    <div className="p-2 text-xs text-navy-400 border-r border-gray-100 flex items-start justify-center">
-                      {time}
-                    </div>
-                    {weekDays.map((day, dayIndex) => {
-                      const dayBookings = getBookingsForDate(day).filter(b => {
-                        const bookingHour = new Date(b.datetime).getHours();
-                        return bookingHour === parseInt(time);
-                      });
-                      
-                      return (
-                        <div
-                          key={dayIndex}
-                          className="min-h-[50px] p-1 border-r border-gray-50 last:border-r-0 hover:bg-gray-50 cursor-pointer"
-                          onClick={() => {
-                            setSelectedDate(day);
-                            setNewBooking(prev => ({ ...prev, date: day, time }));
-                            setShowAddBooking(true);
-                          }}
-                        >
-                          {dayBookings.map((booking) => (
-                            <div
-                              key={booking.id}
-                              className={`${getStatusColor(booking.status)} rounded-lg p-1.5 mb-1 text-xs cursor-pointer hover:opacity-90 transition-opacity`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingBooking(booking);
-                              }}
-                            >
-                              <div className="font-medium text-white truncate text-[10px]">{formatTime(booking.datetime)}</div>
-                              <div className="text-white/90 truncate">{booking.client_name}</div>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
+        {/* Team Management Modal */}
+        <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-navy-900">Team Members</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              {/* Existing Members */}
+              <div className="space-y-2">
+                {teamMembers.length === 0 ? (
+                  <div className="text-center py-8 text-navy-400">
+                    <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>No team members yet</p>
+                    <p className="text-sm">Add your first team member below</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Selected Day Bookings */}
-        <Card className="bg-white rounded-2xl shadow-card border-0">
-          <CardHeader className="pb-2 flex-row items-center justify-between">
-            <CardTitle className="text-lg font-heading font-semibold text-navy-900 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-teal-600" />
-              {format(selectedDate, 'EEEE, MMMM d')}
-            </CardTitle>
-            <Button
-              size="sm"
-              onClick={() => {
-                setNewBooking(prev => ({ ...prev, date: selectedDate }));
-                setShowAddBooking(true);
-              }}
-              className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {getBookingsForDate(selectedDate).length === 0 ? (
-              <p className="text-navy-500 text-center py-8">No bookings on this day</p>
-            ) : (
-              <div className="space-y-3">
-                {getBookingsForDate(selectedDate).sort((a, b) => new Date(a.datetime) - new Date(b.datetime)).map((booking) => (
-                  <div
-                    key={booking.id}
-                    className="flex items-center justify-between p-4 rounded-xl bg-cream hover:bg-gray-100 transition-colors cursor-pointer"
-                    onClick={() => setEditingBooking(booking)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(booking.status)}`} />
-                      <div className="text-lg font-bold font-display tabular-nums text-teal-600">{formatTime(booking.datetime)}</div>
-                      <div>
-                        <div className="font-medium text-navy-900">{booking.client_name}</div>
-                        <div className="text-sm text-navy-500">{booking.service_name}</div>
+                ) : (
+                  teamMembers.map((member) => (
+                    <div 
+                      key={member.id} 
+                      className="flex items-center gap-3 p-3 bg-cream-50 rounded-xl"
+                    >
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
+                        style={{ backgroundColor: member.color }}
+                      >
+                        {member.name?.charAt(0)}
                       </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-navy-900">{member.name}</p>
+                        <p className="text-sm text-navy-400 capitalize">{member.role}</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteTeamMember(member.id)}
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium text-teal-600">{formatPrice(booking.price_pence)}</div>
-                      <div className="text-xs text-navy-400 capitalize">{booking.status}</div>
+                  ))
+                )}
+              </div>
+              
+              {/* Add New Member */}
+              <div className="border-t border-gray-200 pt-4">
+                <p className="font-medium text-navy-900 mb-3">Add New Member</p>
+                <div className="space-y-3">
+                  <Input
+                    value={newMember.name}
+                    onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
+                    className="rounded-xl"
+                    placeholder="Name"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      type="email"
+                      value={newMember.email}
+                      onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
+                      className="rounded-xl"
+                      placeholder="Email (optional)"
+                    />
+                    <Select
+                      value={newMember.role}
+                      onValueChange={(v) => setNewMember(prev => ({ ...prev, role: v }))}
+                    >
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="staff">Staff</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-navy-600 mb-2 block">Calendar Color</Label>
+                    <div className="flex gap-2 flex-wrap">
+                      {MEMBER_COLORS.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setNewMember(prev => ({ ...prev, color }))}
+                          className={`w-8 h-8 rounded-full transition-transform ${
+                            newMember.color === color ? 'ring-2 ring-offset-2 ring-navy-900 scale-110' : ''
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
                     </div>
                   </div>
-                ))}
+                  <Button
+                    onClick={handleAddTeamMember}
+                    className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Team Member
+                  </Button>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {/* Add Booking Modal */}
-      <Dialog open={showAddBooking} onOpenChange={setShowAddBooking}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display">Add New Booking</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label>Service *</Label>
-              <Select value={newBooking.service_id} onValueChange={(v) => setNewBooking(prev => ({ ...prev, service_id: v }))}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select a service" />
-                </SelectTrigger>
-                <SelectContent>
-                  {services.map(s => (
-                    <SelectItem key={s.id} value={s.id}>{s.name} - {formatPrice(s.price_pence)}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Date *</Label>
-                <Input 
-                  type="date" 
-                  value={newBooking.date ? format(newBooking.date, 'yyyy-MM-dd') : ''} 
-                  onChange={(e) => setNewBooking(prev => ({ ...prev, date: new Date(e.target.value) }))}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label>Time *</Label>
-                <Select value={newBooking.time} onValueChange={(v) => setNewBooking(prev => ({ ...prev, time: v }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {generateTimeOptions().map(t => (
-                      <SelectItem key={t} value={t}>{t}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label>Client Name *</Label>
-              <Input 
-                value={newBooking.client_name} 
-                onChange={(e) => setNewBooking(prev => ({ ...prev, client_name: e.target.value }))}
-                placeholder="John Smith"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Client Email *</Label>
-              <Input 
-                type="email"
-                value={newBooking.client_email} 
-                onChange={(e) => setNewBooking(prev => ({ ...prev, client_email: e.target.value }))}
-                placeholder="john@example.com"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Client Phone</Label>
-              <Input 
-                value={newBooking.client_phone} 
-                onChange={(e) => setNewBooking(prev => ({ ...prev, client_phone: e.target.value }))}
-                placeholder="+44 7XXX XXXXXX"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Notes</Label>
-              <Input 
-                value={newBooking.notes} 
-                onChange={(e) => setNewBooking(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder="Any special requests..."
-                className="mt-1"
-              />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setShowAddBooking(false)} className="flex-1">Cancel</Button>
-            <Button onClick={handleCreateBooking} className="flex-1 bg-teal-500 hover:bg-teal-600">Create Booking</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Availability Modal */}
-      <Dialog open={showEditAvailability} onOpenChange={setShowEditAvailability}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-display">Working Hours</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 py-4 max-h-[400px] overflow-y-auto">
-            {availability.sort((a, b) => a.day - b.day).map((slot) => (
-              <div key={slot.day} className="flex items-center gap-3 p-3 rounded-xl bg-cream">
-                <input
-                  type="checkbox"
-                  checked={slot.enabled}
-                  onChange={(e) => updateAvailability(slot.day, 'enabled', e.target.checked)}
-                  className="w-5 h-5 rounded border-gray-300 text-teal-500 focus:ring-teal-500"
-                />
-                <span className="w-24 font-medium text-navy-900">{dayNames[slot.day]}</span>
-                <Input
-                  type="time"
-                  value={slot.start}
-                  onChange={(e) => updateAvailability(slot.day, 'start', e.target.value)}
-                  disabled={!slot.enabled}
-                  className="w-28"
-                />
-                <span className="text-navy-500">to</span>
-                <Input
-                  type="time"
-                  value={slot.end}
-                  onChange={(e) => updateAvailability(slot.day, 'end', e.target.value)}
-                  disabled={!slot.enabled}
-                  className="w-28"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setShowEditAvailability(false)} className="flex-1">Cancel</Button>
-            <Button onClick={handleSaveAvailability} className="flex-1 bg-teal-500 hover:bg-teal-600">
-              <Save className="w-4 h-4 mr-2" />
-              Save Hours
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Booking Modal */}
-      <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display">Booking Details</DialogTitle>
-          </DialogHeader>
-          {editingBooking && (
-            <div className="space-y-4 py-4">
-              <div className="p-4 rounded-xl bg-cream">
-                <div className="flex justify-between mb-2">
-                  <span className="text-navy-500">Service</span>
-                  <span className="font-medium text-navy-900">{editingBooking.service_name}</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-navy-500">Date & Time</span>
-                  <span className="font-medium text-navy-900">{format(new Date(editingBooking.datetime), 'EEE, d MMM')} at {formatTime(editingBooking.datetime)}</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-navy-500">Duration</span>
-                  <span className="font-medium text-navy-900">{editingBooking.duration_min} min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-navy-500">Price</span>
-                  <span className="font-bold text-teal-600">{formatPrice(editingBooking.price_pence)}</span>
-                </div>
-              </div>
-              
-              <div className="p-4 rounded-xl border border-gray-200">
-                <h4 className="font-medium text-navy-900 mb-2">Client</h4>
-                <p className="text-navy-700">{editingBooking.client_name}</p>
-                <p className="text-sm text-navy-500">{editingBooking.client_email}</p>
-                {editingBooking.client_phone && <p className="text-sm text-navy-500">{editingBooking.client_phone}</p>}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-navy-500">Status:</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium text-white ${getStatusColor(editingBooking.status)}`}>
-                  {editingBooking.status}
-                </span>
-              </div>
-
-              {editingBooking.status === 'pending' && (
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => { handleUpdateBookingStatus(editingBooking.id, 'confirmed'); setEditingBooking(null); }}
-                    className="flex-1 bg-emerald-500 hover:bg-emerald-600"
-                  >
-                    Confirm
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => { handleUpdateBookingStatus(editingBooking.id, 'cancelled'); setEditingBooking(null); }}
-                    className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    Decline
-                  </Button>
-                </div>
-              )}
-              
-              {editingBooking.status === 'confirmed' && (
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => { handleUpdateBookingStatus(editingBooking.id, 'completed'); setEditingBooking(null); }}
-                    className="flex-1 bg-teal-500 hover:bg-teal-600"
-                  >
-                    Mark Complete
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => { handleDeleteBooking(editingBooking.id); setEditingBooking(null); }}
-                    className="border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </AppLayout>
   );
 };
