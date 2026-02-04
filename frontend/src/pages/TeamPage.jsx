@@ -52,6 +52,17 @@ function TeamPage() {
       };
       const res = await api.post('/team-members', newMember);
       await fetchData();
+      // Set edit form for the new member
+      setEditForm({
+        name: newMember.name,
+        email: newMember.email || '',
+        phone: newMember.phone || '',
+        role: newMember.role,
+        color: newMember.color,
+        avatar_url: newMember.avatar_url || '',
+        service_ids: newMember.service_ids || [],
+        show_on_booking_page: newMember.show_on_booking_page
+      });
       setExpandedId(res.data.id);
       setEditingId(res.data.id);
       toast.success('Team member added');
