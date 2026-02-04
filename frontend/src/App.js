@@ -17,6 +17,10 @@ import ShareLinkPage from "./pages/ShareLinkPage";
 import PublicBookingPage from "./pages/PublicBookingPage";
 import MobilePreview from "./pages/MobilePreview";
 import ExpoTestingPage from "./pages/ExpoTestingPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
+import CookiesPage from "./pages/CookiesPage";
+import CookieConsent from "./components/CookieConsent";
 
 import "./App.css";
 
