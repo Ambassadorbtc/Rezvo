@@ -8,9 +8,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                display: ['Fraunces', 'Georgia', 'serif'],
-                heading: ['Outfit', '-apple-system', 'sans-serif'],
+                sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                display: ['Space Grotesk', '-apple-system', 'sans-serif'],
+                heading: ['Plus Jakarta Sans', '-apple-system', 'sans-serif'],
             },
             colors: {
                 // Rezvo Brand Colors - Monzo/Starling inspired
