@@ -1308,6 +1308,35 @@ async def ai_chat(
         logger.error(f"AI chat error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
+# ==================== EXPO TUNNEL ====================
+
+@api_router.get("/expo/tunnel-url")
+async def get_expo_tunnel_url():
+    """Get the current Expo tunnel URL for QR code generation"""
+    try:
+        # Fetch from local ngrok API
+        response = http_requests.get("http://localhost:4040/api/tunnels", timeout=2)
+        if response.status_code == 200:
+            data = response.json()
+            tunnels = data.get("tunnels", [])
+            for tunnel in tunnels:
+                public_url = tunnel.get("public_url", "")
+                if public_url and "exp.direct" in public_url:
+                    # Convert https://xxx.exp.direct to exp://xxx.exp.direct format
+                    expo_url = public_url.replace("https://", "exp://")
+                    return {"url": expo_url, "status": "active"}
+            
+            # Fallback to first tunnel if no exp.direct found
+            if tunnels:
+                public_url = tunnels[0].get("public_url", "")
+                expo_url = public_url.replace("https://", "exp://").replace("http://", "exp://")
+                return {"url": expo_url, "status": "active"}
+        
+        return {"url": None, "status": "tunnel_not_found"}
+    except Exception as e:
+        logger.error(f"Failed to fetch Expo tunnel URL: {e}")
+        return {"url": None, "status": "unavailable", "error": str(e)}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
