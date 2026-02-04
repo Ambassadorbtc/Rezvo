@@ -1,142 +1,144 @@
 {
   "identity": {
-    "name": "QuickSlot",
-    "vibe": "Fintech Energy meets Viral Utility",
-    "archetype": "The Performance Pro (Dark Mode Edition)",
-    "core_promise": "Booking links in 12 seconds",
-    "target_audience": "UK Micro-businesses (Barbers, PTs, Food Trucks)"
+    "name": "Rezvo.app",
+    "aesthetic": "UK Fintech (Monzo/Starling)",
+    "tone": "Trustworthy, Approachable, Modern, British",
+    "target_audience": "UK micro-business owners (hairdressers, PTs, nail techs)"
   },
   "typography": {
-    "primary_font": "Inter",
-    "secondary_font": "Inter",
+    "font_family": {
+      "headings": "Fraunces, serif",
+      "subheadings": "Outfit, sans-serif",
+      "body": "Inter, sans-serif",
+      "ui": "Inter, sans-serif"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-bold tracking-tight",
+      "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-semibold",
+      "body": "text-base md:text-lg leading-relaxed",
+      "caption": "text-sm font-medium tracking-wide uppercase"
+    },
     "weights": {
-      "heading": "800",
-      "body": "400",
-      "accent": "600"
-    },
-    "tracking": {
-      "headings": "tracking-tight",
-      "overline": "tracking-[0.2em]",
-      "body": "tracking-normal"
-    },
-    "rules": [
-      "Headings (h1-h3) MUST use tracking-tight and font-weight-800 to mimic the 'heavy' fintech aesthetic.",
-      "Numbers (prices, dates) MUST use tabular-nums for alignment.",
-      "Use 'text-balance' on all multi-line headings."
-    ]
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    }
   },
   "colors": {
     "palette": {
-      "primary": {
-        "DEFAULT": "#FF6600",
-        "foreground": "#FFFFFF",
-        "hover": "#FF8533",
-        "active": "#CC5200"
-      },
-      "background": {
-        "DEFAULT": "#0F1115",
-        "paper": "#16191F",
-        "subtle": "#1C2026"
-      },
-      "foreground": {
-        "DEFAULT": "#FFFFFF",
-        "muted": "#A1A1AA",
-        "subtle": "#52525B"
-      },
-      "accent": {
-        "teal": "#2DD4BF",
-        "purple": "#A855F7",
-        "success": "#22C55E",
-        "warning": "#EAB308",
-        "error": "#EF4444"
-      },
-      "border": {
-        "DEFAULT": "#27272A",
-        "hover": "#3F3F46"
-      }
+      "background": "#FDFBF7",
+      "surface": "#FFFFFF",
+      "primary": "#00BFA5",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#FF6B6B",
+      "secondary_foreground": "#FFFFFF",
+      "accent": "#1A2B3C",
+      "accent_foreground": "#FFFFFF",
+      "text_main": "#0A1626",
+      "text_muted": "#4A5568",
+      "border": "#E2E8F0",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444"
     },
     "gradients": {
-      "primary": "linear-gradient(135deg, #FF6600 0%, #FF8533 100%)",
-      "dark_glass": "linear-gradient(180deg, rgba(22, 25, 31, 0.7) 0%, rgba(22, 25, 31, 0.3) 100%)",
-      "glow": "radial-gradient(circle at center, rgba(255, 102, 0, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
-    },
-    "usage_rules": [
-      "NEVER use pure black (#000000). Use Obsidian (#0F1115).",
-      "Primary Orange (#FF6600) is for CTAs and Key Data points ONLY. Do not overuse.",
-      "Use the 'Teal' accent for 'Money Received' or 'Booking Confirmed' states (Monzo style).",
-      "Use 'Purple' for 'Premium/Pro' features."
-    ]
+      "hero": "linear-gradient(135deg, #FDFBF7 0%, #F0F9FF 100%)",
+      "primary_btn": "linear-gradient(135deg, #00BFA5 0%, #00A896 100%)",
+      "secondary_btn": "linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%)"
+    }
   },
-  "components": {
+  "visual_enhancers": {
     "radius": {
       "default": "0.75rem",
+      "card": "1.5rem",
       "button": "9999px",
-      "card": "1rem",
-      "input": "0.75rem"
+      "hero": "2.5rem"
     },
     "shadows": {
-      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15)",
-      "glow": "0 0 20px rgba(255, 102, 0, 0.25)"
+      "card": "0 10px 40px -10px rgba(0,0,0,0.08)",
+      "button": "0 4px 12px rgba(0, 191, 165, 0.3)",
+      "float": "0 20px 50px -12px rgba(0,0,0,0.12)"
     },
-    "customizations": {
-      "Button": "Must be pill-shaped (rounded-full). Primary buttons use the Orange gradient. Secondary buttons use 'bg-white/10 hover:bg-white/20'.",
-      "Card": "Use 'bg-[#16191F]' with a 'border-white/5' border. Add a subtle hover lift (-translate-y-1).",
-      "Input": "Deep background 'bg-[#0A0C10]' with 'border-white/10'. Focus ring must be Orange (#FF6600).",
-      "Dialog": "Use 'backdrop-blur-xl' overlay. Content background 'bg-[#16191F]'.",
-      "Badge": "Use 'rounded-md' (not full pill) for status indicators to differentiate from buttons."
+    "borders": {
+      "subtle": "1px solid #E2E8F0",
+      "focus": "2px solid #00BFA5"
     }
   },
   "layout": {
-    "grid_system": "Bento Grid",
-    "spacing_scale": "Generous (p-6, p-8 for containers)",
-    "mobile_first": true,
-    "max_width": "max-w-md mx-auto md:max-w-5xl",
-    "rules": [
-      "Dashboard MUST use a Bento Grid layout (mix of 1x1, 2x1, 2x2 tiles).",
-      "Mobile view acts like a PWA: Bottom Navigation Bar (fixed), Top Header (sticky).",
-      "Desktop view: Sidebar Navigation (left), Content (right).",
-      "Containers with borders MUST have internal padding (p-6) to prevent text collision."
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section": "py-20 md:py-32",
+      "element": "gap-6 md:gap-8"
+    },
+    "grid_patterns": [
+      "Bento Grid (Asymmetric)",
+      "Feature Split (Text Left, Image Right)",
+      "Three Column Cards"
     ]
   },
-  "visual_enhancers": {
-    "glassmorphism": "Use 'backdrop-blur-md bg-black/40' for sticky headers and bottom nav.",
-    "noise": "Add a subtle noise texture overlay at 2% opacity to the main background to kill digital flatness.",
-    "micro_interactions": [
-      "Buttons: Scale down (0.98) on click.",
-      "Cards: Lift (-4px) and glow on hover.",
-      "Inputs: Border color transition on focus."
-    ],
-    "shareable_assets": {
-      "booking_ticket": "The 'Share Link' card should look like a digital event ticket or boarding pass. High contrast, QR code prominent, 'Add to Wallet' vibe."
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white rounded-full px-8 py-4 font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1",
+      "secondary": "bg-white text-text_main border-2 border-gray-100 rounded-full px-8 py-4 font-semibold hover:border-gray-200 transition-all",
+      "ghost": "text-primary font-semibold hover:bg-primary/10 rounded-full px-6 py-3 transition-all"
+    },
+    "cards": {
+      "feature": "bg-white rounded-3xl p-8 shadow-card border border-gray-50 hover:shadow-float transition-all duration-300",
+      "pricing": "bg-white rounded-3xl p-10 shadow-card border border-gray-100 relative overflow-hidden"
+    },
+    "badges": {
+      "trust": "bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-text_muted flex items-center gap-2"
     }
   },
   "media": {
-    "image_style": "High contrast, moody lighting, authentic action shots (no staged stock smiles).",
     "image_urls": {
-      "hero_bg": "https://images.unsplash.com/photo-1768314816669-e23f620777d0?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "barber": "https://images.unsplash.com/photo-1635346125627-74d1b2867898?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "trainer": "https://images.unsplash.com/photo-1434682881908-b43d0467b798?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "food_truck": "https://images.unsplash.com/photo-1765457436819-1ea7749d4506?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "gym_guy": "https://images.unsplash.com/photo-1700784795176-7ff886439d79?crop=entropy&cs=srgb&fm=jpg&q=85"
+      "hero_hairdresser": "https://images.unsplash.com/photo-1551386234-48770e28e791?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "hero_pt": "https://images.unsplash.com/photo-1750698544727-ffc439ade2ba?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "app_mockup": "https://images.unsplash.com/photo-1709193874570-bf8be1706d6d?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "trust_badge_which": "https://upload.wikimedia.org/wikipedia/en/thumb/b/b6/Which%3F_logo.svg/1200px-Which%3F_logo.svg.png",
+      "trust_badge_fscs": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/FSCS_logo.svg/1200px-FSCS_logo.svg.png"
+    },
+    "icons": "Lucide React (Rounded style)",
+    "illustrations": "Minimalist 3D or Flat Vector (Starling style)"
+  },
+  "motion": {
+    "transitions": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    "animations": {
+      "fade_in_up": "animate-fade-in-up",
+      "hover_lift": "hover:-translate-y-1 hover:shadow-lg"
     }
   },
-  "accessibility": {
-    "contrast": "Ensure text on Orange (#FF6600) is White or Black depending on size (APCA check).",
-    "focus_states": "Visible focus rings (2px solid Orange) on all interactive elements.",
-    "reduced_motion": "Respect 'prefers-reduced-motion' media query."
-  },
   "instructions_to_main_agent": [
-    "1. SETUP: Configure Tailwind with the custom colors (Obsidian, Blaze Orange) immediately.",
-    "2. COMPONENTS: Customize Shadcn components in `src/components/ui` to match the 'rounded-full' button and 'rounded-xl' card style.",
-    "3. LAYOUT: Build the 'Dashboard' using a CSS Grid (Bento style). Do not use simple flex columns.",
-    "4. MOBILE: Ensure the 'Bottom Nav' is fixed at the bottom for mobile screens (z-50).",
-    "5. VIBE: Use the 'noise' texture on the body background.",
-    "6. TESTING: Add `data-testid` to all interactive elements."
+    "1. THEME OVERHAUL: Completely remove the dark mode 'QuickSlot' theme. Replace with 'Rezvo' Light Theme.",
+    "2. FONTS: Install 'Fraunces' for Headings and 'Outfit' for Subheadings. Keep 'Inter' for body.",
+    "3. HERO SECTION: Must use a large rounded container (rounded-b-[3rem] or floating rounded-3xl) with the 'hero_hairdresser' or 'hero_pt' image.",
+    "4. BUTTONS: All buttons must be PILL SHAPED (rounded-full). No sharp corners.",
+    "5. COLORS: Use Cream (#FDFBF7) as the main background. Do not use pure white for the page background.",
+    "6. TRUST: Add a 'Trusted by' section immediately after the hero with the Which? and FSCS style badges (use text or generic icons if actual logos are tricky, but aim for the 'Trust Badge' look).",
+    "7. MOCKUPS: Use the iPhone mockup image to show the 'App' interface.",
+    "8. COPY: Use British English (Colour, Centre, Programme). Tone: Friendly, helpful, no jargon.",
+    "9. SHADCN: Customize all Shadcn components to match the rounded-3xl radius and cream/teal palette."
   ],
-  "universal_guidelines": [
-    "Avoid 'AI Slop': No generic centered layouts. Use asymmetry.",
-    "Dark Mode First: Design for dark mode primarily, light mode is secondary.",
-    "No Gradients on Text: Keep text solid white/grey for readability.",
-    "Use 'sonner' for toasts."
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts"
   ]
 }
