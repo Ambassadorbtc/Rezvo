@@ -12,15 +12,18 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, borderRadius, typography } from '../lib/theme';
+
+const TEAL = '#00BFA5';
 
 export default function LoginScreen({ navigation, route }) {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState(route?.params?.userType || 'business');
+  const [userType, setUserType] = useState(route.params?.userType || 'business');
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -47,78 +50,62 @@ export default function LoginScreen({ navigation, route }) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView
+        <ScrollView 
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backText}>←</Text>
-            </TouchableOpacity>
-            <View style={styles.logo}>
-              <View style={styles.logoIcon}>
-                <Text style={styles.logoText}>R</Text>
-              </View>
-              <Text style={styles.logoName}>Rezvo</Text>
-            </View>
-          </View>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#0A1626" />
+          </TouchableOpacity>
 
-          {/* Title */}
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>
-              Log in to {userType === 'client' ? 'book appointments' : 'manage your business'}
-            </Text>
+          <View style={styles.header}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>R</Text>
+            </View>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Sign in to your account</Text>
           </View>
 
           {/* User Type Toggle */}
-          <View style={styles.userTypeToggle}>
+          <View style={styles.toggleContainer}>
             <TouchableOpacity
-              style={[
-                styles.toggleButton,
-                userType === 'client' && styles.toggleButtonActive,
-              ]}
+              style={[styles.toggleButton, userType === 'client' && styles.toggleActive]}
               onPress={() => setUserType('client')}
             >
-              <Text
-                style={[
-                  styles.toggleText,
-                  userType === 'client' && styles.toggleTextActive,
-                ]}
-              >
+              <Ionicons 
+                name="person" 
+                size={18} 
+                color={userType === 'client' ? '#FFFFFF' : TEAL} 
+              />
+              <Text style={[styles.toggleText, userType === 'client' && styles.toggleTextActive]}>
                 Client
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.toggleButton,
-                userType === 'business' && styles.toggleButtonActive,
-              ]}
+              style={[styles.toggleButton, userType === 'business' && styles.toggleActive]}
               onPress={() => setUserType('business')}
             >
-              <Text
-                style={[
-                  styles.toggleText,
-                  userType === 'business' && styles.toggleTextActive,
-                ]}
-              >
+              <Ionicons 
+                name="briefcase" 
+                size={18} 
+                color={userType === 'business' ? '#FFFFFF' : TEAL} 
+              />
+              <Text style={[styles.toggleText, userType === 'business' && styles.toggleTextActive]}>
                 Business
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* Form */}
           <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="mail-outline" size={20} color="#627D98" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
-                placeholderTextColor={colors.textLight}
+                placeholder="Email address"
+                placeholderTextColor="#9FB3C8"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -127,44 +114,50 @@ export default function LoginScreen({ navigation, route }) {
               />
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#627D98" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor={colors.textLight}
+                placeholder="Password"
+                placeholderTextColor="#9FB3C8"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 autoComplete="password"
               />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Ionicons 
+                  name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                  size={20} 
+                  color="#627D98" 
+                />
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.forgotButton}>
-              <Text style={styles.forgotText}>Forgot password?</Text>
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Text style={styles.loginButtonText}>Sign In</Text>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
-          {/* Login Button */}
-          <TouchableOpacity
-            style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={colors.surface} />
-            ) : (
-              <Text style={styles.loginButtonText}>Log in</Text>
-            )}
-          </TouchableOpacity>
-
-          {/* Signup Link */}
-          <View style={styles.signupLink}>
-            <Text style={styles.signupText}>Don't have an account? </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Signup', { userType })}
-            >
-              <Text style={styles.signupLinkText}>Sign up</Text>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+              <Text style={styles.signupLink}>Sign up</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -176,154 +169,138 @@ export default function LoginScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
   keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-  },
-  header: {
-    marginTop: spacing.md,
-    marginBottom: spacing.xxl,
+    paddingHorizontal: 24,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginTop: 8,
   },
-  backText: {
-    fontSize: 24,
-    color: colors.text,
+  header: {
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 32,
   },
   logo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: colors.primary,
+    width: 56,
+    height: 56,
+    backgroundColor: TEAL,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.sm,
+    marginBottom: 20,
   },
   logoText: {
-    fontSize: 20,
+    color: '#FFFFFF',
+    fontSize: 32,
     fontWeight: '700',
-    color: colors.surface,
-  },
-  logoName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  titleContainer: {
-    marginBottom: spacing.xl,
   },
   title: {
-    fontSize: typography.sizes['4xl'],
+    fontSize: 28,
     fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-    letterSpacing: -0.5,
+    color: '#0A1626',
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: typography.sizes.lg,
-    color: colors.textMuted,
+    fontSize: 16,
+    color: '#627D98',
   },
-  userTypeToggle: {
+  toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: borderRadius.lg,
+    backgroundColor: '#F5F0E8',
+    borderRadius: 12,
     padding: 4,
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
   toggleButton: {
     flex: 1,
-    paddingVertical: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    gap: 6,
   },
-  toggleButtonActive: {
-    backgroundColor: colors.surface,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  toggleActive: {
+    backgroundColor: TEAL,
   },
   toggleText: {
-    fontSize: typography.sizes.base,
-    fontWeight: '500',
-    color: colors.textMuted,
+    fontSize: 15,
+    fontWeight: '600',
+    color: TEAL,
   },
   toggleTextActive: {
-    color: colors.text,
-    fontWeight: '600',
+    color: '#FFFFFF',
   },
   form: {
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
-  inputGroup: {
-    marginBottom: spacing.lg,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
-  label: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
+  inputIcon: {
+    marginRight: 12,
   },
   input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md + 4,
-    fontSize: typography.sizes.base,
-    color: colors.text,
+    flex: 1,
+    paddingVertical: 16,
+    fontSize: 16,
+    color: '#0A1626',
   },
-  forgotButton: {
+  forgotPassword: {
     alignSelf: 'flex-end',
+    marginBottom: 24,
   },
-  forgotText: {
-    fontSize: typography.sizes.sm,
-    color: colors.primary,
+  forgotPasswordText: {
+    color: TEAL,
+    fontSize: 14,
     fontWeight: '500',
   },
   loginButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.full,
+    backgroundColor: TEAL,
+    paddingVertical: 16,
+    borderRadius: 50,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    justifyContent: 'center',
+    gap: 8,
   },
   loginButtonDisabled: {
     opacity: 0.7,
   },
   loginButtonText: {
-    color: colors.surface,
-    fontSize: typography.sizes.lg,
+    color: '#FFFFFF',
+    fontSize: 18,
     fontWeight: '600',
   },
-  signupLink: {
+  footer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginTop: 'auto',
+    paddingBottom: 24,
   },
-  signupText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+  footerText: {
+    fontSize: 15,
+    color: '#627D98',
   },
-  signupLinkText: {
-    fontSize: typography.sizes.base,
-    color: colors.primary,
+  signupLink: {
+    fontSize: 15,
+    color: TEAL,
     fontWeight: '600',
   },
 });
