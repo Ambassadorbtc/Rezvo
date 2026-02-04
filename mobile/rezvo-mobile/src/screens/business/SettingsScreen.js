@@ -5,12 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   Share,
   Alert,
   ActivityIndicator,
-  Clipboard,
+  Linking,
+  Switch,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
@@ -23,6 +24,7 @@ export default function SettingsScreen({ navigation }) {
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shortLink, setShortLink] = useState(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
     fetchBusiness();
@@ -30,7 +32,7 @@ export default function SettingsScreen({ navigation }) {
 
   const fetchBusiness = async () => {
     try {
-      const response = await api.get('/business/me');
+      const response = await api.get('/business');
       setBusiness(response.data);
     } catch (error) {
       console.error('Error fetching business:', error);
@@ -49,8 +51,8 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
-  const copyToClipboard = (text) => {
-    Clipboard.setString(text);
+  const copyToClipboard = async (text) => {
+    await Clipboard.setStringAsync(text);
     Alert.alert('Copied!', 'Link copied to clipboard');
   };
 
@@ -77,6 +79,10 @@ export default function SettingsScreen({ navigation }) {
     );
   };
 
+  const openURL = (url) => {
+    Linking.openURL(url).catch(err => console.error('Error opening URL:', err));
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -91,18 +97,25 @@ export default function SettingsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Settings</Text>
         </View>
 
-        {/* Business Profile */}
+        {/* Business Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.profileIcon}>
             <Text style={styles.profileInitial}>{business?.name?.charAt(0) || 'B'}</Text>
           </View>
           <Text style={styles.businessName}>{business?.name || 'Your Business'}</Text>
           <Text style={styles.businessEmail}>{user?.email}</Text>
+          <TouchableOpacity 
+            style={styles.editProfileBtn}
+            onPress={() => Alert.alert('Edit Profile', 'Navigate to edit business profile')}
+          >
+            <Ionicons name="create-outline" size={16} color={TEAL} />
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Share Link Section */}
@@ -138,69 +151,152 @@ export default function SettingsScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Menu Items */}
+        {/* Business Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Text style={styles.sectionTitle}>Business</Text>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Business Details', 'Edit your business name, address, and contact info')}
+          >
             <View style={styles.menuIcon}>
               <Ionicons name="business-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Business Details</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Business Details</Text>
+              <Text style={styles.menuSubtext}>Name, address, contact</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Working Hours', 'Set your business operating hours')}
+          >
             <View style={styles.menuIcon}>
               <Ionicons name="time-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Working Hours</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Working Hours</Text>
+              <Text style={styles.menuSubtext}>Set availability</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Booking Settings', 'Configure booking rules and policies')}
+          >
+            <View style={styles.menuIcon}>
+              <Ionicons name="calendar-outline" size={20} color={TEAL} />
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Booking Settings</Text>
+              <Text style={styles.menuSubtext}>Rules & policies</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Notifications */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Notifications</Text>
+          
+          <View style={styles.menuItem}>
             <View style={styles.menuIcon}>
               <Ionicons name="notifications-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Notifications</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={styles.menuIcon}>
-              <Ionicons name="card-outline" size={20} color={TEAL} />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Push Notifications</Text>
+              <Text style={styles.menuSubtext}>Get notified about bookings</Text>
             </View>
-            <Text style={styles.menuText}>Subscription</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={setNotificationsEnabled}
+              trackColor={{ false: '#E2E8F0', true: TEAL }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Email Preferences', 'Configure email notification settings')}
+          >
+            <View style={styles.menuIcon}>
+              <Ionicons name="mail-outline" size={20} color={TEAL} />
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Email Preferences</Text>
+              <Text style={styles.menuSubtext}>Booking confirmations & reminders</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
+        </View>
+
+        {/* Subscription */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Subscription</Text>
+          
+          <View style={styles.subscriptionCard}>
+            <View style={styles.subscriptionBadge}>
+              <Text style={styles.subscriptionBadgeText}>FREE TRIAL</Text>
+            </View>
+            <Text style={styles.subscriptionTitle}>You're on the Free Plan</Text>
+            <Text style={styles.subscriptionDesc}>Upgrade to unlock unlimited bookings, analytics, and more.</Text>
+            <TouchableOpacity 
+              style={styles.upgradeBtn}
+              onPress={() => Alert.alert('Upgrade', 'Subscription management coming soon!')}
+            >
+              <Ionicons name="rocket" size={18} color="#FFFFFF" />
+              <Text style={styles.upgradeBtnText}>Upgrade to Pro - £4.99/mo</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Support */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support</Text>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Help Centre', 'Browse FAQs and guides')}
+          >
             <View style={styles.menuIcon}>
               <Ionicons name="help-circle-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Help & FAQ</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Help Centre</Text>
+              <Text style={styles.menuSubtext}>FAQs & guides</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => openURL('mailto:support@rezvo.app')}
+          >
             <View style={styles.menuIcon}>
               <Ionicons name="chatbubble-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Contact Us</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Contact Support</Text>
+              <Text style={styles.menuSubtext}>support@rezvo.app</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => Alert.alert('Terms & Privacy', 'View our legal documents')}
+          >
             <View style={styles.menuIcon}>
               <Ionicons name="document-text-outline" size={20} color={TEAL} />
             </View>
-            <Text style={styles.menuText}>Terms & Privacy</Text>
-            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Terms & Privacy</Text>
+              <Text style={styles.menuSubtext}>Legal information</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
         </View>
 
@@ -210,7 +306,7 @@ export default function SettingsScreen({ navigation }) {
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>Version 1.0.0</Text>
+        <Text style={styles.version}>Rezvo v1.0.0</Text>
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
@@ -233,7 +329,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '700',
     color: '#0A1626',
   },
@@ -270,15 +366,30 @@ const styles = StyleSheet.create({
   businessEmail: {
     fontSize: 14,
     color: '#627D98',
+    marginBottom: 16,
+  },
+  editProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#F5F0E8',
+    borderRadius: 20,
+    gap: 6,
+  },
+  editProfileText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: TEAL,
   },
   section: {
     paddingHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#627D98',
+    color: '#9FB3C8',
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -359,19 +470,73 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   menuIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     backgroundColor: '#F5F0E8',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  menuText: {
+  menuContent: {
     flex: 1,
+  },
+  menuText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#0A1626',
+  },
+  menuSubtext: {
+    fontSize: 13,
+    color: '#9FB3C8',
+    marginTop: 2,
+  },
+  subscriptionCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    alignItems: 'center',
+  },
+  subscriptionBadge: {
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  subscriptionBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#16A34A',
+  },
+  subscriptionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0A1626',
+    marginBottom: 8,
+  },
+  subscriptionDesc: {
+    fontSize: 14,
+    color: '#627D98',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  upgradeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: TEAL,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 25,
+    gap: 8,
+  },
+  upgradeBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   logoutBtn: {
     flexDirection: 'row',
@@ -392,6 +557,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     color: '#9FB3C8',
-    marginTop: 16,
+    marginTop: 20,
   },
 });
