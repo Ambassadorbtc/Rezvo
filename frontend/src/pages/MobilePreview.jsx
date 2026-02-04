@@ -679,9 +679,10 @@ const MobilePreview = () => {
   // Business Settings
   const BusinessSettingsScreen = () => (
     <div className="h-full flex flex-col bg-[#FDFBF7]">
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-3 pb-2 overflow-auto flex-1">
         <h2 className="text-xl font-bold text-[#0A1626] mb-4">Settings</h2>
         
+        {/* Profile Card */}
         <div className="bg-white rounded-xl p-4 shadow-sm mb-4 flex items-center border border-[#E2E8F0]">
           <div className="w-14 h-14 rounded-2xl bg-[#00BFA5] flex items-center justify-center mr-3 shadow-lg shadow-[#00BFA5]/30">
             <span className="text-xl font-bold text-white">T</span>
@@ -690,50 +691,191 @@ const MobilePreview = () => {
             <p className="font-bold text-[#0A1626]">Test Business</p>
             <p className="text-sm text-[#627D98]">{email}</p>
           </div>
+          <button className="text-[#00BFA5] text-sm font-medium">Edit</button>
         </div>
 
-        <button 
-          onClick={() => { setUserType('client'); navigate('home'); }}
-          className="w-full bg-[#1A2B3C] rounded-xl p-4 mb-4 flex items-center"
-        >
-          <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center mr-3">
-            <span className="text-xl">📱</span>
+        {/* Booking Link Section */}
+        <div className="bg-white rounded-xl p-4 shadow-sm mb-4 border border-[#E2E8F0]">
+          <p className="text-xs font-semibold text-[#9FB3C8] uppercase tracking-wider mb-2">Your Booking Link</p>
+          <div className="flex items-center gap-2 bg-[#F5F0E8] px-3 py-2.5 rounded-lg mb-3">
+            <span className="flex-1 text-sm text-[#0A1626] truncate">rezvo.app/book/test-business</span>
           </div>
-          <div className="flex-1 text-left">
-            <p className="text-white font-semibold">Switch to Client Mode</p>
-            <p className="text-white/70 text-sm">Book appointments</p>
+          <div className="flex gap-2">
+            <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#F5F0E8] rounded-lg">
+              <span className="text-sm font-medium text-[#00BFA5]">Copy</span>
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#00BFA5] rounded-lg">
+              <span className="text-sm font-medium text-white">Share</span>
+            </button>
           </div>
-          <ChevronRight className="w-5 h-5 text-white/50" />
-        </button>
+        </div>
 
+        {/* Business Section */}
+        <p className="text-xs font-semibold text-[#9FB3C8] uppercase tracking-wider mb-2">Business</p>
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#E2E8F0] mb-4">
           {[
-            { icon: '🏪', label: 'Business Profile' },
-            { icon: '⏰', label: 'Availability' },
-            { icon: '💳', label: 'Payment Setup' },
-            { icon: '📊', label: 'Analytics' },
+            { icon: '🏪', label: 'Business Details', desc: 'Name, address, contact' },
+            { icon: '⏰', label: 'Working Hours', desc: 'Set availability' },
+            { icon: '📅', label: 'Booking Settings', desc: 'Rules & policies' },
           ].map((item, i) => (
             <button key={i} className="flex items-center px-4 py-3.5 border-b border-[#F5F0E8] last:border-0 w-full">
-              <div className="w-9 h-9 rounded-lg bg-[#F5F0E8] flex items-center justify-center mr-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] flex items-center justify-center mr-3">
+                <span className="text-lg">{item.icon}</span>
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-[#0A1626]">{item.label}</p>
+                <p className="text-xs text-[#9FB3C8]">{item.desc}</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#C1C7CD]" />
+            </button>
+          ))}
+        </div>
+
+        {/* Subscription */}
+        <div className="bg-white rounded-xl p-4 shadow-sm mb-4 border border-[#E2E8F0] text-center">
+          <span className="inline-block px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold mb-2">FREE TRIAL</span>
+          <p className="font-bold text-[#0A1626] mb-1">You're on the Free Plan</p>
+          <p className="text-xs text-[#627D98] mb-3">Upgrade to unlock unlimited bookings</p>
+          <button className="w-full py-3 bg-[#00BFA5] rounded-full text-white font-semibold text-sm">
+            Upgrade to Pro - £4.99/mo
+          </button>
+        </div>
+
+        {/* Support */}
+        <p className="text-xs font-semibold text-[#9FB3C8] uppercase tracking-wider mb-2">Support</p>
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#E2E8F0] mb-4">
+          {[
+            { icon: '❓', label: 'Help Centre' },
+            { icon: '💬', label: 'Contact Support' },
+            { icon: '📄', label: 'Terms & Privacy' },
+          ].map((item, i) => (
+            <button key={i} className="flex items-center px-4 py-3.5 border-b border-[#F5F0E8] last:border-0 w-full">
+              <div className="w-10 h-10 rounded-xl bg-[#F5F0E8] flex items-center justify-center mr-3">
                 <span className="text-lg">{item.icon}</span>
               </div>
               <span className="flex-1 text-left font-medium text-[#0A1626]">{item.label}</span>
-              <ChevronRight className="w-4 h-4 text-[#9FB3C8]" />
+              <ChevronRight className="w-4 h-4 text-[#C1C7CD]" />
             </button>
           ))}
         </div>
 
         <button 
           onClick={() => { setIsLoggedIn(false); navigate('welcome'); }}
-          className="w-full py-3.5 border-2 border-red-500 text-red-500 rounded-xl font-semibold"
+          className="w-full py-3.5 bg-red-50 border border-red-200 text-red-500 rounded-xl font-semibold flex items-center justify-center gap-2"
         >
+          <LogOut className="w-5 h-5" />
           Log out
         </button>
+        
+        <p className="text-center text-xs text-[#9FB3C8] mt-4">Rezvo v1.0.0</p>
       </div>
 
       <BusinessBottomNav active="settings" navigate={navigate} />
     </div>
   );
+
+  // Business Services Screen (with Products)
+  const BusinessServicesScreen = () => {
+    const [activeTab, setActiveTab] = useState('services');
+    const services = [
+      { name: 'Haircut & Style', price: 35, duration: 45, desc: 'Professional haircut' },
+      { name: 'Beard Trim', price: 15, duration: 20, desc: 'Beard grooming' },
+      { name: 'Hair Color', price: 55, duration: 90, desc: 'Full coloring' },
+      { name: 'Deep Conditioning', price: 25, duration: 30, desc: 'Hair treatment' },
+    ];
+    const products = [
+      { name: 'Premium Hair Oil', price: 12.99, stock: 25, category: 'Hair Care' },
+      { name: 'Styling Gel', price: 8.99, stock: 40, category: 'Styling' },
+      { name: 'Beard Balm', price: 15.99, stock: 15, category: 'Beard Care' },
+    ];
+    
+    return (
+      <div className="h-full flex flex-col bg-[#FDFBF7]">
+        <div className="px-4 pt-3 pb-2 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-[#0A1626]">Catalogue</h2>
+          <button className="w-10 h-10 rounded-full bg-[#00BFA5] flex items-center justify-center shadow-lg shadow-[#00BFA5]/30">
+            <Plus className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        {/* Tab Toggle */}
+        <div className="mx-4 mb-3 flex bg-[#F5F0E8] rounded-xl p-1">
+          <button 
+            onClick={() => setActiveTab('services')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'services' ? 'bg-[#00BFA5] text-white shadow-lg' : 'text-[#627D98]'}`}
+          >
+            <Scissors className="w-4 h-4" />
+            Services ({services.length})
+          </button>
+          <button 
+            onClick={() => setActiveTab('products')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === 'products' ? 'bg-[#00BFA5] text-white shadow-lg' : 'text-[#627D98]'}`}
+          >
+            <span className="text-sm">📦</span>
+            Products ({products.length})
+          </button>
+        </div>
+
+        <div className="flex-1 px-4 overflow-auto">
+          {activeTab === 'services' ? (
+            services.map((service, i) => (
+              <div key={i} className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-[#E2E8F0]">
+                <div className="flex items-start mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#F5F0E8] flex items-center justify-center mr-3">
+                    <Scissors className="w-6 h-6 text-[#00BFA5]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-[#0A1626]">{service.name}</p>
+                    <p className="text-xs text-[#627D98]">{service.desc}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 pt-3 border-t border-[#F5F0E8]">
+                  <div className="flex items-center gap-1.5 text-[#627D98]">
+                    <span className="text-sm">💷</span>
+                    <span className="text-sm font-medium">£{service.price}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[#627D98]">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-sm font-medium">{service.duration} min</span>
+                  </div>
+                  <div className="flex-1" />
+                  <button className="px-4 py-2 bg-[#F5F0E8] rounded-lg text-sm font-medium text-[#00BFA5]">Edit</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            products.map((product, i) => (
+              <div key={i} className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-[#E2E8F0]">
+                <div className="flex items-start mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center mr-3">
+                    <span className="text-xl">📦</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-[#0A1626]">{product.name}</p>
+                    <p className="text-xs text-[#627D98]">{product.category}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 pt-3 border-t border-[#F5F0E8]">
+                  <div className="flex items-center gap-1.5 text-[#627D98]">
+                    <span className="text-sm">💷</span>
+                    <span className="text-sm font-medium">£{product.price}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[#627D98]">
+                    <span className="text-sm">📦</span>
+                    <span className="text-sm font-medium">{product.stock} in stock</span>
+                  </div>
+                  <div className="flex-1" />
+                  <button className="px-4 py-2 bg-[#F5F0E8] rounded-lg text-sm font-medium text-[#00BFA5]">Edit</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <BusinessBottomNav active="services" navigate={navigate} />
+      </div>
+    );
+  };
 
   // Client Bottom Navigation
   const ClientBottomNav = ({ active, navigate }) => (
