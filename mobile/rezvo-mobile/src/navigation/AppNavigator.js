@@ -11,6 +11,10 @@ import { colors } from '../lib/theme';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import VerifyCodeScreen from '../screens/VerifyCodeScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
+import PasswordResetSuccessScreen from '../screens/PasswordResetSuccessScreen';
 
 // Client Screens
 import ClientHomeScreen from '../screens/client/HomeScreen';
@@ -106,6 +110,10 @@ function AuthStack() {
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+      <Stack.Screen name="PasswordResetSuccess" component={PasswordResetSuccessScreen} />
     </Stack.Navigator>
   );
 }
