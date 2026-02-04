@@ -1,9 +1,10 @@
 # Rezvo.app - Product Requirements Document
 
 ## Overview
-QuickSlot is a £4.99/month booking tool for UK micro-businesses who can't stomach £40+ schedulers like Booksy. Target: mobile hairdressers, food trucks, nail techs, personal trainers, dog groomers, driving instructors.
+Rezvo is a £4.99/month booking tool for UK micro-businesses who can't stomach £40+ schedulers like Booksy. Target: mobile hairdressers, food trucks, nail techs, personal trainers, dog groomers, driving instructors.
 
 **Core Promise:** Generate a shareable booking link in 12 seconds.
+**App Name:** rezvo.app
 
 ---
 
@@ -22,145 +23,174 @@ QuickSlot is a £4.99/month booking tool for UK micro-businesses who can't stoma
 
 ---
 
-## Core Requirements (Static)
-
-### Must Have (P0)
-1. ✅ User authentication (signup/login with JWT)
-2. ✅ Business profile setup
-3. ✅ Services management (CRUD with pricing, duration, deposits)
-4. ✅ Availability management (weekly schedule)
-5. ✅ Shareable booking links with QR codes
-6. ✅ Public booking page for clients
-7. ✅ Bookings management (view, cancel)
-8. ✅ Dashboard with key metrics
-9. ✅ Calendar view (week/month)
-10. ✅ Mobile-responsive design (PWA-style)
-
-### Should Have (P1)
-1. ✅ Analytics with charts (revenue, bookings by service)
-2. ✅ AI-powered suggestions (via Emergent LLM)
-3. ✅ Onboarding wizard (4 steps)
-4. ⏳ Dojo payment integration (code complete, needs API key)
-5. ⏳ Email reminders (Resend integration ready)
-
-### Could Have (P2)
-1. ⏳ SMS reminders (Twilio - structure ready)
-2. ⏳ Admin dashboard for platform management
-3. ⏳ Multi-location support
-4. ⏳ Staff management
-
----
-
 ## What's Been Implemented
 
-### Date: 2026-02-04
+### Date: 2026-02-04 (Latest Update)
 
-**Backend (FastAPI + MongoDB)**
-- Complete authentication system (JWT, 14-day expiry, bcrypt hashing)
-- Business CRUD operations
-- Services CRUD with deposits
-- Bookings management
-- Public booking endpoints
-- Shareable link generation
-- Analytics endpoints (dashboard, revenue, services)
-- AI suggestions via Emergent LLM
-- Dojo payment integration (hosted checkout flow)
-- Onboarding completion tracking
-- Settings management
+**Design & Fonts:**
+- ✅ Updated typography to Monzo/Starling style:
+  - Headlines: Space Grotesk (clean, geometric)
+  - Body/UI: Plus Jakarta Sans (modern, readable)
+- ✅ Teal (#00BFA5) primary color maintained
+- ✅ Cream (#FDFBF7) background
+- ✅ Pill-shaped buttons throughout
 
-**Frontend (React + Tailwind + shadcn/ui)**
-- Landing page with bold Monzo-style design
-- Signup/Login pages
-- Onboarding wizard (4 steps)
-- Dashboard with Bento Grid layout
-- Calendar view (week/month toggle)
-- Bookings list with filtering
-- Services management
-- Share Link page with QR code
-- Settings page (profile, payments, reminders)
-- Analytics page with Recharts
-- Public booking page for clients
-- Mobile-responsive with bottom nav
-- Dark mode theme (Obsidian + Blaze Orange)
+**Session & Auth:**
+- ✅ Fixed session persistence bug
+- ✅ Renamed localStorage keys from `quickslot_token` to `rezvo_token`
+- ✅ Added user data caching in `rezvo_user`
+- ✅ Immediate state rehydration prevents auth flash
 
-**Design System**
-- Custom Tailwind config with QuickSlot colors
-- Inter font family
-- Pill-shaped buttons
-- Glassmorphism effects
-- Card hover animations
-- Noise texture overlay
+**Backend (FastAPI + MongoDB):**
+- ✅ Complete authentication system (JWT, 14-day expiry, bcrypt)
+- ✅ Business CRUD operations
+- ✅ Services CRUD with deposits
+- ✅ Bookings management
+- ✅ Public booking endpoints
+- ✅ Shareable link generation
+- ✅ Analytics endpoints
+- ✅ Share link URL fixed to use rezvo domain
 
----
+**Web Frontend (React + Tailwind + shadcn/ui):**
+- ✅ Landing page with Monzo/Starling design
+- ✅ Signup/Login pages with new fonts
+- ✅ Dashboard with navigation sidebar
+- ✅ Calendar view (week/month toggle)
+- ✅ Bookings list with filtering
+- ✅ Services management
+- ✅ Share Link page with QR code
+- ✅ Settings page
+- ✅ Analytics page with Recharts
+- ✅ Public booking page for clients
 
-## Prioritized Backlog
+**React Native Mobile App (NEW):**
+- ✅ Expo project setup at `/app/mobile/rezvo-mobile`
+- ✅ Dual-mode architecture (Client & Business views)
+- ✅ Shared theme with web app (teal primary)
+- ✅ Navigation with bottom tabs
 
-### P0 - Critical (Next Sprint)
-1. [ ] Connect Dojo payment API key for live deposits
-2. [ ] Set up Resend for email confirmations/reminders
-3. [ ] Add booking reschedule functionality
-4. [ ] Implement date blocking for holidays
+**Mobile Client Screens:**
+- ✅ WelcomeScreen - Onboarding carousel
+- ✅ LoginScreen / SignupScreen - User type toggle (Client/Business)
+- ✅ HomeScreen - Search, promo banner, categories, top rated
+- ✅ SearchScreen - Filter chips, business cards
+- ✅ BookingsScreen - Upcoming/Past/Cancelled tabs
+- ✅ ProfileScreen - Account settings, switch mode
+- ✅ BusinessDetailScreen - Gallery, services, quick actions
+- ✅ BookingFlowScreen - Date/time picker, summary, confirm
 
-### P1 - Important
-1. [ ] Add client management (CRM)
-2. [ ] Implement booking confirmation emails
-3. [ ] Add Google Calendar sync
-4. [ ] Create promotional landing pages
-
-### P2 - Nice to Have
-1. [ ] Native mobile apps (iOS/Android)
-2. [ ] Multi-staff scheduling
-3. [ ] Customer reviews/ratings
-4. [ ] Waitlist for full slots
-5. [ ] Gift vouchers
-6. [ ] Stripe billing for subscriptions
+**Mobile Business Screens:**
+- ✅ DashboardScreen - Stats, today's schedule, quick actions
+- ✅ CalendarScreen - Week view with bookings
+- ✅ BookingsScreen - Pending/upcoming management
+- ✅ ServicesScreen - CRUD with deposits
+- ✅ SettingsScreen - Business profile, availability, billing
 
 ---
 
 ## Technical Architecture
 
 ```
-Frontend: React 18 + Tailwind CSS + shadcn/ui
-Backend: FastAPI (Python)
-Database: MongoDB
-Auth: JWT (14-day expiry)
-Payments: Dojo (UK) - hosted checkout
-AI: OpenAI GPT-4o-mini via Emergent
-Hosting: Emergent.sh
+/app/
+├── backend/
+│   └── server.py      # FastAPI monolith
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── AppLayout.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.js (session fixed)
+│   │   ├── lib/
+│   │   │   └── api.js (rezvo_token)
+│   │   ├── pages/         # 12 React pages
+│   │   ├── App.js
+│   │   └── index.css      # Space Grotesk + Plus Jakarta Sans
+│   └── tailwind.config.js
+├── mobile/
+│   └── rezvo-mobile/      # React Native Expo
+│       ├── App.js
+│       └── src/
+│           ├── screens/
+│           │   ├── client/    # 6 screens
+│           │   └── business/  # 5 screens
+│           ├── context/
+│           ├── navigation/
+│           └── lib/
+└── memory/
+    └── PRD.md
 ```
 
 ---
 
-## Success Metrics
+## Core Requirements Status
 
+### Must Have (P0)
+1. ✅ User authentication (signup/login with JWT)
+2. ✅ Business profile setup
+3. ✅ Services management (CRUD with pricing, duration, deposits)
+4. ✅ Availability management
+5. ✅ Shareable booking links with QR codes
+6. ✅ Public booking page for clients
+7. ✅ Bookings management (view, cancel)
+8. ✅ Dashboard with key metrics
+9. ✅ Calendar view (week/month)
+10. ✅ Mobile-responsive web design
+11. ✅ React Native mobile app structure
+
+### Should Have (P1)
+1. ✅ Analytics with charts
+2. ⏳ AI-powered suggestions (skeleton ready)
+3. ✅ Onboarding wizard
+4. ⏳ Dojo payment integration (skeleton ready)
+5. ⏳ Email reminders (Resend - not yet integrated)
+
+### Could Have (P2)
+1. ⏳ SMS reminders (Twilio)
+2. ⏳ Admin dashboard
+3. ⏳ Multi-location support
+4. ⏳ Staff management
+
+---
+
+## Prioritized Backlog
+
+### P0 - Critical (Next Sprint)
+1. [ ] Build and test React Native app on simulator
+2. [ ] Connect Dojo payment API for live deposits
+3. [ ] Set up Resend for email confirmations
+4. [ ] Complete public booking flow end-to-end
+
+### P1 - Important
+1. [ ] Add booking reschedule functionality
+2. [ ] Implement date blocking for holidays
+3. [ ] Add client management (CRM)
+4. [ ] Google Calendar sync
+
+### P2 - Nice to Have
+1. [ ] Native mobile apps deployment (App Store/Play Store)
+2. [ ] Multi-staff scheduling
+3. [ ] Customer reviews/ratings
+4. [ ] Gift vouchers
+5. [ ] Stripe billing for subscriptions
+
+---
+
+## Test Credentials
+- **Email:** testuser@example.com
+- **Password:** password123
+
+---
+
+## Success Metrics
 - **North Star:** Monthly Active Businesses
 - **Key Metrics:**
   - Signups/week
   - Bookings created/week
-  - Revenue per user (avg)
+  - Revenue per user
   - No-show rate (target: <5%)
   - Link shares (virality)
 
 ---
 
-## Next Tasks List
-
-1. **Immediate:**
-   - Test complete booking flow end-to-end
-   - Add Dojo API key and test payment flow
-   - Set up email notifications via Resend
-
-2. **This Week:**
-   - Add booking reschedule feature
-   - Implement date blocking
-   - Add client notes to bookings
-
-3. **Next Week:**
-   - Build client CRM view
-   - Add referral program
-   - Create onboarding video/tutorial
-
----
-
 *Last Updated: 2026-02-04*
-*Version: 1.0.0 MVP*
+*Version: 1.1.0 (Fonts + Mobile App Structure)*
