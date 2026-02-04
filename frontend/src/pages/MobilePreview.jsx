@@ -81,10 +81,10 @@ const MobilePreview = () => {
           
           <button 
             onClick={() => navigate('signup')}
-            className="w-full h-12 bg-white text-[#0A1626] rounded-3xl font-semibold text-[15px] flex items-center justify-center gap-2 mb-3"
+            className="w-full h-11 bg-[#00BFA5] text-white rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 mb-3"
           >
             Get Started
-            <ArrowRight className="w-4 h-4 text-[#00BFA5]" />
+            <ArrowRight className="w-4 h-4 text-white" />
           </button>
           
           <button 
