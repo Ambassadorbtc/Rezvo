@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api, { formatPrice } from '../lib/api';
 import AppLayout from '../components/AppLayout';
 import { Button } from '../components/ui/button';
@@ -8,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { ChevronLeft, ChevronRight, Plus, Clock, User, Phone, Mail, X, Users, Settings, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, addDays, startOfWeek, isSameDay, setHours, setMinutes } from 'date-fns';
+import { format, addDays, addWeeks, addMonths, startOfWeek, startOfMonth, endOfMonth, isSameDay, isSameMonth, setHours, setMinutes, eachDayOfInterval } from 'date-fns';
 
 // Service colors for visual distinction
 const SERVICE_COLORS = [
