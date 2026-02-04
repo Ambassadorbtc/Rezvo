@@ -29,7 +29,7 @@ import BusinessSettingsScreen from '../screens/business/SettingsScreen';
 // Icons (using simple text for now, will add expo-vector-icons later)
 const TabIcon = ({ name, focused }) => (
   <View style={styles.iconContainer}>
-    <Text style={[styles.iconText, focused && styles.iconFocused]}>{name}</Text>
+    <Text style={[styles.iconText, focused === true && styles.iconFocused]}>{name}</Text>
   </View>
 );
 
