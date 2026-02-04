@@ -24,8 +24,8 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blaze border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -73,9 +73,9 @@ function App() {
           position="top-right" 
           toastOptions={{
             style: {
-              background: '#16191F',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#FFFFFF',
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              color: '#0A1626',
             },
           }}
         />
