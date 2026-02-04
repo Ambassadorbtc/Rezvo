@@ -86,10 +86,17 @@ class BusinessCreate(BaseModel):
 class BusinessUpdate(BaseModel):
     name: Optional[str] = None
     tagline: Optional[str] = None
+    description: Optional[str] = None
     phone: Optional[str] = None
+    email: Optional[str] = None
     address: Optional[str] = None
     instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    website: Optional[str] = None
     logo_url: Optional[str] = None
+    booking_message: Optional[str] = None
+    availability: Optional[List[dict]] = None
+    blocked_dates: Optional[List[str]] = None
 
 class ServiceCreate(BaseModel):
     name: str
