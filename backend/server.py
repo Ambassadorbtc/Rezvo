@@ -1957,6 +1957,7 @@ async def create_team_member(data: TeamMemberCreate, current_user: dict = Depend
         "avatar_url": data.avatar_url,
         "service_ids": data.service_ids,
         "working_hours": data.working_hours or default_hours,
+        "show_on_booking_page": data.show_on_booking_page,
         "active": True,
         "bookings_completed": 0,
         "revenue_pence": 0,
