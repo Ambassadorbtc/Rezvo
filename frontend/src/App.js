@@ -55,6 +55,7 @@ function AppRoutes() {
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
       <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
+      <Route path="/b/:shortCode" element={<ShortLinkRedirect />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
       <Route path="/expo-test" element={<ExpoTestingPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
