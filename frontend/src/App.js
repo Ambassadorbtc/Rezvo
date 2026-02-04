@@ -15,6 +15,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import ShareLinkPage from "./pages/ShareLinkPage";
 import PublicBookingPage from "./pages/PublicBookingPage";
+import MobilePreview from "./pages/MobilePreview";
 
 import "./App.css";
 
