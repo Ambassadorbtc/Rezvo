@@ -21,13 +21,13 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] User authentication (JWT-based)
 - [x] Business dashboard with stats
 - [x] Calendar view with team member columns (Fresha-style)
-- [x] **Team Management Page** (NEW)
-  - Team member cards with avatar, name, role, email
-  - Profile image upload
-  - Calendar color assignment
-  - Service assignment
-  - "Show on booking page" toggle
-  - Add/Edit modal with full form
+- [x] **Team Management Page** (REDESIGNED - Premium table with inline editing)
+  - Premium table layout with Name, Email, Role, Status, Actions columns
+  - Round profile avatars with colored backgrounds
+  - Inline editing (expands below row - NOT modal)
+  - Profile image upload with color picker
+  - Service assignment per team member
+  - "Show on booking page" visibility toggle
 - [x] Services management (CRUD)
 - [x] Bookings management with status updates
 - [x] Analytics dashboard with charts (Recharts)
@@ -54,8 +54,8 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Business management endpoints
 - [x] Services CRUD endpoints
 - [x] Team Members CRUD with show_on_booking_page field
-- [x] **Image Upload Endpoint** (NEW) - POST /api/upload/avatar
-- [x] **Public Team Endpoint** (NEW) - GET /api/public/business/{id}/team
+- [x] Image Upload Endpoint - POST /api/upload/avatar
+- [x] Public Team Endpoint - GET /api/public/business/{id}/team (filtered by visibility)
 - [x] Enhanced Calendar API with team view
 - [x] Bookings endpoints with team member assignment
 - [x] Public booking endpoints
@@ -94,7 +94,8 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **Admin Panel:** https://bookrezvo.preview.emergentagent.com/admin
 
 ## Known Issues
-1. **Global Search (DISABLED):** The SearchModal component causes a "Maximum call stack size exceeded" error due to a conflict with the babel-metadata-plugin. Feature removed until resolved.
+1. **Global Search (DISABLED):** The SearchModal component causes infinite recursion with babel-metadata-plugin. Plugin disabled in craco.config.js.
+2. **Mobile App Login Crash:** The Expo app may crash on login - needs investigation of navigation stacks.
 
 ## P0 - Next Priority Tasks
 1. Wire onboarding wizard to backend (complete business setup flow)
@@ -107,7 +108,7 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - Google Calendar sync
 - Automated booking reminders (cron/scheduled)
 - SMS notifications (Twilio)
-- Fix global search feature
+- Fix global search feature (needs babel plugin fix)
 
 ## P2 - Future/Backlog
 - Multi-location business support
@@ -121,17 +122,18 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 /app/
 ├── backend/
 │   ├── server.py          # FastAPI with all endpoints
-│   └── uploads/           # Avatar images storage (NEW)
+│   └── uploads/           # Avatar images storage
 ├── frontend/
+│   ├── craco.config.js    # Babel plugin disabled here
 │   └── src/
 │       ├── components/    
-│       │   ├── AppLayout.jsx      # Main navigation layout (Team nav added)
+│       │   ├── AppLayout.jsx      # Main navigation layout
 │       │   ├── CookieConsent.jsx
 │       │   └── ui/
 │       └── pages/         
 │           ├── DashboardPage.jsx
 │           ├── CalendarPage.jsx
-│           ├── TeamPage.jsx       # NEW - Team management
+│           ├── TeamPage.jsx       # Premium table, inline editing
 │           ├── MobilePreview.jsx
 │           └── ...
 ├── mobile/
@@ -144,11 +146,9 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ```
 
 ## Last Updated
-February 4, 2026 - Session 4:
-- Added Team management page to web app (/team)
-- Team page features: member cards with avatar, name, role, visibility status
-- Add/Edit modal with: avatar upload, name/email/phone, role selector, color picker, services, show_on_booking_page toggle
-- Backend: Added POST /api/upload/avatar for image upload
-- Backend: Added GET /api/public/business/{id}/team for public booking page
-- Backend: TeamMember model now includes show_on_booking_page field
-- All tests passing (12 backend + frontend tests)
+February 4, 2026 - Session 5:
+- Completely redesigned Team page with premium table layout
+- Replaced modal editing with inline expansion panel
+- Fixed babel-metadata-plugin infinite recursion (disabled plugin)
+- Testing agent fixed 3 bugs: empty email validation, undefined service_ids
+- All Team page features verified working (100% test pass rate)
