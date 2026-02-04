@@ -189,6 +189,55 @@ def serialize_doc(doc: dict) -> dict:
             result[key] = value
     return result
 
+# ==================== SEARCH ====================
+
+@api_router.get("/search")
+async def global_search(q: str, current_user: dict = Depends(get_current_user)):
+    """Global search across bookings, services, and customers"""
+    if not q or len(q) < 2:
+        return {"bookings": [], "services": [], "customers": []}
+    
+    user = await db.users.find_one({"id": current_user["sub"]})
+    business_id = user.get("business_id") if user else None
+    
+    results = {"bookings": [], "services": [], "customers": []}
+    
+    if business_id:
+        # Search bookings
+        bookings_query = {
+            "business_id": business_id,
+            "$or": [
+                {"client_name": {"$regex": q, "$options": "i"}},
+                {"client_email": {"$regex": q, "$options": "i"}},
+                {"service_name": {"$regex": q, "$options": "i"}},
+                {"notes": {"$regex": q, "$options": "i"}}
+            ]
+        }
+        bookings = await db.bookings.find(bookings_query, {"_id": 0}).limit(10).to_list(10)
+        results["bookings"] = bookings
+        
+        # Search services
+        services_query = {
+            "business_id": business_id,
+            "name": {"$regex": q, "$options": "i"}
+        }
+        services = await db.services.find(services_query, {"_id": 0}).limit(10).to_list(10)
+        results["services"] = services
+        
+        # Search unique customers from bookings
+        customer_pipeline = [
+            {"$match": {"business_id": business_id, "$or": [
+                {"client_name": {"$regex": q, "$options": "i"}},
+                {"client_email": {"$regex": q, "$options": "i"}}
+            ]}},
+            {"$group": {"_id": "$client_email", "name": {"$first": "$client_name"}, "email": {"$first": "$client_email"}, "phone": {"$first": "$client_phone"}}},
+            {"$limit": 10}
+        ]
+        customers = await db.bookings.aggregate(customer_pipeline).to_list(10)
+        results["customers"] = [{"name": c["name"], "email": c["email"], "phone": c.get("phone")} for c in customers]
+    
+    return results
+
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/signup", response_model=TokenResponse)
