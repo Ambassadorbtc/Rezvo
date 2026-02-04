@@ -47,19 +47,6 @@ const AppLayout = ({ children }) => {
           </Link>
         </div>
 
-        {/* Search Button */}
-        <div className="px-4 pt-4">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left group"
-            data-testid="search-btn"
-          >
-            <Search className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
-            <span className="text-sm text-gray-400 group-hover:text-gray-600 flex-1">Search...</span>
-            <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] bg-white rounded border border-gray-200 text-gray-400">⌘K</kbd>
-          </button>
-        </div>
-
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => (
