@@ -557,16 +557,31 @@ async def create_public_booking(data: BookingCreate):
         "status": "pending",
         "notes": data.notes,
         "dojo_payment_id": None,
+        "confirmation_sent": False,
+        "reminder_sent": False,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat()
     }
     await db.bookings.insert_one(booking_doc)
     
+    # Send confirmation email (non-blocking)
+    business = await db.businesses.find_one({"id": service["business_id"]}, {"_id": 0})
+    business_name = business["name"] if business else "Your Provider"
+    
+    if data.client_email:
+        html = get_booking_confirmation_html(booking_doc, business_name)
+        asyncio.create_task(send_email_async(
+            data.client_email,
+            f"Booking Confirmed - {service['name']} at {business_name}",
+            html
+        ))
+    
     return {
         "id": booking_id,
         "status": "pending",
         "deposit_required": service["deposit_required"],
-        "deposit_amount_pence": service["deposit_amount_pence"]
+        "deposit_amount_pence": service["deposit_amount_pence"],
+        "confirmation_email_queued": bool(data.client_email)
     }
 
 # ==================== SHAREABLE LINKS ====================
