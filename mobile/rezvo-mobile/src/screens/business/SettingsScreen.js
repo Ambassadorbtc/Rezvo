@@ -1,44 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  TextInput,
+  Share,
   Alert,
+  ActivityIndicator,
+  Clipboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
+import api from '../../lib/api';
 
-const menuSections = [
-  {
-    title: 'Business',
-    items: [
-      { id: 'profile', icon: '🏪', label: 'Business Profile', subtitle: 'Name, logo, contact' },
-      { id: 'availability', icon: '⏰', label: 'Availability', subtitle: 'Working hours' },
-      { id: 'payment', icon: '💳', label: 'Payment Setup', subtitle: 'Dojo integration' },
-    ],
-  },
-  {
-    title: 'Notifications',
-    items: [
-      { id: 'reminders', icon: '📧', label: 'Email Reminders', subtitle: 'Client notifications' },
-      { id: 'push', icon: '🔔', label: 'Push Notifications', subtitle: 'Booking alerts' },
-    ],
-  },
-  {
-    title: 'Account',
-    items: [
-      { id: 'account', icon: '👤', label: 'Account Details', subtitle: 'Email, password' },
-      { id: 'billing', icon: '💷', label: 'Billing', subtitle: 'Subscription & invoices' },
-      { id: 'help', icon: '❓', label: 'Help & Support', subtitle: 'FAQs, contact' },
-    ],
-  },
-];
+const TEAL = '#00BFA5';
 
 export default function SettingsScreen({ navigation }) {
-  const { user, logout, switchUserType } = useAuth();
+  const { user, logout } = useAuth();
+  const [business, setBusiness] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [shortLink, setShortLink] = useState(null);
+
+  useEffect(() => {
+    fetchBusiness();
+  }, []);
+
+  const fetchBusiness = async () => {
+    try {
+      const response = await api.get('/business/me');
+      setBusiness(response.data);
+    } catch (error) {
+      console.error('Error fetching business:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateShareLink = async () => {
+    try {
+      const response = await api.post('/links/create');
+      setShortLink(response.data);
+      Alert.alert('Success', 'Share link created!');
+    } catch (error) {
+      Alert.alert('Error', 'Could not generate share link');
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    Clipboard.setString(text);
+    Alert.alert('Copied!', 'Link copied to clipboard');
+  };
+
+  const handleShare = async () => {
+    const link = shortLink?.short_link || `https://rezvo.app/book/${business?.id}`;
+    try {
+      await Share.share({
+        message: `Book with ${business?.name || 'us'} on Rezvo: ${link}`,
+        title: business?.name,
+      });
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -51,91 +77,141 @@ export default function SettingsScreen({ navigation }) {
     );
   };
 
-  const handleSwitchToClient = () => {
-    Alert.alert(
-      'Switch to Client Mode',
-      'Do you want to switch to booking appointments?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Switch', onPress: () => switchUserType('client') },
-      ]
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
+        </View>
+      </SafeAreaView>
     );
-  };
+  }
+
+  const bookingLink = shortLink?.short_link || `https://rezvo.app/book/${business?.id}`;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Settings</Text>
         </View>
 
-        {/* Business Info Card */}
-        <View style={styles.businessCard}>
-          <View style={styles.businessAvatar}>
-            <Text style={styles.businessInitial}>
-              {user?.business_name?.[0] || user?.email?.[0]?.toUpperCase() || 'B'}
-            </Text>
+        {/* Business Profile */}
+        <View style={styles.profileCard}>
+          <View style={styles.profileIcon}>
+            <Text style={styles.profileInitial}>{business?.name?.charAt(0) || 'B'}</Text>
           </View>
-          <View style={styles.businessInfo}>
-            <Text style={styles.businessName}>
-              {user?.business_name || 'Your Business'}
-            </Text>
-            <Text style={styles.businessEmail}>{user?.email}</Text>
+          <Text style={styles.businessName}>{business?.name || 'Your Business'}</Text>
+          <Text style={styles.businessEmail}>{user?.email}</Text>
+        </View>
+
+        {/* Share Link Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Booking Link</Text>
+          <View style={styles.linkCard}>
+            <View style={styles.linkRow}>
+              <Ionicons name="link" size={20} color={TEAL} />
+              <Text style={styles.linkText} numberOfLines={1}>{bookingLink}</Text>
+            </View>
+            <View style={styles.linkActions}>
+              <TouchableOpacity 
+                style={styles.linkBtn}
+                onPress={() => copyToClipboard(bookingLink)}
+              >
+                <Ionicons name="copy-outline" size={18} color={TEAL} />
+                <Text style={styles.linkBtnText}>Copy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.linkBtn, styles.shareBtn]}
+                onPress={handleShare}
+              >
+                <Ionicons name="share-outline" size={18} color="#FFFFFF" />
+                <Text style={styles.shareBtnText}>Share</Text>
+              </TouchableOpacity>
+            </View>
+            {!shortLink && (
+              <TouchableOpacity style={styles.generateBtn} onPress={generateShareLink}>
+                <Ionicons name="flash" size={18} color={TEAL} />
+                <Text style={styles.generateBtnText}>Generate Short Link</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editIcon}>✏️</Text>
+        </View>
+
+        {/* Menu Items */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="business-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Business Details</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="time-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Working Hours</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="notifications-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Notifications</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="card-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Subscription</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
           </TouchableOpacity>
         </View>
 
-        {/* Switch Mode */}
-        <TouchableOpacity style={styles.switchModeCard} onPress={handleSwitchToClient}>
-          <View style={styles.switchModeIcon}>
-            <Text style={styles.switchModeEmoji}>📱</Text>
-          </View>
-          <View style={styles.switchModeContent}>
-            <Text style={styles.switchModeTitle}>Switch to Client Mode</Text>
-            <Text style={styles.switchModeSubtitle}>Book appointments as a customer</Text>
-          </View>
-          <Text style={styles.chevron}>›</Text>
+        {/* Support */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Support</Text>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="help-circle-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Help & FAQ</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="chatbubble-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Contact Us</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuIcon}>
+              <Ionicons name="document-text-outline" size={20} color={TEAL} />
+            </View>
+            <Text style={styles.menuText}>Terms & Privacy</Text>
+            <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Logout */}
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+          <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
 
-        {/* Menu Sections */}
-        {menuSections.map((section, sectionIndex) => (
-          <View key={sectionIndex} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.menuContainer}>
-              {section.items.map((item, index) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.menuItem,
-                    index === section.items.length - 1 && styles.menuItemLast,
-                  ]}
-                >
-                  <View style={styles.menuIcon}>
-                    <Text style={styles.menuEmoji}>{item.icon}</Text>
-                  </View>
-                  <View style={styles.menuContent}>
-                    <Text style={styles.menuLabel}>{item.label}</Text>
-                    <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-                  </View>
-                  <Text style={styles.chevron}>›</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        ))}
-
-        {/* Danger Zone */}
-        <View style={styles.section}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Log out</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* App Version */}
-        <Text style={styles.versionText}>Rezvo Business v1.0.0</Text>
+        <Text style={styles.version}>Version 1.0.0</Text>
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -144,176 +220,178 @@ export default function SettingsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   headerTitle: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
   },
-  businessCard: {
-    flexDirection: 'row',
+  profileCard: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    ...shadows.md,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginVertical: 16,
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  businessAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
+  profileIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: TEAL,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
+    marginBottom: 16,
   },
-  businessInitial: {
-    fontSize: typography.sizes['2xl'],
+  profileInitial: {
+    fontSize: 32,
     fontWeight: '700',
-    color: colors.surface,
-  },
-  businessInfo: {
-    flex: 1,
+    color: '#FFFFFF',
   },
   businessName: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0A1626',
+    marginBottom: 4,
   },
   businessEmail: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-  },
-  editButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.surfaceAlt,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editIcon: {
-    fontSize: 16,
-  },
-  switchModeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.navy,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-  },
-  switchModeIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  switchModeEmoji: {
-    fontSize: 22,
-  },
-  switchModeContent: {
-    flex: 1,
-  },
-  switchModeTitle: {
-    fontSize: typography.sizes.base,
-    fontWeight: '600',
-    color: colors.surface,
-    marginBottom: 2,
-  },
-  switchModeSubtitle: {
-    fontSize: typography.sizes.sm,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  chevron: {
-    fontSize: 22,
-    color: colors.textLight,
+    fontSize: 14,
+    color: '#627D98',
   },
   section: {
-    marginBottom: spacing.lg,
+    paddingHorizontal: 20,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: typography.sizes.sm,
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.textMuted,
-    marginLeft: spacing.xl,
-    marginBottom: spacing.sm,
+    color: '#627D98',
+    marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  menuContainer: {
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    borderRadius: borderRadius.xl,
-    ...shadows.sm,
+  linkCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+    padding: 12,
+    backgroundColor: '#F5F0E8',
+    borderRadius: 10,
+  },
+  linkText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0A1626',
+  },
+  linkActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  linkBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#F5F0E8',
+    gap: 6,
+  },
+  linkBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: TEAL,
+  },
+  shareBtn: {
+    backgroundColor: TEAL,
+  },
+  shareBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  generateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: TEAL,
+    borderStyle: 'dashed',
+    gap: 6,
+  },
+  generateBtnText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: TEAL,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  menuItemLast: {
-    borderBottomWidth: 0,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   menuIcon: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: 10,
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: '#F5F0E8',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
+    marginRight: 12,
   },
-  menuEmoji: {
-    fontSize: 18,
-  },
-  menuContent: {
+  menuText: {
     flex: 1,
-  },
-  menuLabel: {
-    fontSize: typography.sizes.base,
+    fontSize: 15,
     fontWeight: '500',
-    color: colors.text,
-    marginBottom: 2,
+    color: '#0A1626',
   },
-  menuSubtitle: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-  },
-  logoutButton: {
-    marginHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
+  logoutBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.error,
-    backgroundColor: colors.surface,
+    justifyContent: 'center',
+    backgroundColor: '#FEE2E2',
+    marginHorizontal: 20,
+    padding: 16,
+    borderRadius: 12,
+    gap: 8,
   },
   logoutText: {
-    fontSize: typography.sizes.base,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.error,
+    color: '#EF4444',
   },
-  versionText: {
+  version: {
     textAlign: 'center',
-    fontSize: typography.sizes.sm,
-    color: colors.textLight,
-    marginTop: spacing.md,
-    marginBottom: spacing.xxl,
+    fontSize: 13,
+    color: '#9FB3C8',
+    marginTop: 16,
   },
 });
