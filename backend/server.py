@@ -1319,18 +1319,19 @@ async def get_expo_tunnel_url():
         if response.status_code == 200:
             data = response.json()
             tunnels = data.get("tunnels", [])
+            
+            # Find HTTPS tunnel with exp.direct domain
             for tunnel in tunnels:
                 public_url = tunnel.get("public_url", "")
-                if public_url and "exp.direct" in public_url:
-                    # Convert https://xxx.exp.direct to exp://xxx.exp.direct format
-                    expo_url = public_url.replace("https://", "exp://")
-                    return {"url": expo_url, "status": "active"}
+                proto = tunnel.get("proto", "")
+                if public_url and "exp.direct" in public_url and proto == "https":
+                    # Return the HTTPS URL directly - Expo Go handles this
+                    return {"url": public_url, "status": "active"}
             
-            # Fallback to first tunnel if no exp.direct found
-            if tunnels:
-                public_url = tunnels[0].get("public_url", "")
-                expo_url = public_url.replace("https://", "exp://").replace("http://", "exp://")
-                return {"url": expo_url, "status": "active"}
+            # Fallback to first HTTPS tunnel
+            for tunnel in tunnels:
+                if tunnel.get("proto") == "https":
+                    return {"url": tunnel.get("public_url", ""), "status": "active"}
         
         return {"url": None, "status": "tunnel_not_found"}
     except Exception as e:
