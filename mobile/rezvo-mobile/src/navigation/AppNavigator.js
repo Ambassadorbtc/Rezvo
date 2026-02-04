@@ -32,6 +32,11 @@ import BusinessServicesScreen from '../screens/business/ServicesScreen';
 import BusinessSettingsScreen from '../screens/business/SettingsScreen';
 import BusinessTeamScreen from '../screens/business/TeamScreen';
 
+// Settings Sub-screens
+import HelpCentreScreen from '../screens/HelpCentreScreen';
+import ContactSupportScreen from '../screens/ContactSupportScreen';
+import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
