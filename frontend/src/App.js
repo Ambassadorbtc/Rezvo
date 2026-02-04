@@ -55,6 +55,9 @@ function AppRoutes() {
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
       <Route path="/expo-test" element={<ExpoTestingPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/cookies" element={<CookiesPage />} />
       
       {/* Protected Routes */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
