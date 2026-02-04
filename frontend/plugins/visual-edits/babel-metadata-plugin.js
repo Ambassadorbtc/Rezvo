@@ -1634,9 +1634,9 @@ const babelMetadataPlugin = ({ types: t }) => {
       // Add metadata attributes to React components (capitalized JSX)
       JSXElement(jsxPath, state) {
         // Skip processing for files that cause recursion issues
-        const filename = state.filename || state.file?.opts?.filename || '';
+        const currentFile = state.filename || state.file?.opts?.filename || '';
         const excludedFiles = ['TeamPage.jsx', 'SearchModal.jsx', 'MobilePreview.jsx'];
-        if (excludedFiles.some(f => filename.includes(f))) {
+        if (excludedFiles.some(f => currentFile.includes(f))) {
           return;
         }
 
