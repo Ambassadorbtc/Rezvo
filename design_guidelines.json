@@ -1,0 +1,142 @@
+{
+  "identity": {
+    "name": "QuickSlot",
+    "vibe": "Fintech Energy meets Viral Utility",
+    "archetype": "The Performance Pro (Dark Mode Edition)",
+    "core_promise": "Booking links in 12 seconds",
+    "target_audience": "UK Micro-businesses (Barbers, PTs, Food Trucks)"
+  },
+  "typography": {
+    "primary_font": "Inter",
+    "secondary_font": "Inter",
+    "weights": {
+      "heading": "800",
+      "body": "400",
+      "accent": "600"
+    },
+    "tracking": {
+      "headings": "tracking-tight",
+      "overline": "tracking-[0.2em]",
+      "body": "tracking-normal"
+    },
+    "rules": [
+      "Headings (h1-h3) MUST use tracking-tight and font-weight-800 to mimic the 'heavy' fintech aesthetic.",
+      "Numbers (prices, dates) MUST use tabular-nums for alignment.",
+      "Use 'text-balance' on all multi-line headings."
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#FF6600",
+        "foreground": "#FFFFFF",
+        "hover": "#FF8533",
+        "active": "#CC5200"
+      },
+      "background": {
+        "DEFAULT": "#0F1115",
+        "paper": "#16191F",
+        "subtle": "#1C2026"
+      },
+      "foreground": {
+        "DEFAULT": "#FFFFFF",
+        "muted": "#A1A1AA",
+        "subtle": "#52525B"
+      },
+      "accent": {
+        "teal": "#2DD4BF",
+        "purple": "#A855F7",
+        "success": "#22C55E",
+        "warning": "#EAB308",
+        "error": "#EF4444"
+      },
+      "border": {
+        "DEFAULT": "#27272A",
+        "hover": "#3F3F46"
+      }
+    },
+    "gradients": {
+      "primary": "linear-gradient(135deg, #FF6600 0%, #FF8533 100%)",
+      "dark_glass": "linear-gradient(180deg, rgba(22, 25, 31, 0.7) 0%, rgba(22, 25, 31, 0.3) 100%)",
+      "glow": "radial-gradient(circle at center, rgba(255, 102, 0, 0.15) 0%, rgba(0, 0, 0, 0) 70%)"
+    },
+    "usage_rules": [
+      "NEVER use pure black (#000000). Use Obsidian (#0F1115).",
+      "Primary Orange (#FF6600) is for CTAs and Key Data points ONLY. Do not overuse.",
+      "Use the 'Teal' accent for 'Money Received' or 'Booking Confirmed' states (Monzo style).",
+      "Use 'Purple' for 'Premium/Pro' features."
+    ]
+  },
+  "components": {
+    "radius": {
+      "default": "0.75rem",
+      "button": "9999px",
+      "card": "1rem",
+      "input": "0.75rem"
+    },
+    "shadows": {
+      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15)",
+      "glow": "0 0 20px rgba(255, 102, 0, 0.25)"
+    },
+    "customizations": {
+      "Button": "Must be pill-shaped (rounded-full). Primary buttons use the Orange gradient. Secondary buttons use 'bg-white/10 hover:bg-white/20'.",
+      "Card": "Use 'bg-[#16191F]' with a 'border-white/5' border. Add a subtle hover lift (-translate-y-1).",
+      "Input": "Deep background 'bg-[#0A0C10]' with 'border-white/10'. Focus ring must be Orange (#FF6600).",
+      "Dialog": "Use 'backdrop-blur-xl' overlay. Content background 'bg-[#16191F]'.",
+      "Badge": "Use 'rounded-md' (not full pill) for status indicators to differentiate from buttons."
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid",
+    "spacing_scale": "Generous (p-6, p-8 for containers)",
+    "mobile_first": true,
+    "max_width": "max-w-md mx-auto md:max-w-5xl",
+    "rules": [
+      "Dashboard MUST use a Bento Grid layout (mix of 1x1, 2x1, 2x2 tiles).",
+      "Mobile view acts like a PWA: Bottom Navigation Bar (fixed), Top Header (sticky).",
+      "Desktop view: Sidebar Navigation (left), Content (right).",
+      "Containers with borders MUST have internal padding (p-6) to prevent text collision."
+    ]
+  },
+  "visual_enhancers": {
+    "glassmorphism": "Use 'backdrop-blur-md bg-black/40' for sticky headers and bottom nav.",
+    "noise": "Add a subtle noise texture overlay at 2% opacity to the main background to kill digital flatness.",
+    "micro_interactions": [
+      "Buttons: Scale down (0.98) on click.",
+      "Cards: Lift (-4px) and glow on hover.",
+      "Inputs: Border color transition on focus."
+    ],
+    "shareable_assets": {
+      "booking_ticket": "The 'Share Link' card should look like a digital event ticket or boarding pass. High contrast, QR code prominent, 'Add to Wallet' vibe."
+    }
+  },
+  "media": {
+    "image_style": "High contrast, moody lighting, authentic action shots (no staged stock smiles).",
+    "image_urls": {
+      "hero_bg": "https://images.unsplash.com/photo-1768314816669-e23f620777d0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "barber": "https://images.unsplash.com/photo-1635346125627-74d1b2867898?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "trainer": "https://images.unsplash.com/photo-1434682881908-b43d0467b798?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "food_truck": "https://images.unsplash.com/photo-1765457436819-1ea7749d4506?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "gym_guy": "https://images.unsplash.com/photo-1700784795176-7ff886439d79?crop=entropy&cs=srgb&fm=jpg&q=85"
+    }
+  },
+  "accessibility": {
+    "contrast": "Ensure text on Orange (#FF6600) is White or Black depending on size (APCA check).",
+    "focus_states": "Visible focus rings (2px solid Orange) on all interactive elements.",
+    "reduced_motion": "Respect 'prefers-reduced-motion' media query."
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Configure Tailwind with the custom colors (Obsidian, Blaze Orange) immediately.",
+    "2. COMPONENTS: Customize Shadcn components in `src/components/ui` to match the 'rounded-full' button and 'rounded-xl' card style.",
+    "3. LAYOUT: Build the 'Dashboard' using a CSS Grid (Bento style). Do not use simple flex columns.",
+    "4. MOBILE: Ensure the 'Bottom Nav' is fixed at the bottom for mobile screens (z-50).",
+    "5. VIBE: Use the 'noise' texture on the body background.",
+    "6. TESTING: Add `data-testid` to all interactive elements."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop': No generic centered layouts. Use asymmetry.",
+    "Dark Mode First: Design for dark mode primarily, light mode is secondary.",
+    "No Gradients on Text: Keep text solid white/grey for readability.",
+    "Use 'sonner' for toasts."
+  ]
+}
