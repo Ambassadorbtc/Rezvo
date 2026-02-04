@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,37 +10,63 @@ import {
   Modal,
   TextInput,
   Alert,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
 
+const { width } = Dimensions.get('window');
 const TEAL = '#00BFA5';
+const HOUR_HEIGHT = 70;
+const TIME_COLUMN_WIDTH = 50;
+const MIN_COLUMN_WIDTH = 140;
+
+// Service colors for bookings
+const SERVICE_COLORS = [
+  '#00BFA5', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', 
+  '#EC4899', '#14B8A6', '#6366F1', '#84CC16', '#F97316'
+];
 
 export default function CalendarScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState('day'); // 'day' or 'week'
   const [bookings, setBookings] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const scrollViewRef = useRef(null);
   
   // Form state for new booking
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [selectedService, setSelectedService] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [selectedTime, setSelectedTime] = useState('10:00');
+
+  const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8am to 7pm
+  const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
 
   const fetchData = async () => {
     try {
-      const [bookingsRes, servicesRes] = await Promise.all([
-        api.get('/bookings'),
-        api.get('/services')
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      const [bookingsRes, membersRes, servicesRes] = await Promise.all([
+        api.get(`/bookings?date=${dateStr}`).catch(() => ({ data: [] })),
+        api.get('/team-members').catch(() => ({ data: [] })),
+        api.get('/services').catch(() => ({ data: [] }))
       ]);
+      
       setBookings(bookingsRes.data || []);
+      setTeamMembers(membersRes.data || []);
       setServices(servicesRes.data || []);
+      
+      if (!selectedService && servicesRes.data?.length > 0) {
+        setSelectedService(servicesRes.data[0]);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -51,6 +77,13 @@ export default function CalendarScreen({ navigation }) {
 
   useEffect(() => {
     fetchData();
+  }, [selectedDate]);
+
+  // Scroll to 9am on load
+  useEffect(() => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: HOUR_HEIGHT, animated: false });
+    }, 100);
   }, []);
 
   const onRefresh = () => {
@@ -58,7 +91,6 @@ export default function CalendarScreen({ navigation }) {
     fetchData();
   };
 
-  // Generate week dates
   const getWeekDates = () => {
     const dates = [];
     const start = new Date(selectedDate);
@@ -73,20 +105,30 @@ export default function CalendarScreen({ navigation }) {
 
   const weekDates = getWeekDates();
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
 
-  // Filter bookings for selected date
-  const dayBookings = bookings.filter(b => 
-    new Date(b.datetime).toDateString() === selectedDate.toDateString()
-  );
+  const getServiceColor = (serviceId) => {
+    const index = services.findIndex(s => s.id === serviceId);
+    return SERVICE_COLORS[index % SERVICE_COLORS.length];
+  };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return '#10B981';
-      case 'pending': return '#F59E0B';
-      case 'cancelled': return '#EF4444';
-      default: return '#627D98';
-    }
+  const getMemberBookings = (memberId) => {
+    return bookings.filter(b => 
+      b.team_member_id === memberId || 
+      (!b.team_member_id && memberId === 'unassigned')
+    );
+  };
+
+  const parseTime = (dateStr) => {
+    if (!dateStr) return { hours: 0, minutes: 0 };
+    const date = new Date(dateStr);
+    return { hours: date.getHours(), minutes: date.getMinutes() };
+  };
+
+  const getBookingPosition = (booking) => {
+    const { hours, minutes } = parseTime(booking.datetime);
+    const top = (hours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
+    const height = (booking.duration_min / 60) * HOUR_HEIGHT;
+    return { top, height: Math.max(height, 30) };
   };
 
   const formatBookingTime = (dateStr) => {
@@ -99,6 +141,7 @@ export default function CalendarScreen({ navigation }) {
     setClientEmail('');
     setClientPhone('');
     setSelectedService(services[0] || null);
+    setSelectedMember(teamMembers[0] || null);
     setSelectedTime('10:00');
     setShowAddModal(true);
   };
@@ -115,8 +158,9 @@ export default function CalendarScreen({ navigation }) {
       const bookingDate = new Date(selectedDate);
       bookingDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-      await api.post('/bookings', {
+      await api.post('/bookings/with-team', {
         service_id: selectedService.id,
+        team_member_id: selectedMember?.id || null,
         client_name: clientName,
         client_email: clientEmail,
         client_phone: clientPhone,
@@ -137,8 +181,18 @@ export default function CalendarScreen({ navigation }) {
   const formatDateHeader = (date) => {
     const today = new Date();
     if (date.toDateString() === today.toDateString()) return 'Today';
-    return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+    return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
   };
+
+  const changeDate = (days) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    setSelectedDate(newDate);
+  };
+
+  // Calculate column width based on team members
+  const columnCount = Math.max(teamMembers.length, 1);
+  const columnWidth = Math.max((width - TIME_COLUMN_WIDTH - 20) / columnCount, MIN_COLUMN_WIDTH);
 
   if (loading) {
     return (
@@ -154,13 +208,31 @@ export default function CalendarScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Calendar</Text>
-        <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
-          <Ionicons name="add" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle}>Calendar</Text>
+          <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
+            <Ionicons name="add" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Date Navigation */}
+        <View style={styles.dateNav}>
+          <TouchableOpacity onPress={() => changeDate(-1)} style={styles.navBtn}>
+            <Ionicons name="chevron-back" size={24} color="#0A1626" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.todayBtn}
+            onPress={() => setSelectedDate(new Date())}
+          >
+            <Text style={styles.dateText}>{formatDateHeader(selectedDate)}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeDate(1)} style={styles.navBtn}>
+            <Ionicons name="chevron-forward" size={24} color="#0A1626" />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Week View */}
+      {/* Week Strip */}
       <View style={styles.weekContainer}>
         {weekDates.map((date, index) => {
           const isSelected = date.toDateString() === selectedDate.toDateString();
@@ -197,47 +269,136 @@ export default function CalendarScreen({ navigation }) {
         })}
       </View>
 
-      {/* Selected Date Header */}
-      <View style={styles.dateHeader}>
-        <Text style={styles.dateHeaderText}>{formatDateHeader(selectedDate)}</Text>
-        <Text style={styles.bookingCount}>{dayBookings.length} bookings</Text>
-      </View>
+      {/* Team Members Header (if any) */}
+      {teamMembers.length > 0 && (
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.teamHeader}
+        >
+          <View style={{ width: TIME_COLUMN_WIDTH }} />
+          {teamMembers.map((member) => (
+            <View key={member.id} style={[styles.teamColumn, { width: columnWidth }]}>
+              <View style={[styles.memberAvatar, { backgroundColor: member.color || TEAL }]}>
+                <Text style={styles.memberInitial}>{member.name?.charAt(0)}</Text>
+              </View>
+              <Text style={styles.memberName} numberOfLines={1}>{member.name}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      )}
 
-      {/* Bookings List */}
+      {/* Calendar Grid */}
       <ScrollView
+        ref={scrollViewRef}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
-        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       >
-        {dayBookings.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Ionicons name="calendar-outline" size={48} color="#E2E8F0" />
-            <Text style={styles.emptyTitle}>No bookings</Text>
-            <Text style={styles.emptySubtitle}>Tap + to add a booking</Text>
-          </View>
-        ) : (
-          dayBookings.map((booking) => (
-            <View key={booking.id} style={styles.bookingCard}>
-              <View style={[styles.timeIndicator, { backgroundColor: getStatusColor(booking.status) }]} />
-              <View style={styles.bookingContent}>
-                <View style={styles.bookingHeader}>
-                  <Text style={styles.bookingTime}>{formatBookingTime(booking.datetime)}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) + '20' }]}>
-                    <Text style={[styles.statusText, { color: getStatusColor(booking.status) }]}>
-                      {booking.status}
-                    </Text>
-                  </View>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.gridContainer}
+        >
+          <View style={styles.calendarGrid}>
+            {/* Time Column */}
+            <View style={styles.timeColumn}>
+              {hours.map((hour) => (
+                <View key={hour} style={styles.timeSlot}>
+                  <Text style={styles.timeText}>
+                    {hour.toString().padStart(2, '0')}:00
+                  </Text>
                 </View>
-                <Text style={styles.clientName}>{booking.client_name}</Text>
-                <View style={styles.serviceRow}>
-                  <Text style={styles.serviceName}>{booking.service_name}</Text>
-                  <Text style={styles.price}>{formatPrice(booking.price_pence)}</Text>
-                </View>
-              </View>
+              ))}
             </View>
-          ))
-        )}
+
+            {/* Team Member Columns or Single Column */}
+            {teamMembers.length > 0 ? (
+              teamMembers.map((member) => (
+                <View key={member.id} style={[styles.dayColumn, { width: columnWidth }]}>
+                  {/* Hour Lines */}
+                  {hours.map((hour) => (
+                    <View key={hour} style={styles.hourLine} />
+                  ))}
+                  
+                  {/* Bookings */}
+                  {getMemberBookings(member.id).map((booking) => {
+                    const { top, height } = getBookingPosition(booking);
+                    const color = getServiceColor(booking.service_id);
+                    return (
+                      <TouchableOpacity
+                        key={booking.id}
+                        style={[
+                          styles.bookingBlock,
+                          { 
+                            top,
+                            height,
+                            backgroundColor: color + '20',
+                            borderLeftColor: color,
+                          }
+                        ]}
+                        onPress={() => Alert.alert(
+                          booking.client_name,
+                          `${booking.service_name}\n${formatBookingTime(booking.datetime)}\n${formatPrice(booking.price_pence)}`
+                        )}
+                      >
+                        <Text style={[styles.bookingTime, { color }]}>
+                          {formatBookingTime(booking.datetime)}
+                        </Text>
+                        <Text style={styles.bookingClient} numberOfLines={1}>
+                          {booking.client_name}
+                        </Text>
+                        <Text style={styles.bookingService} numberOfLines={1}>
+                          {booking.service_name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              ))
+            ) : (
+              <View style={[styles.dayColumn, { width: width - TIME_COLUMN_WIDTH - 40 }]}>
+                {hours.map((hour) => (
+                  <View key={hour} style={styles.hourLine} />
+                ))}
+                
+                {bookings.map((booking) => {
+                  const { top, height } = getBookingPosition(booking);
+                  const color = getServiceColor(booking.service_id);
+                  return (
+                    <TouchableOpacity
+                      key={booking.id}
+                      style={[
+                        styles.bookingBlock,
+                        { 
+                          top,
+                          height,
+                          backgroundColor: color + '20',
+                          borderLeftColor: color,
+                        }
+                      ]}
+                      onPress={() => Alert.alert(
+                        booking.client_name,
+                        `${booking.service_name}\n${formatBookingTime(booking.datetime)}\n${formatPrice(booking.price_pence)}`
+                      )}
+                    >
+                      <Text style={[styles.bookingTime, { color }]}>
+                        {formatBookingTime(booking.datetime)}
+                      </Text>
+                      <Text style={styles.bookingClient} numberOfLines={1}>
+                        {booking.client_name}
+                      </Text>
+                      <Text style={styles.bookingService} numberOfLines={1}>
+                        {booking.service_name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+          </View>
+        </ScrollView>
         <View style={{ height: 100 }} />
       </ScrollView>
 
@@ -294,15 +455,47 @@ export default function CalendarScreen({ navigation }) {
                 />
               </View>
 
+              {/* Team Member Selection */}
+              {teamMembers.length > 0 && (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Assign To</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {teamMembers.map((member) => (
+                      <TouchableOpacity
+                        key={member.id}
+                        style={[
+                          styles.memberOption,
+                          selectedMember?.id === member.id && styles.selectedMemberOption
+                        ]}
+                        onPress={() => setSelectedMember(member)}
+                      >
+                        <View style={[styles.memberOptionAvatar, { backgroundColor: member.color || TEAL }]}>
+                          <Text style={styles.memberOptionInitial}>{member.name?.charAt(0)}</Text>
+                        </View>
+                        <Text style={[
+                          styles.memberOptionName,
+                          selectedMember?.id === member.id && styles.selectedMemberOptionText
+                        ]} numberOfLines={1}>
+                          {member.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Service *</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {services.map((service) => (
+                  {services.map((service, index) => (
                     <TouchableOpacity
                       key={service.id}
                       style={[
                         styles.serviceOption,
-                        selectedService?.id === service.id && styles.selectedServiceOption
+                        selectedService?.id === service.id && { 
+                          backgroundColor: SERVICE_COLORS[index % SERVICE_COLORS.length],
+                          borderColor: SERVICE_COLORS[index % SERVICE_COLORS.length]
+                        }
                       ]}
                       onPress={() => setSelectedService(service)}
                     >
@@ -384,12 +577,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
+    marginBottom: 12,
   },
   headerTitle: {
     fontSize: 28,
@@ -404,36 +599,63 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  dateNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    marginBottom: 8,
+  },
+  navBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  todayBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+  },
   weekContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     backgroundColor: '#FFFFFF',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     borderRadius: 16,
-    marginTop: 8,
+    marginBottom: 12,
   },
   dayItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   selectedDay: {
     borderRadius: 12,
   },
   dayName: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#9FB3C8',
-    marginBottom: 8,
+    marginBottom: 6,
+    fontWeight: '500',
   },
   selectedDayText: {
     color: TEAL,
     fontWeight: '600',
   },
   dayNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -445,7 +667,7 @@ const styles = StyleSheet.create({
     borderColor: TEAL,
   },
   dayNumberText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
     color: '#0A1626',
   },
@@ -456,101 +678,91 @@ const styles = StyleSheet.create({
     color: TEAL,
   },
   dot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
     backgroundColor: TEAL,
-    marginTop: 6,
-  },
-  dateHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 12,
-  },
-  dateHeaderText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#0A1626',
-  },
-  bookingCount: {
-    fontSize: 14,
-    color: '#627D98',
-  },
-  listContainer: {
-    paddingHorizontal: 20,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: 48,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#627D98',
-    marginTop: 12,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: '#9FB3C8',
     marginTop: 4,
   },
-  bookingCard: {
+  teamHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginBottom: 10,
-    overflow: 'hidden',
   },
-  timeIndicator: {
-    width: 4,
-  },
-  bookingContent: {
-    flex: 1,
-    padding: 14,
-  },
-  bookingHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  teamColumn: {
     alignItems: 'center',
-    marginBottom: 8,
+    paddingVertical: 8,
   },
-  bookingTime: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: TEAL,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  clientName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0A1626',
+  memberAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  serviceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  memberInitial: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
-  serviceName: {
-    fontSize: 13,
+  memberName: {
+    fontSize: 12,
     color: '#627D98',
+    fontWeight: '500',
   },
-  price: {
-    fontSize: 14,
+  gridContainer: {
+    paddingHorizontal: 16,
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+  },
+  timeColumn: {
+    width: TIME_COLUMN_WIDTH,
+  },
+  timeSlot: {
+    height: HOUR_HEIGHT,
+    justifyContent: 'flex-start',
+  },
+  timeText: {
+    fontSize: 11,
+    color: '#9FB3C8',
+    marginTop: -6,
+  },
+  dayColumn: {
+    position: 'relative',
+    borderLeftWidth: 1,
+    borderLeftColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+  },
+  hourLine: {
+    height: HOUR_HEIGHT,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F0E8',
+  },
+  bookingBlock: {
+    position: 'absolute',
+    left: 4,
+    right: 4,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    padding: 6,
+    overflow: 'hidden',
+  },
+  bookingTime: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  bookingClient: {
+    fontSize: 12,
     fontWeight: '600',
     color: '#0A1626',
+    marginTop: 2,
+  },
+  bookingService: {
+    fontSize: 11,
+    color: '#627D98',
+    marginTop: 1,
   },
   modalOverlay: {
     flex: 1,
@@ -598,6 +810,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0A1626',
   },
+  memberOption: {
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginRight: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    minWidth: 80,
+  },
+  selectedMemberOption: {
+    borderColor: TEAL,
+    backgroundColor: '#E8F5F3',
+  },
+  memberOptionAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  memberOptionInitial: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  memberOptionName: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#627D98',
+    maxWidth: 70,
+  },
+  selectedMemberOptionText: {
+    color: TEAL,
+  },
   serviceOption: {
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -607,10 +856,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
     alignItems: 'center',
-  },
-  selectedServiceOption: {
-    backgroundColor: TEAL,
-    borderColor: TEAL,
   },
   serviceOptionName: {
     fontSize: 14,
