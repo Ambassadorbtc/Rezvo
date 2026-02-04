@@ -7,10 +7,10 @@
   },
   "typography": {
     "font_family": {
-      "headings": "Fraunces, serif",
-      "subheadings": "Outfit, sans-serif",
-      "body": "Inter, sans-serif",
-      "ui": "Inter, sans-serif"
+      "headings": "Space Grotesk, sans-serif",
+      "subheadings": "Plus Jakarta Sans, sans-serif",
+      "body": "Plus Jakarta Sans, sans-serif",
+      "ui": "Plus Jakarta Sans, sans-serif"
     },
     "scale": {
       "h1": "text-5xl md:text-7xl font-bold tracking-tight",
@@ -23,7 +23,8 @@
       "regular": 400,
       "medium": 500,
       "semibold": 600,
-      "bold": 700
+      "bold": 700,
+      "extrabold": 800
     }
   },
   "colors": {
