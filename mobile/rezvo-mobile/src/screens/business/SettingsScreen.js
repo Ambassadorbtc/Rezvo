@@ -277,7 +277,7 @@ export default function SettingsScreen({ navigation }) {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Linking.openURL('https://rezvo.app/help')}
+            onPress={() => navigation.navigate('HelpCentre')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="help-circle-outline" size={20} color={TEAL} />
@@ -290,7 +290,7 @@ export default function SettingsScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Linking.openURL('mailto:support@rezvo.app')}
+            onPress={() => navigation.navigate('ContactSupport')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="chatbubble-outline" size={20} color={TEAL} />
@@ -303,7 +303,7 @@ export default function SettingsScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Linking.openURL('https://rezvo.app/privacy')}
+            onPress={() => navigation.navigate('TermsPrivacy')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="document-text-outline" size={20} color={TEAL} />
