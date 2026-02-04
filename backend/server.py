@@ -2044,6 +2044,41 @@ async def get_team_member_stats(member_id: str, current_user: dict = Depends(get
         "this_month_revenue_pence": month_revenue
     }
 
+# ==================== FILE UPLOAD ====================
+
+@api_router.post("/upload/avatar")
+async def upload_avatar(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    """Upload an avatar image for team member or business"""
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Allowed: JPEG, PNG, WebP, GIF")
+    
+    # Validate file size (max 5MB)
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Max size: 5MB")
+    
+    # Generate unique filename
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = UPLOADS_DIR / filename
+    
+    # Save file
+    with open(filepath, "wb") as f:
+        f.write(content)
+    
+    # Return URL
+    return {"url": f"/api/uploads/{filename}"}
+
+@api_router.get("/uploads/{filename}")
+async def get_uploaded_file(filename: str):
+    """Serve uploaded files"""
+    filepath = UPLOADS_DIR / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(filepath)
+
 @api_router.get("/calendar/team-view")
 async def get_team_calendar_view(
     date: str,  # YYYY-MM-DD
