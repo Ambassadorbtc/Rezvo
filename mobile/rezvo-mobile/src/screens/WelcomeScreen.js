@@ -67,25 +67,18 @@ export default function WelcomeScreen({ navigation }) {
 
   const renderDots = () => (
     <View style={styles.dotsContainer}>
-      {slides.map((_, index) => {
-        const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-        const dotWidth = scrollX.interpolate({
-          inputRange,
-          outputRange: [8, 24, 8],
-          extrapolate: 'clamp',
-        });
-        const opacity = scrollX.interpolate({
-          inputRange,
-          outputRange: [0.4, 1, 0.4],
-          extrapolate: 'clamp',
-        });
-        return (
-          <Animated.View
-            key={index}
-            style={[styles.dot, { width: dotWidth, opacity }]}
-          />
-        );
-      })}
+      {slides.map((_, index) => (
+        <View
+          key={index}
+          style={[
+            styles.dot, 
+            { 
+              width: currentIndex === index ? 24 : 8,
+              opacity: currentIndex === index ? 1 : 0.4 
+            }
+          ]}
+        />
+      ))}
     </View>
   );
 
