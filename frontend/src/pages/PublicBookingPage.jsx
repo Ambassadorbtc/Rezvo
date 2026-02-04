@@ -30,11 +30,13 @@ const PublicBookingPage = () => {
   const [loading, setLoading] = useState(true);
   const [business, setBusiness] = useState(null);
   const [services, setServices] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
 
   const [selectedService, setSelectedService] = useState(null);
+  const [selectedTeamMember, setSelectedTeamMember] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [clientName, setClientName] = useState('');
@@ -48,12 +50,15 @@ const PublicBookingPage = () => {
 
   const loadBusinessData = async () => {
     try {
-      const [businessRes, servicesRes] = await Promise.all([
+      const [businessRes, servicesRes, teamRes] = await Promise.all([
         api.get(`/public/business/${businessId}`),
         api.get(`/public/business/${businessId}/services`),
+        api.get(`/public/business/${businessId}/team`).catch(() => ({ data: [] })),
       ]);
       setBusiness(businessRes.data);
       setServices(servicesRes.data);
+      // Only show team members who have show_on_booking_page enabled
+      setTeamMembers(teamRes.data.filter(m => m.show_on_booking_page !== false));
     } catch (error) {
       toast.error('Business not found');
     } finally {
