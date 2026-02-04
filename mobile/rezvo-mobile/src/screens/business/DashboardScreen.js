@@ -100,7 +100,7 @@ export default function DashboardScreen({ navigation }) {
           </View>
           <TouchableOpacity 
             style={styles.notificationBtn}
-            onPress={() => navigation.navigate('Notifications')}
+            onPress={() => {/* TODO: Add notifications screen */}}
           >
             <Ionicons name="notifications-outline" size={24} color="#0A1626" />
           </TouchableOpacity>
