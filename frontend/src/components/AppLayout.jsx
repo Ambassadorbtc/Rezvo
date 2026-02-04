@@ -213,8 +213,7 @@ const AppLayout = ({ children }) => {
         </div>
       </nav>
 
-      {/* Search Modal */}
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      {/* Search Modal - Temporarily disabled */}
     </div>
   );
 };
