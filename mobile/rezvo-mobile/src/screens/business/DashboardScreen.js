@@ -169,7 +169,7 @@ export default function DashboardScreen({ navigation }) {
               <TouchableOpacity 
                 key={booking.id || index} 
                 style={styles.bookingCard}
-                onPress={() => navigation.navigate('BookingDetail', { booking })}
+                onPress={() => navigation.navigate('Bookings')}
               >
                 <View style={styles.bookingTime}>
                   <Text style={styles.timeText}>{formatTime(booking.datetime)}</Text>
