@@ -21,6 +21,13 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] User authentication (JWT-based)
 - [x] Business dashboard with stats
 - [x] Calendar view with team member columns (Fresha-style)
+- [x] **Team Management Page** (NEW)
+  - Team member cards with avatar, name, role, email
+  - Profile image upload
+  - Calendar color assignment
+  - Service assignment
+  - "Show on booking page" toggle
+  - Add/Edit modal with full form
 - [x] Services management (CRUD)
 - [x] Bookings management with status updates
 - [x] Analytics dashboard with charts (Recharts)
@@ -36,35 +43,19 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ### Mobile Application (React Native/Expo)
 - [x] Welcome screen with onboarding slides
 - [x] Login/Signup screens with user type toggle
-- [x] **Complete Auth Flow:**
-  - Forgot Password screen (sends reset code)
-  - Verify Code screen (6-digit OTP entry)
-  - Reset Password screen (new password form)
-  - Password Reset Success screen
-- [x] **Client Flow:**
-  - Home screen with categories and businesses
-  - Search screen with filters
-  - Bookings list (upcoming/past)
-  - Business detail view
-  - Full booking flow (date, time, details, confirm)
-  - Profile screen
-- [x] **Business Flow:**
-  - Dashboard with stats and quick actions
-  - Calendar with team member columns view
-  - Bookings management with status actions
-  - Services management with add/edit modal
-  - Team Management screen
-  - **Settings with functional navigation:**
-    - Help Centre screen (FAQs, quick actions)
-    - Contact Support screen (form, business hours)
-    - Terms & Privacy screen (GDPR info, data rights)
+- [x] Complete Auth Flow (Forgot Password, Verify Code, Reset Password)
+- [x] Client Flow (Home, Search, Bookings, Profile, Business Detail, Booking Flow)
+- [x] Business Flow (Dashboard, Calendar, Bookings, Services, Team, Settings)
+- [x] Settings with functional navigation (Help Centre, Contact Support, Terms & Privacy)
 
 ### Backend (FastAPI + MongoDB)
 - [x] Authentication endpoints (signup, login, me)
-- [x] Password Reset Flow (forgot-password, verify-reset-code, reset-password)
+- [x] Password Reset Flow
 - [x] Business management endpoints
 - [x] Services CRUD endpoints
-- [x] Team Members CRUD
+- [x] Team Members CRUD with show_on_booking_page field
+- [x] **Image Upload Endpoint** (NEW) - POST /api/upload/avatar
+- [x] **Public Team Endpoint** (NEW) - GET /api/public/business/{id}/team
 - [x] Enhanced Calendar API with team view
 - [x] Bookings endpoints with team member assignment
 - [x] Public booking endpoints
@@ -73,7 +64,6 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Notifications system
 - [x] Products CRUD
 - [x] Admin analytics endpoints
-- [x] Global search endpoint
 
 ### Integrations
 - [x] OpenAI GPT-4o-mini (via Emergent LLM Key)
@@ -90,7 +80,7 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **businesses:** id, ownerId, name, logoUrl, services, availability
 - **services:** id, businessId, name, pricePence, durationMin, color
 - **bookings:** id, serviceId, clientName, datetime, status, team_member_id
-- **team_members:** id, business_id, name, email, phone, role, color, service_ids
+- **team_members:** id, business_id, name, email, phone, role, color, avatar_url, service_ids, show_on_booking_page
 - **password_resets:** email, code, expires, used, reset_token
 - **notifications:** id, userId, title, message, type, read
 - **short_links:** id, short_code, business_id, clicks
@@ -99,6 +89,7 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ## Application URLs
 - **Web Landing:** https://bookrezvo.preview.emergentagent.com
 - **Web Dashboard:** https://bookrezvo.preview.emergentagent.com/dashboard
+- **Web Team:** https://bookrezvo.preview.emergentagent.com/team
 - **Mobile Preview:** https://bookrezvo.preview.emergentagent.com/mobile-preview
 - **Admin Panel:** https://bookrezvo.preview.emergentagent.com/admin
 
@@ -109,6 +100,7 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 1. Wire onboarding wizard to backend (complete business setup flow)
 2. Full client-side mobile app functionality (backend wiring)
 3. Push notifications (Expo)
+4. Team member selection on public booking page
 
 ## P1 - Upcoming Tasks
 - Stripe subscription integration (£4.99/month)
@@ -128,53 +120,35 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ```
 /app/
 ├── backend/
-│   └── server.py          # FastAPI with all endpoints
+│   ├── server.py          # FastAPI with all endpoints
+│   └── uploads/           # Avatar images storage (NEW)
 ├── frontend/
 │   └── src/
 │       ├── components/    
-│       │   ├── AppLayout.jsx      # Main navigation layout
-│       │   ├── CookieConsent.jsx  # GDPR cookie popup
-│       │   └── ui/                # Shadcn components
+│       │   ├── AppLayout.jsx      # Main navigation layout (Team nav added)
+│       │   ├── CookieConsent.jsx
+│       │   └── ui/
 │       └── pages/         
 │           ├── DashboardPage.jsx
-│           ├── CalendarPage.jsx   # Team view calendar
-│           ├── MobilePreview.jsx  # Browser mobile simulator
+│           ├── CalendarPage.jsx
+│           ├── TeamPage.jsx       # NEW - Team management
+│           ├── MobilePreview.jsx
 │           └── ...
 ├── mobile/
 │   └── rezvo-mobile/
 │       └── src/
-│           ├── navigation/
-│           │   └── AppNavigator.js  # Auth/Business/Client stacks
-│           ├── screens/
-│           │   ├── WelcomeScreen.js
-│           │   ├── LoginScreen.js
-│           │   ├── SignupScreen.js
-│           │   ├── ForgotPasswordScreen.js
-│           │   ├── VerifyCodeScreen.js
-│           │   ├── ResetPasswordScreen.js
-│           │   ├── PasswordResetSuccessScreen.js
-│           │   ├── HelpCentreScreen.js      # NEW
-│           │   ├── ContactSupportScreen.js  # NEW
-│           │   ├── TermsPrivacyScreen.js    # NEW
-│           │   ├── business/
-│           │   │   ├── DashboardScreen.js
-│           │   │   ├── CalendarScreen.js
-│           │   │   ├── BookingsScreen.js
-│           │   │   ├── ServicesScreen.js
-│           │   │   ├── SettingsScreen.js    # UPDATED - uses navigation
-│           │   │   └── TeamScreen.js
-│           │   └── client/
-│           └── context/
-│               └── AuthContext.js
+│           ├── navigation/AppNavigator.js
+│           └── screens/
 └── memory/
     └── PRD.md
 ```
 
 ## Last Updated
-February 4, 2026 - Session 3:
-- Fixed mobile app settings navigation (Help Centre, Contact Support, Terms & Privacy now accessible)
-- Added screens to AppNavigator for both Business and Client stacks
-- Updated SettingsScreen to use navigation.navigate() instead of Linking.openURL()
-- Removed SearchModal due to babel plugin conflict (global search disabled)
-- Added data-testid to CookieConsent for testing
-- All backend (37/37 tests) and frontend tests passing
+February 4, 2026 - Session 4:
+- Added Team management page to web app (/team)
+- Team page features: member cards with avatar, name, role, visibility status
+- Add/Edit modal with: avatar upload, name/email/phone, role selector, color picker, services, show_on_booking_page toggle
+- Backend: Added POST /api/upload/avatar for image upload
+- Backend: Added GET /api/public/business/{id}/team for public booking page
+- Backend: TeamMember model now includes show_on_booking_page field
+- All tests passing (12 backend + frontend tests)
