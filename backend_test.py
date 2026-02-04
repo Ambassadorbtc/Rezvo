@@ -23,7 +23,7 @@ class QuickSlotAPITester:
         self.failed_tests = []
         
         # Test user credentials
-        self.test_email = f"test_{datetime.now().strftime('%H%M%S')}@quickslot.test"
+        self.test_email = f"test_{datetime.now().strftime('%H%M%S')}@example.com"
         self.test_password = "TestPass123!"
         self.test_business_name = "Test Hair Studio"
 
