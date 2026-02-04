@@ -51,25 +51,11 @@ import {
 import { toast } from 'sonner';
 import { Toaster } from '../components/ui/sonner';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  Legend
-} from 'recharts';
+import { format, startOfMonth } from 'date-fns';
 
 const CHART_COLORS = ['#00BFA5', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
 
-// Separate chart components to avoid Babel plugin issues
+// Simple placeholder charts until Babel plugin issue is resolved
 const WeeklyChart = ({ data }) => {
   if (!data) {
     return (
@@ -81,28 +67,21 @@ const WeeklyChart = ({ data }) => {
       </div>
     );
   }
+  
+  const maxBookings = Math.max(...data.map(d => d.bookings), 1);
+  
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#00BFA5" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#00BFA5" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
-          <YAxis stroke="#9CA3AF" fontSize={12} />
-          <Tooltip contentStyle={{ backgroundColor: 'white', border: 'none', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-          <Area type="monotone" dataKey="bookings" stroke="#00BFA5" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" name="Bookings" />
-          <Area type="monotone" dataKey="users" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" name="New Users" />
-        </AreaChart>
-      </ResponsiveContainer>
+    <div className="h-64 flex items-end gap-2 pt-4">
+      {data.map((day, i) => (
+        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+          <div 
+            className="w-full bg-gradient-to-t from-teal-500 to-teal-400 rounded-t-lg transition-all hover:from-teal-600 hover:to-teal-500"
+            style={{ height: `${Math.max((day.bookings / maxBookings) * 180, 8)}px` }}
+            title={`${day.bookings} bookings`}
+          />
+          <span className="text-xs text-gray-500">{day.date}</span>
+        </div>
+      ))}
     </div>
   );
 };
@@ -115,20 +94,25 @@ const StatusChart = ({ data }) => {
       </div>
     );
   }
-  const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
+  
+  const total = Object.values(data).reduce((a, b) => a + b, 0) || 1;
+  const entries = Object.entries(data);
+  
   return (
-    <div className="h-52">
-      <ResponsiveContainer width="100%" height="100%">
-        <RechartsPieChart>
-          <Pie data={chartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value">
-            {chartData.map((entry, index) => (
-              <Cell key={entry.name} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend iconSize={10} />
-        </RechartsPieChart>
-      </ResponsiveContainer>
+    <div className="h-52 flex flex-col justify-center gap-3 px-2">
+      {entries.map(([status, count], i) => (
+        <div key={status} className="flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
+          <span className="text-sm capitalize flex-1">{status}</span>
+          <span className="text-sm font-medium">{count}</span>
+          <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full transition-all" 
+              style={{ width: `${(count / total) * 100}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
@@ -141,17 +125,24 @@ const TopServicesChart = ({ data }) => {
       </div>
     );
   }
+  
+  const maxCount = Math.max(...data.map(s => s.bookings), 1);
+  
   return (
-    <div className="h-52">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
-          <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
-          <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={80} />
-          <Tooltip />
-          <Bar dataKey="bookings" fill="#00BFA5" radius={[0, 4, 4, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="h-52 flex flex-col justify-center gap-2">
+      {data.slice(0, 5).map((service, i) => (
+        <div key={i} className="flex items-center gap-3">
+          <span className="text-sm w-24 truncate" title={service.name}>{service.name}</span>
+          <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden">
+            <div 
+              className="h-full bg-teal-500 rounded-lg flex items-center justify-end px-2 transition-all"
+              style={{ width: `${(service.bookings / maxCount) * 100}%` }}
+            >
+              <span className="text-xs text-white font-medium">{service.bookings}</span>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
