@@ -69,6 +69,93 @@ import {
 
 const CHART_COLORS = ['#00BFA5', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
 
+// Separate chart components to avoid Babel plugin issues
+const WeeklyChart = ({ data }) => {
+  if (!data) {
+    return (
+      <div className="h-64 flex items-center justify-center bg-gray-50 rounded-xl">
+        <div className="text-center">
+          <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">Loading analytics...</p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#00BFA5" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#00BFA5" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+          <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
+          <YAxis stroke="#9CA3AF" fontSize={12} />
+          <Tooltip contentStyle={{ backgroundColor: 'white', border: 'none', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+          <Area type="monotone" dataKey="bookings" stroke="#00BFA5" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" name="Bookings" />
+          <Area type="monotone" dataKey="users" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" name="New Users" />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+const StatusChart = ({ data }) => {
+  if (!data) {
+    return (
+      <div className="h-52 flex items-center justify-center">
+        <p className="text-gray-400">No data yet</p>
+      </div>
+    );
+  }
+  const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
+  return (
+    <div className="h-52">
+      <ResponsiveContainer width="100%" height="100%">
+        <RechartsPieChart>
+          <Pie data={chartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value">
+            {chartData.map((entry, index) => (
+              <Cell key={entry.name} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend iconSize={10} />
+        </RechartsPieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+const TopServicesChart = ({ data }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-52 flex items-center justify-center">
+        <p className="text-gray-400">No bookings yet</p>
+      </div>
+    );
+  }
+  return (
+    <div className="h-52">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+          <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
+          <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={80} />
+          <Tooltip />
+          <Bar dataKey="bookings" fill="#00BFA5" radius={[0, 4, 4, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
 const FounderAdminPage = () => {
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
