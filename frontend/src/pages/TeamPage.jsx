@@ -149,10 +149,11 @@ function TeamPage() {
 
   function toggleService(sid) {
     setEditForm(function(prev) {
-      const exists = prev.service_ids.includes(sid);
+      const serviceIds = prev.service_ids || [];
+      const exists = serviceIds.includes(sid);
       return {
         ...prev,
-        service_ids: exists ? prev.service_ids.filter(function(x) { return x !== sid; }) : [...prev.service_ids, sid]
+        service_ids: exists ? serviceIds.filter(function(x) { return x !== sid; }) : [...serviceIds, sid]
       };
     });
   }
