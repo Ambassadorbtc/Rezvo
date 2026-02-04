@@ -10,18 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { 
   Calendar as CalendarIcon, 
   Clock, 
-  User, 
-  Mail, 
-  Phone, 
   Check, 
   ArrowLeft, 
   ArrowRight,
-  Loader2,
-  MapPin
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Toaster } from '../components/ui/sonner';
-import { format, addDays, setHours, setMinutes } from 'date-fns';
+import { format, setHours, setMinutes } from 'date-fns';
 
 const PublicBookingPage = () => {
   const { businessId } = useParams();
@@ -32,7 +28,6 @@ const PublicBookingPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
 
-  // Booking form state
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
@@ -60,11 +55,10 @@ const PublicBookingPage = () => {
     }
   };
 
-  // Generate available time slots based on business availability
   const getAvailableTimeSlots = () => {
     if (!selectedDate || !business?.availability) return [];
     
-    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayOfWeek = selectedDate.getDay();
     const dayAvailability = business.availability.find(a => a.day === dayOfWeek);
     
     if (!dayAvailability) return [];
@@ -93,7 +87,7 @@ const PublicBookingPage = () => {
       const [hours, minutes] = selectedTime.split(':').map(Number);
       const bookingDate = setMinutes(setHours(selectedDate, hours), minutes);
 
-      const response = await api.post('/public/bookings', {
+      await api.post('/public/bookings', {
         service_id: selectedService.id,
         client_name: clientName,
         client_email: clientEmail,
@@ -111,7 +105,6 @@ const PublicBookingPage = () => {
     }
   };
 
-  // Check if date is available (has availability for that day)
   const isDateAvailable = (date) => {
     if (!business?.availability) return false;
     const dayOfWeek = date.getDay();
@@ -120,20 +113,20 @@ const PublicBookingPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blaze border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!business) {
     return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center p-4">
-        <Card className="bg-obsidian-paper border-white/5 max-w-md w-full">
+      <div className="min-h-screen bg-cream flex items-center justify-center p-4">
+        <Card className="bg-white rounded-3xl shadow-card border-0 max-w-md w-full">
           <CardContent className="py-12 text-center">
-            <CalendarIcon className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Business Not Found</h2>
-            <p className="text-white/50">This booking page doesn't exist or has been removed.</p>
+            <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl font-bold font-display text-navy-900 mb-2">Business not found</h2>
+            <p className="text-navy-500">This booking page doesn't exist or has been removed.</p>
           </CardContent>
         </Card>
       </div>
@@ -142,28 +135,28 @@ const PublicBookingPage = () => {
 
   if (bookingComplete) {
     return (
-      <div className="min-h-screen bg-obsidian flex items-center justify-center p-4">
-        <Card className="bg-obsidian-paper border-white/5 max-w-md w-full" data-testid="booking-success">
-          <CardContent className="py-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-success" />
+      <div className="min-h-screen bg-cream flex items-center justify-center p-4">
+        <Card className="bg-white rounded-3xl shadow-card border-0 max-w-md w-full" data-testid="booking-success">
+          <CardContent className="py-12 px-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Booking Confirmed!</h2>
-            <p className="text-white/50 mb-6">
+            <h2 className="text-2xl font-bold font-display text-navy-900 mb-2">Booking confirmed!</h2>
+            <p className="text-navy-500 mb-6">
               We've sent a confirmation to {clientEmail}
             </p>
-            <div className="p-4 rounded-xl bg-obsidian border border-white/5 text-left">
-              <div className="flex justify-between mb-2">
-                <span className="text-white/50">Service</span>
-                <span className="font-medium">{selectedService?.name}</span>
+            <div className="p-5 rounded-2xl bg-cream text-left">
+              <div className="flex justify-between mb-3">
+                <span className="text-navy-500">Service</span>
+                <span className="font-medium text-navy-900">{selectedService?.name}</span>
               </div>
-              <div className="flex justify-between mb-2">
-                <span className="text-white/50">Date</span>
-                <span className="font-medium">{format(selectedDate, 'EEE, d MMM yyyy')}</span>
+              <div className="flex justify-between mb-3">
+                <span className="text-navy-500">Date</span>
+                <span className="font-medium text-navy-900">{format(selectedDate, 'EEE, d MMM yyyy')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Time</span>
-                <span className="font-medium">{selectedTime}</span>
+                <span className="text-navy-500">Time</span>
+                <span className="font-medium text-navy-900">{selectedTime}</span>
               </div>
             </div>
           </CardContent>
@@ -174,20 +167,20 @@ const PublicBookingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian" data-testid="public-booking-page">
+    <div className="min-h-screen bg-cream" data-testid="public-booking-page">
       {/* Header */}
-      <header className="glass border-b border-white/5 sticky top-0 z-10">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           {business.logo_url ? (
             <img src={business.logo_url} alt={business.name} className="w-10 h-10 rounded-xl object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-blaze flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center">
               <CalendarIcon className="w-5 h-5 text-white" />
             </div>
           )}
           <div>
-            <h1 className="font-bold">{business.name}</h1>
-            {business.tagline && <p className="text-sm text-white/50">{business.tagline}</p>}
+            <h1 className="font-bold font-heading text-navy-900">{business.name}</h1>
+            {business.tagline && <p className="text-sm text-navy-500">{business.tagline}</p>}
           </div>
         </div>
       </header>
@@ -199,7 +192,7 @@ const PublicBookingPage = () => {
             <div
               key={s}
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
-                s < step ? 'bg-success text-white' : s === step ? 'bg-blaze text-white' : 'bg-white/10 text-white/40'
+                s < step ? 'bg-teal-500 text-white' : s === step ? 'bg-teal-500 text-white' : 'bg-gray-100 text-navy-400'
               }`}
             >
               {s < step ? <Check className="w-4 h-4" /> : s}
@@ -210,11 +203,11 @@ const PublicBookingPage = () => {
         {/* Step 1: Select Service */}
         {step === 1 && (
           <div className="space-y-4" data-testid="step-1">
-            <h2 className="text-xl font-bold text-center mb-6">Select a Service</h2>
+            <h2 className="text-xl font-bold font-display text-navy-900 text-center mb-6">Select a service</h2>
             {services.length === 0 ? (
-              <Card className="bg-obsidian-paper border-white/5">
+              <Card className="bg-white rounded-2xl shadow-card border-0">
                 <CardContent className="py-8 text-center">
-                  <p className="text-white/50">No services available</p>
+                  <p className="text-navy-500">No services available</p>
                 </CardContent>
               </Card>
             ) : (
@@ -222,28 +215,28 @@ const PublicBookingPage = () => {
                 {services.map((service) => (
                   <Card
                     key={service.id}
-                    className={`bg-obsidian-paper border-white/5 cursor-pointer transition-all ${
-                      selectedService?.id === service.id ? 'ring-2 ring-blaze' : 'hover:bg-obsidian-subtle'
+                    className={`bg-white rounded-2xl shadow-card border-0 cursor-pointer transition-all ${
+                      selectedService?.id === service.id ? 'ring-2 ring-teal-500' : 'hover:shadow-card-hover'
                     }`}
                     onClick={() => setSelectedService(service)}
                     data-testid={`service-option-${service.id}`}
                   >
-                    <CardContent className="p-4 flex items-center justify-between">
+                    <CardContent className="p-5 flex items-center justify-between">
                       <div>
-                        <h3 className="font-semibold">{service.name}</h3>
-                        <div className="flex items-center gap-3 text-sm text-white/50 mt-1">
+                        <h3 className="font-semibold text-navy-900">{service.name}</h3>
+                        <div className="flex items-center gap-3 text-sm text-navy-500 mt-1">
                           <span className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
                             {service.duration_min} min
                           </span>
                           {service.deposit_required && (
-                            <span className="text-warning">
+                            <span className="text-amber-600">
                               Deposit: {formatPrice(service.deposit_amount_pence)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="text-xl font-bold text-accent-teal">
+                      <div className="text-xl font-bold text-teal-600">
                         {formatPrice(service.price_pence)}
                       </div>
                     </CardContent>
@@ -254,7 +247,7 @@ const PublicBookingPage = () => {
             <Button
               onClick={() => setStep(2)}
               disabled={!selectedService}
-              className="w-full bg-gradient-blaze hover:opacity-90 text-white rounded-full py-6 font-semibold btn-press"
+              className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-6 font-semibold shadow-button btn-press"
               data-testid="step-1-next"
             >
               Continue
@@ -266,9 +259,9 @@ const PublicBookingPage = () => {
         {/* Step 2: Select Date & Time */}
         {step === 2 && (
           <div className="space-y-4" data-testid="step-2">
-            <h2 className="text-xl font-bold text-center mb-6">Select Date & Time</h2>
+            <h2 className="text-xl font-bold font-display text-navy-900 text-center mb-6">Select date & time</h2>
             
-            <Card className="bg-obsidian-paper border-white/5">
+            <Card className="bg-white rounded-2xl shadow-card border-0">
               <CardContent className="p-4">
                 <Calendar
                   mode="single"
@@ -281,13 +274,13 @@ const PublicBookingPage = () => {
             </Card>
 
             {selectedDate && (
-              <Card className="bg-obsidian-paper border-white/5">
+              <Card className="bg-white rounded-2xl shadow-card border-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Available Times</CardTitle>
+                  <CardTitle className="text-base font-heading text-navy-900">Available times</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {getAvailableTimeSlots().length === 0 ? (
-                    <p className="text-white/50 text-center py-4">No available times for this date</p>
+                    <p className="text-navy-500 text-center py-4">No available times for this date</p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
                       {getAvailableTimeSlots().map((time) => (
@@ -296,7 +289,7 @@ const PublicBookingPage = () => {
                           variant={selectedTime === time ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setSelectedTime(time)}
-                          className={selectedTime === time ? 'bg-blaze text-white' : 'border-white/10'}
+                          className={selectedTime === time ? 'bg-teal-500 text-white rounded-full' : 'border-gray-200 text-navy-600 rounded-full'}
                           data-testid={`time-slot-${time}`}
                         >
                           {time}
@@ -312,7 +305,7 @@ const PublicBookingPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setStep(1)}
-                className="flex-1 border-white/10"
+                className="flex-1 border-gray-200 rounded-full py-5 text-navy-600"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -320,7 +313,7 @@ const PublicBookingPage = () => {
               <Button
                 onClick={() => setStep(3)}
                 disabled={!selectedDate || !selectedTime}
-                className="flex-1 bg-gradient-blaze hover:opacity-90 text-white rounded-full font-semibold btn-press"
+                className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-full py-5 font-semibold btn-press"
                 data-testid="step-2-next"
               >
                 Continue
@@ -333,21 +326,21 @@ const PublicBookingPage = () => {
         {/* Step 3: Your Details */}
         {step === 3 && (
           <div className="space-y-4" data-testid="step-3">
-            <h2 className="text-xl font-bold text-center mb-6">Your Details</h2>
+            <h2 className="text-xl font-bold font-display text-navy-900 text-center mb-6">Your details</h2>
 
             {/* Summary Card */}
-            <Card className="bg-obsidian-paper border-blaze/30">
-              <CardContent className="p-4">
+            <Card className="bg-teal-50 rounded-2xl border-0">
+              <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-semibold">{selectedService?.name}</h3>
-                    <p className="text-sm text-white/50">{selectedService?.duration_min} min</p>
+                    <h3 className="font-semibold text-navy-900">{selectedService?.name}</h3>
+                    <p className="text-sm text-navy-500">{selectedService?.duration_min} min</p>
                   </div>
-                  <div className="text-xl font-bold text-accent-teal">
+                  <div className="text-xl font-bold text-teal-600">
                     {formatPrice(selectedService?.price_pence)}
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-white/70">
+                <div className="flex items-center gap-4 text-sm text-navy-600">
                   <span className="flex items-center gap-1">
                     <CalendarIcon className="w-4 h-4" />
                     {format(selectedDate, 'EEE, d MMM')}
@@ -360,40 +353,40 @@ const PublicBookingPage = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-obsidian-paper border-white/5">
-              <CardContent className="p-4 space-y-4">
+            <Card className="bg-white rounded-2xl shadow-card border-0">
+              <CardContent className="p-5 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Your Name *</Label>
+                  <Label htmlFor="name" className="text-navy-700 font-medium">Your Name *</Label>
                   <Input
                     id="name"
                     placeholder="John Smith"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl py-5"
                     data-testid="client-name-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email" className="text-navy-700 font-medium">Email *</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="john@example.com"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl py-5"
                     data-testid="client-email-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (optional)</Label>
+                  <Label htmlFor="phone" className="text-navy-700 font-medium">Phone (optional)</Label>
                   <Input
                     id="phone"
                     type="tel"
                     placeholder="+44 7XXX XXXXXX"
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl py-5"
                     data-testid="client-phone-input"
                   />
                 </div>
@@ -404,7 +397,7 @@ const PublicBookingPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setStep(2)}
-                className="flex-1 border-white/10"
+                className="flex-1 border-gray-200 rounded-full py-5 text-navy-600"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -412,7 +405,7 @@ const PublicBookingPage = () => {
               <Button
                 onClick={handleSubmit}
                 disabled={submitting || !clientName || !clientEmail}
-                className="flex-1 bg-gradient-blaze hover:opacity-90 text-white rounded-full font-semibold btn-press"
+                className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-full py-5 font-semibold btn-press"
                 data-testid="confirm-booking-btn"
               >
                 {submitting ? (
@@ -420,7 +413,7 @@ const PublicBookingPage = () => {
                 ) : (
                   <>
                     <Check className="w-4 h-4 mr-2" />
-                    Confirm Booking
+                    Confirm booking
                   </>
                 )}
               </Button>
@@ -430,8 +423,8 @@ const PublicBookingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="text-center py-8 text-white/30 text-sm">
-        Powered by QuickSlot
+      <footer className="text-center py-8 text-navy-400 text-sm">
+        Powered by Rezvo
       </footer>
 
       <Toaster />
