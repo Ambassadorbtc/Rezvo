@@ -56,7 +56,7 @@ export default function WelcomeScreen({ navigation }) {
               activeOpacity={0.9}
             >
               <Text style={styles.primaryBtnText}>Get Started</Text>
-              <Ionicons name="arrow-forward" size={16} color={TEAL} />
+              <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -174,16 +174,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    height: 48,
-    borderRadius: 24,
+    backgroundColor: TEAL,
+    height: 44,
+    borderRadius: 22,
     gap: 8,
     marginBottom: 12,
   },
   primaryBtnText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0A1626',
+    color: '#FFFFFF',
   },
   secondaryBtn: {
     alignItems: 'center',
