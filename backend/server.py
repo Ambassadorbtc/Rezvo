@@ -1910,6 +1910,363 @@ async def mark_all_notifications_read(current_user: dict = Depends(get_current_u
     )
     return {"success": True}
 
+# ==================== TEAM MEMBERS ROUTES ====================
+
+@api_router.post("/team-members")
+async def create_team_member(data: TeamMemberCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new team member for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    member_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    # Default working hours (Mon-Fri 9-17)
+    default_hours = [
+        {"day": i, "start": "09:00", "end": "17:00", "enabled": i >= 1 and i <= 5}
+        for i in range(7)
+    ]
+    
+    member_doc = {
+        "id": member_id,
+        "business_id": user["business_id"],
+        "name": data.name,
+        "email": data.email,
+        "phone": data.phone,
+        "role": data.role,
+        "color": data.color,
+        "avatar_url": data.avatar_url,
+        "service_ids": data.service_ids,
+        "working_hours": data.working_hours or default_hours,
+        "active": True,
+        "bookings_completed": 0,
+        "revenue_pence": 0,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.team_members.insert_one(member_doc)
+    return {"id": member_id, "name": data.name}
+
+@api_router.get("/team-members")
+async def get_team_members(current_user: dict = Depends(get_current_user)):
+    """Get all team members for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    members = await db.team_members.find(
+        {"business_id": user["business_id"], "active": True},
+        {"_id": 0}
+    ).to_list(50)
+    return members
+
+@api_router.get("/team-members/{member_id}")
+async def get_team_member(member_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    member = await db.team_members.find_one(
+        {"id": member_id, "business_id": user["business_id"]},
+        {"_id": 0}
+    )
+    if not member:
+        raise HTTPException(status_code=404, detail="Team member not found")
+    return member
+
+@api_router.patch("/team-members/{member_id}")
+async def update_team_member(member_id: str, data: TeamMemberUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.team_members.update_one(
+        {"id": member_id, "business_id": user["business_id"]},
+        {"$set": update_data}
+    )
+    return {"status": "updated"}
+
+@api_router.delete("/team-members/{member_id}")
+async def delete_team_member(member_id: str, current_user: dict = Depends(get_current_user)):
+    """Soft delete a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.team_members.update_one(
+        {"id": member_id, "business_id": user["business_id"]},
+        {"$set": {"active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"status": "deleted"}
+
+@api_router.get("/team-members/{member_id}/stats")
+async def get_team_member_stats(member_id: str, current_user: dict = Depends(get_current_user)):
+    """Get performance stats for a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Get bookings assigned to this team member
+    bookings = await db.bookings.find(
+        {"business_id": user["business_id"], "team_member_id": member_id},
+        {"_id": 0}
+    ).to_list(1000)
+    
+    completed = [b for b in bookings if b.get("status") == "completed"]
+    total_revenue = sum(b.get("price_pence", 0) for b in completed)
+    
+    # This month stats
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    this_month = [b for b in completed if b.get("datetime", "") >= month_start.isoformat()]
+    month_revenue = sum(b.get("price_pence", 0) for b in this_month)
+    
+    return {
+        "total_bookings": len(bookings),
+        "completed_bookings": len(completed),
+        "total_revenue_pence": total_revenue,
+        "this_month_bookings": len(this_month),
+        "this_month_revenue_pence": month_revenue
+    }
+
+@api_router.get("/calendar/team-view")
+async def get_team_calendar_view(
+    date: str,  # YYYY-MM-DD
+    current_user: dict = Depends(get_current_user)
+):
+    """Get calendar data with team member columns for a specific date"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business_id = user["business_id"]
+    
+    # Get team members
+    members = await db.team_members.find(
+        {"business_id": business_id, "active": True},
+        {"_id": 0}
+    ).to_list(50)
+    
+    # Get bookings for this date
+    bookings = await db.bookings.find(
+        {"business_id": business_id, "datetime": {"$regex": f"^{date}"}},
+        {"_id": 0}
+    ).to_list(500)
+    
+    # Get services for color mapping
+    services = await db.services.find(
+        {"business_id": business_id, "active": True},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Service color map
+    service_colors = {
+        s["id"]: s.get("color", "#00BFA5") for s in services
+    }
+    
+    # Group bookings by team member
+    member_bookings = {m["id"]: [] for m in members}
+    member_bookings["unassigned"] = []
+    
+    for booking in bookings:
+        member_id = booking.get("team_member_id", "unassigned")
+        if member_id in member_bookings:
+            booking["color"] = service_colors.get(booking.get("service_id"), "#00BFA5")
+            member_bookings[member_id].append(booking)
+        else:
+            member_bookings["unassigned"].append(booking)
+    
+    return {
+        "date": date,
+        "team_members": members,
+        "bookings_by_member": member_bookings,
+        "services": services
+    }
+
+# ==================== PASSWORD RESET ROUTES ====================
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest):
+    """Send password reset code to email"""
+    user = await db.users.find_one({"email": data.email})
+    if not user:
+        # Don't reveal if email exists
+        return {"message": "If the email exists, a reset code has been sent"}
+    
+    # Generate 6-digit code
+    import random
+    code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    expires = datetime.now(timezone.utc) + timedelta(minutes=15)
+    
+    # Store reset code
+    await db.password_resets.delete_many({"email": data.email})
+    await db.password_resets.insert_one({
+        "email": data.email,
+        "code": code,
+        "expires": expires.isoformat(),
+        "used": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Send email
+    if resend.api_key:
+        try:
+            html = f"""
+            <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <div style="background: #00BFA5; color: white; width: 48px; height: 48px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">R</div>
+                </div>
+                <h2 style="color: #0A1626; margin-bottom: 16px; text-align: center;">Reset Your Password</h2>
+                <p style="color: #627D98; margin-bottom: 24px; text-align: center;">Enter this code to reset your password. It expires in 15 minutes.</p>
+                <div style="background: #F5F0E8; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 24px;">
+                    <span style="font-size: 32px; font-weight: bold; color: #0A1626; letter-spacing: 8px;">{code}</span>
+                </div>
+                <p style="color: #9FB3C8; font-size: 13px; text-align: center;">If you didn't request this, please ignore this email.</p>
+            </div>
+            """
+            resend.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": data.email,
+                "subject": "Rezvo - Password Reset Code",
+                "html": html
+            })
+        except Exception as e:
+            logger.error(f"Failed to send reset email: {e}")
+    
+    return {"message": "If the email exists, a reset code has been sent"}
+
+@api_router.post("/auth/verify-reset-code")
+async def verify_reset_code(data: VerifyCodeRequest):
+    """Verify the password reset code"""
+    reset = await db.password_resets.find_one({
+        "email": data.email,
+        "code": data.code,
+        "used": False
+    })
+    
+    if not reset:
+        raise HTTPException(status_code=400, detail="Invalid or expired code")
+    
+    if datetime.fromisoformat(reset["expires"]) < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Code has expired")
+    
+    # Generate a temporary token for password reset
+    token = str(uuid.uuid4())
+    await db.password_resets.update_one(
+        {"email": data.email, "code": data.code},
+        {"$set": {"reset_token": token, "verified_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"valid": True, "reset_token": token}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    """Reset password using the verified token"""
+    reset = await db.password_resets.find_one({
+        "reset_token": data.token,
+        "used": False
+    })
+    
+    if not reset:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    if datetime.fromisoformat(reset["expires"]) < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Token has expired")
+    
+    # Update password
+    new_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"email": reset["email"]},
+        {"$set": {"password_hash": new_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Mark reset as used
+    await db.password_resets.update_one(
+        {"reset_token": data.token},
+        {"$set": {"used": True}}
+    )
+    
+    return {"message": "Password reset successfully"}
+
+# ==================== BOOKING WITH TEAM MEMBER ====================
+
+class BookingCreateWithTeam(BaseModel):
+    service_id: str
+    team_member_id: Optional[str] = None
+    client_name: str
+    client_email: EmailStr
+    client_phone: Optional[str] = None
+    datetime_iso: str
+    notes: Optional[str] = None
+
+@api_router.post("/bookings/with-team")
+async def create_booking_with_team(data: BookingCreateWithTeam, current_user: dict = Depends(get_current_user)):
+    """Create a booking assigned to a specific team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    service = await db.services.find_one({"id": data.service_id})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    # Verify team member if provided
+    team_member = None
+    if data.team_member_id:
+        team_member = await db.team_members.find_one({
+            "id": data.team_member_id,
+            "business_id": user["business_id"],
+            "active": True
+        })
+    
+    booking_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    booking_doc = {
+        "id": booking_id,
+        "business_id": user["business_id"],
+        "service_id": data.service_id,
+        "service_name": service["name"],
+        "team_member_id": data.team_member_id,
+        "team_member_name": team_member["name"] if team_member else None,
+        "client_name": data.client_name,
+        "client_email": data.client_email,
+        "client_phone": data.client_phone,
+        "datetime": data.datetime_iso,
+        "duration_min": service["duration_min"],
+        "price_pence": service["price_pence"],
+        "deposit_required": service.get("deposit_required", False),
+        "deposit_amount_pence": service.get("deposit_amount_pence", 0),
+        "deposit_paid": False,
+        "status": "pending",
+        "notes": data.notes,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.bookings.insert_one(booking_doc)
+    return {"id": booking_id, "status": "pending"}
+
+# ==================== SERVICE COLORS ====================
+
+@api_router.patch("/services/{service_id}/color")
+async def update_service_color(service_id: str, color: str, current_user: dict = Depends(get_current_user)):
+    """Update service color for calendar display"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.services.update_one(
+        {"id": service_id, "business_id": user["business_id"]},
+        {"$set": {"color": color, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"status": "updated"}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
