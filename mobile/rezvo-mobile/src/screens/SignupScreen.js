@@ -67,20 +67,21 @@ export default function SignupScreen({ navigation }) {
         <ScrollView 
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
           <TouchableOpacity 
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color="#0A1626" />
+            <Ionicons name="chevron-back" size={22} color="#0A1626" />
           </TouchableOpacity>
 
           <View style={styles.header}>
             <View style={styles.logo}>
               <Text style={styles.logoText}>R</Text>
             </View>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Start booking or managing today</Text>
+            <Text style={styles.title}>Create account</Text>
+            <Text style={styles.subtitle}>Get started with Rezvo</Text>
           </View>
 
           {/* User Type Toggle */}
@@ -90,9 +91,9 @@ export default function SignupScreen({ navigation }) {
               onPress={() => setUserType('client')}
             >
               <Ionicons 
-                name="person" 
-                size={18} 
-                color={userType === 'client' ? '#FFFFFF' : TEAL} 
+                name="person-outline" 
+                size={16} 
+                color={userType === 'client' ? '#FFFFFF' : '#627D98'} 
               />
               <Text style={[styles.toggleText, userType === 'client' && styles.toggleTextActive]}>
                 Client
@@ -103,9 +104,9 @@ export default function SignupScreen({ navigation }) {
               onPress={() => setUserType('business')}
             >
               <Ionicons 
-                name="briefcase" 
-                size={18} 
-                color={userType === 'business' ? '#FFFFFF' : TEAL} 
+                name="briefcase-outline" 
+                size={16} 
+                color={userType === 'business' ? '#FFFFFF' : '#627D98'} 
               />
               <Text style={[styles.toggleText, userType === 'business' && styles.toggleTextActive]}>
                 Business
@@ -114,63 +115,74 @@ export default function SignupScreen({ navigation }) {
           </View>
 
           <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#627D98" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email address"
-                placeholderTextColor="#9FB3C8"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-            </View>
-
             {userType === 'business' && (
-              <View style={styles.inputContainer}>
-                <Ionicons name="business-outline" size={20} color="#627D98" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Business name"
-                  placeholderTextColor="#9FB3C8"
-                  value={businessName}
-                  onChangeText={setBusinessName}
-                  autoCapitalize="words"
-                />
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Business name</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons name="storefront-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Your business name"
+                    placeholderTextColor="#C1C7CD"
+                    value={businessName}
+                    onChangeText={setBusinessName}
+                  />
+                </View>
               </View>
             )}
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#627D98" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#9FB3C8"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Ionicons 
-                  name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                  size={20} 
-                  color="#627D98" 
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="mail-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="you@example.com"
+                  placeholderTextColor="#C1C7CD"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
                 />
-              </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#627D98" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm password"
-                placeholderTextColor="#9FB3C8"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showPassword}
-              />
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Min. 6 characters"
+                  placeholderTextColor="#C1C7CD"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons 
+                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                    size={18} 
+                    color="#9FB3C8" 
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Confirm password</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Re-enter password"
+                  placeholderTextColor="#C1C7CD"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showPassword}
+                />
+              </View>
             </View>
 
             <TouchableOpacity 
@@ -179,20 +191,19 @@ export default function SignupScreen({ navigation }) {
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
-                <>
-                  <Text style={styles.signupButtonText}>Create Account</Text>
-                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                </>
+                <Text style={styles.signupButtonText}>Create account</Text>
               )}
             </TouchableOpacity>
 
-            <Text style={styles.terms}>
-              By signing up, you agree to our{' '}
-              <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-              <Text style={styles.termsLink}>Privacy Policy</Text>
-            </Text>
+            <View style={styles.termsContainer}>
+              <Text style={styles.termsText}>
+                By signing up, you agree to our{' '}
+                <Text style={styles.termsLink}>Terms</Text> and{' '}
+                <Text style={styles.termsLink}>Privacy Policy</Text>
+              </Text>
+            </View>
           </View>
 
           <View style={styles.footer}>
@@ -218,47 +229,50 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   backButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: 4,
+    marginLeft: -8,
   },
   header: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 8,
     marginBottom: 24,
   },
   logo: {
-    width: 56,
-    height: 56,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     backgroundColor: TEAL,
-    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   logoText: {
-    color: '#FFFFFF',
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '700',
+    color: '#FFFFFF',
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     color: '#0A1626',
-    marginBottom: 8,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#627D98',
+    marginTop: 4,
   },
   toggleContainer: {
     flexDirection: 'row',
     backgroundColor: '#F5F0E8',
-    borderRadius: 12,
-    padding: 4,
+    borderRadius: 10,
+    padding: 3,
     marginBottom: 24,
   },
   toggleButton: {
@@ -266,51 +280,56 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
     gap: 6,
   },
   toggleActive: {
     backgroundColor: TEAL,
   },
   toggleText: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
-    color: TEAL,
+    color: '#627D98',
   },
   toggleTextActive: {
     color: '#FFFFFF',
   },
   form: {
-    marginBottom: 24,
+    flex: 1,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#0A1626',
+    marginBottom: 6,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: 14,
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   input: {
     flex: 1,
-    paddingVertical: 16,
-    fontSize: 16,
+    paddingVertical: 13,
+    fontSize: 15,
     color: '#0A1626',
   },
   signupButton: {
     backgroundColor: TEAL,
-    paddingVertical: 16,
-    borderRadius: 50,
-    flexDirection: 'row',
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
     marginTop: 8,
   },
   signupButtonDisabled: {
@@ -318,15 +337,18 @@ const styles = StyleSheet.create({
   },
   signupButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: '600',
   },
-  terms: {
-    fontSize: 13,
-    color: '#627D98',
-    textAlign: 'center',
+  termsContainer: {
     marginTop: 16,
-    lineHeight: 20,
+    alignItems: 'center',
+  },
+  termsText: {
+    fontSize: 12,
+    color: '#9FB3C8',
+    textAlign: 'center',
+    lineHeight: 18,
   },
   termsLink: {
     color: TEAL,
@@ -335,15 +357,14 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 'auto',
-    paddingBottom: 24,
+    paddingTop: 24,
   },
   footerText: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#627D98',
   },
   loginLink: {
-    fontSize: 15,
+    fontSize: 14,
     color: TEAL,
     fontWeight: '600',
   },
