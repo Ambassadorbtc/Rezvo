@@ -9,28 +9,29 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, borderRadius, typography } from '../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
+const TEAL = '#00BFA5';
 
 const slides = [
   {
     id: '1',
-    title: 'Book Your Appointments Effortlessly',
+    title: 'Book Appointments Effortlessly',
     description: 'Find skilled professionals near you and book appointments with just a few taps.',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
+    icon: 'calendar',
   },
   {
     id: '2',
     title: 'Manage Your Business',
-    description: 'Take bookings, manage your calendar, and grow your client base - all in one app.',
-    image: 'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=800&q=80',
+    description: 'Take bookings, manage your calendar, and grow your client base.',
+    icon: 'briefcase',
   },
   {
     id: '3',
     title: 'Never Miss a Booking',
-    description: 'Get instant notifications and reminders for all your upcoming appointments.',
-    image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800&q=80',
+    description: 'Get instant notifications and reminders for all your appointments.',
+    icon: 'notifications',
   },
 ];
 
@@ -48,13 +49,10 @@ export default function WelcomeScreen({ navigation }) {
 
   const renderSlide = ({ item }) => (
     <View style={styles.slide}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: item.image }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.imageOverlay} />
+      <View style={styles.iconContainer}>
+        <View style={styles.iconCircle}>
+          <Ionicons name={item.icon} size={64} color="#FFFFFF" />
+        </View>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.title}>{item.title}</Text>
@@ -69,7 +67,7 @@ export default function WelcomeScreen({ navigation }) {
         <View
           key={index}
           style={[
-            styles.dot, 
+            styles.dot,
             { 
               width: currentIndex === index ? 24 : 8,
               opacity: currentIndex === index ? 1 : 0.4 
@@ -82,6 +80,13 @@ export default function WelcomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.logo}>
+          <Text style={styles.logoText}>R</Text>
+        </View>
+        <Text style={styles.brandName}>Rezvo</Text>
+      </View>
+
       <FlatList
         ref={flatListRef}
         data={slides}
@@ -103,32 +108,17 @@ export default function WelcomeScreen({ navigation }) {
           <Text style={styles.primaryButtonText}>
             {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
           </Text>
+          <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <View style={styles.authLinks}>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.linkText}>
-              Already have an account? <Text style={styles.linkTextBold}>Log in</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.userTypeSwitch}>
-          <TouchableOpacity
-            style={styles.userTypeButton}
-            onPress={() => navigation.navigate('Login', { userType: 'client' })}
-          >
-            <Text style={styles.userTypeText}>Book Appointments</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.userTypeButton, styles.userTypeButtonAlt]}
-            onPress={() => navigation.navigate('Login', { userType: 'business' })}
-          >
-            <Text style={[styles.userTypeText, styles.userTypeTextAlt]}>
-              Manage Business
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          style={styles.secondaryButton}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={styles.secondaryButtonText}>
+            Already have an account? <Text style={styles.linkText}>Log in</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -137,110 +127,108 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 20,
+    gap: 10,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    backgroundColor: TEAL,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  brandName: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#0A1626',
   },
   slide: {
     width,
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
   },
-  imageContainer: {
-    height: '55%',
-    overflow: 'hidden',
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+  iconContainer: {
+    marginBottom: 40,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  imageOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  iconCircle: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: TEAL,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textContainer: {
-    flex: 1,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xxl,
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.sizes['3xl'],
+    fontSize: 28,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
     textAlign: 'center',
-    marginBottom: spacing.md,
-    letterSpacing: -0.5,
+    marginBottom: 16,
   },
   description: {
-    fontSize: typography.sizes.lg,
-    color: colors.textMuted,
+    fontSize: 16,
+    color: '#627D98',
     textAlign: 'center',
-    lineHeight: 26,
-    paddingHorizontal: spacing.md,
+    lineHeight: 24,
   },
   footer: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
   },
   dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
   dot: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: TEAL,
     marginHorizontal: 4,
   },
   primaryButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.full,
+    backgroundColor: TEAL,
+    paddingVertical: 16,
+    borderRadius: 50,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
   },
   primaryButtonText: {
-    color: colors.surface,
-    fontSize: typography.sizes.lg,
+    color: '#FFFFFF',
+    fontSize: 18,
     fontWeight: '600',
   },
-  authLinks: {
+  secondaryButton: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    paddingVertical: 8,
+  },
+  secondaryButtonText: {
+    fontSize: 15,
+    color: '#627D98',
   },
   linkText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
-  },
-  linkTextBold: {
-    color: colors.primary,
+    color: TEAL,
     fontWeight: '600',
-  },
-  userTypeSwitch: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  userTypeButton: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  userTypeButtonAlt: {
-    backgroundColor: colors.navy,
-    borderColor: colors.navy,
-  },
-  userTypeText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  userTypeTextAlt: {
-    color: colors.surface,
   },
 });
