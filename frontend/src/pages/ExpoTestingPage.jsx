@@ -1,8 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Wifi, Download, CheckCircle, AlertCircle, ExternalLink, Copy, Terminal } from 'lucide-react';
+import { Smartphone, Wifi, Download, CheckCircle, AlertCircle, ExternalLink, Copy, Terminal, QrCode, RefreshCw } from 'lucide-react';
+import QRCode from 'react-qr-code';
 
 const ExpoTestingPage = () => {
   const [copied, setCopied] = useState(false);
+  const [expoUrl, setExpoUrl] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch the current tunnel URL from the backend
+  useEffect(() => {
+    fetchTunnelUrl();
+  }, []);
+
+  const fetchTunnelUrl = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/expo/tunnel-url`);
+      const data = await response.json();
+      if (data.url) {
+        setExpoUrl(data.url);
+      } else {
+        setError('Tunnel not available. The mobile preview server may need to be started.');
+      }
+    } catch (err) {
+      setError('Could not connect to server.');
+    }
+    setLoading(false);
+  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -22,8 +48,102 @@ const ExpoTestingPage = () => {
             Test Rezvo Mobile App
           </h1>
           <p className="text-[#627D98] text-lg">
-            Follow these steps to run the app on your phone
+            Scan the QR code with Expo Go to test on your phone
           </p>
+        </div>
+
+        {/* QR Code Section */}
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#E2E8F0] mb-8">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            {/* QR Code */}
+            <div className="flex-shrink-0">
+              <div className="bg-white p-4 rounded-2xl border-2 border-[#00BFA5]/20">
+                {loading ? (
+                  <div className="w-[200px] h-[200px] flex items-center justify-center">
+                    <RefreshCw className="w-8 h-8 text-[#00BFA5] animate-spin" />
+                  </div>
+                ) : error ? (
+                  <div className="w-[200px] h-[200px] flex flex-col items-center justify-center text-center p-4">
+                    <AlertCircle className="w-8 h-8 text-[#F59E0B] mb-2" />
+                    <p className="text-sm text-[#627D98]">{error}</p>
+                    <button
+                      onClick={fetchTunnelUrl}
+                      className="mt-3 text-sm text-[#00BFA5] hover:underline flex items-center gap-1"
+                    >
+                      <RefreshCw className="w-3 h-3" /> Retry
+                    </button>
+                  </div>
+                ) : (
+                  <QRCode
+                    value={expoUrl}
+                    size={200}
+                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                    viewBox={`0 0 256 256`}
+                    fgColor="#0A1626"
+                    bgColor="#FFFFFF"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-xl font-semibold text-[#0A1626] mb-4">
+                Scan with Expo Go
+              </h3>
+              
+              <div className="space-y-3 mb-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#00BFA5] flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">1</div>
+                  <p className="text-[#627D98]">Download <span className="font-medium text-[#0A1626]">Expo Go</span> from App Store or Google Play</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#00BFA5] flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">2</div>
+                  <p className="text-[#627D98]">Open Expo Go and tap <span className="font-medium text-[#0A1626]">"Scan QR Code"</span></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#00BFA5] flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">3</div>
+                  <p className="text-[#627D98]">Point your camera at the QR code above</p>
+                </div>
+              </div>
+
+              {expoUrl && (
+                <div className="bg-[#F5F0E8] rounded-xl p-3 mt-4">
+                  <p className="text-xs text-[#627D98] mb-1">Or enter this URL manually:</p>
+                  <div className="flex items-center gap-2">
+                    <code className="text-sm text-[#0A1626] font-mono flex-1 truncate">{expoUrl}</code>
+                    <button
+                      onClick={() => copyToClipboard(expoUrl)}
+                      className="p-1.5 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+                    >
+                      {copied ? <CheckCircle className="w-4 h-4 text-[#00BFA5]" /> : <Copy className="w-4 h-4 text-[#627D98]" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                <a 
+                  href="https://apps.apple.com/app/expo-go/id982107779"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  iOS
+                </a>
+                <a 
+                  href="https://play.google.com/store/apps/details?id=host.exp.exponent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#00BFA5] text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-[#00A896] transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Android
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Steps */}
