@@ -7,7 +7,6 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
-  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, typography } from '../lib/theme';
@@ -38,7 +37,6 @@ const slides = [
 export default function WelcomeScreen({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
-  const scrollX = useRef(new Animated.Value(0)).current;
 
   const handleNext = () => {
     if (currentIndex < slides.length - 1) {
