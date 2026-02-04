@@ -23,49 +23,79 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Calendar view for availability
 - [x] Services management (CRUD)
 - [x] Bookings management with status updates
-- [x] Analytics dashboard with charts
+- [x] Analytics dashboard with charts (Recharts)
 - [x] Settings page with business details
 - [x] Shareable booking links with QR codes
 - [x] Public booking page for customers
 - [x] Legal pages: Privacy, Terms, Cookie Policy
 - [x] Cookie consent popup (GDPR compliant)
 - [x] Onboarding wizard UI (4 steps)
+- [x] Founder Admin Panel with TailAdmin-style design
 
-### Mobile Application (React Native/Expo)
+### Mobile Application (React Native/Expo) - UPDATED FEB 2026
 - [x] Welcome screen with onboarding slides
 - [x] Login/Signup screens with user type toggle
+- [x] **Complete Auth Flow:**
+  - Forgot Password screen (sends reset code)
+  - Verify Code screen (6-digit OTP entry)
+  - Reset Password screen (new password form)
+  - Password Reset Success screen
 - [x] **Client Flow:**
   - Home screen with categories and businesses
   - Search screen with filters
   - Bookings list (upcoming/past)
   - Business detail view
   - Full booking flow (date, time, details, confirm)
-  - Profile screen (NO switch to business mode)
+  - Profile screen
 - [x] **Business Flow:**
   - Dashboard with stats and quick actions
-  - Calendar with week view
+  - **Enhanced Calendar** - Fresha/Booksy-style with:
+    - Team member columns view
+    - Color-coded bookings by service
+    - Week strip navigation
+    - Add booking modal with team member assignment
+    - Date navigation controls
   - Bookings management with status actions
   - Services management with add/edit modal
-  - Settings with share link generation
+  - **Team Management** - Add/edit team members:
+    - Color assignment for calendar
+    - Role selection (staff/manager/admin)
+    - Service assignment capabilities
+    - Performance tracking (bookings, revenue)
+  - Settings with share link, business details modals
 
-### Backend (FastAPI + MongoDB)
+### Backend (FastAPI + MongoDB) - UPDATED FEB 2026
 - [x] Authentication endpoints (signup, login, me)
+- [x] **Password Reset Flow:**
+  - POST /api/auth/forgot-password
+  - POST /api/auth/verify-reset-code
+  - POST /api/auth/reset-password
 - [x] Business management endpoints
 - [x] Services CRUD endpoints
-- [x] Bookings endpoints with status management
+- [x] **Team Members CRUD:**
+  - POST /api/team-members
+  - GET /api/team-members
+  - GET /api/team-members/{id}
+  - PATCH /api/team-members/{id}
+  - DELETE /api/team-members/{id}
+  - GET /api/team-members/{id}/stats
+- [x] **Enhanced Calendar API:**
+  - GET /api/calendar/team-view?date=YYYY-MM-DD
+- [x] Bookings endpoints with team member assignment
+  - POST /api/bookings/with-team
 - [x] Public booking endpoints
 - [x] AI-powered suggestions (OpenAI GPT-4o-mini)
 - [x] Email notifications (Resend)
 - [x] Notifications system
-- [x] Error logging system
-- [x] Short link generation and resolution
-- [x] Seed data endpoint (10 dummy customers)
-- [x] Business stats/analytics endpoint
+- [x] Products CRUD
+- [x] Admin analytics endpoints
+- [x] Global search endpoint
 
 ### Integrations
 - [x] OpenAI GPT-4o-mini (via Emergent LLM Key)
 - [x] Resend for email notifications
 - [x] React Native / Expo for mobile
+- [x] Recharts for analytics visualizations
 
 ## Test Credentials
 - **Email:** testuser@example.com
@@ -74,73 +104,75 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ## Database Schema
 - **users:** id, email, passwordHash, role, createdAt, business_id
 - **businesses:** id, ownerId, name, logoUrl, services, availability
-- **services:** id, businessId, name, pricePence, durationMin
-- **bookings:** id, serviceId, clientName, datetime, status
+- **services:** id, businessId, name, pricePence, durationMin, color
+- **bookings:** id, serviceId, clientName, datetime, status, team_member_id
+- **team_members:** id, business_id, name, email, phone, role, color, service_ids, working_hours, bookings_completed, revenue_pence
+- **password_resets:** email, code, expires, used, reset_token
 - **notifications:** id, userId, title, message, type, read
 - **short_links:** id, short_code, business_id, clicks
 - **error_logs:** id, type, message, stack, resolved
+- **products:** id, business_id, name, price_pence, stock_quantity
+
+## Testing URLs
+- **Web Landing:** https://slotwise-6.preview.emergentagent.com
+- **Expo QR Page:** https://slotwise-6.preview.emergentagent.com/expo-test
+- **Mobile Preview:** https://slotwise-6.preview.emergentagent.com/mobile-preview
+- **Expo Tunnel:** exp://3ckafhi-anonymous-8081.exp.direct
 
 ## P0 - Next Priority Tasks
-1. Stripe subscription integration (£4.99/month)
-2. Wire onboarding wizard to backend
+1. Wire onboarding wizard to backend (complete business setup flow)
+2. Full client-side mobile app functionality (backend wiring)
 3. Push notifications (Expo)
-4. Google Calendar sync
 
 ## P1 - Upcoming Tasks
+- Stripe subscription integration (£4.99/month)
+- Google Calendar sync
 - Automated booking reminders (cron/scheduled)
-- CRM features (client history, notes)
-- Multi-staff scheduling
-- Customer reviews
+- SMS notifications (Twilio)
 
 ## P2 - Future/Backlog
+- Multi-location business support
+- Advanced team scheduling (shift management)
+- Customer reviews
+- Advanced analytics/reports
 - Dojo payment integration (deferred)
-- Admin super-dashboard
-- SMS notifications (Twilio)
-- Advanced analytics
 
-## Founder Admin Panel (TailAdmin-style design)
-- [x] **Dashboard Tab:** Stats cards (Users, Businesses, Bookings, Revenue), Weekly bar chart, Status breakdown, Top Services chart, Platform Health
-- [x] **Users Tab:** Searchable table with pagination, role badges, status indicators, view actions
-- [x] **Businesses Tab:** Card grid layout with search, logo/avatar, tagline, status, view actions
-- [x] **Bookings Tab:** Table view of all platform bookings with client, service, date, amount, status
-- [x] **Error Logs Tab:** Error list with severity, timestamp, stack trace viewer, resolve action
-- [x] Analytics API endpoint `/api/admin/analytics` with daily data, status breakdown, top services
-- [x] Clean sidebar navigation with teal accent, light theme
-
-## Search Feature
-- [x] Backend search endpoint `/api/search` - searches bookings, services, and customers
-- [ ] Frontend search modal (temporarily disabled due to Babel plugin conflict)
-
-## Known Issues
-- SearchModal component causes Babel visual-edits plugin recursion error - temporarily disabled
-
-## Technical Stack
-- **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI
-- **Mobile:** React Native, Expo, React Navigation
-- **Backend:** FastAPI, MongoDB, Pydantic
-- **Integrations:** OpenAI, Resend
-
-## Mobile App (Business Owner)
-- [x] Welcome/Homepage with branding
-- [x] Login/Signup screens in Rezvo branding (teal accents, light theme)
-- [x] Business Dashboard with stats, revenue, today's schedule
-- [x] Calendar view with week/day toggle
-- [x] **Catalogue screen** with Services + Products tabs
-- [x] Settings screen redesigned with booking link sharing, business settings, subscription info
-- [x] Products feature added alongside Services
-
-## Test Data
-- 4 Services: Haircut & Style, Beard Trim, Hair Color, Deep Conditioning
-- 3 Products: Premium Hair Oil, Styling Gel, Beard Balm
-- 6+ Test Bookings with real customer data
-- Test credentials: testuser@example.com / password123
-
-## Recent Updates (Iteration 8)
-- Redesigned Business Settings screen with better UX
-- Added Products feature with full CRUD API endpoints
-- Created combined Services/Products "Catalogue" screen with tabbed interface
-- Added test data (services, products, bookings)
-- Fixed Settings screen to show booking link, subscription info, and organized menu
+## Code Architecture
+```
+/app/
+├── backend/
+│   └── server.py          # FastAPI with all endpoints (~2100 lines)
+├── frontend/
+│   └── src/
+│       ├── components/    # Reusable UI components
+│       ├── pages/         # Page components
+│       └── App.js         # Routes
+├── mobile/
+│   └── rezvo-mobile/
+│       └── src/
+│           ├── screens/
+│           │   ├── WelcomeScreen.js
+│           │   ├── LoginScreen.js
+│           │   ├── SignupScreen.js
+│           │   ├── ForgotPasswordScreen.js (NEW)
+│           │   ├── VerifyCodeScreen.js (NEW)
+│           │   ├── ResetPasswordScreen.js (NEW)
+│           │   ├── PasswordResetSuccessScreen.js (NEW)
+│           │   ├── business/
+│           │   │   ├── DashboardScreen.js
+│           │   │   ├── CalendarScreen.js (ENHANCED)
+│           │   │   ├── BookingsScreen.js
+│           │   │   ├── ServicesScreen.js
+│           │   │   ├── SettingsScreen.js
+│           │   │   └── TeamScreen.js (NEW)
+│           │   └── client/
+│           ├── navigation/
+│           │   └── AppNavigator.js
+│           └── context/
+│               └── AuthContext.js
+└── memory/
+    └── PRD.md
+```
 
 ## Last Updated
-February 2026 - Iteration 8 Complete
+February 4, 2026 - Added Team Management, Calendar Redesign, Complete Auth Flow
