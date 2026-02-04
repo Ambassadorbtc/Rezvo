@@ -35,10 +35,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       {/* Header */}
-      <header className="p-4">
-        <Link to="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors">
+      <header className="p-4 md:p-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-navy-500 hover:text-navy-900 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to home
         </Link>
@@ -49,49 +49,49 @@ const LoginPage = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-gradient-blaze rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+              <Calendar className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold tracking-tight">QuickSlot</span>
+            <span className="text-2xl font-bold font-heading text-navy-900">Rezvo</span>
           </div>
 
-          <Card className="bg-obsidian-paper border-white/5" data-testid="login-card">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-              <CardDescription className="text-white/50">
+          <Card className="bg-white rounded-3xl shadow-card border-0" data-testid="login-card">
+            <CardHeader className="text-center pb-4 pt-8 px-8">
+              <CardTitle className="font-display text-2xl font-bold text-navy-900">Welcome back</CardTitle>
+              <CardDescription className="text-navy-500">
                 Log in to manage your bookings
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <CardContent className="px-8 pb-8">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-navy-700 font-medium">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-obsidian-deep border-white/10 focus:border-blaze focus:ring-blaze"
+                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
                     data-testid="login-email-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-navy-700 font-medium">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-obsidian-deep border-white/10 focus:border-blaze focus:ring-blaze"
+                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
                     data-testid="login-password-input"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-blaze hover:opacity-90 text-white rounded-full py-5 font-semibold btn-press"
+                  className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-6 font-semibold shadow-button hover:shadow-button-hover transition-all btn-press"
                   data-testid="login-submit-btn"
                 >
                   {loading ? (
@@ -106,9 +106,9 @@ const LoginPage = () => {
               </form>
 
               <div className="mt-6 text-center">
-                <p className="text-white/50 text-sm">
+                <p className="text-navy-500 text-sm">
                   Don't have an account?{' '}
-                  <Link to="/signup" className="text-blaze hover:underline" data-testid="signup-link">
+                  <Link to="/signup" className="text-teal-600 hover:text-teal-700 font-medium" data-testid="signup-link">
                     Sign up free
                   </Link>
                 </p>

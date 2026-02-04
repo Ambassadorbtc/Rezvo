@@ -40,10 +40,10 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       {/* Header */}
-      <header className="p-4">
-        <Link to="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors">
+      <header className="p-4 md:p-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-navy-500 hover:text-navy-900 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to home
         </Link>
@@ -54,61 +54,61 @@ const SignupPage = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-gradient-blaze rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+              <Calendar className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold tracking-tight">QuickSlot</span>
+            <span className="text-2xl font-bold font-heading text-navy-900">Rezvo</span>
           </div>
 
-          <Card className="bg-obsidian-paper border-white/5" data-testid="signup-card">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
-              <CardDescription className="text-white/50">
+          <Card className="bg-white rounded-3xl shadow-card border-0" data-testid="signup-card">
+            <CardHeader className="text-center pb-4 pt-8 px-8">
+              <CardTitle className="font-display text-2xl font-bold text-navy-900">Create your account</CardTitle>
+              <CardDescription className="text-navy-500">
                 Start your 14-day free trial. No credit card required.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <CardContent className="px-8 pb-8">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="businessName">Business Name</Label>
+                  <Label htmlFor="businessName" className="text-navy-700 font-medium">Business Name</Label>
                   <Input
                     id="businessName"
                     type="text"
                     placeholder="e.g. Sarah's Hair Studio"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    className="bg-obsidian-deep border-white/10 focus:border-blaze focus:ring-blaze"
+                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
                     data-testid="signup-business-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-navy-700 font-medium">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-obsidian-deep border-white/10 focus:border-blaze focus:ring-blaze"
+                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
                     data-testid="signup-email-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-navy-700 font-medium">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="At least 8 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-obsidian-deep border-white/10 focus:border-blaze focus:ring-blaze"
+                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
                     data-testid="signup-password-input"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-blaze hover:opacity-90 text-white rounded-full py-5 font-semibold btn-press"
+                  className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-6 font-semibold shadow-button hover:shadow-button-hover transition-all btn-press"
                   data-testid="signup-submit-btn"
                 >
                   {loading ? (
@@ -117,18 +117,20 @@ const SignupPage = () => {
                       Creating account...
                     </>
                   ) : (
-                    'Create Account'
+                    'Create account'
                   )}
                 </Button>
               </form>
 
               {/* Benefits */}
-              <div className="mt-6 p-4 rounded-xl bg-obsidian border border-white/5">
-                <p className="text-sm font-medium mb-3 text-white/80">What you get:</p>
+              <div className="mt-6 p-4 rounded-2xl bg-cream">
+                <p className="text-sm font-medium text-navy-700 mb-3">What you get:</p>
                 <ul className="space-y-2">
                   {['14-day free trial', 'Unlimited bookings', 'Shareable links', 'Email reminders'].map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-white/60">
-                      <Check className="w-4 h-4 text-success flex-shrink-0" />
+                    <li key={item} className="flex items-center gap-2 text-sm text-navy-600">
+                      <div className="w-5 h-5 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-teal-600" />
+                      </div>
                       {item}
                     </li>
                   ))}
@@ -136,9 +138,9 @@ const SignupPage = () => {
               </div>
 
               <div className="mt-6 text-center">
-                <p className="text-white/50 text-sm">
+                <p className="text-navy-500 text-sm">
                   Already have an account?{' '}
-                  <Link to="/login" className="text-blaze hover:underline" data-testid="login-link">
+                  <Link to="/login" className="text-teal-600 hover:text-teal-700 font-medium" data-testid="login-link">
                     Log in
                   </Link>
                 </p>
