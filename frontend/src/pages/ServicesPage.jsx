@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api, { formatPrice } from '../lib/api';
 import AppLayout from '../components/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -9,7 +9,7 @@ import { Switch } from '../components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { Textarea } from '../components/ui/textarea';
-import { Plus, Scissors, Pencil, Trash2, Loader2, Clock, PoundSterling } from 'lucide-react';
+import { Plus, Scissors, Pencil, Trash2, Loader2, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ServicesPage = () => {
@@ -19,7 +19,6 @@ const ServicesPage = () => {
   const [editingService, setEditingService] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Form state
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('60');
@@ -118,7 +117,7 @@ const ServicesPage = () => {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-blaze border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </AppLayout>
     );
@@ -126,16 +125,16 @@ const ServicesPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 space-y-6" data-testid="services-page">
+      <div className="p-4 md:p-6 lg:p-8 space-y-6" data-testid="services-page">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Services</h1>
-            <p className="text-white/50 mt-1">{services.length} services</p>
+            <h1 className="font-display text-2xl md:text-3xl font-bold text-navy-900">Services</h1>
+            <p className="text-navy-500 mt-1">{services.length} services</p>
           </div>
           <Button
             onClick={() => openDialog()}
-            className="bg-gradient-blaze hover:opacity-90 text-white rounded-full btn-press"
+            className="bg-teal-500 hover:bg-teal-600 text-white rounded-full shadow-button btn-press"
             data-testid="add-service-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -145,11 +144,11 @@ const ServicesPage = () => {
 
         {/* Services Grid */}
         {services.length === 0 ? (
-          <Card className="bg-obsidian-paper border-white/5">
+          <Card className="bg-white rounded-2xl shadow-card border-0">
             <CardContent className="py-12 text-center">
-              <Scissors className="w-12 h-12 text-white/20 mx-auto mb-3" />
-              <p className="text-white/50 mb-4">No services yet</p>
-              <Button onClick={() => openDialog()} className="bg-blaze hover:bg-blaze-hover text-white" data-testid="empty-add-service-btn">
+              <Scissors className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-navy-500 mb-4">No services yet</p>
+              <Button onClick={() => openDialog()} className="bg-teal-500 hover:bg-teal-600 text-white rounded-full" data-testid="empty-add-service-btn">
                 Add Your First Service
               </Button>
             </CardContent>
@@ -159,20 +158,20 @@ const ServicesPage = () => {
             {services.map((service) => (
               <Card
                 key={service.id}
-                className="bg-obsidian-paper border-white/5 card-hover group"
+                className="bg-white rounded-2xl shadow-card border-0 hover-lift group"
                 data-testid={`service-card-${service.id}`}
               >
-                <CardContent className="p-5">
+                <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-blaze/10 flex items-center justify-center">
-                      <Scissors className="w-6 h-6 text-blaze" />
+                    <div className="w-12 h-12 rounded-xl bg-coral-50 flex items-center justify-center">
+                      <Scissors className="w-6 h-6 text-coral-500" />
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => openDialog(service)}
-                        className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/10"
+                        className="h-8 w-8 text-navy-400 hover:text-navy-700 hover:bg-gray-100"
                         data-testid={`edit-service-${service.id}`}
                       >
                         <Pencil className="w-4 h-4" />
@@ -181,7 +180,7 @@ const ServicesPage = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(service.id)}
-                        className="h-8 w-8 text-white/40 hover:text-destructive hover:bg-destructive/10"
+                        className="h-8 w-8 text-navy-400 hover:text-red-600 hover:bg-red-50"
                         data-testid={`delete-service-${service.id}`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -189,24 +188,24 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-lg mb-2">{service.name}</h3>
+                  <h3 className="font-heading font-semibold text-lg text-navy-900 mb-2">{service.name}</h3>
                   
                   {service.description && (
-                    <p className="text-sm text-white/50 mb-4 line-clamp-2">{service.description}</p>
+                    <p className="text-sm text-navy-500 mb-4 line-clamp-2">{service.description}</p>
                   )}
 
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                    <div className="flex items-center gap-1 text-white/60">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-1 text-navy-500">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">{service.duration_min} min</span>
                     </div>
-                    <div className="text-xl font-bold text-accent-teal tabular-nums">
+                    <div className="text-xl font-bold text-teal-600 tabular-nums">
                       {formatPrice(service.price_pence)}
                     </div>
                   </div>
 
                   {service.deposit_required && (
-                    <div className="mt-3 px-3 py-2 rounded-lg bg-warning/10 text-warning text-sm">
+                    <div className="mt-3 px-3 py-2 rounded-lg bg-amber-50 text-amber-700 text-sm">
                       Deposit: {formatPrice(service.deposit_amount_pence)}
                     </div>
                   )}
@@ -218,26 +217,26 @@ const ServicesPage = () => {
 
         {/* Add/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="bg-obsidian-paper border-white/10 max-w-md">
+          <DialogContent className="bg-white border-0 rounded-2xl max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
+              <DialogTitle className="font-display text-xl text-navy-900">{editingService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Service Name *</Label>
+                <Label htmlFor="name" className="text-navy-700 font-medium">Service Name *</Label>
                 <Input
                   id="name"
                   placeholder="e.g. Haircut & Beard Trim"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-obsidian border-white/10"
+                  className="bg-cream border-gray-200 rounded-xl"
                   data-testid="service-name-input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (£) *</Label>
+                  <Label htmlFor="price" className="text-navy-700 font-medium">Price (£) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -245,14 +244,14 @@ const ServicesPage = () => {
                     placeholder="25.00"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl"
                     data-testid="service-price-input"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Duration</Label>
+                  <Label className="text-navy-700 font-medium">Duration</Label>
                   <Select value={duration} onValueChange={setDuration}>
-                    <SelectTrigger className="bg-obsidian border-white/10" data-testid="service-duration-select">
+                    <SelectTrigger className="bg-cream border-gray-200 rounded-xl" data-testid="service-duration-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -268,22 +267,22 @@ const ServicesPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description (optional)</Label>
+                <Label htmlFor="description" className="text-navy-700 font-medium">Description (optional)</Label>
                 <Textarea
                   id="description"
                   placeholder="Describe your service..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="bg-obsidian border-white/10 resize-none"
+                  className="bg-cream border-gray-200 rounded-xl resize-none"
                   rows={3}
                   data-testid="service-description-input"
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl bg-obsidian border border-white/5">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
                 <div>
-                  <Label className="text-base">Require Deposit?</Label>
-                  <p className="text-sm text-white/50">Reduces no-shows</p>
+                  <Label className="text-navy-700 font-medium">Require Deposit?</Label>
+                  <p className="text-sm text-navy-500">Reduces no-shows</p>
                 </div>
                 <Switch
                   checked={depositRequired}
@@ -294,7 +293,7 @@ const ServicesPage = () => {
 
               {depositRequired && (
                 <div className="space-y-2">
-                  <Label htmlFor="depositAmount">Deposit Amount (£)</Label>
+                  <Label htmlFor="depositAmount" className="text-navy-700 font-medium">Deposit Amount (£)</Label>
                   <Input
                     id="depositAmount"
                     type="number"
@@ -302,20 +301,20 @@ const ServicesPage = () => {
                     placeholder="10.00"
                     value={depositAmount}
                     onChange={(e) => setDepositAmount(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl"
                     data-testid="service-deposit-amount-input"
                   />
                 </div>
               )}
             </div>
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-white/10">
+              <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-gray-200 rounded-full">
                 Cancel
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={saving}
-                className="bg-blaze hover:bg-blaze-hover text-white"
+                className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
                 data-testid="save-service-btn"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : editingService ? 'Update' : 'Add Service'}
