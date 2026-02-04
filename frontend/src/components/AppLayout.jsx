@@ -10,7 +10,8 @@ import {
   Scissors,
   LogOut,
   Menu,
-  X
+  X,
+  Shield
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
@@ -25,7 +26,7 @@ const AppLayout = ({ children }) => {
     { path: '/calendar', label: 'Calendar', icon: Calendar },
     { path: '/bookings', label: 'Bookings', icon: Users },
     { path: '/services', label: 'Services', icon: Scissors },
-    { path: '/share', label: 'Share Link', icon: Link2 },
+    { path: '/share', label: 'Booking Page', icon: Link2 },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
