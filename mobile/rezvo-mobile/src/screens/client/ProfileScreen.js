@@ -23,7 +23,7 @@ const menuItems = [
 ];
 
 export default function ProfileScreen({ navigation }) {
-  const { user, logout, switchUserType } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert(
@@ -32,17 +32,6 @@ export default function ProfileScreen({ navigation }) {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Log out', style: 'destructive', onPress: logout },
-      ]
-    );
-  };
-
-  const handleSwitchMode = () => {
-    Alert.alert(
-      'Switch to Business Mode',
-      'Do you want to manage your business instead?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Switch', onPress: () => switchUserType('business') },
       ]
     );
   };
