@@ -1542,6 +1542,42 @@ async def resolve_error_log(log_id: str, current_user: dict = Depends(get_curren
     )
     return {"resolved": True}
 
+@api_router.get("/admin/stats")
+async def get_admin_stats(current_user: dict = Depends(get_current_user)):
+    """Get platform statistics for admin dashboard"""
+    if current_user.get("role") not in ["admin", "founder", "business"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    total_users = await db.users.count_documents({})
+    total_businesses = await db.businesses.count_documents({})
+    total_bookings = await db.bookings.count_documents({})
+    total_services = await db.services.count_documents({})
+    
+    return {
+        "total_users": total_users,
+        "total_businesses": total_businesses,
+        "total_bookings": total_bookings,
+        "total_services": total_services
+    }
+
+@api_router.get("/admin/users")
+async def get_admin_users(current_user: dict = Depends(get_current_user)):
+    """Get all users for admin panel"""
+    if current_user.get("role") not in ["admin", "founder", "business"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(500)
+    return users
+
+@api_router.get("/admin/businesses")
+async def get_admin_businesses(current_user: dict = Depends(get_current_user)):
+    """Get all businesses for admin panel"""
+    if current_user.get("role") not in ["admin", "founder", "business"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    businesses = await db.businesses.find({}, {"_id": 0}).to_list(500)
+    return businesses
+
 # ==================== NOTIFICATIONS ====================
 
 class NotificationCreate(BaseModel):
