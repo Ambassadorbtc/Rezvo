@@ -163,9 +163,10 @@ class TestServicesEndpoints:
         service_data = {
             "name": f"TEST_Service_{uuid.uuid4().hex[:8]}",
             "description": "Test service description",
-            "duration_minutes": 60,
+            "duration_min": 60,
             "price_pence": 5000,
-            "deposit_pence": 1000
+            "deposit_required": False,
+            "deposit_amount_pence": 1000
         }
         
         create_response = requests.post(
@@ -258,7 +259,7 @@ class TestShareLinkEndpoints:
     def test_get_share_link(self, auth_token):
         """Test getting shareable booking link"""
         response = requests.get(
-            f"{BASE_URL}/api/share-link",
+            f"{BASE_URL}/api/links/generate",
             headers={"Authorization": f"Bearer {auth_token}"},
             timeout=10
         )
