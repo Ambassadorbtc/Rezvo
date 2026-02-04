@@ -120,11 +120,27 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **Backend:** FastAPI, MongoDB, Pydantic
 - **Integrations:** OpenAI, Resend
 
-## Recent Fixes (Iteration 7)
-- Added analytics charts to Admin Panel (using custom CSS charts instead of Recharts due to Babel plugin conflict)
-- Added `/api/admin/analytics` endpoint with daily stats, status breakdown, top services
-- Added `/api/search` backend endpoint for global search
-- Fixed duplicate import error in FounderAdminPage
+## Mobile App (Business Owner)
+- [x] Welcome/Homepage with branding
+- [x] Login/Signup screens in Rezvo branding (teal accents, light theme)
+- [x] Business Dashboard with stats, revenue, today's schedule
+- [x] Calendar view with week/day toggle
+- [x] **Catalogue screen** with Services + Products tabs
+- [x] Settings screen redesigned with booking link sharing, business settings, subscription info
+- [x] Products feature added alongside Services
+
+## Test Data
+- 4 Services: Haircut & Style, Beard Trim, Hair Color, Deep Conditioning
+- 3 Products: Premium Hair Oil, Styling Gel, Beard Balm
+- 6+ Test Bookings with real customer data
+- Test credentials: testuser@example.com / password123
+
+## Recent Updates (Iteration 8)
+- Redesigned Business Settings screen with better UX
+- Added Products feature with full CRUD API endpoints
+- Created combined Services/Products "Catalogue" screen with tabbed interface
+- Added test data (services, products, bookings)
+- Fixed Settings screen to show booking link, subscription info, and organized menu
 
 ## Last Updated
-February 2026 - Iteration 7 Complete
+February 2026 - Iteration 8 Complete
