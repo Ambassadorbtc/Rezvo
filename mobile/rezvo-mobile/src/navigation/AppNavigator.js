@@ -181,7 +181,7 @@ function BusinessStack() {
 export default function AppNavigator() {
   const { user, userType, loading } = useAuth();
 
-  if (loading) {
+  if (loading === true) {
     return (
       <View style={styles.loadingContainer}>
         <View style={styles.spinner} />
@@ -191,7 +191,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {!user ? (
+      {user === null ? (
         <AuthStack />
       ) : userType === 'client' ? (
         <ClientStack />
