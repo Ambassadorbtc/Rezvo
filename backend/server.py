@@ -493,6 +493,73 @@ async def delete_service(service_id: str, current_user: dict = Depends(get_curre
     )
     return {"status": "deleted"}
 
+# ==================== PRODUCTS ROUTES ====================
+
+@api_router.post("/products")
+async def create_product(data: ProductCreate, current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    product_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    product_doc = {
+        "id": product_id,
+        "business_id": user["business_id"],
+        "name": data.name,
+        "price_pence": data.price_pence,
+        "description": data.description or "",
+        "stock_quantity": data.stock_quantity,
+        "category": data.category or "General",
+        "image_url": data.image_url,
+        "active": True,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.products.insert_one(product_doc)
+    return {"id": product_id, "name": data.name}
+
+@api_router.get("/products")
+async def get_products(current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    products = await db.products.find(
+        {"business_id": user["business_id"], "active": True},
+        {"_id": 0}
+    ).to_list(100)
+    return products
+
+@api_router.patch("/products/{product_id}")
+async def update_product(product_id: str, data: ProductUpdate, current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    product = await db.products.find_one({"id": product_id, "business_id": user["business_id"]})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.products.update_one({"id": product_id}, {"$set": update_data})
+    return {"status": "updated"}
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str, current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.products.update_one(
+        {"id": product_id, "business_id": user["business_id"]},
+        {"$set": {"active": False}}
+    )
+    return {"status": "deleted"}
+
 # ==================== BOOKINGS ROUTES ====================
 
 @api_router.post("/bookings")
