@@ -33,16 +33,16 @@ const AppLayout = ({ children }) => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-obsidian flex">
+    <div className="min-h-screen bg-cream flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-white/5 bg-obsidian-paper">
+      <aside className="hidden md:flex flex-col w-64 border-r border-gray-200 bg-white">
         {/* Logo */}
-        <div className="p-6 border-b border-white/5">
+        <div className="p-6 border-b border-gray-100">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-blaze rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-teal-500 rounded-xl flex items-center justify-center">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight">QuickSlot</span>
+            <span className="text-xl font-bold font-heading text-navy-900">Rezvo</span>
           </Link>
         </div>
 
@@ -54,8 +54,8 @@ const AppLayout = ({ children }) => {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 isActive(item.path)
-                  ? 'bg-blaze/10 text-blaze'
-                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  ? 'bg-teal-50 text-teal-700'
+                  : 'text-navy-600 hover:bg-gray-50 hover:text-navy-900'
               }`}
               data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
             >
@@ -66,19 +66,19 @@ const AppLayout = ({ children }) => {
         </nav>
 
         {/* User Section */}
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-gray-100">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-blaze/20 flex items-center justify-center text-blaze font-semibold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-semibold">
               {user?.email?.[0]?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">{user?.email}</div>
-              <div className="text-xs text-white/40">Free Trial</div>
+              <div className="text-sm font-medium text-navy-900 truncate">{user?.email}</div>
+              <div className="text-xs text-navy-500">Free Trial</div>
             </div>
           </div>
           <Button
             variant="ghost"
-            className="w-full justify-start text-white/60 hover:text-white hover:bg-white/5"
+            className="w-full justify-start text-navy-500 hover:text-navy-900 hover:bg-gray-50"
             onClick={logout}
             data-testid="logout-btn"
           >
@@ -89,19 +89,19 @@ const AppLayout = ({ children }) => {
       </aside>
 
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-blaze rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold">QuickSlot</span>
+            <span className="text-lg font-bold font-heading text-navy-900">Rezvo</span>
           </Link>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-white"
+            className="text-navy-700"
             data-testid="mobile-menu-btn"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -111,7 +111,7 @@ const AppLayout = ({ children }) => {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-obsidian/95 backdrop-blur-lg pt-20">
+        <div className="md:hidden fixed inset-0 z-40 bg-white pt-20">
           <nav className="p-4 space-y-2">
             {navItems.map((item) => (
               <Link
@@ -120,8 +120,8 @@ const AppLayout = ({ children }) => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-4 rounded-xl transition-all ${
                   isActive(item.path)
-                    ? 'bg-blaze/10 text-blaze'
-                    : 'text-white/60 hover:bg-white/5 hover:text-white'
+                    ? 'bg-teal-50 text-teal-700'
+                    : 'text-navy-600 hover:bg-gray-50 hover:text-navy-900'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -133,7 +133,7 @@ const AppLayout = ({ children }) => {
                 logout();
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center gap-3 px-4 py-4 rounded-xl text-white/60 hover:bg-white/5 hover:text-white w-full"
+              className="flex items-center gap-3 px-4 py-4 rounded-xl text-navy-600 hover:bg-gray-50 hover:text-navy-900 w-full"
             >
               <LogOut className="w-5 h-5" />
               <span className="font-medium text-lg">Log out</span>
@@ -143,12 +143,12 @@ const AppLayout = ({ children }) => {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto md:h-screen pt-16 md:pt-0 pb-20 md:pb-0">
+      <main className="flex-1 overflow-auto md:h-screen pt-16 md:pt-0 pb-20 md:pb-0 bg-cream">
         {children}
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/5">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
         <div className="flex items-center justify-around py-2">
           {navItems.slice(0, 5).map((item) => (
             <Link
@@ -156,8 +156,8 @@ const AppLayout = ({ children }) => {
               to={item.path}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all ${
                 isActive(item.path)
-                  ? 'text-blaze'
-                  : 'text-white/40 hover:text-white/60'
+                  ? 'text-teal-600'
+                  : 'text-navy-400 hover:text-navy-600'
               }`}
               data-testid={`mobile-nav-${item.label.toLowerCase().replace(' ', '-')}`}
             >
