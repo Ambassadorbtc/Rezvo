@@ -193,6 +193,20 @@ export default function SettingsScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.menuItem}
+            onPress={() => navigation.navigate('Team')}
+          >
+            <View style={styles.menuIcon}>
+              <Ionicons name="people-outline" size={20} color={TEAL} />
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Team Members</Text>
+              <Text style={styles.menuSubtext}>Manage your staff</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
             onPress={() => setShowWorkingHours(true)}
           >
             <View style={styles.menuIcon}>
