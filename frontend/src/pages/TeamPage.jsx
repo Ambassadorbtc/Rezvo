@@ -42,7 +42,7 @@ function TeamPage() {
     try {
       const newMember = {
         name: 'New Team Member',
-        email: '',
+        email: null,
         phone: '',
         role: 'staff',
         color: COLORS[members.length % COLORS.length],
