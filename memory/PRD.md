@@ -112,9 +112,9 @@ Password: password123
 ---
 
 ## URLs
-- **Web App:** https://rezvo-booking.preview.emergentagent.com
-- **Mobile Preview:** https://rezvo-booking.preview.emergentagent.com/mobile-preview
-- **Public Booking:** https://rezvo-booking.preview.emergentagent.com/book/{business_id}
+- **Web App:** https://quick-slot-1.preview.emergentagent.com
+- **Mobile Preview:** https://quick-slot-1.preview.emergentagent.com/mobile-preview
+- **Public Booking:** https://quick-slot-1.preview.emergentagent.com/book/{business_id}
 
 ---
 
