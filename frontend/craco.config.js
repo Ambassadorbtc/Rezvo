@@ -71,15 +71,16 @@ const webpackConfig = {
 };
 
 // Only add babel metadata plugin during dev server
-if (config.enableVisualEdits && babelMetadataPlugin) {
-  webpackConfig.babel = {
-    plugins: [
-      [babelMetadataPlugin, {
-        exclude: ['**/TeamPage.jsx', '**/SearchModal.jsx', '**/MobilePreview.jsx']
-      }]
-    ],
-  };
-}
+// DISABLED: babel-metadata-plugin causes infinite recursion on complex files
+// if (config.enableVisualEdits && babelMetadataPlugin) {
+//   webpackConfig.babel = {
+//     plugins: [
+//       [babelMetadataPlugin, {
+//         exclude: ['**/TeamPage.jsx', '**/SearchModal.jsx', '**/MobilePreview.jsx']
+//       }]
+//     ],
+//   };
+// }
 
 webpackConfig.devServer = (devServerConfig) => {
   // Apply visual edits dev server setup only if enabled
