@@ -4,69 +4,30 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TouchableOpacity,
-  TextInput,
-  FlatList,
   RefreshControl,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import api, { formatPrice } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
 
-const categories = [
-  { id: '1', name: 'Haircut', icon: '✂️' },
-  { id: '2', name: 'Nails', icon: '💅' },
-  { id: '3', name: 'Fitness', icon: '💪' },
-  { id: '4', name: 'Beauty', icon: '💄' },
-  { id: '5', name: 'Massage', icon: '💆' },
-  { id: '6', name: 'More', icon: '•••' },
-];
+const TEAL = '#00BFA5';
 
 export default function HomeScreen({ navigation }) {
   const { user } = useAuth();
   const [businesses, setBusinesses] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchBusinesses = async () => {
     try {
-      const response = await api.get('/businesses/public');
+      const response = await api.get('/public/businesses');
       setBusinesses(response.data || []);
     } catch (error) {
-      console.log('No public businesses yet');
-      // Mock data for demo
-      setBusinesses([
-        {
-          id: '1',
-          name: "Sarah's Hair Studio",
-          tagline: 'Professional hairdressing in Manchester',
-          image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80',
-          rating: 4.9,
-          reviews: 127,
-          services: [{ price_pence: 3500 }],
-        },
-        {
-          id: '2',
-          name: 'FitLife PT',
-          tagline: 'Personal training sessions',
-          image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80',
-          rating: 4.8,
-          reviews: 89,
-          services: [{ price_pence: 5000 }],
-        },
-        {
-          id: '3',
-          name: 'Glamour Nails',
-          tagline: 'Nail art and treatments',
-          image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80',
-          rating: 5.0,
-          reviews: 234,
-          services: [{ price_pence: 2500 }],
-        },
-      ]);
+      console.error('Error fetching businesses:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -82,126 +43,111 @@ export default function HomeScreen({ navigation }) {
     fetchBusinesses();
   };
 
-  const renderCategory = ({ item }) => (
-    <TouchableOpacity style={styles.categoryCard}>
-      <Text style={styles.categoryIcon}>{item.icon}</Text>
-      <Text style={styles.categoryName}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+  const categories = [
+    { id: '1', name: 'Hair', icon: 'cut' },
+    { id: '2', name: 'Nails', icon: 'color-palette' },
+    { id: '3', name: 'Spa', icon: 'leaf' },
+    { id: '4', name: 'Barber', icon: 'man' },
+    { id: '5', name: 'Beauty', icon: 'sparkles' },
+    { id: '6', name: 'Massage', icon: 'hand-left' },
+  ];
 
-  const renderBusiness = ({ item }) => (
-    <TouchableOpacity
-      style={styles.businessCard}
-      onPress={() => navigation.navigate('BusinessDetail', { business: item })}
-    >
-      <Image source={{ uri: item.image }} style={styles.businessImage} />
-      <View style={styles.businessInfo}>
-        <Text style={styles.businessName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.businessTagline} numberOfLines={1}>{item.tagline}</Text>
-        <View style={styles.businessMeta}>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingStar}>★</Text>
-            <Text style={styles.ratingText}>{item.rating}</Text>
-            <Text style={styles.reviewsText}>({item.reviews})</Text>
-          </View>
-          {item.services?.[0]?.price_pence && (
-            <Text style={styles.priceText}>
-              From {formatPrice(item.services[0].price_pence)}
-            </Text>
-          )}
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
         </View>
-      </View>
-      <TouchableOpacity style={styles.bookButton}>
-        <Text style={styles.bookButtonText}>Book</Text>
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
-        showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
       >
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>
-              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}
-            </Text>
-            <Text style={styles.userName}>{user?.email?.split('@')[0] || 'there'}</Text>
+            <Text style={styles.greeting}>Hello, {user?.email?.split('@')[0] || 'there'}</Text>
+            <Text style={styles.subtitle}>Find your next appointment</Text>
           </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.notificationButton}>
-              <Text style={styles.notificationIcon}>🔔</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.notificationBtn}>
+            <Ionicons name="notifications-outline" size={24} color="#0A1626" />
+          </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search services or businesses..."
-            placeholderTextColor={colors.textLight}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-
-        {/* Promo Banner */}
-        <View style={styles.promoBanner}>
-          <View style={styles.promoContent}>
-            <Text style={styles.promoTitle}>Get 20% Off</Text>
-            <Text style={styles.promoSubtitle}>Your first booking</Text>
-            <TouchableOpacity style={styles.promoButton}>
-              <Text style={styles.promoButtonText}>Book Now</Text>
-            </TouchableOpacity>
-          </View>
-          <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=300&q=80' }}
-            style={styles.promoImage}
-          />
-        </View>
+        <TouchableOpacity 
+          style={styles.searchBar}
+          onPress={() => navigation.navigate('Search')}
+        >
+          <Ionicons name="search" size={20} color="#627D98" />
+          <Text style={styles.searchPlaceholder}>Search services or businesses...</Text>
+        </TouchableOpacity>
 
         {/* Categories */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Popular Categories</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={categories}
-            renderItem={renderCategory}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesList}
-          />
+          <Text style={styles.sectionTitle}>Categories</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.categoriesRow}>
+              {categories.map((cat) => (
+                <TouchableOpacity 
+                  key={cat.id} 
+                  style={styles.categoryCard}
+                  onPress={() => navigation.navigate('Search', { category: cat.name })}
+                >
+                  <View style={styles.categoryIcon}>
+                    <Ionicons name={cat.icon} size={24} color={TEAL} />
+                  </View>
+                  <Text style={styles.categoryName}>{cat.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
         </View>
 
-        {/* Top Rated */}
+        {/* Featured Businesses */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Top Rated</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See All</Text>
+            <Text style={styles.sectionTitle}>Near You</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+              <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </View>
-          {businesses.map((business) => (
-            <View key={business.id}>
-              {renderBusiness({ item: business })}
+
+          {businesses.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="business-outline" size={48} color="#E2E8F0" />
+              <Text style={styles.emptyText}>No businesses found</Text>
+              <Text style={styles.emptySubtext}>Check back soon for new listings</Text>
             </View>
-          ))}
+          ) : (
+            businesses.slice(0, 5).map((business) => (
+              <TouchableOpacity
+                key={business.id}
+                style={styles.businessCard}
+                onPress={() => navigation.navigate('BusinessDetail', { businessId: business.id })}
+              >
+                <View style={styles.businessImage}>
+                  <Ionicons name="storefront" size={32} color={TEAL} />
+                </View>
+                <View style={styles.businessInfo}>
+                  <Text style={styles.businessName}>{business.name}</Text>
+                  <Text style={styles.businessTagline}>{business.tagline || 'Professional services'}</Text>
+                  <View style={styles.businessMeta}>
+                    <Ionicons name="star" size={14} color="#F59E0B" />
+                    <Text style={styles.rating}>4.8</Text>
+                    <Text style={styles.reviews}>(124 reviews)</Text>
+                  </View>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#E2E8F0" />
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -211,212 +157,172 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   greeting: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: 2,
-  },
-  userName: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  subtitle: {
+    fontSize: 15,
+    color: '#627D98',
+    marginTop: 4,
   },
-  notificationButton: {
+  notificationBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    ...shadows.sm,
-  },
-  notificationIcon: {
-    fontSize: 20,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#E2E8F0',
   },
-  searchIcon: {
-    fontSize: 18,
-    marginRight: spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    fontSize: typography.sizes.base,
-    color: colors.text,
-  },
-  promoBanner: {
+  searchBar: {
     flexDirection: 'row',
-    backgroundColor: colors.primary,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-    height: 140,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginVertical: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  promoContent: {
-    flex: 1,
-    padding: spacing.lg,
-    justifyContent: 'center',
-  },
-  promoTitle: {
-    fontSize: typography.sizes['2xl'],
-    fontWeight: '700',
-    color: colors.surface,
-    marginBottom: 4,
-  },
-  promoSubtitle: {
-    fontSize: typography.sizes.base,
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: spacing.md,
-  },
-  promoButton: {
-    backgroundColor: colors.surface,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
-  },
-  promoButtonText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  promoImage: {
-    width: 140,
-    height: '100%',
+  searchPlaceholder: {
+    marginLeft: 12,
+    fontSize: 15,
+    color: '#9FB3C8',
   },
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
+    paddingHorizontal: 20,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: typography.sizes.xl,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0A1626',
+    paddingHorizontal: 20,
+    marginBottom: 12,
   },
   seeAll: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
+    fontSize: 14,
+    color: TEAL,
+    fontWeight: '500',
   },
-  categoriesList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
+  categoriesRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    gap: 12,
   },
   categoryCard: {
-    width: 80,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md,
     alignItems: 'center',
-    marginRight: spacing.sm,
-    ...shadows.sm,
+    width: 80,
   },
   categoryIcon: {
-    fontSize: 24,
-    marginBottom: spacing.xs,
+    width: 60,
+    height: 60,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   categoryName: {
-    fontSize: typography.sizes.xs,
+    fontSize: 13,
+    color: '#627D98',
     fontWeight: '500',
-    color: colors.text,
   },
   businessCard: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    ...shadows.md,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   businessImage: {
-    width: 100,
-    height: 100,
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   businessInfo: {
     flex: 1,
-    padding: spacing.md,
-    justifyContent: 'center',
+    marginLeft: 14,
   },
   businessName: {
-    fontSize: typography.sizes.base,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
+    color: '#0A1626',
+    marginBottom: 4,
   },
   businessTagline: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
+    fontSize: 13,
+    color: '#627D98',
+    marginBottom: 6,
   },
   businessMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
-  ratingContainer: {
-    flexDirection: 'row',
+  rating: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginLeft: 4,
+  },
+  reviews: {
+    fontSize: 13,
+    color: '#627D98',
+    marginLeft: 4,
+  },
+  emptyState: {
     alignItems: 'center',
+    paddingVertical: 40,
+    marginHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  ratingStar: {
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#627D98',
+    marginTop: 12,
+  },
+  emptySubtext: {
     fontSize: 14,
-    color: '#F59E0B',
-    marginRight: 2,
-  },
-  ratingText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.text,
-    marginRight: 2,
-  },
-  reviewsText: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-  },
-  priceText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  bookButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
-    justifyContent: 'center',
-  },
-  bookButtonText: {
-    color: colors.surface,
-    fontWeight: '600',
-    fontSize: typography.sizes.sm,
+    color: '#9FB3C8',
+    marginTop: 4,
   },
 });
