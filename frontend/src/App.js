@@ -80,6 +80,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <CookieConsent />
         <Toaster 
           position="top-right" 
           toastOptions={{
