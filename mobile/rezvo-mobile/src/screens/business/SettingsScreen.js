@@ -10,12 +10,14 @@ import {
   ActivityIndicator,
   Linking,
   Switch,
+  TextInput,
+  Modal,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../lib/api';
+import api, { formatPrice } from '../../lib/api';
 
 const TEAL = '#00BFA5';
 
@@ -23,8 +25,21 @@ export default function SettingsScreen({ navigation }) {
   const { user, logout } = useAuth();
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [shortLink, setShortLink] = useState(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  
+  // Modals
+  const [showBusinessDetails, setShowBusinessDetails] = useState(false);
+  const [showWorkingHours, setShowWorkingHours] = useState(false);
+  const [showBookingSettings, setShowBookingSettings] = useState(false);
+  
+  // Edit form
+  const [editName, setEditName] = useState('');
+  const [editTagline, setEditTagline] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchBusiness();
@@ -34,6 +49,12 @@ export default function SettingsScreen({ navigation }) {
     try {
       const response = await api.get('/business');
       setBusiness(response.data);
+      setEditName(response.data?.name || '');
+      setEditTagline(response.data?.tagline || '');
+      setEditDescription(response.data?.description || '');
+      setEditPhone(response.data?.phone || '');
+      setEditEmail(response.data?.email || '');
+      setEditAddress(response.data?.address || '');
     } catch (error) {
       console.error('Error fetching business:', error);
     } finally {
@@ -41,13 +62,24 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
-  const generateShareLink = async () => {
+  const handleSaveBusinessDetails = async () => {
+    setSaving(true);
     try {
-      const response = await api.post('/links/create');
-      setShortLink(response.data);
-      Alert.alert('Success', 'Share link created!');
+      await api.patch('/business', {
+        name: editName,
+        tagline: editTagline,
+        description: editDescription,
+        phone: editPhone,
+        email: editEmail,
+        address: editAddress,
+      });
+      setShowBusinessDetails(false);
+      fetchBusiness();
+      Alert.alert('Success', 'Business details updated');
     } catch (error) {
-      Alert.alert('Error', 'Could not generate share link');
+      Alert.alert('Error', 'Could not save changes');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -57,7 +89,7 @@ export default function SettingsScreen({ navigation }) {
   };
 
   const handleShare = async () => {
-    const link = shortLink?.short_link || `https://rezvo.app/book/${business?.id}`;
+    const link = `https://rezvo.app/book/${business?.id}`;
     try {
       await Share.share({
         message: `Book with ${business?.name || 'us'} on Rezvo: ${link}`,
@@ -79,10 +111,6 @@ export default function SettingsScreen({ navigation }) {
     );
   };
 
-  const openURL = (url) => {
-    Linking.openURL(url).catch(err => console.error('Error opening URL:', err));
-  };
-
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -93,7 +121,7 @@ export default function SettingsScreen({ navigation }) {
     );
   }
 
-  const bookingLink = shortLink?.short_link || `https://rezvo.app/book/${business?.id}`;
+  const bookingLink = `rezvo.app/book/${business?.id?.slice(0, 8) || 'demo'}`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,7 +139,7 @@ export default function SettingsScreen({ navigation }) {
           <Text style={styles.businessEmail}>{user?.email}</Text>
           <TouchableOpacity 
             style={styles.editProfileBtn}
-            onPress={() => Alert.alert('Edit Profile', 'Navigate to edit business profile')}
+            onPress={() => setShowBusinessDetails(true)}
           >
             <Ionicons name="create-outline" size={16} color={TEAL} />
             <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -129,7 +157,7 @@ export default function SettingsScreen({ navigation }) {
             <View style={styles.linkActions}>
               <TouchableOpacity 
                 style={styles.linkBtn}
-                onPress={() => copyToClipboard(bookingLink)}
+                onPress={() => copyToClipboard(`https://${bookingLink}`)}
               >
                 <Ionicons name="copy-outline" size={18} color={TEAL} />
                 <Text style={styles.linkBtnText}>Copy</Text>
@@ -142,12 +170,6 @@ export default function SettingsScreen({ navigation }) {
                 <Text style={styles.shareBtnText}>Share</Text>
               </TouchableOpacity>
             </View>
-            {!shortLink && (
-              <TouchableOpacity style={styles.generateBtn} onPress={generateShareLink}>
-                <Ionicons name="flash" size={18} color={TEAL} />
-                <Text style={styles.generateBtnText}>Generate Short Link</Text>
-              </TouchableOpacity>
-            )}
           </View>
         </View>
 
@@ -157,42 +179,42 @@ export default function SettingsScreen({ navigation }) {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Alert.alert('Business Details', 'Edit your business name, address, and contact info')}
+            onPress={() => setShowBusinessDetails(true)}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="business-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Business Details</Text>
-              <Text style={styles.menuSubtext}>Name, address, contact</Text>
+              <Text style={styles.menuSubtext}>{business?.name || 'Not set'}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Alert.alert('Working Hours', 'Set your business operating hours')}
+            onPress={() => setShowWorkingHours(true)}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="time-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Working Hours</Text>
-              <Text style={styles.menuSubtext}>Set availability</Text>
+              <Text style={styles.menuSubtext}>Mon-Fri, 9:00 - 17:00</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Alert.alert('Booking Settings', 'Configure booking rules and policies')}
+            onPress={() => setShowBookingSettings(true)}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="calendar-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Booking Settings</Text>
-              <Text style={styles.menuSubtext}>Rules & policies</Text>
+              <Text style={styles.menuSubtext}>Auto-confirm enabled</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
@@ -217,36 +239,18 @@ export default function SettingsScreen({ navigation }) {
               thumbColor="#FFFFFF"
             />
           </View>
-
-          <TouchableOpacity 
-            style={styles.menuItem}
-            onPress={() => Alert.alert('Email Preferences', 'Configure email notification settings')}
-          >
-            <View style={styles.menuIcon}>
-              <Ionicons name="mail-outline" size={20} color={TEAL} />
-            </View>
-            <View style={styles.menuContent}>
-              <Text style={styles.menuText}>Email Preferences</Text>
-              <Text style={styles.menuSubtext}>Booking confirmations & reminders</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
-          </TouchableOpacity>
         </View>
 
         {/* Subscription */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Subscription</Text>
-          
           <View style={styles.subscriptionCard}>
             <View style={styles.subscriptionBadge}>
               <Text style={styles.subscriptionBadgeText}>FREE TRIAL</Text>
             </View>
             <Text style={styles.subscriptionTitle}>You're on the Free Plan</Text>
             <Text style={styles.subscriptionDesc}>Upgrade to unlock unlimited bookings, analytics, and more.</Text>
-            <TouchableOpacity 
-              style={styles.upgradeBtn}
-              onPress={() => Alert.alert('Upgrade', 'Subscription management coming soon!')}
-            >
+            <TouchableOpacity style={styles.upgradeBtn}>
               <Ionicons name="rocket" size={18} color="#FFFFFF" />
               <Text style={styles.upgradeBtnText}>Upgrade to Pro - £4.99/mo</Text>
             </TouchableOpacity>
@@ -259,42 +263,39 @@ export default function SettingsScreen({ navigation }) {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Alert.alert('Help Centre', 'Browse FAQs and guides')}
+            onPress={() => Linking.openURL('https://rezvo.app/help')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="help-circle-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Help Centre</Text>
-              <Text style={styles.menuSubtext}>FAQs & guides</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => openURL('mailto:support@rezvo.app')}
+            onPress={() => Linking.openURL('mailto:support@rezvo.app')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="chatbubble-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Contact Support</Text>
-              <Text style={styles.menuSubtext}>support@rezvo.app</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => Alert.alert('Terms & Privacy', 'View our legal documents')}
+            onPress={() => Linking.openURL('https://rezvo.app/privacy')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="document-text-outline" size={20} color={TEAL} />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Terms & Privacy</Text>
-              <Text style={styles.menuSubtext}>Legal information</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
@@ -307,8 +308,240 @@ export default function SettingsScreen({ navigation }) {
         </TouchableOpacity>
 
         <Text style={styles.version}>Rezvo v1.0.0</Text>
-        <View style={{ height: 40 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Business Details Modal */}
+      <Modal
+        visible={showBusinessDetails}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowBusinessDetails(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Business Details</Text>
+              <TouchableOpacity onPress={() => setShowBusinessDetails(false)}>
+                <Ionicons name="close" size={24} color="#627D98" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Business Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Your business name"
+                  placeholderTextColor="#9FB3C8"
+                  value={editName}
+                  onChangeText={setEditName}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Tagline</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="A short description"
+                  placeholderTextColor="#9FB3C8"
+                  value={editTagline}
+                  onChangeText={setEditTagline}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>About</Text>
+                <TextInput
+                  style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+                  placeholder="Tell customers about your business"
+                  placeholderTextColor="#9FB3C8"
+                  value={editDescription}
+                  onChangeText={setEditDescription}
+                  multiline
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Phone</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+44 7123 456789"
+                  placeholderTextColor="#9FB3C8"
+                  value={editPhone}
+                  onChangeText={setEditPhone}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="business@email.com"
+                  placeholderTextColor="#9FB3C8"
+                  value={editEmail}
+                  onChangeText={setEditEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Address</Text>
+                <TextInput
+                  style={[styles.input, { minHeight: 60, textAlignVertical: 'top' }]}
+                  placeholder="123 High Street, London"
+                  placeholderTextColor="#9FB3C8"
+                  value={editAddress}
+                  onChangeText={setEditAddress}
+                  multiline
+                />
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.cancelModalBtn}
+                onPress={() => setShowBusinessDetails(false)}
+              >
+                <Text style={styles.cancelModalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.saveModalBtn, saving && styles.saveBtnDisabled]}
+                onPress={handleSaveBusinessDetails}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.saveModalBtnText}>Save Changes</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Working Hours Modal */}
+      <Modal
+        visible={showWorkingHours}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowWorkingHours(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Working Hours</Text>
+              <TouchableOpacity onPress={() => setShowWorkingHours(false)}>
+                <Ionicons name="close" size={24} color="#627D98" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, index) => (
+                <View key={day} style={styles.dayRow}>
+                  <Text style={styles.dayName}>{day}</Text>
+                  <View style={styles.dayHours}>
+                    {index < 5 ? (
+                      <Text style={styles.hoursText}>09:00 - 17:00</Text>
+                    ) : (
+                      <Text style={styles.closedText}>Closed</Text>
+                    )}
+                  </View>
+                  <TouchableOpacity>
+                    <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.saveModalBtn}
+                onPress={() => setShowWorkingHours(false)}
+              >
+                <Text style={styles.saveModalBtnText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Booking Settings Modal */}
+      <Modal
+        visible={showBookingSettings}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowBookingSettings(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Booking Settings</Text>
+              <TouchableOpacity onPress={() => setShowBookingSettings(false)}>
+                <Ionicons name="close" size={24} color="#627D98" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingLabel}>Auto-confirm bookings</Text>
+                  <Text style={styles.settingDesc}>Automatically confirm new bookings</Text>
+                </View>
+                <Switch
+                  value={true}
+                  trackColor={{ false: '#E2E8F0', true: TEAL }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingLabel}>Allow cancellations</Text>
+                  <Text style={styles.settingDesc}>Let customers cancel bookings</Text>
+                </View>
+                <Switch
+                  value={true}
+                  trackColor={{ false: '#E2E8F0', true: TEAL }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingLabel}>Send reminders</Text>
+                  <Text style={styles.settingDesc}>Email customers 24h before</Text>
+                </View>
+                <Switch
+                  value={true}
+                  trackColor={{ false: '#E2E8F0', true: TEAL }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingLabel}>Buffer time</Text>
+                  <Text style={styles.settingDesc}>Time between appointments</Text>
+                </View>
+                <Text style={styles.settingValue}>15 min</Text>
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.saveModalBtn}
+                onPress={() => setShowBookingSettings(false)}
+              >
+                <Text style={styles.saveModalBtnText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -442,23 +675,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  generateBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    paddingVertical: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: TEAL,
-    borderStyle: 'dashed',
-    gap: 6,
-  },
-  generateBtnText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: TEAL,
-  },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -558,5 +774,134 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#9FB3C8',
     marginTop: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FDFBF7',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '90%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0A1626',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#0A1626',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#0A1626',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    padding: 20,
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+  },
+  cancelModalBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 50,
+    backgroundColor: '#F5F0E8',
+    alignItems: 'center',
+  },
+  cancelModalBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#627D98',
+  },
+  saveModalBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 50,
+    backgroundColor: TEAL,
+    alignItems: 'center',
+  },
+  saveBtnDisabled: {
+    opacity: 0.7,
+  },
+  saveModalBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  dayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F0E8',
+  },
+  dayName: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#0A1626',
+  },
+  dayHours: {
+    marginRight: 12,
+  },
+  hoursText: {
+    fontSize: 14,
+    color: '#627D98',
+  },
+  closedText: {
+    fontSize: 14,
+    color: '#9FB3C8',
+  },
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F0E8',
+  },
+  settingInfo: {
+    flex: 1,
+  },
+  settingLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#0A1626',
+  },
+  settingDesc: {
+    fontSize: 13,
+    color: '#9FB3C8',
+    marginTop: 2,
+  },
+  settingValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: TEAL,
   },
 });
