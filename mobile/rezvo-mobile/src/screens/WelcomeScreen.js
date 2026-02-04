@@ -1,234 +1,199 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Image,
-  Dimensions,
   TouchableOpacity,
-  FlatList,
+  ImageBackground,
+  StatusBar,
+  Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const TEAL = '#00BFA5';
 
-const slides = [
-  {
-    id: '1',
-    title: 'Book Appointments Effortlessly',
-    description: 'Find skilled professionals near you and book appointments with just a few taps.',
-    icon: 'calendar',
-  },
-  {
-    id: '2',
-    title: 'Manage Your Business',
-    description: 'Take bookings, manage your calendar, and grow your client base.',
-    icon: 'briefcase',
-  },
-  {
-    id: '3',
-    title: 'Never Miss a Booking',
-    description: 'Get instant notifications and reminders for all your appointments.',
-    icon: 'notifications',
-  },
-];
-
 export default function WelcomeScreen({ navigation }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef(null);
-
-  const handleNext = () => {
-    if (currentIndex < slides.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
-    } else {
-      navigation.navigate('Login');
-    }
-  };
-
-  const renderSlide = ({ item }) => (
-    <View style={styles.slide}>
-      <View style={styles.iconContainer}>
-        <View style={styles.iconCircle}>
-          <Ionicons name={item.icon} size={64} color="#FFFFFF" />
-        </View>
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-      </View>
-    </View>
-  );
-
-  const renderDots = () => (
-    <View style={styles.dotsContainer}>
-      {slides.map((_, index) => (
-        <View
-          key={index}
-          style={[
-            styles.dot,
-            { 
-              width: currentIndex === index ? 24 : 8,
-              opacity: currentIndex === index ? 1 : 0.4 
-            }
-          ]}
-        />
-      ))}
-    </View>
-  );
-
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.logo}>
-          <Text style={styles.logoText}>R</Text>
-        </View>
-        <Text style={styles.brandName}>Rezvo</Text>
-      </View>
-
-      <FlatList
-        ref={flatListRef}
-        data={slides}
-        renderItem={renderSlide}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(event) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          setCurrentIndex(index);
-        }}
-      />
-
-      <View style={styles.footer}>
-        {renderDots()}
-
-        <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
-          <Text style={styles.primaryButtonText}>
-            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
-          </Text>
-          <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.secondaryButton}
-          onPress={() => navigation.navigate('Login')}
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800' }}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
+          style={styles.gradient}
         >
-          <Text style={styles.secondaryButtonText}>
-            Already have an account? <Text style={styles.linkText}>Log in</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoBox}>
+              <Ionicons name="calendar" size={24} color="#FFFFFF" />
+            </View>
+            <Text style={styles.logoText}>Rezvo</Text>
+          </View>
+
+          {/* Main Content */}
+          <View style={styles.content}>
+            <Text style={styles.title}>Book Your{'\n'}Appointments{'\n'}Effortlessly</Text>
+            <Text style={styles.subtitle}>
+              The simplest way to manage bookings for your business or find services you love
+            </Text>
+
+            {/* CTA Buttons */}
+            <TouchableOpacity
+              style={styles.primaryBtn}
+              onPress={() => navigation.navigate('Signup')}
+            >
+              <Text style={styles.primaryBtnText}>Get Started</Text>
+              <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryBtn}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text style={styles.secondaryBtnText}>Already have an account? Log in</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Bottom Quick Actions */}
+          <View style={styles.quickActions}>
+            <TouchableOpacity 
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="search" size={20} color={TEAL} />
+              </View>
+              <Text style={styles.quickActionText}>Book Services</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Signup')}
+            >
+              <View style={styles.quickActionIcon}>
+                <Ionicons name="business" size={20} color={TEAL} />
+              </View>
+              <Text style={styles.quickActionText}>For Business</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDFBF7',
+    backgroundColor: '#000',
   },
-  header: {
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  gradient: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
+    justifyContent: 'space-between',
+  },
+  logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 20,
     gap: 10,
   },
-  logo: {
+  logoBox: {
     width: 40,
     height: 40,
+    borderRadius: 12,
     backgroundColor: TEAL,
-    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoText: {
-    color: '#FFFFFF',
     fontSize: 24,
     fontWeight: '700',
+    color: '#FFFFFF',
   },
-  brandName: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#0A1626',
-  },
-  slide: {
-    width,
+  content: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  iconContainer: {
-    marginBottom: 40,
-  },
-  iconCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: TEAL,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textContainer: {
-    alignItems: 'center',
+    paddingVertical: 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: 42,
     fontWeight: '700',
-    color: '#0A1626',
-    textAlign: 'center',
+    color: '#FFFFFF',
+    lineHeight: 50,
     marginBottom: 16,
   },
-  description: {
+  subtitle: {
     fontSize: 16,
-    color: '#627D98',
-    textAlign: 'center',
+    color: 'rgba(255,255,255,0.8)',
     lineHeight: 24,
+    marginBottom: 32,
   },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-  },
-  dotsContainer: {
+  primaryBtn: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
-  },
-  dot: {
-    height: 8,
-    borderRadius: 4,
+    justifyContent: 'center',
     backgroundColor: TEAL,
-    marginHorizontal: 4,
-  },
-  primaryButton: {
-    backgroundColor: TEAL,
-    paddingVertical: 16,
+    paddingVertical: 18,
     borderRadius: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: 8,
     marginBottom: 16,
+    shadowColor: TEAL,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  primaryButtonText: {
-    color: '#FFFFFF',
+  primaryBtnText: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#FFFFFF',
   },
-  secondaryButton: {
+  secondaryBtn: {
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
-  secondaryButtonText: {
+  secondaryBtnText: {
     fontSize: 15,
-    color: '#627D98',
+    color: 'rgba(255,255,255,0.9)',
   },
-  linkText: {
-    color: TEAL,
+  quickActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  quickAction: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    gap: 10,
+  },
+  quickActionIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickActionText: {
+    fontSize: 14,
     fontWeight: '600',
+    color: '#0A1626',
   },
 });
