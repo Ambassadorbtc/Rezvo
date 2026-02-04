@@ -423,6 +423,7 @@ function EditFormSection({ editForm, onUpdateForm }) {
 }
 
 function EditServicesSection({ services, editForm, saving, onSave, onCancel, onToggleService, onUpdateForm }) {
+  const serviceIds = editForm.service_ids || [];
   return (
     <div className="space-y-6">
       <div>
@@ -432,7 +433,7 @@ function EditServicesSection({ services, editForm, saving, onSave, onCancel, onT
             <p className="text-sm text-navy-500">No services available</p>
           ) : (
             services.map(function(s) {
-              const isSelected = editForm.service_ids.includes(s.id);
+              const isSelected = serviceIds.includes(s.id);
               return (
                 <button 
                   key={s.id} 
