@@ -437,9 +437,10 @@ const LandingPage = () => {
               <span className="text-lg font-bold font-heading text-navy-900">Rezvo</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-navy-500">
-              <a href="#" className="hover:text-navy-900 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-navy-900 transition-colors">Terms</a>
-              <a href="#" className="hover:text-navy-900 transition-colors">Support</a>
+              <Link to="/privacy" className="hover:text-navy-900 transition-colors">Privacy</Link>
+              <Link to="/terms" className="hover:text-navy-900 transition-colors">Terms</Link>
+              <Link to="/cookies" className="hover:text-navy-900 transition-colors">Cookies</Link>
+              <a href="mailto:support@rezvo.app" className="hover:text-navy-900 transition-colors">Support</a>
             </div>
             <p className="text-sm text-navy-400">
               © 2026 Rezvo. Made in the UK.
