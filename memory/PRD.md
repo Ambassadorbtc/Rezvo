@@ -175,4 +175,11 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ```
 
 ## Last Updated
-February 4, 2026 - Added Team Management, Calendar Redesign, Complete Auth Flow
+February 4, 2026 - Session 2:
+- Completely redesigned web Calendar page (Fresha/Booksy-style with team columns)
+- Updated MobilePreview.jsx with Expo SDK 52 badge and complete auth flow screens
+- Auth flow screens: Sign In, Sign Up, Phone Verify, Security Code, Forgot Password, Mail Confirm, Reset Password, Reset Success
+- Screen Navigator for easy navigation between all app screens
+
+February 4, 2026 - Session 1:
+- Added Team Management, Calendar Redesign, Complete Auth Flow backend APIs
