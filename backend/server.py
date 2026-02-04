@@ -384,6 +384,42 @@ async def get_business(current_user: dict = Depends(get_current_user)):
     
     return business
 
+@api_router.get("/business/stats")
+async def get_business_stats(current_user: dict = Depends(get_current_user)):
+    """Get dashboard stats for business owner"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business_id = user["business_id"]
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Get all bookings for this business
+    all_bookings = await db.bookings.find({"business_id": business_id}, {"_id": 0}).to_list(1000)
+    
+    # Today's bookings
+    today_str = today.strftime("%Y-%m-%d")
+    today_bookings = [b for b in all_bookings if b.get("datetime", "").startswith(today_str)]
+    
+    # Pending bookings
+    pending_bookings = [b for b in all_bookings if b.get("status") == "pending"]
+    
+    # This month's revenue (completed bookings)
+    this_month = today.replace(day=1)
+    month_bookings = [b for b in all_bookings if b.get("status") == "completed" and b.get("datetime", "") >= this_month.isoformat()]
+    revenue = sum(b.get("price_pence", 0) for b in month_bookings)
+    
+    # Total customers (unique emails)
+    unique_customers = len(set(b.get("client_email") for b in all_bookings if b.get("client_email")))
+    
+    return {
+        "today_count": len(today_bookings),
+        "pending_count": len(pending_bookings),
+        "revenue_pence": revenue,
+        "total_bookings": len(all_bookings),
+        "total_customers": unique_customers
+    }
+
 @api_router.patch("/business")
 async def update_business(data: BusinessUpdate, current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"id": current_user["sub"]})
