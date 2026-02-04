@@ -781,6 +781,15 @@ async def get_public_services(business_id: str):
     ).to_list(100)
     return services
 
+@api_router.get("/public/business/{business_id}/team")
+async def get_public_team_members(business_id: str):
+    """Get team members visible on public booking page"""
+    members = await db.team_members.find(
+        {"business_id": business_id, "active": True, "show_on_booking_page": True},
+        {"_id": 0, "id": 1, "name": 1, "avatar_url": 1, "color": 1, "role": 1, "service_ids": 1}
+    ).to_list(100)
+    return members
+
 @api_router.post("/public/bookings")
 async def create_public_booking(data: BookingCreate):
     service = await db.services.find_one({"id": data.service_id})
