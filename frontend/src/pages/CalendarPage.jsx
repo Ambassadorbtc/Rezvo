@@ -58,7 +58,7 @@ const CalendarPage = () => {
       const [bookingsRes, servicesRes, businessRes] = await Promise.all([
         api.get('/bookings'),
         api.get('/services'),
-        api.get('/business/me')
+        api.get('/business')
       ]);
       setBookings(bookingsRes.data || []);
       setServices(servicesRes.data || []);
@@ -153,7 +153,7 @@ const CalendarPage = () => {
 
   const handleSaveAvailability = async () => {
     try {
-      await api.patch('/business/me', { availability });
+      await api.patch('/business', { availability });
       toast.success('Availability saved');
       setShowEditAvailability(false);
     } catch (error) {
@@ -176,7 +176,7 @@ const CalendarPage = () => {
       : [...blockedDates, dateStr];
     
     try {
-      await api.patch('/business/me', { blocked_dates: newBlockedDates });
+      await api.patch('/business', { blocked_dates: newBlockedDates });
       setBlockedDates(newBlockedDates);
       toast.success(isBlocked ? 'Date unblocked' : 'Date blocked');
     } catch (error) {
