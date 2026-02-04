@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import SearchModal from './SearchModal';
 
 const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
