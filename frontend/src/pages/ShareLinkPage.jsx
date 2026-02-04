@@ -57,7 +57,7 @@ const ShareLinkPage = () => {
   const loadData = async () => {
     try {
       const [businessRes, linksRes] = await Promise.all([
-        api.get('/business/me'),
+        api.get('/business'),
         api.get('/links/list').catch(() => ({ data: [] }))
       ]);
       
@@ -88,7 +88,7 @@ const ShareLinkPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.patch('/business/me', formData);
+      await api.patch('/business', formData);
       toast.success('Booking page updated!');
       loadData();
     } catch (error) {
