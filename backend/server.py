@@ -41,6 +41,10 @@ DOJO_WEBHOOK_SECRET = os.environ.get('DOJO_WEBHOOK_SECRET', '')
 # Emergent LLM Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
+# Resend Email Config
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+resend.api_key = os.environ.get('RESEND_API_KEY', '')
+
 app = FastAPI(title="QuickSlot API", version="1.0.0")
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
