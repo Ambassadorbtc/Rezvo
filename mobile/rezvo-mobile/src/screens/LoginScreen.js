@@ -268,15 +268,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
   },
   inputIcon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   input: {
     flex: 1,
-    paddingVertical: 13,
-    fontSize: 15,
+    paddingVertical: 10,
+    fontSize: 14,
     color: '#0A1626',
   },
   forgotPassword: {
