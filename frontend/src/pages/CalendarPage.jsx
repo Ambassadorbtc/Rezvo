@@ -26,6 +26,7 @@ const SERVICE_COLORS = [
 const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState('day'); // day, week, month
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
