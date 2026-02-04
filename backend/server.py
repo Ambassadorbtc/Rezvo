@@ -1452,6 +1452,44 @@ async def resolve_short_link(short_code: str):
     
     return {"business_id": link["business_id"], "business_name": link["business_name"]}
 
+@api_router.get("/links/list")
+async def list_short_links(current_user: dict = Depends(get_current_user)):
+    """Get all short links for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    base_url = os.environ.get('FRONTEND_URL', 'https://rezvo.app')
+    links = await db.short_links.find(
+        {"business_id": user["business_id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(20)
+    
+    # Add full short_link URL to each
+    for link in links:
+        link["short_link"] = f"{base_url}/b/{link['short_code']}"
+    
+    return links
+
+@api_router.get("/links/generate")
+async def generate_link(current_user: dict = Depends(get_current_user)):
+    """Generate booking link for business (legacy endpoint)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business = await db.businesses.find_one({"id": user["business_id"]})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    base_url = os.environ.get('FRONTEND_URL', 'https://rezvo.app')
+    
+    return {
+        "link": f"{base_url}/book/{user['business_id']}",
+        "business_name": business.get("name", "Your Business"),
+        "business_id": user["business_id"]
+    }
+
 # ==================== ERROR LOGGING ====================
 
 error_logs = []
