@@ -142,6 +142,42 @@ class AvailabilityUpdate(BaseModel):
     slots: List[AvailabilitySlot]
     blocked_dates: Optional[List[str]] = None  # ISO date strings
 
+# ==================== TEAM MEMBER MODELS ====================
+
+class TeamMemberCreate(BaseModel):
+    name: str
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    role: str = "staff"  # staff, manager, admin
+    color: str = "#00BFA5"  # For calendar color coding
+    avatar_url: Optional[str] = None
+    service_ids: List[str] = []  # Services this member can perform
+    working_hours: Optional[List[dict]] = None  # Custom working hours
+
+class TeamMemberUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    role: Optional[str] = None
+    color: Optional[str] = None
+    avatar_url: Optional[str] = None
+    service_ids: Optional[List[str]] = None
+    working_hours: Optional[List[dict]] = None
+    active: Optional[bool] = None
+
+# ==================== PASSWORD RESET MODELS ====================
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+class VerifyCodeRequest(BaseModel):
+    email: EmailStr
+    code: str
+
 class BookingCreate(BaseModel):
     service_id: str
     client_name: str
