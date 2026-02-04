@@ -98,8 +98,16 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - SMS notifications (Twilio)
 - Advanced analytics
 
+## Founder Admin Panel
+- [x] Overview tab with platform stats (users, businesses, bookings, errors)
+- [x] Platform health monitoring (API status, DB connection, Email service)
+- [x] Users management tab with search
+- [x] Businesses management tab with search
+- [x] Error Logs viewer
+- **Access:** Any authenticated user with 'admin', 'founder', or 'business' role
+
 ## Known Issues
-- None currently - all features tested and working
+- None currently - all features tested and working (Iteration 5)
 
 ## Technical Stack
 - **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI
@@ -107,5 +115,10 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **Backend:** FastAPI, MongoDB, Pydantic
 - **Integrations:** OpenAI, Resend
 
+## Recent Fixes (Iteration 5)
+- Fixed API endpoint mismatch: Frontend was calling `/business/me` but backend had `/business`
+- Fixed duplicate admin routes that blocked non-admin users from admin panel
+- All 20 backend tests passing, all UI tests passing
+
 ## Last Updated
-February 2025 - Iteration 4 Complete
+February 2026 - Iteration 5 Complete
