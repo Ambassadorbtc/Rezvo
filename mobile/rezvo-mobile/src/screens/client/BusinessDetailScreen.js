@@ -1,450 +1,411 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TouchableOpacity,
-  FlatList,
-  Dimensions,
+  ActivityIndicator,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { formatPrice } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+import api, { formatPrice } from '../../lib/api';
 
-const { width } = Dimensions.get('window');
+const TEAL = '#00BFA5';
 
-const mockServices = [
-  { id: '1', name: 'Classic Haircut', duration_min: 30, price_pence: 2500 },
-  { id: '2', name: 'Haircut & Style', duration_min: 45, price_pence: 3500 },
-  { id: '3', name: 'Hair Colouring', duration_min: 90, price_pence: 7500 },
-  { id: '4', name: 'Beard Trim', duration_min: 20, price_pence: 1500 },
-  { id: '5', name: 'Full Treatment', duration_min: 120, price_pence: 9500 },
-];
+export default function BusinessDetailScreen({ navigation, route }) {
+  const { businessId } = route.params;
+  const [business, setBusiness] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const mockPhotos = [
-  'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80',
-  'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&q=80',
-  'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80',
-  'https://images.unsplash.com/photo-1559599101-f09722fb4948?w=400&q=80',
-];
+  useEffect(() => {
+    fetchBusinessDetails();
+  }, [businessId]);
 
-export default function BusinessDetailScreen({ route, navigation }) {
-  const { business } = route.params;
-  const [selectedService, setSelectedService] = useState(null);
-
-  const handleBookNow = () => {
-    if (selectedService) {
-      navigation.navigate('BookingFlow', { business, service: selectedService });
+  const fetchBusinessDetails = async () => {
+    try {
+      const [bizRes, svcRes] = await Promise.all([
+        api.get(`/public/business/${businessId}`),
+        api.get(`/public/business/${businessId}/services`)
+      ]);
+      setBusiness(bizRes.data);
+      setServices(svcRes.data || []);
+    } catch (error) {
+      console.error('Error fetching business:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Book with ${business?.name} on Rezvo: https://rezvo.app/book/${businessId}`,
+        title: business?.name,
+      });
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!business) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={64} color="#E2E8F0" />
+          <Text style={styles.errorText}>Business not found</Text>
+          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+            <Text style={styles.backBtnText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#0A1626" />
+        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.headerBtn}>
+            <Ionicons name="heart-outline" size={24} color="#0A1626" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerBtn} onPress={handleShare}>
+            <Ionicons name="share-outline" size={24} color="#0A1626" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header Image */}
-        <View style={styles.headerImage}>
-          <Image
-            source={{ uri: business.image || mockPhotos[0] }}
-            style={styles.coverImage}
-          />
-          <View style={styles.headerOverlay} />
-          <SafeAreaView style={styles.headerButtons}>
-            <TouchableOpacity
-              style={styles.headerButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.headerButtonIcon}>←</Text>
-            </TouchableOpacity>
-            <View style={styles.headerRight}>
-              <TouchableOpacity style={styles.headerButton}>
-                <Text style={styles.headerButtonIcon}>♡</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.headerButton}>
-                <Text style={styles.headerButtonIcon}>↗</Text>
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
-        </View>
-
         {/* Business Info */}
-        <View style={styles.infoSection}>
-          <View style={styles.infoHeader}>
-            <View style={styles.infoMain}>
-              <Text style={styles.businessName}>{business.name}</Text>
-              <Text style={styles.businessTagline}>{business.tagline}</Text>
-            </View>
-            <View style={styles.ratingBadge}>
-              <Text style={styles.ratingStar}>★</Text>
-              <Text style={styles.ratingText}>{business.rating || '4.9'}</Text>
-              <Text style={styles.reviewCount}>({business.reviews || 127})</Text>
-            </View>
+        <View style={styles.businessCard}>
+          <View style={styles.businessLogo}>
+            <Ionicons name="storefront" size={48} color={TEAL} />
+          </View>
+          <Text style={styles.businessName}>{business.name}</Text>
+          <Text style={styles.businessTagline}>{business.tagline || 'Professional services'}</Text>
+          
+          <View style={styles.ratingRow}>
+            <Ionicons name="star" size={18} color="#F59E0B" />
+            <Text style={styles.ratingText}>4.8</Text>
+            <Text style={styles.reviewCount}>(124 reviews)</Text>
           </View>
 
-          {/* Quick Actions */}
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.quickAction}>
-              <View style={styles.quickActionIcon}>
-                <Text style={styles.quickActionEmoji}>🌐</Text>
-              </View>
-              <Text style={styles.quickActionText}>Website</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction}>
-              <View style={styles.quickActionIcon}>
-                <Text style={styles.quickActionEmoji}>💬</Text>
-              </View>
-              <Text style={styles.quickActionText}>Message</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction}>
-              <View style={styles.quickActionIcon}>
-                <Text style={styles.quickActionEmoji}>📞</Text>
-              </View>
-              <Text style={styles.quickActionText}>Call</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction}>
-              <View style={styles.quickActionIcon}>
-                <Text style={styles.quickActionEmoji}>📍</Text>
-              </View>
-              <Text style={styles.quickActionText}>Direction</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction}>
-              <View style={styles.quickActionIcon}>
-                <Text style={styles.quickActionEmoji}>↗</Text>
-              </View>
-              <Text style={styles.quickActionText}>Share</Text>
-            </TouchableOpacity>
+          <View style={styles.infoRow}>
+            <Ionicons name="location-outline" size={18} color="#627D98" />
+            <Text style={styles.infoText}>{business.address || 'Location not specified'}</Text>
           </View>
-        </View>
-
-        {/* Photo Gallery */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Photo Gallery</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={mockPhotos}
-            renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.galleryImage} />
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.galleryList}
-          />
         </View>
 
         {/* Services */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Services</Text>
-          </View>
-          <View style={styles.servicesList}>
-            {mockServices.map((service) => (
+          <Text style={styles.sectionTitle}>Services</Text>
+          
+          {services.length === 0 ? (
+            <View style={styles.emptyServices}>
+              <Text style={styles.emptyText}>No services available</Text>
+            </View>
+          ) : (
+            services.map((service) => (
               <TouchableOpacity
                 key={service.id}
-                style={[
-                  styles.serviceCard,
-                  selectedService?.id === service.id && styles.serviceCardSelected,
-                ]}
-                onPress={() => setSelectedService(service)}
+                style={styles.serviceCard}
+                onPress={() => navigation.navigate('BookingFlow', { 
+                  businessId, 
+                  serviceId: service.id,
+                  serviceName: service.name,
+                  price: service.price_pence,
+                  duration: service.duration_min
+                })}
               >
-                <View style={styles.serviceCheckbox}>
-                  {selectedService?.id === service.id && (
-                    <Text style={styles.checkIcon}>✓</Text>
-                  )}
-                </View>
                 <View style={styles.serviceInfo}>
                   <Text style={styles.serviceName}>{service.name}</Text>
-                  <Text style={styles.serviceDuration}>{service.duration_min} min</Text>
+                  <Text style={styles.serviceDesc}>{service.description || `${service.duration_min} minutes`}</Text>
+                  <View style={styles.serviceMeta}>
+                    <Text style={styles.servicePrice}>{formatPrice(service.price_pence)}</Text>
+                    <View style={styles.dot} />
+                    <Ionicons name="time-outline" size={14} color="#627D98" />
+                    <Text style={styles.serviceDuration}>{service.duration_min} min</Text>
+                  </View>
                 </View>
-                <Text style={styles.servicePrice}>{formatPrice(service.price_pence)}</Text>
+                <TouchableOpacity 
+                  style={styles.bookBtn}
+                  onPress={() => navigation.navigate('BookingFlow', { 
+                    businessId, 
+                    serviceId: service.id,
+                    serviceName: service.name,
+                    price: service.price_pence,
+                    duration: service.duration_min
+                  })}
+                >
+                  <Text style={styles.bookBtnText}>Book</Text>
+                </TouchableOpacity>
               </TouchableOpacity>
-            ))}
-          </View>
+            ))
+          )}
         </View>
 
         {/* About */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          <Text style={styles.aboutText}>
-            Built with a minimal and stylish layout, the experience feels premium, 
-            user-friendly and professional. We pride ourselves on delivering 
-            exceptional service to all our clients.
-          </Text>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutText}>
+              {business.description || 'This business provides professional services. Contact them for more information about their offerings.'}
+            </Text>
+          </View>
         </View>
 
-        {/* Spacer for bottom button */}
-        <View style={{ height: 100 }} />
+        {/* Contact */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Contact</Text>
+          <View style={styles.contactCard}>
+            {business.phone && (
+              <TouchableOpacity style={styles.contactRow}>
+                <Ionicons name="call-outline" size={20} color={TEAL} />
+                <Text style={styles.contactText}>{business.phone}</Text>
+              </TouchableOpacity>
+            )}
+            {business.instagram && (
+              <TouchableOpacity style={styles.contactRow}>
+                <Ionicons name="logo-instagram" size={20} color={TEAL} />
+                <Text style={styles.contactText}>@{business.instagram}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        <View style={{ height: 40 }} />
       </ScrollView>
-
-      {/* Book Now Button */}
-      <View style={styles.bottomBar}>
-        <View style={styles.priceInfo}>
-          {selectedService && (
-            <>
-              <Text style={styles.selectedServiceName}>{selectedService.name}</Text>
-              <Text style={styles.selectedServicePrice}>
-                {formatPrice(selectedService.price_pence)}
-              </Text>
-            </>
-          )}
-        </View>
-        <TouchableOpacity
-          style={[styles.bookButton, !selectedService && styles.bookButtonDisabled]}
-          onPress={handleBookNow}
-          disabled={!selectedService}
-        >
-          <Text style={styles.bookButtonText}>Book Now</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
-  headerImage: {
-    height: 280,
-    position: 'relative',
-  },
-  coverImage: {
-    width: '100%',
-    height: '100%',
-  },
-  headerOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-  headerButtons: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerButtonIcon: {
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
     fontSize: 18,
-    color: colors.text,
+    color: '#627D98',
+    marginTop: 16,
   },
-  infoSection: {
-    backgroundColor: colors.surface,
-    marginTop: -24,
-    borderTopLeftRadius: borderRadius.xl,
-    borderTopRightRadius: borderRadius.xl,
-    padding: spacing.xl,
+  backBtn: {
+    marginTop: 20,
+    backgroundColor: TEAL,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
   },
-  infoHeader: {
+  backBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.lg,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  infoMain: {
-    flex: 1,
-    marginRight: spacing.md,
+  headerBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  businessCard: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  businessLogo: {
+    width: 100,
+    height: 100,
+    borderRadius: 25,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   businessName: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
     marginBottom: 4,
   },
   businessTagline: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+    fontSize: 15,
+    color: '#627D98',
+    marginBottom: 12,
   },
-  ratingBadge: {
+  ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceAlt,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-  },
-  ratingStar: {
-    fontSize: 16,
-    color: '#F59E0B',
-    marginRight: 4,
+    marginBottom: 12,
   },
   ratingText: {
-    fontSize: typography.sizes.base,
-    fontWeight: '700',
-    color: colors.text,
-    marginRight: 4,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginLeft: 4,
   },
   reviewCount: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
+    fontSize: 14,
+    color: '#627D98',
+    marginLeft: 4,
   },
-  quickActions: {
+  infoRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  quickAction: {
     alignItems: 'center',
+    gap: 6,
   },
-  quickActionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.surfaceAlt,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  quickActionEmoji: {
-    fontSize: 20,
-  },
-  quickActionText: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-    fontWeight: '500',
+  infoText: {
+    fontSize: 14,
+    color: '#627D98',
   },
   section: {
-    padding: spacing.xl,
-    backgroundColor: colors.surface,
-    marginTop: spacing.sm,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: 20,
+    paddingHorizontal: 20,
   },
   sectionTitle: {
-    fontSize: typography.sizes.lg,
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
+    marginBottom: 12,
   },
-  seeAll: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
+  emptyServices: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
   },
-  galleryList: {
-    gap: spacing.sm,
-  },
-  galleryImage: {
-    width: 120,
-    height: 120,
-    borderRadius: borderRadius.lg,
-    marginRight: spacing.sm,
-  },
-  servicesList: {
-    gap: spacing.sm,
+  emptyText: {
+    color: '#627D98',
   },
   serviceCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.border,
-  },
-  serviceCardSelected: {
-    borderColor: colors.primary,
-    backgroundColor: `${colors.primary}08`,
-  },
-  serviceCheckbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.border,
-    marginRight: spacing.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-  },
-  checkIcon: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '700',
+    borderColor: '#E2E8F0',
   },
   serviceInfo: {
     flex: 1,
   },
   serviceName: {
-    fontSize: typography.sizes.base,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  serviceDuration: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-  },
-  servicePrice: {
-    fontSize: typography.sizes.base,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.primary,
+    color: '#0A1626',
+    marginBottom: 4,
   },
-  aboutText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
-    lineHeight: 24,
+  serviceDesc: {
+    fontSize: 13,
+    color: '#627D98',
+    marginBottom: 8,
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+  serviceMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
-    paddingBottom: spacing.xl + 10,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    ...shadows.lg,
   },
-  priceInfo: {
-    flex: 1,
-  },
-  selectedServiceName: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: 2,
-  },
-  selectedServicePrice: {
-    fontSize: typography.sizes.xl,
+  servicePrice: {
+    fontSize: 15,
     fontWeight: '700',
-    color: colors.text,
+    color: TEAL,
   },
-  bookButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.full,
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E2E8F0',
+    marginHorizontal: 8,
   },
-  bookButtonDisabled: {
-    backgroundColor: colors.textLight,
+  serviceDuration: {
+    fontSize: 13,
+    color: '#627D98',
+    marginLeft: 4,
   },
-  bookButtonText: {
-    fontSize: typography.sizes.base,
+  bookBtn: {
+    backgroundColor: TEAL,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  bookBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.surface,
+  },
+  aboutCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  aboutText: {
+    fontSize: 14,
+    color: '#627D98',
+    lineHeight: 22,
+  },
+  contactCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+  },
+  contactText: {
+    fontSize: 15,
+    color: '#0A1626',
   },
 });
