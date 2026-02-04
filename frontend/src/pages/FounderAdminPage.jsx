@@ -453,23 +453,7 @@ const FounderAdminPage = () => {
                     <CardDescription>Most booked services</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-52">
-                      {analytics?.top_services && analytics.top_services.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={analytics.top_services} layout="vertical" margin={{ left: 0, right: 10 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
-                            <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
-                            <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={80} />
-                            <Tooltip />
-                            <Bar dataKey="bookings" fill="#00BFA5" radius={[0, 4, 4, 0]} />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-full flex items-center justify-center">
-                          <p className="text-gray-400">No bookings yet</p>
-                        </div>
-                      )}
-                    </div>
+                    <TopServicesChart data={analytics?.top_services} />
                   </CardContent>
                 </Card>
 
