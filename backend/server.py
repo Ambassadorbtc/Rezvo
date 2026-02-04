@@ -505,6 +505,20 @@ async def cancel_booking(booking_id: str, current_user: dict = Depends(get_curre
     )
     return {"status": "cancelled"}
 
+@api_router.get("/bookings/my")
+async def get_my_bookings(current_user: dict = Depends(get_current_user)):
+    """Get bookings for the logged in client"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user:
+        return []
+    
+    # Find bookings by client email
+    bookings = await db.bookings.find(
+        {"client_email": user["email"]},
+        {"_id": 0}
+    ).sort("datetime", -1).to_list(100)
+    return bookings
+
 # ==================== PUBLIC BOOKING ROUTES ====================
 
 @api_router.get("/public/business/{business_id}")
