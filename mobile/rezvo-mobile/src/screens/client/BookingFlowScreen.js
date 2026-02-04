@@ -5,269 +5,295 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  TextInput,
   Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import api, { formatPrice, formatDate } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+import api, { formatPrice } from '../../lib/api';
 
-// Generate time slots
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 9; hour < 18; hour++) {
-    slots.push(`${hour.toString().padStart(2, '0')}:00`);
-    slots.push(`${hour.toString().padStart(2, '0')}:30`);
-  }
-  return slots;
-};
+const TEAL = '#00BFA5';
 
-// Generate dates for next 14 days
-const generateDates = () => {
-  const dates = [];
-  for (let i = 0; i < 14; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    dates.push(date);
-  }
-  return dates;
-};
-
-export default function BookingFlowScreen({ route, navigation }) {
-  const { business, service } = route.params;
+export default function BookingFlowScreen({ navigation, route }) {
+  const { businessId, serviceId, serviceName, price, duration } = route.params;
+  
+  const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [step, setStep] = useState(1); // 1: Date, 2: Time, 3: Confirm
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const dates = generateDates();
-  const timeSlots = generateTimeSlots();
+  // Generate next 7 days
+  const dates = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    return date;
+  });
+
+  // Generate time slots
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+  ];
+
+  const formatDateDisplay = (date) => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return {
+      day: days[date.getDay()],
+      date: date.getDate(),
+      month: months[date.getMonth()]
+    };
+  };
 
   const handleConfirmBooking = async () => {
-    if (!selectedDate || !selectedTime) {
-      Alert.alert('Error', 'Please select a date and time');
+    if (!clientName || !clientEmail || !clientPhone) {
+      Alert.alert('Error', 'Please fill in all contact details');
       return;
     }
 
     setLoading(true);
     try {
-      const [hours, minutes] = selectedTime.split(':');
       const bookingDate = new Date(selectedDate);
-      bookingDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const [hours, mins] = selectedTime.split(':');
+      bookingDate.setHours(parseInt(hours), parseInt(mins), 0, 0);
 
-      const response = await api.post('/bookings', {
-        service_id: service.id,
+      const response = await api.post('/public/bookings', {
+        service_id: serviceId,
+        client_name: clientName,
+        client_email: clientEmail,
+        client_phone: clientPhone,
         datetime_iso: bookingDate.toISOString(),
-        client_name: 'Mobile User', // Would come from auth
-        client_email: 'user@example.com',
+        notes: notes
       });
 
       Alert.alert(
         'Booking Confirmed!',
-        `Your appointment for ${service.name} on ${formatDate(bookingDate.toISOString())} at ${selectedTime} has been confirmed.`,
-        [
-          {
-            text: 'View Bookings',
-            onPress: () => navigation.navigate('ClientTabs', { screen: 'Bookings' }),
-          },
-        ]
+        'You will receive a confirmation email shortly.',
+        [{ text: 'OK', onPress: () => navigation.popToTop() }]
       );
     } catch (error) {
-      // For demo, show success anyway
-      const bookingDate = new Date(selectedDate);
-      const [hours, minutes] = selectedTime.split(':');
-      bookingDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      
-      Alert.alert(
-        'Booking Confirmed!',
-        `Your appointment for ${service.name} on ${formatDate(bookingDate.toISOString())} at ${selectedTime} has been confirmed.`,
-        [
-          {
-            text: 'View Bookings',
-            onPress: () => navigation.navigate('ClientTabs', { screen: 'Bookings' }),
-          },
-        ]
-      );
+      Alert.alert('Error', error.response?.data?.detail || 'Could not complete booking');
     } finally {
       setLoading(false);
     }
   };
 
-  const renderDateSelection = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Select Date</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.datesList}
-      >
-        {dates.map((date, index) => {
-          const isSelected = selectedDate?.toDateString() === date.toDateString();
-          const isToday = date.toDateString() === new Date().toDateString();
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[styles.dateCard, isSelected && styles.dateCardSelected]}
-              onPress={() => setSelectedDate(date)}
-            >
-              <Text style={[styles.dateDay, isSelected && styles.dateDaySelected]}>
-                {date.toLocaleDateString('en-GB', { weekday: 'short' })}
-              </Text>
-              <Text style={[styles.dateNum, isSelected && styles.dateNumSelected]}>
-                {date.getDate()}
-              </Text>
-              {isToday && <View style={styles.todayDot} />}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-    </View>
-  );
-
-  const renderTimeSelection = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Select Time</Text>
-      <View style={styles.timeSlotsGrid}>
-        {timeSlots.map((time, index) => {
-          const isSelected = selectedTime === time;
-          // Simulate some unavailable slots
-          const isUnavailable = Math.random() > 0.8;
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.timeSlot,
-                isSelected && styles.timeSlotSelected,
-                isUnavailable && styles.timeSlotUnavailable,
-              ]}
-              onPress={() => !isUnavailable && setSelectedTime(time)}
-              disabled={isUnavailable}
-            >
-              <Text
-                style={[
-                  styles.timeSlotText,
-                  isSelected && styles.timeSlotTextSelected,
-                  isUnavailable && styles.timeSlotTextUnavailable,
-                ]}
-              >
-                {time}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  );
-
-  const renderSummary = () => {
-    const bookingDate = selectedDate ? new Date(selectedDate) : null;
-    if (bookingDate && selectedTime) {
-      const [hours, minutes] = selectedTime.split(':');
-      bookingDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    }
-
-    return (
-      <View style={styles.summaryCard}>
-        <Text style={styles.summaryTitle}>Booking Summary</Text>
-        
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Service</Text>
-          <Text style={styles.summaryValue}>{service.name}</Text>
-        </View>
-        
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Duration</Text>
-          <Text style={styles.summaryValue}>{service.duration_min} minutes</Text>
-        </View>
-        
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Date & Time</Text>
-          <Text style={styles.summaryValue}>
-            {bookingDate ? `${formatDate(bookingDate.toISOString())} at ${selectedTime}` : 'Not selected'}
-          </Text>
-        </View>
-        
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Business</Text>
-          <Text style={styles.summaryValue}>{business.name}</Text>
-        </View>
-        
-        <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>{formatPrice(service.price_pence)}</Text>
-        </View>
-      </View>
-    );
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity style={styles.backBtn} onPress={() => {
+          if (step > 1) setStep(step - 1);
+          else navigation.goBack();
+        }}>
+          <Ionicons name="arrow-back" size={24} color="#0A1626" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Book Appointment</Text>
-        <View style={styles.placeholder} />
+        <View style={{ width: 44 }} />
       </View>
 
-      {/* Progress Steps */}
-      <View style={styles.progressContainer}>
+      {/* Progress */}
+      <View style={styles.progress}>
         {[1, 2, 3].map((s) => (
-          <View key={s} style={styles.progressStep}>
-            <View
-              style={[
-                styles.progressDot,
-                step >= s && styles.progressDotActive,
-              ]}
-            >
-              <Text style={[styles.progressNum, step >= s && styles.progressNumActive]}>
-                {s}
-              </Text>
-            </View>
-            <Text style={[styles.progressLabel, step >= s && styles.progressLabelActive]}>
-              {s === 1 ? 'Date' : s === 2 ? 'Time' : 'Confirm'}
-            </Text>
-          </View>
+          <View key={s} style={[styles.progressDot, s <= step && styles.progressDotActive]} />
         ))}
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Service Info */}
-        <View style={styles.serviceInfo}>
-          <Text style={styles.serviceName}>{service.name}</Text>
-          <Text style={styles.serviceDetails}>
-            {service.duration_min} min • {formatPrice(service.price_pence)}
-          </Text>
+        <View style={styles.serviceCard}>
+          <View style={styles.serviceIcon}>
+            <Ionicons name="cut" size={24} color={TEAL} />
+          </View>
+          <View style={styles.serviceInfo}>
+            <Text style={styles.serviceName}>{serviceName}</Text>
+            <Text style={styles.serviceDetails}>{duration} min • {formatPrice(price)}</Text>
+          </View>
         </View>
 
-        {renderDateSelection()}
-        {selectedDate && renderTimeSelection()}
-        {selectedDate && selectedTime && renderSummary()}
+        {/* Step 1: Select Date */}
+        {step === 1 && (
+          <View style={styles.stepContent}>
+            <Text style={styles.stepTitle}>Select Date</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={styles.datesRow}>
+                {dates.map((date, index) => {
+                  const d = formatDateDisplay(date);
+                  const isSelected = selectedDate?.toDateString() === date.toDateString();
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[styles.dateCard, isSelected && styles.dateCardSelected]}
+                      onPress={() => setSelectedDate(date)}
+                    >
+                      <Text style={[styles.dateDay, isSelected && styles.dateTextSelected]}>{d.day}</Text>
+                      <Text style={[styles.dateNum, isSelected && styles.dateTextSelected]}>{d.date}</Text>
+                      <Text style={[styles.dateMonth, isSelected && styles.dateTextSelected]}>{d.month}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
 
-        <View style={{ height: 100 }} />
+            <Text style={[styles.stepTitle, { marginTop: 24 }]}>Select Time</Text>
+            <View style={styles.timesGrid}>
+              {timeSlots.map((time) => (
+                <TouchableOpacity
+                  key={time}
+                  style={[styles.timeSlot, selectedTime === time && styles.timeSlotSelected]}
+                  onPress={() => setSelectedTime(time)}
+                >
+                  <Text style={[styles.timeText, selectedTime === time && styles.timeTextSelected]}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.continueBtn, (!selectedDate || !selectedTime) && styles.continueBtnDisabled]}
+              disabled={!selectedDate || !selectedTime}
+              onPress={() => setStep(2)}
+            >
+              <Text style={styles.continueBtnText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Step 2: Contact Details */}
+        {step === 2 && (
+          <View style={styles.stepContent}>
+            <Text style={styles.stepTitle}>Your Details</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Full Name</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="person-outline" size={20} color="#627D98" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your name"
+                  placeholderTextColor="#9FB3C8"
+                  value={clientName}
+                  onChangeText={setClientName}
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="mail-outline" size={20} color="#627D98" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#9FB3C8"
+                  value={clientEmail}
+                  onChangeText={setClientEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Phone</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="call-outline" size={20} color="#627D98" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your phone"
+                  placeholderTextColor="#9FB3C8"
+                  value={clientPhone}
+                  onChangeText={setClientPhone}
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Notes (optional)</Text>
+              <View style={[styles.inputContainer, { alignItems: 'flex-start', paddingVertical: 12 }]}>
+                <TextInput
+                  style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+                  placeholder="Any special requests..."
+                  placeholderTextColor="#9FB3C8"
+                  value={notes}
+                  onChangeText={setNotes}
+                  multiline
+                />
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.continueBtn, (!clientName || !clientEmail || !clientPhone) && styles.continueBtnDisabled]}
+              disabled={!clientName || !clientEmail || !clientPhone}
+              onPress={() => setStep(3)}
+            >
+              <Text style={styles.continueBtnText}>Review Booking</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Step 3: Confirm */}
+        {step === 3 && (
+          <View style={styles.stepContent}>
+            <Text style={styles.stepTitle}>Confirm Booking</Text>
+            
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Service</Text>
+                <Text style={styles.summaryValue}>{serviceName}</Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Date</Text>
+                <Text style={styles.summaryValue}>
+                  {selectedDate?.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
+                </Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Time</Text>
+                <Text style={styles.summaryValue}>{selectedTime}</Text>
+              </View>
+              <View style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>Duration</Text>
+                <Text style={styles.summaryValue}>{duration} minutes</Text>
+              </View>
+              <View style={[styles.summaryRow, styles.summaryTotal]}>
+                <Text style={styles.totalLabel}>Total</Text>
+                <Text style={styles.totalValue}>{formatPrice(price)}</Text>
+              </View>
+            </View>
+
+            <View style={styles.contactSummary}>
+              <Text style={styles.contactSummaryTitle}>Contact Details</Text>
+              <Text style={styles.contactSummaryText}>{clientName}</Text>
+              <Text style={styles.contactSummaryText}>{clientEmail}</Text>
+              <Text style={styles.contactSummaryText}>{clientPhone}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.confirmBtn, loading && styles.confirmBtnDisabled]}
+              onPress={handleConfirmBooking}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark-circle" size={20} color="#FFFFFF" />
+                  <Text style={styles.confirmBtnText}>Confirm Booking</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
-
-      {/* Bottom Button */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={[
-            styles.confirmButton,
-            (!selectedDate || !selectedTime) && styles.confirmButtonDisabled,
-          ]}
-          onPress={handleConfirmBooking}
-          disabled={!selectedDate || !selectedTime || loading}
-        >
-          {loading ? (
-            <ActivityIndicator color={colors.surface} />
-          ) : (
-            <Text style={styles.confirmButtonText}>Confirm Booking</Text>
-          )}
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -275,246 +301,260 @@ export default function BookingFlowScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  backButton: {
-    width: 40,
-    height: 40,
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  backIcon: {
-    fontSize: 24,
-    color: colors.text,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   headerTitle: {
-    fontSize: typography.sizes.lg,
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
   },
-  placeholder: {
-    width: 40,
-  },
-  progressContainer: {
+  progress: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
-    gap: spacing.xl,
-  },
-  progressStep: {
-    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
   },
   progressDot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.surfaceAlt,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#E2E8F0',
   },
   progressDotActive: {
-    backgroundColor: colors.primary,
+    width: 24,
+    backgroundColor: TEAL,
   },
-  progressNum: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.textMuted,
+  serviceCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  progressNumActive: {
-    color: colors.surface,
-  },
-  progressLabel: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-  },
-  progressLabelActive: {
-    color: colors.primary,
-    fontWeight: '500',
-  },
-  content: {
-    flex: 1,
+  serviceIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   serviceInfo: {
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-    ...shadows.sm,
+    marginLeft: 12,
   },
   serviceName: {
-    fontSize: typography.sizes.lg,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
+    color: '#0A1626',
   },
   serviceDetails: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+    fontSize: 14,
+    color: '#627D98',
+    marginTop: 2,
   },
-  section: {
-    marginBottom: spacing.lg,
+  stepContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
-  sectionTitle: {
-    fontSize: typography.sizes.base,
+  stepTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.xl,
+    color: '#0A1626',
+    marginBottom: 16,
   },
-  datesList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
+  datesRow: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingRight: 20,
   },
   dateCard: {
-    width: 64,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
+    width: 70,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    marginRight: spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#E2E8F0',
   },
   dateCardSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: TEAL,
+    borderColor: TEAL,
   },
   dateDay: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-    fontWeight: '500',
+    fontSize: 13,
+    color: '#627D98',
     marginBottom: 4,
   },
-  dateDaySelected: {
-    color: 'rgba(255,255,255,0.8)',
-  },
   dateNum: {
-    fontSize: typography.sizes.xl,
+    fontSize: 20,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
   },
-  dateNumSelected: {
-    color: colors.surface,
-  },
-  todayDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.primary,
+  dateMonth: {
+    fontSize: 13,
+    color: '#627D98',
     marginTop: 4,
   },
-  timeSlotsGrid: {
+  dateTextSelected: {
+    color: '#FFFFFF',
+  },
+  timesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
+    gap: 10,
   },
   timeSlot: {
-    width: '22%',
-    paddingVertical: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#E2E8F0',
   },
   timeSlotSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: TEAL,
+    borderColor: TEAL,
   },
-  timeSlotUnavailable: {
-    backgroundColor: colors.surfaceAlt,
-    borderColor: colors.surfaceAlt,
-  },
-  timeSlotText: {
-    fontSize: typography.sizes.sm,
+  timeText: {
+    fontSize: 14,
     fontWeight: '500',
-    color: colors.text,
+    color: '#0A1626',
   },
-  timeSlotTextSelected: {
-    color: colors.surface,
+  timeTextSelected: {
+    color: '#FFFFFF',
   },
-  timeSlotTextUnavailable: {
-    color: colors.textLight,
-    textDecorationLine: 'line-through',
+  continueBtn: {
+    backgroundColor: TEAL,
+    paddingVertical: 16,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  continueBtnDisabled: {
+    opacity: 0.5,
+  },
+  continueBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#0A1626',
+    marginBottom: 8,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 16,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
+    paddingLeft: 12,
+    fontSize: 16,
+    color: '#0A1626',
   },
   summaryCard: {
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    ...shadows.md,
-  },
-  summaryTitle: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 16,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: '#F1F5F9',
   },
   summaryLabel: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+    fontSize: 14,
+    color: '#627D98',
   },
   summaryValue: {
-    fontSize: typography.sizes.base,
+    fontSize: 14,
     fontWeight: '500',
-    color: colors.text,
+    color: '#0A1626',
   },
-  totalRow: {
-    marginTop: spacing.sm,
+  summaryTotal: {
     borderBottomWidth: 0,
-    paddingTop: spacing.md,
+    paddingTop: 16,
+    marginTop: 8,
   },
   totalLabel: {
-    fontSize: typography.sizes.lg,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
   },
   totalValue: {
-    fontSize: typography.sizes.xl,
+    fontSize: 20,
     fontWeight: '700',
-    color: colors.primary,
+    color: TEAL,
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
-    paddingBottom: spacing.xl + 10,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+  contactSummary: {
+    backgroundColor: '#F5F0E8',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
   },
-  confirmButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.full,
-    alignItems: 'center',
-  },
-  confirmButtonDisabled: {
-    backgroundColor: colors.textLight,
-  },
-  confirmButtonText: {
-    fontSize: typography.sizes.lg,
+  contactSummaryTitle: {
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.surface,
+    color: '#0A1626',
+    marginBottom: 8,
+  },
+  contactSummaryText: {
+    fontSize: 14,
+    color: '#627D98',
+    marginBottom: 2,
+  },
+  confirmBtn: {
+    backgroundColor: TEAL,
+    paddingVertical: 16,
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  confirmBtnDisabled: {
+    opacity: 0.7,
+  },
+  confirmBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
