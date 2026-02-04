@@ -334,9 +334,22 @@ async def update_availability(data: AvailabilityUpdate, current_user: dict = Dep
     if not user or not user.get("business_id"):
         raise HTTPException(status_code=404, detail="Business not found")
     
-    slots = [slot.model_dump() for slot in data.slots]
+    # Convert minutes to time format for storage
+    converted_slots = []
+    for slot in data.slots:
+        start_hours = slot.start_min // 60
+        start_mins = slot.start_min % 60
+        end_hours = slot.end_min // 60
+        end_mins = slot.end_min % 60
+        converted_slots.append({
+            "day": slot.day,
+            "start": f"{start_hours:02d}:{start_mins:02d}",
+            "end": f"{end_hours:02d}:{end_mins:02d}",
+            "enabled": True
+        })
+    
     update_data = {
-        "availability": slots,
+        "availability": converted_slots,
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     if data.blocked_dates is not None:
