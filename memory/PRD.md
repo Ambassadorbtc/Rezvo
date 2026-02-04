@@ -20,7 +20,7 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Landing page with modern design and CTA
 - [x] User authentication (JWT-based)
 - [x] Business dashboard with stats
-- [x] Calendar view for availability
+- [x] Calendar view with team member columns (Fresha-style)
 - [x] Services management (CRUD)
 - [x] Bookings management with status updates
 - [x] Analytics dashboard with charts (Recharts)
@@ -31,8 +31,9 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Cookie consent popup (GDPR compliant)
 - [x] Onboarding wizard UI (4 steps)
 - [x] Founder Admin Panel with TailAdmin-style design
+- [ ] Global search (DISABLED - babel plugin conflict)
 
-### Mobile Application (React Native/Expo) - UPDATED FEB 2026
+### Mobile Application (React Native/Expo)
 - [x] Welcome screen with onboarding slides
 - [x] Login/Signup screens with user type toggle
 - [x] **Complete Auth Flow:**
@@ -49,40 +50,23 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
   - Profile screen
 - [x] **Business Flow:**
   - Dashboard with stats and quick actions
-  - **Enhanced Calendar** - Fresha/Booksy-style with:
-    - Team member columns view
-    - Color-coded bookings by service
-    - Week strip navigation
-    - Add booking modal with team member assignment
-    - Date navigation controls
+  - Calendar with team member columns view
   - Bookings management with status actions
   - Services management with add/edit modal
-  - **Team Management** - Add/edit team members:
-    - Color assignment for calendar
-    - Role selection (staff/manager/admin)
-    - Service assignment capabilities
-    - Performance tracking (bookings, revenue)
-  - Settings with share link, business details modals
+  - Team Management screen
+  - **Settings with functional navigation:**
+    - Help Centre screen (FAQs, quick actions)
+    - Contact Support screen (form, business hours)
+    - Terms & Privacy screen (GDPR info, data rights)
 
-### Backend (FastAPI + MongoDB) - UPDATED FEB 2026
+### Backend (FastAPI + MongoDB)
 - [x] Authentication endpoints (signup, login, me)
-- [x] **Password Reset Flow:**
-  - POST /api/auth/forgot-password
-  - POST /api/auth/verify-reset-code
-  - POST /api/auth/reset-password
+- [x] Password Reset Flow (forgot-password, verify-reset-code, reset-password)
 - [x] Business management endpoints
 - [x] Services CRUD endpoints
-- [x] **Team Members CRUD:**
-  - POST /api/team-members
-  - GET /api/team-members
-  - GET /api/team-members/{id}
-  - PATCH /api/team-members/{id}
-  - DELETE /api/team-members/{id}
-  - GET /api/team-members/{id}/stats
-- [x] **Enhanced Calendar API:**
-  - GET /api/calendar/team-view?date=YYYY-MM-DD
+- [x] Team Members CRUD
+- [x] Enhanced Calendar API with team view
 - [x] Bookings endpoints with team member assignment
-  - POST /api/bookings/with-team
 - [x] Public booking endpoints
 - [x] AI-powered suggestions (OpenAI GPT-4o-mini)
 - [x] Email notifications (Resend)
@@ -106,18 +90,20 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **businesses:** id, ownerId, name, logoUrl, services, availability
 - **services:** id, businessId, name, pricePence, durationMin, color
 - **bookings:** id, serviceId, clientName, datetime, status, team_member_id
-- **team_members:** id, business_id, name, email, phone, role, color, service_ids, working_hours, bookings_completed, revenue_pence
+- **team_members:** id, business_id, name, email, phone, role, color, service_ids
 - **password_resets:** email, code, expires, used, reset_token
 - **notifications:** id, userId, title, message, type, read
 - **short_links:** id, short_code, business_id, clicks
-- **error_logs:** id, type, message, stack, resolved
 - **products:** id, business_id, name, price_pence, stock_quantity
 
-## Testing URLs
+## Application URLs
 - **Web Landing:** https://bookrezvo.preview.emergentagent.com
-- **Expo QR Page:** https://bookrezvo.preview.emergentagent.com/expo-test
+- **Web Dashboard:** https://bookrezvo.preview.emergentagent.com/dashboard
 - **Mobile Preview:** https://bookrezvo.preview.emergentagent.com/mobile-preview
-- **Expo Tunnel:** exp://3ckafhi-anonymous-8081.exp.direct
+- **Admin Panel:** https://bookrezvo.preview.emergentagent.com/admin
+
+## Known Issues
+1. **Global Search (DISABLED):** The SearchModal component causes a "Maximum call stack size exceeded" error due to a conflict with the babel-metadata-plugin. Feature removed until resolved.
 
 ## P0 - Next Priority Tasks
 1. Wire onboarding wizard to backend (complete business setup flow)
@@ -129,45 +115,55 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - Google Calendar sync
 - Automated booking reminders (cron/scheduled)
 - SMS notifications (Twilio)
+- Fix global search feature
 
 ## P2 - Future/Backlog
 - Multi-location business support
 - Advanced team scheduling (shift management)
 - Customer reviews
 - Advanced analytics/reports
-- Dojo payment integration (deferred)
+- Staff separate logins
 
 ## Code Architecture
 ```
 /app/
 ├── backend/
-│   └── server.py          # FastAPI with all endpoints (~2100 lines)
+│   └── server.py          # FastAPI with all endpoints
 ├── frontend/
 │   └── src/
-│       ├── components/    # Reusable UI components
-│       ├── pages/         # Page components
-│       └── App.js         # Routes
+│       ├── components/    
+│       │   ├── AppLayout.jsx      # Main navigation layout
+│       │   ├── CookieConsent.jsx  # GDPR cookie popup
+│       │   └── ui/                # Shadcn components
+│       └── pages/         
+│           ├── DashboardPage.jsx
+│           ├── CalendarPage.jsx   # Team view calendar
+│           ├── MobilePreview.jsx  # Browser mobile simulator
+│           └── ...
 ├── mobile/
 │   └── rezvo-mobile/
 │       └── src/
+│           ├── navigation/
+│           │   └── AppNavigator.js  # Auth/Business/Client stacks
 │           ├── screens/
 │           │   ├── WelcomeScreen.js
 │           │   ├── LoginScreen.js
 │           │   ├── SignupScreen.js
-│           │   ├── ForgotPasswordScreen.js (NEW)
-│           │   ├── VerifyCodeScreen.js (NEW)
-│           │   ├── ResetPasswordScreen.js (NEW)
-│           │   ├── PasswordResetSuccessScreen.js (NEW)
+│           │   ├── ForgotPasswordScreen.js
+│           │   ├── VerifyCodeScreen.js
+│           │   ├── ResetPasswordScreen.js
+│           │   ├── PasswordResetSuccessScreen.js
+│           │   ├── HelpCentreScreen.js      # NEW
+│           │   ├── ContactSupportScreen.js  # NEW
+│           │   ├── TermsPrivacyScreen.js    # NEW
 │           │   ├── business/
 │           │   │   ├── DashboardScreen.js
-│           │   │   ├── CalendarScreen.js (ENHANCED)
+│           │   │   ├── CalendarScreen.js
 │           │   │   ├── BookingsScreen.js
 │           │   │   ├── ServicesScreen.js
-│           │   │   ├── SettingsScreen.js
-│           │   │   └── TeamScreen.js (NEW)
+│           │   │   ├── SettingsScreen.js    # UPDATED - uses navigation
+│           │   │   └── TeamScreen.js
 │           │   └── client/
-│           ├── navigation/
-│           │   └── AppNavigator.js
 │           └── context/
 │               └── AuthContext.js
 └── memory/
@@ -175,11 +171,10 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ```
 
 ## Last Updated
-February 4, 2026 - Session 2:
-- Completely redesigned web Calendar page (Fresha/Booksy-style with team columns)
-- Updated MobilePreview.jsx with Expo SDK 52 badge and complete auth flow screens
-- Auth flow screens: Sign In, Sign Up, Phone Verify, Security Code, Forgot Password, Mail Confirm, Reset Password, Reset Success
-- Screen Navigator for easy navigation between all app screens
-
-February 4, 2026 - Session 1:
-- Added Team Management, Calendar Redesign, Complete Auth Flow backend APIs
+February 4, 2026 - Session 3:
+- Fixed mobile app settings navigation (Help Centre, Contact Support, Terms & Privacy now accessible)
+- Added screens to AppNavigator for both Business and Client stacks
+- Updated SettingsScreen to use navigation.navigate() instead of Linking.openURL()
+- Removed SearchModal due to babel plugin conflict (global search disabled)
+- Added data-testid to CookieConsent for testing
+- All backend (37/37 tests) and frontend tests passing
