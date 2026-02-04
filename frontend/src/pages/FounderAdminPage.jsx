@@ -50,7 +50,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Toaster } from '../components/ui/sonner';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { format, startOfMonth } from 'date-fns';
 
 const CHART_COLORS = ['#00BFA5', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
