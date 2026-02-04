@@ -89,7 +89,12 @@ function TeamPage() {
   async function handleSaveEdit(memberId) {
     setSaving(true);
     try {
-      await api.patch('/team-members/' + memberId, editForm);
+      // Convert empty email to null for backend validation
+      const dataToSave = {
+        ...editForm,
+        email: editForm.email && editForm.email.trim() ? editForm.email : null
+      };
+      await api.patch('/team-members/' + memberId, dataToSave);
       await fetchData();
       setEditingId(null);
       setEditForm({});
