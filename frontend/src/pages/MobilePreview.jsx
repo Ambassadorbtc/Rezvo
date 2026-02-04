@@ -932,7 +932,7 @@ const MobilePreview = () => {
       case 'profile': return <ClientProfileScreen />;
       case 'dashboard': return <BusinessDashboardScreen />;
       case 'calendar': return <BusinessCalendarScreen />;
-      case 'services': return <BusinessDashboardScreen />;
+      case 'services': return <BusinessServicesScreen />;
       case 'settings': return <BusinessSettingsScreen />;
       default: return <WelcomeScreen />;
     }
