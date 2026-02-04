@@ -153,6 +153,7 @@ class TeamMemberCreate(BaseModel):
     avatar_url: Optional[str] = None
     service_ids: List[str] = []  # Services this member can perform
     working_hours: Optional[List[dict]] = None  # Custom working hours
+    show_on_booking_page: bool = True  # Whether to show on public booking page
 
 class TeamMemberUpdate(BaseModel):
     name: Optional[str] = None
@@ -164,6 +165,7 @@ class TeamMemberUpdate(BaseModel):
     service_ids: Optional[List[str]] = None
     working_hours: Optional[List[dict]] = None
     active: Optional[bool] = None
+    show_on_booking_page: Optional[bool] = None
 
 # ==================== PASSWORD RESET MODELS ====================
 
