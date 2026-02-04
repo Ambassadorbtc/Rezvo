@@ -3,36 +3,42 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
-  Alert,
+  TextInput,
   RefreshControl,
+  ActivityIndicator,
+  Alert,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
 
-const mockServices = [
-  { id: '1', name: 'Classic Haircut', duration_min: 30, price_pence: 2500, deposit_required: false },
-  { id: '2', name: 'Haircut & Style', duration_min: 45, price_pence: 3500, deposit_required: true, deposit_amount_pence: 1000 },
-  { id: '3', name: 'Hair Colouring', duration_min: 90, price_pence: 7500, deposit_required: true, deposit_amount_pence: 2500 },
-  { id: '4', name: 'Beard Trim', duration_min: 20, price_pence: 1500, deposit_required: false },
-  { id: '5', name: 'Full Treatment', duration_min: 120, price_pence: 9500, deposit_required: true, deposit_amount_pence: 3000 },
-];
+const TEAL = '#00BFA5';
 
-export default function ServicesScreen({ navigation }) {
-  const [services, setServices] = useState(mockServices);
+export default function ServicesScreen() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  
+  // Form state
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState('');
+  const [description, setDescription] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const fetchServices = async () => {
     try {
       const response = await api.get('/services');
-      if (response.data?.length > 0) {
-        setServices(response.data);
-      }
+      setServices(response.data || []);
     } catch (error) {
-      console.log('Using mock services');
+      console.error('Error fetching services:', error);
     } finally {
+      setLoading(false);
       setRefreshing(false);
     }
   };
@@ -41,98 +47,255 @@ export default function ServicesScreen({ navigation }) {
     fetchServices();
   }, []);
 
-  const handleDeleteService = (serviceId) => {
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchServices();
+  };
+
+  const openModal = (service = null) => {
+    if (service) {
+      setEditingService(service);
+      setName(service.name);
+      setPrice((service.price_pence / 100).toString());
+      setDuration(service.duration_min.toString());
+      setDescription(service.description || '');
+    } else {
+      setEditingService(null);
+      setName('');
+      setPrice('');
+      setDuration('');
+      setDescription('');
+    }
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    if (!name || !price || !duration) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const data = {
+        name,
+        price_pence: Math.round(parseFloat(price) * 100),
+        duration_min: parseInt(duration),
+        description,
+      };
+
+      if (editingService) {
+        await api.put(`/services/${editingService.id}`, data);
+      } else {
+        await api.post('/services', data);
+      }
+
+      setShowModal(false);
+      fetchServices();
+      Alert.alert('Success', editingService ? 'Service updated' : 'Service created');
+    } catch (error) {
+      Alert.alert('Error', 'Could not save service');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = (service) => {
     Alert.alert(
       'Delete Service',
-      'Are you sure you want to delete this service?',
+      `Are you sure you want to delete "${service.name}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
+        { 
+          text: 'Delete', 
           style: 'destructive',
-          onPress: () => {
-            setServices(services.filter((s) => s.id !== serviceId));
-          },
+          onPress: async () => {
+            try {
+              await api.delete(`/services/${service.id}`);
+              fetchServices();
+              Alert.alert('Success', 'Service deleted');
+            } catch (error) {
+              Alert.alert('Error', 'Could not delete service');
+            }
+          }
         },
       ]
     );
   };
 
-  const renderService = ({ item }) => (
-    <View style={styles.serviceCard}>
-      <View style={styles.serviceHeader}>
-        <View style={styles.serviceIcon}>
-          <Text style={styles.serviceEmoji}>✂️</Text>
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
         </View>
-        <View style={styles.serviceInfo}>
-          <Text style={styles.serviceName}>{item.name}</Text>
-          <Text style={styles.serviceDuration}>{item.duration_min} minutes</Text>
-        </View>
-        <Text style={styles.servicePrice}>{formatPrice(item.price_pence)}</Text>
-      </View>
-
-      {item.deposit_required && (
-        <View style={styles.depositBadge}>
-          <Text style={styles.depositText}>
-            Deposit required: {formatPrice(item.deposit_amount_pence)}
-          </Text>
-        </View>
-      )}
-
-      <View style={styles.serviceActions}>
-        <TouchableOpacity style={styles.actionBtn}>
-          <Text style={styles.actionBtnText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionBtn, styles.actionBtnDelete]}
-          onPress={() => handleDeleteService(item.id)}
-        >
-          <Text style={styles.actionBtnTextDelete}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Services</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add</Text>
+        <TouchableOpacity style={styles.addBtn} onPress={() => openModal()}>
+          <Ionicons name="add" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
-      {/* Services List */}
-      <FlatList
-        data={services}
-        renderItem={renderService}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
+      <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              fetchServices();
-            }}
-            tintColor={colors.primary}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
-        ListEmptyComponent={
+        contentContainerStyle={styles.scrollContent}
+      >
+        {services.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>✂️</Text>
+            <Ionicons name="cut-outline" size={64} color="#E2E8F0" />
             <Text style={styles.emptyTitle}>No services yet</Text>
-            <Text style={styles.emptyText}>
-              Add your first service to start taking bookings
-            </Text>
-            <TouchableOpacity style={styles.emptyButton}>
-              <Text style={styles.emptyButtonText}>Add Service</Text>
+            <Text style={styles.emptySubtext}>Add your first service to start accepting bookings</Text>
+            <TouchableOpacity style={styles.addServiceBtn} onPress={() => openModal()}>
+              <Ionicons name="add" size={20} color="#FFFFFF" />
+              <Text style={styles.addServiceBtnText}>Add Service</Text>
             </TouchableOpacity>
           </View>
-        }
-      />
+        ) : (
+          services.map((service) => (
+            <View key={service.id} style={styles.serviceCard}>
+              <View style={styles.serviceHeader}>
+                <View style={styles.serviceIcon}>
+                  <Ionicons name="cut" size={24} color={TEAL} />
+                </View>
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceName}>{service.name}</Text>
+                  <Text style={styles.serviceDesc}>
+                    {service.description || `${service.duration_min} minute service`}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.serviceMeta}>
+                <View style={styles.metaItem}>
+                  <Ionicons name="cash-outline" size={16} color="#627D98" />
+                  <Text style={styles.metaText}>{formatPrice(service.price_pence)}</Text>
+                </View>
+                <View style={styles.metaItem}>
+                  <Ionicons name="time-outline" size={16} color="#627D98" />
+                  <Text style={styles.metaText}>{service.duration_min} min</Text>
+                </View>
+              </View>
+
+              <View style={styles.actions}>
+                <TouchableOpacity 
+                  style={styles.editBtn}
+                  onPress={() => openModal(service)}
+                >
+                  <Ionicons name="create-outline" size={18} color={TEAL} />
+                  <Text style={styles.editBtnText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.deleteBtn}
+                  onPress={() => handleDelete(service)}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      {/* Add/Edit Modal */}
+      <Modal
+        visible={showModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {editingService ? 'Edit Service' : 'New Service'}
+              </Text>
+              <TouchableOpacity onPress={() => setShowModal(false)}>
+                <Ionicons name="close" size={24} color="#627D98" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalBody}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Service Name *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Haircut"
+                  placeholderTextColor="#9FB3C8"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+
+              <View style={styles.inputRow}>
+                <View style={[styles.inputGroup, { flex: 1 }]}>
+                  <Text style={styles.inputLabel}>Price (£) *</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="25.00"
+                    placeholderTextColor="#9FB3C8"
+                    value={price}
+                    onChangeText={setPrice}
+                    keyboardType="decimal-pad"
+                  />
+                </View>
+                <View style={[styles.inputGroup, { flex: 1, marginLeft: 12 }]}>
+                  <Text style={styles.inputLabel}>Duration (min) *</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="30"
+                    placeholderTextColor="#9FB3C8"
+                    value={duration}
+                    onChangeText={setDuration}
+                    keyboardType="number-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Description</Text>
+                <TextInput
+                  style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+                  placeholder="Describe your service..."
+                  placeholderTextColor="#9FB3C8"
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                />
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.cancelModalBtn}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.cancelModalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+                onPress={handleSave}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.saveBtnText}>
+                    {editingService ? 'Update' : 'Create'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -140,147 +303,230 @@ export default function ServicesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   headerTitle: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
   },
-  addButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.full,
+  addBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: TEAL,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  addButtonText: {
-    fontSize: typography.sizes.sm,
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  emptyTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.surface,
+    color: '#627D98',
+    marginTop: 16,
   },
-  listContent: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9FB3C8',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  addServiceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: TEAL,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    marginTop: 24,
+    gap: 8,
+  },
+  addServiceBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   serviceCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    ...shadows.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   serviceHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
   serviceIcon: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: `${colors.primary}15`,
+    backgroundColor: '#F5F0E8',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
-  },
-  serviceEmoji: {
-    fontSize: 24,
   },
   serviceInfo: {
     flex: 1,
+    marginLeft: 12,
   },
   serviceName: {
-    fontSize: typography.sizes.base,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
+    color: '#0A1626',
   },
-  serviceDuration: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
+  serviceDesc: {
+    fontSize: 13,
+    color: '#627D98',
+    marginTop: 2,
   },
-  servicePrice: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '700',
-    color: colors.primary,
+  serviceMeta: {
+    flexDirection: 'row',
+    gap: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
   },
-  depositBadge: {
-    marginTop: spacing.md,
-    backgroundColor: `${colors.warning}15`,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
-  depositText: {
-    fontSize: typography.sizes.sm,
-    color: colors.warning,
+  metaText: {
+    fontSize: 14,
+    color: '#627D98',
     fontWeight: '500',
   },
-  serviceActions: {
+  actions: {
     flexDirection: 'row',
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-    gap: spacing.sm,
+    gap: 12,
+    marginTop: 12,
   },
-  actionBtn: {
+  editBtn: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-  },
-  actionBtnDelete: {
-    backgroundColor: `${colors.error}10`,
-  },
-  actionBtnText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  actionBtnTextDelete: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.error,
-  },
-  emptyState: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: spacing.xxl * 2,
+    backgroundColor: '#F5F0E8',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
   },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
+  editBtnText: {
+    color: TEAL,
+    fontSize: 14,
+    fontWeight: '500',
   },
-  emptyTitle: {
-    fontSize: typography.sizes.xl,
+  deleteBtn: {
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FEE2E2',
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FDFBF7',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '90%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0A1626',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#0A1626',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#0A1626',
+  },
+  inputRow: {
+    flexDirection: 'row',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    padding: 20,
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+  },
+  cancelModalBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 50,
+    backgroundColor: '#F5F0E8',
+    alignItems: 'center',
+  },
+  cancelModalBtnText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
+    color: '#627D98',
   },
-  emptyText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
+  saveBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 50,
+    backgroundColor: TEAL,
+    alignItems: 'center',
   },
-  emptyButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.full,
+  saveBtnDisabled: {
+    opacity: 0.7,
   },
-  emptyButtonText: {
-    fontSize: typography.sizes.base,
+  saveBtnText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.surface,
+    color: '#FFFFFF',
   },
 });
