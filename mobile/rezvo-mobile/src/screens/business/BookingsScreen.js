@@ -16,11 +16,10 @@ import api, { formatPrice } from '../../lib/api';
 const TEAL = '#00BFA5';
 
 const STATUS_CONFIG = {
-  all: { label: 'All', color: '#627D98', bg: '#F5F0E8' },
-  pending: { label: 'Pending', color: '#D97706', bg: '#FEF3C7' },
-  confirmed: { label: 'Confirmed', color: '#16A34A', bg: '#DCFCE7' },
-  completed: { label: 'Completed', color: '#3B82F6', bg: '#DBEAFE' },
-  cancelled: { label: 'Cancelled', color: '#EF4444', bg: '#FEE2E2' },
+  pending: { label: 'Pending', color: '#F59E0B', bg: '#FEF3C7', icon: 'time-outline' },
+  confirmed: { label: 'Confirmed', color: '#10B981', bg: '#D1FAE5', icon: 'checkmark-circle-outline' },
+  completed: { label: 'Completed', color: '#3B82F6', bg: '#DBEAFE', icon: 'checkmark-done-outline' },
+  cancelled: { label: 'Cancelled', color: '#EF4444', bg: '#FEE2E2', icon: 'close-circle-outline' },
 };
 
 export default function BookingsScreen({ navigation }) {
@@ -52,17 +51,16 @@ export default function BookingsScreen({ navigation }) {
 
   const handleStatusChange = async (booking, newStatus) => {
     Alert.alert(
-      `${newStatus === 'confirmed' ? 'Confirm' : newStatus === 'cancelled' ? 'Cancel' : 'Update'} Booking`,
-      `Are you sure you want to ${newStatus === 'confirmed' ? 'confirm' : newStatus === 'cancelled' ? 'cancel' : 'update'} this booking?`,
+      `${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)} Booking`,
+      `Are you sure you want to ${newStatus} this booking?`,
       [
-        { text: 'No', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         { 
           text: 'Yes', 
           onPress: async () => {
             try {
               await api.patch(`/bookings/${booking.id}`, { status: newStatus });
               fetchBookings();
-              Alert.alert('Success', `Booking ${newStatus}`);
             } catch (error) {
               Alert.alert('Error', 'Could not update booking');
             }
@@ -93,15 +91,17 @@ export default function BookingsScreen({ navigation }) {
     ? bookings 
     : bookings.filter(b => b.status === filter);
 
-  // Group by date
   const groupedBookings = filteredBookings.reduce((groups, booking) => {
-    const date = new Date(booking.datetime).toDateString();
+    const date = formatDate(booking.datetime);
     if (!groups[date]) groups[date] = [];
     groups[date].push(booking);
     return groups;
   }, {});
 
-  const sortedDates = Object.keys(groupedBookings).sort((a, b) => new Date(a) - new Date(b));
+  const sortedDates = Object.keys(groupedBookings);
+
+  const pendingCount = bookings.filter(b => b.status === 'pending').length;
+  const confirmedCount = bookings.filter(b => b.status === 'confirmed').length;
 
   if (loading) {
     return (
@@ -117,51 +117,47 @@ export default function BookingsScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Bookings</Text>
-        <View style={styles.headerRight}>
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>{filteredBookings.length}</Text>
-          </View>
+        <View>
+          <Text style={styles.headerTitle}>Bookings</Text>
+          <Text style={styles.headerSubtitle}>{bookings.length} total appointments</Text>
         </View>
       </View>
 
-      {/* Filter Chips */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterContainer}
-      >
-        {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-          <TouchableOpacity
-            key={key}
-            style={[
-              styles.filterChip,
-              filter === key && { backgroundColor: TEAL }
-            ]}
-            onPress={() => setFilter(key)}
-          >
-            <Text style={[
-              styles.filterText,
-              filter === key && { color: '#FFFFFF' }
-            ]}>
-              {config.label}
-            </Text>
-            {key !== 'all' && (
-              <View style={[
-                styles.filterCount,
-                filter === key && { backgroundColor: 'rgba(255,255,255,0.3)' }
-              ]}>
-                <Text style={[
-                  styles.filterCountText,
-                  filter === key && { color: '#FFFFFF' }
-                ]}>
-                  {bookings.filter(b => b.status === key).length}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Stats Row */}
+      <View style={styles.statsRow}>
+        <TouchableOpacity 
+          style={[styles.statCard, filter === 'pending' && styles.statCardActive]}
+          onPress={() => setFilter(filter === 'pending' ? 'all' : 'pending')}
+        >
+          <View style={[styles.statIcon, { backgroundColor: '#FEF3C7' }]}>
+            <Ionicons name="time-outline" size={18} color="#F59E0B" />
+          </View>
+          <Text style={styles.statCount}>{pendingCount}</Text>
+          <Text style={styles.statLabel}>Pending</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.statCard, filter === 'confirmed' && styles.statCardActive]}
+          onPress={() => setFilter(filter === 'confirmed' ? 'all' : 'confirmed')}
+        >
+          <View style={[styles.statIcon, { backgroundColor: '#D1FAE5' }]}>
+            <Ionicons name="checkmark-circle-outline" size={18} color="#10B981" />
+          </View>
+          <Text style={styles.statCount}>{confirmedCount}</Text>
+          <Text style={styles.statLabel}>Confirmed</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.statCard, filter === 'all' && styles.statCardActive]}
+          onPress={() => setFilter('all')}
+        >
+          <View style={[styles.statIcon, { backgroundColor: '#E8F5F3' }]}>
+            <Ionicons name="calendar-outline" size={18} color={TEAL} />
+          </View>
+          <Text style={styles.statCount}>{bookings.length}</Text>
+          <Text style={styles.statLabel}>All</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Bookings List */}
       <ScrollView
@@ -169,86 +165,104 @@ export default function BookingsScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
         contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       >
         {filteredBookings.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="calendar-outline" size={64} color="#E2E8F0" />
-            <Text style={styles.emptyTitle}>No bookings found</Text>
+            <View style={styles.emptyIcon}>
+              <Ionicons name="calendar-outline" size={48} color="#D1D5DB" />
+            </View>
+            <Text style={styles.emptyTitle}>No bookings yet</Text>
             <Text style={styles.emptySubtitle}>
-              {filter === 'all' ? 'Share your link to get bookings' : `No ${filter} bookings`}
+              Share your booking link to start{'\n'}receiving appointments
             </Text>
           </View>
         ) : (
           sortedDates.map(date => (
             <View key={date}>
-              <Text style={styles.dateHeader}>{formatDate(date)}</Text>
-              {groupedBookings[date].map((booking) => (
-                <View key={booking.id} style={styles.bookingCard}>
-                  {/* Card Header */}
-                  <View style={styles.cardHeader}>
-                    <View style={styles.timeContainer}>
-                      <Ionicons name="time-outline" size={16} color={TEAL} />
+              <View style={styles.dateHeader}>
+                <Text style={styles.dateText}>{date}</Text>
+                <View style={styles.dateLine} />
+              </View>
+              
+              {groupedBookings[date].map((booking) => {
+                const status = STATUS_CONFIG[booking.status] || STATUS_CONFIG.pending;
+                
+                return (
+                  <View key={booking.id} style={styles.bookingCard}>
+                    {/* Time Badge */}
+                    <View style={styles.timeBadge}>
                       <Text style={styles.timeText}>{formatTime(booking.datetime)}</Text>
                     </View>
-                    <View style={[styles.statusBadge, { backgroundColor: STATUS_CONFIG[booking.status]?.bg }]}>
-                      <Text style={[styles.statusText, { color: STATUS_CONFIG[booking.status]?.color }]}>
-                        {booking.status}
-                      </Text>
+
+                    {/* Main Content */}
+                    <View style={styles.cardContent}>
+                      {/* Client Row */}
+                      <View style={styles.clientRow}>
+                        <View style={styles.avatar}>
+                          <Text style={styles.avatarText}>
+                            {booking.client_name?.charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <View style={styles.clientInfo}>
+                          <Text style={styles.clientName}>{booking.client_name}</Text>
+                          <Text style={styles.serviceName}>{booking.service_name}</Text>
+                        </View>
+                        <View style={[styles.statusBadge, { backgroundColor: status.bg }]}>
+                          <Ionicons name={status.icon} size={12} color={status.color} />
+                          <Text style={[styles.statusText, { color: status.color }]}>
+                            {status.label}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Price Row */}
+                      <View style={styles.priceRow}>
+                        <View style={styles.priceInfo}>
+                          <Text style={styles.priceLabel}>Service fee</Text>
+                          <Text style={styles.priceValue}>{formatPrice(booking.price_pence)}</Text>
+                        </View>
+                        
+                        {booking.duration_min && (
+                          <View style={styles.durationInfo}>
+                            <Ionicons name="time-outline" size={14} color="#9FB3C8" />
+                            <Text style={styles.durationText}>{booking.duration_min} min</Text>
+                          </View>
+                        )}
+                      </View>
+
+                      {/* Actions */}
+                      {booking.status === 'pending' && (
+                        <View style={styles.actions}>
+                          <TouchableOpacity 
+                            style={styles.confirmBtn}
+                            onPress={() => handleStatusChange(booking, 'confirmed')}
+                          >
+                            <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                            <Text style={styles.confirmBtnText}>Confirm</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity 
+                            style={styles.declineBtn}
+                            onPress={() => handleStatusChange(booking, 'cancelled')}
+                          >
+                            <Ionicons name="close" size={18} color="#EF4444" />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+
+                      {booking.status === 'confirmed' && (
+                        <TouchableOpacity 
+                          style={styles.completeBtn}
+                          onPress={() => handleStatusChange(booking, 'completed')}
+                        >
+                          <Ionicons name="checkmark-done" size={18} color="#3B82F6" />
+                          <Text style={styles.completeBtnText}>Mark as Complete</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </View>
-
-                  {/* Client Info */}
-                  <View style={styles.clientSection}>
-                    <View style={styles.avatar}>
-                      <Text style={styles.avatarText}>{booking.client_name?.charAt(0)}</Text>
-                    </View>
-                    <View style={styles.clientInfo}>
-                      <Text style={styles.clientName}>{booking.client_name}</Text>
-                      <Text style={styles.clientEmail}>{booking.client_email}</Text>
-                    </View>
-                  </View>
-
-                  {/* Service & Price */}
-                  <View style={styles.serviceRow}>
-                    <View style={styles.serviceInfo}>
-                      <Ionicons name="cut-outline" size={16} color="#627D98" />
-                      <Text style={styles.serviceName}>{booking.service_name}</Text>
-                    </View>
-                    <Text style={styles.price}>{formatPrice(booking.price_pence)}</Text>
-                  </View>
-
-                  {/* Actions */}
-                  {booking.status === 'pending' && (
-                    <View style={styles.actions}>
-                      <TouchableOpacity 
-                        style={[styles.actionBtn, styles.confirmBtn]}
-                        onPress={() => handleStatusChange(booking, 'confirmed')}
-                      >
-                        <Ionicons name="checkmark" size={18} color="#FFFFFF" />
-                        <Text style={styles.confirmBtnText}>Confirm</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity 
-                        style={[styles.actionBtn, styles.cancelBtn]}
-                        onPress={() => handleStatusChange(booking, 'cancelled')}
-                      >
-                        <Ionicons name="close" size={18} color="#EF4444" />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-
-                  {booking.status === 'confirmed' && (
-                    <View style={styles.actions}>
-                      <TouchableOpacity 
-                        style={[styles.actionBtn, styles.completeBtn]}
-                        onPress={() => handleStatusChange(booking, 'completed')}
-                      >
-                        <Ionicons name="checkmark-done" size={18} color="#3B82F6" />
-                        <Text style={styles.completeBtnText}>Mark Complete</Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              ))}
+                );
+              })}
             </View>
           ))
         )}
@@ -269,139 +283,143 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingTop: 8,
+    paddingBottom: 16,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#0A1626',
+    letterSpacing: -0.5,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#9FB3C8',
+    marginTop: 2,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    gap: 10,
+    marginBottom: 20,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 14,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  statCardActive: {
+    borderColor: TEAL,
+    backgroundColor: '#F0FDF9',
+  },
+  statIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statCount: {
+    fontSize: 22,
     fontWeight: '700',
     color: '#0A1626',
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  countBadge: {
-    backgroundColor: TEAL,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  countText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  filterContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  filterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 25,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 6,
-  },
-  filterText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#627D98',
-  },
-  filterCount: {
-    backgroundColor: '#F5F0E8',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  filterCountText: {
+  statLabel: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#627D98',
+    color: '#9FB3C8',
+    fontWeight: '500',
+    marginTop: 2,
   },
   listContainer: {
     paddingHorizontal: 20,
   },
   emptyState: {
     alignItems: 'center',
-    paddingTop: 80,
+    paddingTop: 60,
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#627D98',
-    marginTop: 16,
+    marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
     color: '#9FB3C8',
-    marginTop: 4,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   dateHeader: {
-    fontSize: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 14,
+    gap: 12,
+  },
+  dateText: {
+    fontSize: 13,
     fontWeight: '600',
-    color: '#9FB3C8',
-    marginTop: 20,
-    marginBottom: 12,
+    color: '#627D98',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
+  dateLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E2E8F0',
+  },
   bookingCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    overflow: 'hidden',
+    shadowColor: '#0A1626',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+  timeBadge: {
+    backgroundColor: TEAL,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignSelf: 'flex-start',
+    borderBottomRightRadius: 12,
   },
   timeText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: TEAL,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+  cardContent: {
+    padding: 16,
   },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  clientSection: {
+  clientRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F5F0E8',
+    marginBottom: 14,
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: TEAL,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#0A1626',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -418,64 +436,96 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#0A1626',
+    marginBottom: 2,
   },
-  clientEmail: {
+  serviceName: {
     fontSize: 13,
     color: '#627D98',
-    marginTop: 2,
   },
-  serviceRow: {
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 4,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  priceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#F5F0E8',
   },
-  serviceInfo: {
+  priceInfo: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
     gap: 8,
   },
-  serviceName: {
-    fontSize: 14,
-    color: '#627D98',
+  priceLabel: {
+    fontSize: 13,
+    color: '#9FB3C8',
   },
-  price: {
-    fontSize: 16,
+  priceValue: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#0A1626',
+  },
+  durationInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  durationText: {
+    fontSize: 13,
+    color: '#9FB3C8',
   },
   actions: {
     flexDirection: 'row',
     gap: 10,
-    marginTop: 16,
-    paddingTop: 12,
+    marginTop: 14,
+    paddingTop: 14,
     borderTopWidth: 1,
     borderTopColor: '#F5F0E8',
   },
-  actionBtn: {
+  confirmBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: TEAL,
     paddingVertical: 12,
     borderRadius: 12,
     gap: 6,
-  },
-  confirmBtn: {
-    flex: 1,
-    backgroundColor: TEAL,
   },
   confirmBtnText: {
     color: '#FFFFFF',
     fontWeight: '600',
     fontSize: 14,
   },
-  cancelBtn: {
+  declineBtn: {
     width: 48,
+    height: 48,
     backgroundColor: '#FEE2E2',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   completeBtn: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#DBEAFE',
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 6,
+    marginTop: 14,
   },
   completeBtnText: {
     color: '#3B82F6',
