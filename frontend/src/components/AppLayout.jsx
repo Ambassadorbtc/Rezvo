@@ -11,10 +11,9 @@ import {
   LogOut,
   Menu,
   X,
-  Shield,
-  Search
+  Shield
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 
 const AppLayout = ({ children }) => {
