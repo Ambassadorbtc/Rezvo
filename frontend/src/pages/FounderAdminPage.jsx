@@ -334,72 +334,174 @@ const FounderAdminPage = () => {
 
               {/* Charts Row */}
               <div className="grid lg:grid-cols-3 gap-6">
-                {/* Activity Chart Placeholder */}
+                {/* Activity Chart */}
                 <Card className="lg:col-span-2 bg-white rounded-2xl shadow-sm border-0">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg font-semibold text-[#0A1626]">Monthly Overview</CardTitle>
-                        <CardDescription>Platform activity for the current month</CardDescription>
+                        <CardTitle className="text-lg font-semibold text-[#0A1626]">Weekly Overview</CardTitle>
+                        <CardDescription>Bookings and user signups over the last 7 days</CardDescription>
                       </div>
-                      <Button variant="outline" size="sm" className="border-gray-200 text-gray-600 rounded-lg">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filter
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-64 flex items-center justify-center bg-gray-50 rounded-xl">
-                      <div className="text-center">
-                        <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500">Chart visualization coming soon</p>
-                        <p className="text-sm text-gray-400 mt-1">Analytics integration in progress</p>
-                      </div>
+                    <div className="h-64">
+                      {analytics?.daily ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={analytics.daily} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                              <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#00BFA5" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#00BFA5" stopOpacity={0}/>
+                              </linearGradient>
+                              <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                            <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
+                            <YAxis stroke="#9CA3AF" fontSize={12} />
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'white', 
+                                border: 'none', 
+                                borderRadius: '12px', 
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                              }}
+                            />
+                            <Area type="monotone" dataKey="bookings" stroke="#00BFA5" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" name="Bookings" />
+                            <Area type="monotone" dataKey="users" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" name="New Users" />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-full flex items-center justify-center bg-gray-50 rounded-xl">
+                          <div className="text-center">
+                            <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <p className="text-gray-500">Loading analytics...</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Quick Stats */}
+                {/* Booking Status Pie Chart */}
                 <Card className="bg-white rounded-2xl shadow-sm border-0">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg font-semibold text-[#0A1626]">Booking Status</CardTitle>
+                    <CardDescription>Distribution of booking statuses</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-52">
+                      {analytics?.status_breakdown ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsPieChart>
+                            <Pie
+                              data={Object.entries(analytics.status_breakdown).map(([name, value]) => ({ name, value }))}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={40}
+                              outerRadius={70}
+                              paddingAngle={3}
+                              dataKey="value"
+                            >
+                              {Object.entries(analytics.status_breakdown).map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend iconSize={10} wrapperStyle={{ fontSize: '12px' }} />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-full flex items-center justify-center">
+                          <p className="text-gray-400">No data yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Top Services & Platform Health */}
+              <div className="grid lg:grid-cols-3 gap-6">
+                {/* Top Services */}
+                <Card className="bg-white rounded-2xl shadow-sm border-0">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg font-semibold text-[#0A1626]">Top Services</CardTitle>
+                    <CardDescription>Most booked services</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-52">
+                      {analytics?.top_services && analytics.top_services.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={analytics.top_services} layout="vertical" margin={{ left: 0, right: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+                            <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
+                            <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={80} />
+                            <Tooltip />
+                            <Bar dataKey="bookings" fill="#00BFA5" radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-full flex items-center justify-center">
+                          <p className="text-gray-400">No bookings yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Platform Health */}
+                <Card className="lg:col-span-2 bg-white rounded-2xl shadow-sm border-0">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg font-semibold text-[#0A1626]">Platform Health</CardTitle>
                     <CardDescription>System status overview</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="p-4 bg-emerald-50 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-500" />
-                          <span className="font-medium text-[#0A1626]">API Status</span>
+                  <CardContent>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="p-4 bg-emerald-50 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CheckCircle className="w-5 h-5 text-emerald-500" />
+                            <span className="font-medium text-[#0A1626]">API Status</span>
+                          </div>
+                          <span className="text-sm text-emerald-600 font-medium">Online</span>
                         </div>
-                        <span className="text-sm text-emerald-600 font-medium">Online</span>
                       </div>
-                    </div>
-                    <div className="p-4 bg-emerald-50 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-500" />
-                          <span className="font-medium text-[#0A1626]">Database</span>
+                      <div className="p-4 bg-emerald-50 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CheckCircle className="w-5 h-5 text-emerald-500" />
+                            <span className="font-medium text-[#0A1626]">Database</span>
+                          </div>
+                          <span className="text-sm text-emerald-600 font-medium">Connected</span>
                         </div>
-                        <span className="text-sm text-emerald-600 font-medium">Connected</span>
                       </div>
-                    </div>
-                    <div className="p-4 bg-emerald-50 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-500" />
-                          <span className="font-medium text-[#0A1626]">Email Service</span>
+                      <div className="p-4 bg-emerald-50 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CheckCircle className="w-5 h-5 text-emerald-500" />
+                            <span className="font-medium text-[#0A1626]">Email Service</span>
+                          </div>
+                          <span className="text-sm text-emerald-600 font-medium">Active</span>
                         </div>
-                        <span className="text-sm text-emerald-600 font-medium">Active</span>
                       </div>
-                    </div>
-                    <div className="p-4 bg-amber-50 rounded-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <AlertTriangle className="w-5 h-5 text-amber-500" />
-                          <span className="font-medium text-[#0A1626]">Open Errors</span>
+                      <div className={`p-4 rounded-xl ${errorLogs.filter(l => !l.resolved).length > 0 ? 'bg-amber-50' : 'bg-emerald-50'}`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {errorLogs.filter(l => !l.resolved).length > 0 ? (
+                              <AlertTriangle className="w-5 h-5 text-amber-500" />
+                            ) : (
+                              <CheckCircle className="w-5 h-5 text-emerald-500" />
+                            )}
+                            <span className="font-medium text-[#0A1626]">Open Errors</span>
+                          </div>
+                          <span className={`text-sm font-medium ${errorLogs.filter(l => !l.resolved).length > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                            {errorLogs.filter(l => !l.resolved).length}
+                          </span>
                         </div>
-                        <span className="text-sm text-amber-600 font-medium">{errorLogs.filter(l => !l.resolved).length}</span>
                       </div>
                     </div>
                   </CardContent>
