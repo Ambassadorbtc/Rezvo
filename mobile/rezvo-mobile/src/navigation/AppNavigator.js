@@ -30,6 +30,7 @@ import BusinessCalendarScreen from '../screens/business/CalendarScreen';
 import BusinessBookingsScreen from '../screens/business/BookingsScreen';
 import BusinessServicesScreen from '../screens/business/ServicesScreen';
 import BusinessSettingsScreen from '../screens/business/SettingsScreen';
+import BusinessTeamScreen from '../screens/business/TeamScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -132,6 +133,7 @@ function BusinessStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="BusinessTabs" component={BusinessTabs} />
+      <Stack.Screen name="Team" component={BusinessTeamScreen} />
     </Stack.Navigator>
   );
 }
