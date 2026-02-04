@@ -1335,6 +1335,213 @@ async def get_expo_tunnel_url():
         logger.error(f"Failed to fetch Expo tunnel URL: {e}")
         return {"url": None, "status": "unavailable", "error": str(e)}
 
+# ==================== SEED DATA ====================
+
+@api_router.post("/seed/customers")
+async def seed_customers():
+    """Create 10 dummy customers for testing"""
+    customers = [
+        {"name": "Emma Thompson", "email": "emma.t@example.com", "phone": "07700900001"},
+        {"name": "James Wilson", "email": "james.w@example.com", "phone": "07700900002"},
+        {"name": "Sophie Brown", "email": "sophie.b@example.com", "phone": "07700900003"},
+        {"name": "Oliver Davis", "email": "oliver.d@example.com", "phone": "07700900004"},
+        {"name": "Charlotte Miller", "email": "charlotte.m@example.com", "phone": "07700900005"},
+        {"name": "Harry Johnson", "email": "harry.j@example.com", "phone": "07700900006"},
+        {"name": "Amelia Garcia", "email": "amelia.g@example.com", "phone": "07700900007"},
+        {"name": "George Martinez", "email": "george.m@example.com", "phone": "07700900008"},
+        {"name": "Isabella Anderson", "email": "isabella.a@example.com", "phone": "07700900009"},
+        {"name": "William Taylor", "email": "william.t@example.com", "phone": "07700900010"},
+    ]
+    
+    now = datetime.now(timezone.utc)
+    created = 0
+    
+    for cust in customers:
+        existing = await db.users.find_one({"email": cust["email"]})
+        if not existing:
+            user_id = str(uuid.uuid4())
+            user_doc = {
+                "id": user_id,
+                "email": cust["email"],
+                "password_hash": hash_password("password123"),
+                "role": "client",
+                "name": cust["name"],
+                "phone": cust["phone"],
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+            }
+            await db.users.insert_one(user_doc)
+            created += 1
+    
+    return {"message": f"Created {created} test customers", "total": len(customers)}
+
+@api_router.get("/public/businesses")
+async def get_public_businesses():
+    """Get all businesses for public listing"""
+    businesses = await db.businesses.find({}, {"_id": 0}).to_list(100)
+    return businesses
+
+# ==================== SHORT LINKS ====================
+
+@api_router.post("/links/create")
+async def create_short_link(current_user: dict = Depends(get_current_user)):
+    """Create a branded short link for business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business = await db.businesses.find_one({"id": user["business_id"]})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Generate short code
+    short_code = str(uuid.uuid4())[:8]
+    
+    # Store short link
+    link_doc = {
+        "id": str(uuid.uuid4()),
+        "short_code": short_code,
+        "business_id": user["business_id"],
+        "business_name": business["name"],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "clicks": 0
+    }
+    await db.short_links.insert_one(link_doc)
+    
+    base_url = os.environ.get('FRONTEND_URL', 'https://rezvo.app')
+    
+    return {
+        "short_link": f"{base_url}/b/{short_code}",
+        "short_code": short_code,
+        "full_link": f"{base_url}/book/{user['business_id']}"
+    }
+
+@api_router.get("/b/{short_code}")
+async def resolve_short_link(short_code: str):
+    """Resolve short link to full booking URL"""
+    link = await db.short_links.find_one({"short_code": short_code}, {"_id": 0})
+    if not link:
+        raise HTTPException(status_code=404, detail="Link not found")
+    
+    # Increment click count
+    await db.short_links.update_one(
+        {"short_code": short_code},
+        {"$inc": {"clicks": 1}}
+    )
+    
+    return {"business_id": link["business_id"], "business_name": link["business_name"]}
+
+# ==================== ERROR LOGGING ====================
+
+error_logs = []
+
+@api_router.post("/logs/error")
+async def log_error(
+    error_type: str,
+    message: str,
+    stack: str = None,
+    user_id: str = None,
+    context: dict = None
+):
+    """Log an error from frontend or mobile app"""
+    log_entry = {
+        "id": str(uuid.uuid4()),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "type": error_type,
+        "message": message,
+        "stack": stack,
+        "user_id": user_id,
+        "context": context or {},
+        "resolved": False
+    }
+    await db.error_logs.insert_one(log_entry)
+    error_logs.append(log_entry)
+    logger.error(f"[{error_type}] {message}")
+    return {"logged": True, "log_id": log_entry["id"]}
+
+@api_router.get("/admin/logs")
+async def get_error_logs(
+    limit: int = 50,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get error logs for admin panel"""
+    if current_user.get("role") not in ["admin", "founder"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    logs = await db.error_logs.find({}, {"_id": 0}).sort("timestamp", -1).to_list(limit)
+    return {"logs": logs, "total": len(logs)}
+
+@api_router.patch("/admin/logs/{log_id}/resolve")
+async def resolve_error_log(log_id: str, current_user: dict = Depends(get_current_user)):
+    """Mark an error log as resolved"""
+    if current_user.get("role") not in ["admin", "founder"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    await db.error_logs.update_one(
+        {"id": log_id},
+        {"$set": {"resolved": True, "resolved_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"resolved": True}
+
+# ==================== NOTIFICATIONS ====================
+
+class NotificationCreate(BaseModel):
+    title: str
+    message: str
+    type: str = "info"  # info, success, warning, error, booking
+    user_id: Optional[str] = None
+    business_id: Optional[str] = None
+    link: Optional[str] = None
+
+@api_router.post("/notifications")
+async def create_notification(data: NotificationCreate, current_user: dict = Depends(get_current_user)):
+    """Create a notification"""
+    notif_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    notif_doc = {
+        "id": notif_id,
+        "title": data.title,
+        "message": data.message,
+        "type": data.type,
+        "user_id": data.user_id or current_user["sub"],
+        "business_id": data.business_id,
+        "link": data.link,
+        "read": False,
+        "created_at": now.isoformat()
+    }
+    await db.notifications.insert_one(notif_doc)
+    return {"id": notif_id, "created": True}
+
+@api_router.get("/notifications")
+async def get_notifications(current_user: dict = Depends(get_current_user)):
+    """Get notifications for current user"""
+    notifications = await db.notifications.find(
+        {"user_id": current_user["sub"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    unread_count = len([n for n in notifications if not n.get("read")])
+    return {"notifications": notifications, "unread_count": unread_count}
+
+@api_router.patch("/notifications/{notif_id}/read")
+async def mark_notification_read(notif_id: str, current_user: dict = Depends(get_current_user)):
+    """Mark notification as read"""
+    await db.notifications.update_one(
+        {"id": notif_id, "user_id": current_user["sub"]},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"read": True}
+
+@api_router.patch("/notifications/read-all")
+async def mark_all_notifications_read(current_user: dict = Depends(get_current_user)):
+    """Mark all notifications as read"""
+    await db.notifications.update_many(
+        {"user_id": current_user["sub"], "read": False},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
