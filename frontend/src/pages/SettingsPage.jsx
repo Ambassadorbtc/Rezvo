@@ -9,14 +9,11 @@ import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
-  User, 
   Building2, 
   CreditCard, 
   Bell, 
-  Settings as SettingsIcon,
   Loader2,
-  Save,
-  Check
+  Save
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,7 +24,6 @@ const SettingsPage = () => {
   const [business, setBusiness] = useState(null);
   const [settings, setSettings] = useState(null);
 
-  // Form states
   const [businessName, setBusinessName] = useState('');
   const [tagline, setTagline] = useState('');
   const [phone, setPhone] = useState('');
@@ -132,7 +128,7 @@ const SettingsPage = () => {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-blaze border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </AppLayout>
     );
@@ -140,24 +136,24 @@ const SettingsPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 space-y-6" data-testid="settings-page">
+      <div className="p-4 md:p-6 lg:p-8 space-y-6" data-testid="settings-page">
         {/* Header */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-white/50 mt-1">Manage your account and preferences</p>
+          <h1 className="font-display text-2xl md:text-3xl font-bold text-navy-900">Settings</h1>
+          <p className="text-navy-500 mt-1">Manage your account and preferences</p>
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="bg-obsidian-paper border border-white/5">
-            <TabsTrigger value="profile" className="data-[state=active]:bg-blaze data-[state=active]:text-white">
+          <TabsList className="bg-white border border-gray-200 rounded-full p-1">
+            <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <Building2 className="w-4 h-4 mr-2" />
               Profile
             </TabsTrigger>
-            <TabsTrigger value="payments" className="data-[state=active]:bg-blaze data-[state=active]:text-white">
+            <TabsTrigger value="payments" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <CreditCard className="w-4 h-4 mr-2" />
               Payments
             </TabsTrigger>
-            <TabsTrigger value="reminders" className="data-[state=active]:bg-blaze data-[state=active]:text-white">
+            <TabsTrigger value="reminders" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <Bell className="w-4 h-4 mr-2" />
               Reminders
             </TabsTrigger>
@@ -165,75 +161,75 @@ const SettingsPage = () => {
 
           {/* Profile Tab */}
           <TabsContent value="profile">
-            <Card className="bg-obsidian-paper border-white/5" data-testid="profile-settings">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="profile-settings">
               <CardHeader>
-                <CardTitle>Business Profile</CardTitle>
-                <CardDescription className="text-white/50">
+                <CardTitle className="font-heading text-lg text-navy-900">Business Profile</CardTitle>
+                <CardDescription className="text-navy-500">
                   This information appears on your public booking page
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="businessName">Business Name</Label>
+                  <Label htmlFor="businessName" className="text-navy-700 font-medium">Business Name</Label>
                   <Input
                     id="businessName"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl"
                     data-testid="settings-business-name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="tagline">Tagline</Label>
+                  <Label htmlFor="tagline" className="text-navy-700 font-medium">Tagline</Label>
                   <Input
                     id="tagline"
                     placeholder="e.g. Professional cuts at your doorstep"
                     value={tagline}
                     onChange={(e) => setTagline(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl"
                     data-testid="settings-tagline"
                   />
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone" className="text-navy-700 font-medium">Phone</Label>
                     <Input
                       id="phone"
                       type="tel"
                       placeholder="+44 7XXX XXXXXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="bg-obsidian border-white/10"
+                      className="bg-cream border-gray-200 rounded-xl"
                       data-testid="settings-phone"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram</Label>
+                    <Label htmlFor="instagram" className="text-navy-700 font-medium">Instagram</Label>
                     <Input
                       id="instagram"
                       placeholder="@yourbusiness"
                       value={instagram}
                       onChange={(e) => setInstagram(e.target.value)}
-                      className="bg-obsidian border-white/10"
+                      className="bg-cream border-gray-200 rounded-xl"
                       data-testid="settings-instagram"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address" className="text-navy-700 font-medium">Address</Label>
                   <Input
                     id="address"
                     placeholder="Your business address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="bg-obsidian border-white/10"
+                    className="bg-cream border-gray-200 rounded-xl"
                     data-testid="settings-address"
                   />
                 </div>
                 <Button
                   onClick={saveBusinessProfile}
                   disabled={saving}
-                  className="bg-blaze hover:bg-blaze-hover text-white"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
                   data-testid="save-profile-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
@@ -243,17 +239,17 @@ const SettingsPage = () => {
             </Card>
 
             {/* Account Info */}
-            <Card className="bg-obsidian-paper border-white/5 mt-6">
+            <Card className="bg-white rounded-2xl shadow-card border-0 mt-6">
               <CardHeader>
-                <CardTitle>Account</CardTitle>
+                <CardTitle className="font-heading text-lg text-navy-900">Account</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-xl bg-obsidian border border-white/5">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
                   <div>
-                    <div className="font-medium">{user?.email}</div>
-                    <div className="text-sm text-white/50">Logged in as</div>
+                    <div className="font-medium text-navy-900">{user?.email}</div>
+                    <div className="text-sm text-navy-500">Logged in as</div>
                   </div>
-                  <Button variant="outline" onClick={logout} className="border-white/10" data-testid="logout-settings-btn">
+                  <Button variant="outline" onClick={logout} className="border-gray-200 rounded-full" data-testid="logout-settings-btn">
                     Log Out
                   </Button>
                 </div>
@@ -263,30 +259,30 @@ const SettingsPage = () => {
 
           {/* Payments Tab */}
           <TabsContent value="payments">
-            <Card className="bg-obsidian-paper border-white/5" data-testid="payment-settings">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="payment-settings">
               <CardHeader>
-                <CardTitle>Dojo Payments</CardTitle>
-                <CardDescription className="text-white/50">
+                <CardTitle className="font-heading text-lg text-navy-900">Dojo Payments</CardTitle>
+                <CardDescription className="text-navy-500">
                   Connect your Dojo account to collect deposits from clients
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 rounded-xl bg-obsidian border border-white/5">
-                  <p className="text-sm text-white/70 mb-4">
+                <div className="p-5 rounded-2xl bg-cream">
+                  <p className="text-sm text-navy-600 mb-4">
                     Dojo is a UK payment processor. Get your API key from the{' '}
-                    <a href="https://developer.dojo.tech" target="_blank" rel="noopener noreferrer" className="text-blaze hover:underline">
+                    <a href="https://developer.dojo.tech" target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">
                       Dojo Developer Portal
                     </a>
                   </p>
                   <div className="space-y-2">
-                    <Label htmlFor="dojoKey">API Key</Label>
+                    <Label htmlFor="dojoKey" className="text-navy-700 font-medium">API Key</Label>
                     <Input
                       id="dojoKey"
                       type="password"
                       placeholder="sk_live_..."
                       value={dojoKey}
                       onChange={(e) => setDojoKey(e.target.value)}
-                      className="bg-obsidian-deep border-white/10"
+                      className="bg-white border-gray-200 rounded-xl"
                       data-testid="settings-dojo-key"
                     />
                   </div>
@@ -294,7 +290,7 @@ const SettingsPage = () => {
                 <Button
                   onClick={savePaymentSettings}
                   disabled={saving}
-                  className="bg-blaze hover:bg-blaze-hover text-white"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
                   data-testid="save-payments-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
@@ -304,19 +300,19 @@ const SettingsPage = () => {
             </Card>
 
             {/* Billing Card */}
-            <Card className="bg-obsidian-paper border-blaze/30 mt-6">
+            <Card className="bg-white rounded-2xl shadow-card border-2 border-teal-200 mt-6">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded bg-blaze/20 text-blaze text-xs font-medium">FREE TRIAL</span>
+                      <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-semibold">FREE TRIAL</span>
                     </div>
-                    <h3 className="text-xl font-bold">QuickSlot Pro</h3>
-                    <p className="text-white/50 text-sm">14-day free trial, then £4.99/month</p>
+                    <h3 className="text-xl font-bold font-heading text-navy-900">Rezvo Pro</h3>
+                    <p className="text-navy-500 text-sm">14-day free trial, then £4.99/month</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-blaze tabular-nums">£4.99</div>
-                    <div className="text-sm text-white/40">/month</div>
+                    <div className="text-3xl font-bold font-display text-teal-600 tabular-nums">£4.99</div>
+                    <div className="text-sm text-navy-400">/month</div>
                   </div>
                 </div>
               </CardContent>
@@ -325,18 +321,18 @@ const SettingsPage = () => {
 
           {/* Reminders Tab */}
           <TabsContent value="reminders">
-            <Card className="bg-obsidian-paper border-white/5" data-testid="reminder-settings">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="reminder-settings">
               <CardHeader>
-                <CardTitle>Reminder Settings</CardTitle>
-                <CardDescription className="text-white/50">
+                <CardTitle className="font-heading text-lg text-navy-900">Reminder Settings</CardTitle>
+                <CardDescription className="text-navy-500">
                   Configure how and when clients receive booking reminders
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-xl bg-obsidian border border-white/5">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
                   <div>
-                    <Label className="text-base">Email Reminders</Label>
-                    <p className="text-sm text-white/50">Send email before appointment</p>
+                    <Label className="text-navy-700 font-medium">Email Reminders</Label>
+                    <p className="text-sm text-navy-500">Send email before appointment</p>
                   </div>
                   <Switch
                     checked={emailReminders}
@@ -345,10 +341,10 @@ const SettingsPage = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-xl bg-obsidian border border-white/5">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
                   <div>
-                    <Label className="text-base">SMS Reminders</Label>
-                    <p className="text-sm text-white/50">Coming soon via Twilio</p>
+                    <Label className="text-navy-700 font-medium">SMS Reminders</Label>
+                    <p className="text-sm text-navy-500">Coming soon via Twilio</p>
                   </div>
                   <Switch
                     checked={smsReminders}
@@ -359,7 +355,7 @@ const SettingsPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Reminder Timing</Label>
+                  <Label className="text-navy-700 font-medium">Reminder Timing</Label>
                   <div className="flex gap-2">
                     {['2', '24', '48'].map((hours) => (
                       <Button
@@ -367,7 +363,7 @@ const SettingsPage = () => {
                         variant={reminderHours === hours ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setReminderHours(hours)}
-                        className={reminderHours === hours ? 'bg-blaze text-white' : 'border-white/10'}
+                        className={reminderHours === hours ? 'bg-teal-500 text-white rounded-full' : 'border-gray-200 rounded-full text-navy-600'}
                         data-testid={`reminder-${hours}h-btn`}
                       >
                         {hours}h before
@@ -379,7 +375,7 @@ const SettingsPage = () => {
                 <Button
                   onClick={saveReminderSettings}
                   disabled={saving}
-                  className="bg-blaze hover:bg-blaze-hover text-white"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
                   data-testid="save-reminders-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
