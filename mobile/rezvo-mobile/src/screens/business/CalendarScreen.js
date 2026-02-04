@@ -1,167 +1,181 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+import api, { formatTime } from '../../lib/api';
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 7 PM
+const TEAL = '#00BFA5';
 
-const mockBookings = [
-  { id: '1', day: 2, hour: 10, client: 'Emma Watson', service: 'Haircut', duration: 1 },
-  { id: '2', day: 2, hour: 14, client: 'John Smith', service: 'Beard Trim', duration: 0.5 },
-  { id: '3', day: 3, hour: 11, client: 'Sarah Connor', service: 'Colouring', duration: 2 },
-  { id: '4', day: 4, hour: 9, client: 'Mike Brown', service: 'Full Treatment', duration: 2.5 },
-];
-
-export default function CalendarScreen({ navigation }) {
+export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState('week'); // 'week' or 'day'
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const fetchBookings = async () => {
+    try {
+      const response = await api.get('/bookings');
+      setBookings(response.data || []);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchBookings();
+  };
+
+  // Generate week dates
   const getWeekDates = () => {
     const dates = [];
-    const startOfWeek = new Date(selectedDate);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-    
+    const start = new Date(selectedDate);
+    start.setDate(start.getDate() - start.getDay());
     for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(date.getDate() + i);
-      dates.push(date);
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      dates.push(d);
     }
     return dates;
   };
 
   const weekDates = getWeekDates();
-  const today = new Date();
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const getBookingsForDay = (dayIndex) => {
-    return mockBookings.filter((b) => b.day === dayIndex);
+  // Filter bookings for selected date
+  const dayBookings = bookings.filter(b => 
+    new Date(b.datetime).toDateString() === selectedDate.toDateString()
+  );
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return '#10B981';
+      case 'pending': return '#F59E0B';
+      case 'cancelled': return '#EF4444';
+      default: return '#627D98';
+    }
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Calendar</Text>
-        <View style={styles.viewToggle}>
-          <TouchableOpacity
-            style={[styles.toggleBtn, viewMode === 'week' && styles.toggleBtnActive]}
-            onPress={() => setViewMode('week')}
-          >
-            <Text style={[styles.toggleText, viewMode === 'week' && styles.toggleTextActive]}>
-              Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.toggleBtn, viewMode === 'day' && styles.toggleBtnActive]}
-            onPress={() => setViewMode('day')}
-          >
-            <Text style={[styles.toggleText, viewMode === 'day' && styles.toggleTextActive]}>
-              Day
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.addBtn}>
+          <Ionicons name="add" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
 
       {/* Month Navigation */}
       <View style={styles.monthNav}>
-        <TouchableOpacity style={styles.navButton}>
-          <Text style={styles.navIcon}>‹</Text>
+        <TouchableOpacity onPress={() => {
+          const newDate = new Date(selectedDate);
+          newDate.setMonth(newDate.getMonth() - 1);
+          setSelectedDate(newDate);
+        }}>
+          <Ionicons name="chevron-back" size={24} color="#0A1626" />
         </TouchableOpacity>
-        <Text style={styles.monthTitle}>
+        <Text style={styles.monthText}>
           {selectedDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
         </Text>
-        <TouchableOpacity style={styles.navButton}>
-          <Text style={styles.navIcon}>›</Text>
+        <TouchableOpacity onPress={() => {
+          const newDate = new Date(selectedDate);
+          newDate.setMonth(newDate.getMonth() + 1);
+          setSelectedDate(newDate);
+        }}>
+          <Ionicons name="chevron-forward" size={24} color="#0A1626" />
         </TouchableOpacity>
       </View>
 
-      {/* Week Days Header */}
-      <View style={styles.weekHeader}>
+      {/* Week View */}
+      <View style={styles.weekContainer}>
         {weekDates.map((date, index) => {
-          const isToday = date.toDateString() === today.toDateString();
           const isSelected = date.toDateString() === selectedDate.toDateString();
+          const isToday = date.toDateString() === new Date().toDateString();
+          const hasBookings = bookings.some(b => new Date(b.datetime).toDateString() === date.toDateString());
+          
           return (
             <TouchableOpacity
               key={index}
-              style={[styles.dayHeader, isSelected && styles.dayHeaderSelected]}
+              style={[styles.dayCell, isSelected && styles.dayCellSelected]}
               onPress={() => setSelectedDate(date)}
             >
-              <Text style={[styles.dayName, isSelected && styles.dayNameSelected]}>
-                {DAYS[index]}
+              <Text style={[styles.dayName, isSelected && styles.dayTextSelected]}>{dayNames[index]}</Text>
+              <Text style={[styles.dayNum, isSelected && styles.dayTextSelected, isToday && !isSelected && styles.dayToday]}>
+                {date.getDate()}
               </Text>
-              <View style={[styles.dayNumber, isToday && styles.dayNumberToday]}>
-                <Text style={[
-                  styles.dayNumberText,
-                  isToday && styles.dayNumberTextToday,
-                  isSelected && styles.dayNumberTextSelected,
-                ]}>
-                  {date.getDate()}
-                </Text>
-              </View>
+              {hasBookings && <View style={[styles.bookingDot, isSelected && styles.bookingDotSelected]} />}
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {/* Calendar Grid */}
-      <ScrollView style={styles.calendarScroll} showsVerticalScrollIndicator={false}>
-        <View style={styles.calendarGrid}>
-          {/* Time Labels */}
-          <View style={styles.timeColumn}>
-            {HOURS.map((hour) => (
-              <View key={hour} style={styles.timeSlot}>
-                <Text style={styles.timeLabel}>
-                  {hour.toString().padStart(2, '0')}:00
-                </Text>
-              </View>
-            ))}
+      {/* Day Schedule */}
+      <ScrollView
+        style={styles.scheduleContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
+        }
+      >
+        <Text style={styles.scheduleTitle}>
+          {selectedDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </Text>
+        
+        {dayBookings.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="calendar-outline" size={48} color="#E2E8F0" />
+            <Text style={styles.emptyText}>No bookings for this day</Text>
+            <Text style={styles.emptySubtext}>Enjoy your free time!</Text>
           </View>
-
-          {/* Day Columns */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.daysContainer}>
-              {weekDates.map((date, dayIndex) => (
-                <View key={dayIndex} style={styles.dayColumn}>
-                  {HOURS.map((hour) => (
-                    <View key={hour} style={styles.hourSlot}>
-                      {/* Bookings */}
-                      {getBookingsForDay(dayIndex)
-                        .filter((b) => b.hour === hour)
-                        .map((booking) => (
-                          <TouchableOpacity
-                            key={booking.id}
-                            style={[
-                              styles.bookingBlock,
-                              { height: booking.duration * 60 },
-                            ]}
-                          >
-                            <Text style={styles.bookingClient} numberOfLines={1}>
-                              {booking.client}
-                            </Text>
-                            <Text style={styles.bookingService} numberOfLines={1}>
-                              {booking.service}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                    </View>
-                  ))}
+        ) : (
+          dayBookings.sort((a, b) => new Date(a.datetime) - new Date(b.datetime)).map((booking) => (
+            <View key={booking.id} style={styles.bookingCard}>
+              <View style={[styles.statusLine, { backgroundColor: getStatusColor(booking.status) }]} />
+              <View style={styles.bookingContent}>
+                <View style={styles.bookingHeader}>
+                  <Text style={styles.bookingTime}>{formatTime(booking.datetime)}</Text>
+                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) + '20' }]}>
+                    <Text style={[styles.statusText, { color: getStatusColor(booking.status) }]}>
+                      {booking.status}
+                    </Text>
+                  </View>
                 </View>
-              ))}
+                <Text style={styles.serviceName}>{booking.service_name}</Text>
+                <View style={styles.clientRow}>
+                  <Ionicons name="person-outline" size={14} color="#627D98" />
+                  <Text style={styles.clientName}>{booking.client_name}</Text>
+                </View>
+              </View>
             </View>
-          </ScrollView>
-        </View>
+          ))
+        )}
+        <View style={{ height: 40 }} />
       </ScrollView>
-
-      {/* Add Booking FAB */}
-      <TouchableOpacity style={styles.fab}>
-        <Text style={styles.fabIcon}>+</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -169,185 +183,170 @@ export default function CalendarScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   headerTitle: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
   },
-  viewToggle: {
-    flexDirection: 'row',
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: borderRadius.lg,
-    padding: 4,
-  },
-  toggleBtn: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  toggleBtnActive: {
-    backgroundColor: colors.surface,
-    ...shadows.sm,
-  },
-  toggleText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  toggleTextActive: {
-    color: colors.text,
+  addBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: TEAL,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   monthNav: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.sm,
-    gap: spacing.lg,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
-  navButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shadows.sm,
-  },
-  navIcon: {
-    fontSize: 20,
-    color: colors.text,
-  },
-  monthTitle: {
-    fontSize: typography.sizes.lg,
+  monthText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
   },
-  weekHeader: {
+  weekContainer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    paddingHorizontal: 12,
+    paddingBottom: 16,
+    gap: 4,
   },
-  dayHeader: {
+  dayCell: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  dayHeaderSelected: {
-    backgroundColor: `${colors.primary}10`,
-    borderRadius: borderRadius.lg,
+  dayCellSelected: {
+    backgroundColor: TEAL,
+    borderColor: TEAL,
   },
   dayName: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '500',
-    color: colors.textMuted,
+    fontSize: 11,
+    color: '#627D98',
     marginBottom: 4,
   },
-  dayNameSelected: {
-    color: colors.primary,
+  dayNum: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
   },
-  dayNumber: {
-    width: 32,
-    height: 32,
+  dayTextSelected: {
+    color: '#FFFFFF',
+  },
+  dayToday: {
+    color: TEAL,
+  },
+  bookingDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: TEAL,
+    marginTop: 4,
+  },
+  bookingDotSelected: {
+    backgroundColor: '#FFFFFF',
+  },
+  scheduleContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  scheduleTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginBottom: 16,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  dayNumberToday: {
-    backgroundColor: colors.primary,
-  },
-  dayNumberText: {
-    fontSize: typography.sizes.base,
+  emptyText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: '#627D98',
+    marginTop: 12,
   },
-  dayNumberTextToday: {
-    color: colors.surface,
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9FB3C8',
+    marginTop: 4,
   },
-  dayNumberTextSelected: {
-    color: colors.primary,
-  },
-  calendarScroll: {
-    flex: 1,
-  },
-  calendarGrid: {
+  bookingCard: {
     flexDirection: 'row',
-  },
-  timeColumn: {
-    width: 56,
-    paddingTop: spacing.xs,
-  },
-  timeSlot: {
-    height: 60,
-    justifyContent: 'flex-start',
-    paddingTop: 2,
-    paddingRight: spacing.sm,
-    alignItems: 'flex-end',
-  },
-  timeLabel: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-  },
-  daysContainer: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-  dayColumn: {
-    width: 80,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.borderLight,
-  },
-  hourSlot: {
-    height: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-    position: 'relative',
-  },
-  bookingBlock: {
-    position: 'absolute',
-    left: 2,
-    right: 2,
-    top: 2,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.sm,
-    padding: spacing.xs,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 12,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  bookingClient: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '600',
-    color: colors.surface,
+  statusLine: {
+    width: 4,
   },
-  bookingService: {
-    fontSize: 10,
-    color: 'rgba(255,255,255,0.8)',
+  bookingContent: {
+    flex: 1,
+    padding: 16,
   },
-  fab: {
-    position: 'absolute',
-    bottom: spacing.xl + 80,
-    right: spacing.xl,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
+  bookingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    ...shadows.lg,
+    marginBottom: 8,
   },
-  fabIcon: {
-    fontSize: 28,
-    color: colors.surface,
-    fontWeight: '300',
+  bookingTime: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0A1626',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  serviceName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginBottom: 4,
+  },
+  clientRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  clientName: {
+    fontSize: 14,
+    color: '#627D98',
   },
 });
