@@ -11,7 +11,8 @@ import {
   LogOut,
   Menu,
   X,
-  Shield
+  Shield,
+  UsersRound
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
@@ -25,6 +26,7 @@ const AppLayout = ({ children }) => {
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/calendar', label: 'Calendar', icon: Calendar },
     { path: '/bookings', label: 'Bookings', icon: Users },
+    { path: '/team', label: 'Team', icon: UsersRound },
     { path: '/services', label: 'Services', icon: Scissors },
     { path: '/share', label: 'Booking Page', icon: Link2 },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
