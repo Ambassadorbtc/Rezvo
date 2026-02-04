@@ -183,7 +183,7 @@ const AppLayout = ({ children }) => {
         </div>
       </nav>
 
-      {/* Search Modal - Temporarily disabled */}
+      {/* Mobile Bottom Nav */}
     </div>
   );
 };
