@@ -51,6 +51,23 @@ import {
 import { toast } from 'sonner';
 import { Toaster } from '../components/ui/sonner';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts';
+
+const CHART_COLORS = ['#00BFA5', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 const FounderAdminPage = () => {
   const { user, logout } = useAuth();
@@ -58,6 +75,7 @@ const FounderAdminPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [users, setUsers] = useState([]);
   const [businesses, setBusinesses] = useState([]);
   const [bookings, setBookings] = useState([]);
