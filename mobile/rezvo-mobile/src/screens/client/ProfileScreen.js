@@ -65,18 +65,6 @@ export default function ProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Switch Mode */}
-        <TouchableOpacity style={styles.switchModeCard} onPress={handleSwitchMode}>
-          <View style={styles.switchModeIcon}>
-            <Text style={styles.switchModeEmoji}>💼</Text>
-          </View>
-          <View style={styles.switchModeContent}>
-            <Text style={styles.switchModeTitle}>Switch to Business Mode</Text>
-            <Text style={styles.switchModeSubtitle}>Manage your bookings and services</Text>
-          </View>
-          <Text style={styles.chevron}>›</Text>
-        </TouchableOpacity>
-
         {/* Menu Items */}
         <View style={styles.menuContainer}>
           {menuItems.map((item, index) => (
