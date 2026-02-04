@@ -130,6 +130,9 @@ function ClientStack() {
       <Stack.Screen name="ClientTabs" component={ClientTabs} />
       <Stack.Screen name="BusinessDetail" component={BusinessDetailScreen} />
       <Stack.Screen name="BookingFlow" component={BookingFlowScreen} />
+      <Stack.Screen name="HelpCentre" component={HelpCentreScreen} />
+      <Stack.Screen name="ContactSupport" component={ContactSupportScreen} />
+      <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
     </Stack.Navigator>
   );
 }
