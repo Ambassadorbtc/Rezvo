@@ -338,86 +338,87 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        {/* Calendar Grid */}
-        <div className="flex-1 overflow-hidden flex">
-          {/* Time Column */}
-          <div className="w-16 border-r border-gray-200 bg-white flex-shrink-0">
-            <div className="h-14 border-b border-gray-200" /> {/* Spacer for header */}
-            <div className="relative">
-              {hours.map((hour) => (
-                <div key={hour} className="h-[60px] border-b border-gray-50 flex items-start justify-end pr-2 pt-0">
-                  <span className="text-xs text-navy-400 -mt-2">
-                    {hour.toString().padStart(2, '0')}:00
-                  </span>
-                </div>
-              ))}
+        {/* Calendar Views */}
+        {viewMode === 'day' && (
+          <div className="flex-1 overflow-hidden flex">
+            {/* Time Column */}
+            <div className="w-16 border-r border-gray-200 bg-white flex-shrink-0">
+              <div className="h-14 border-b border-gray-200" /> {/* Spacer for header */}
+              <div className="relative">
+                {hours.map((hour) => (
+                  <div key={hour} className="h-[60px] border-b border-gray-50 flex items-start justify-end pr-2 pt-0">
+                    <span className="text-xs text-navy-400 -mt-2">
+                      {hour.toString().padStart(2, '0')}:00
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Team Member Columns */}
-          <div className="flex-1 overflow-x-auto">
-            <div className="flex min-w-max">
-              {displayMembers.map((member) => {
-                const memberBookings = teamMembers.length > 0 
-                  ? getBookingsForMember(member.id)
-                  : bookings;
-                
-                return (
-                  <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
-                    {/* Member Header */}
-                    <div 
-                      className="h-14 border-b border-gray-200 bg-white flex items-center justify-center gap-2 px-3 sticky top-0"
-                      style={{ borderTopWidth: 3, borderTopColor: member.color }}
-                    >
+            {/* Team Member Columns */}
+            <div className="flex-1 overflow-x-auto">
+              <div className="flex min-w-max">
+                {displayMembers.map((member) => {
+                  const memberBookings = teamMembers.length > 0 
+                    ? getBookingsForMember(member.id)
+                    : bookings;
+                  
+                  return (
+                    <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
+                      {/* Member Header */}
                       <div 
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
-                        style={{ backgroundColor: member.color }}
+                        className="h-14 border-b border-gray-200 bg-white flex items-center justify-center gap-2 px-3 sticky top-0"
+                        style={{ borderTopWidth: 3, borderTopColor: member.color }}
                       >
-                        {member.name?.charAt(0)}
+                        <div 
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                          style={{ backgroundColor: member.color }}
+                        >
+                          {member.name?.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-navy-900 truncate">{member.name}</p>
+                          <p className="text-xs text-navy-400">{member.role || 'All'}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-navy-900 truncate">{member.name}</p>
-                        <p className="text-xs text-navy-400">{member.role || 'All'}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Time Grid with Bookings */}
-                    <div className="relative bg-white">
-                      {/* Hour lines */}
-                      {hours.map((hour) => (
-                        <div key={hour} className="h-[60px] border-b border-gray-50" />
-                      ))}
                       
-                      {/* Bookings */}
-                      {memberBookings.map((booking) => {
-                        const { top, height } = getBookingPosition(booking);
-                        const colors = getServiceColor(booking.service_id);
+                      {/* Time Grid with Bookings */}
+                      <div className="relative bg-white">
+                        {/* Hour lines */}
+                        {hours.map((hour) => (
+                          <div key={hour} className="h-[60px] border-b border-gray-50" />
+                        ))}
                         
-                        return (
-                          <div
-                            key={booking.id}
-                            className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-lg p-2 overflow-hidden cursor-pointer hover:shadow-md transition-shadow`}
-                            style={{ top: `${top}px`, height: `${height}px` }}
-                            onClick={() => toast.info(`${booking.client_name} - ${booking.service_name}`)}
-                          >
-                            <div className={`text-xs font-semibold ${colors.text}`}>
-                              {formatBookingTime(booking.datetime)}
-                            </div>
-                            <div className="text-sm font-medium text-navy-900 truncate">
-                              {booking.client_name}
-                            </div>
-                            {height > 50 && (
-                              <div className="text-xs text-navy-500 truncate">
-                                {booking.service_name}
+                        {/* Bookings */}
+                        {memberBookings.map((booking) => {
+                          const { top, height } = getBookingPosition(booking);
+                          const colors = getServiceColor(booking.service_id);
+                          
+                          return (
+                            <div
+                              key={booking.id}
+                              className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-lg p-2 overflow-hidden cursor-pointer hover:shadow-md transition-shadow`}
+                              style={{ top: `${top}px`, height: `${height}px` }}
+                              onClick={() => toast.info(`${booking.client_name} - ${booking.service_name}`)}
+                            >
+                              <div className={`text-xs font-semibold ${colors.text}`}>
+                                {formatBookingTime(booking.datetime)}
                               </div>
-                            )}
-                            {height > 70 && (
-                              <div className="text-xs text-navy-400 mt-1">
-                                {formatPrice(booking.price_pence)}
+                              <div className="text-sm font-medium text-navy-900 truncate">
+                                {booking.client_name}
                               </div>
-                            )}
-                          </div>
-                        );
+                              {height > 50 && (
+                                <div className="text-xs text-navy-500 truncate">
+                                  {booking.service_name}
+                                </div>
+                              )}
+                              {height > 70 && (
+                                <div className="text-xs text-navy-400 mt-1">
+                                  {formatPrice(booking.price_pence)}
+                                </div>
+                              )}
+                            </div>
+                          );
                       })}
                     </div>
                   </div>
