@@ -114,6 +114,25 @@ class ServiceUpdate(BaseModel):
     deposit_amount_pence: Optional[int] = None
     description: Optional[str] = None
 
+# ==================== PRODUCTS MODELS ====================
+
+class ProductCreate(BaseModel):
+    name: str
+    price_pence: int
+    description: Optional[str] = None
+    stock_quantity: Optional[int] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    price_pence: Optional[int] = None
+    description: Optional[str] = None
+    stock_quantity: Optional[int] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    active: Optional[bool] = None
+
 class AvailabilitySlot(BaseModel):
     day: int  # 0=Sunday, 1=Monday, etc.
     start_min: int  # Minutes from midnight (e.g., 540 = 9am)
