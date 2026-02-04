@@ -1565,6 +1565,67 @@ async def get_admin_stats(current_user: dict = Depends(get_current_user)):
         "total_services": total_services
     }
 
+@api_router.get("/admin/analytics")
+async def get_admin_analytics(current_user: dict = Depends(get_current_user)):
+    """Get analytics data for admin dashboard charts"""
+    if current_user.get("role") not in ["admin", "founder", "business", "owner"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    
+    # Get data for the last 7 days
+    daily_data = []
+    for i in range(6, -1, -1):
+        day = now - timedelta(days=i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+        
+        # Count users created that day
+        users_count = await db.users.count_documents({
+            "created_at": {"$gte": day_start.isoformat(), "$lte": day_end.isoformat()}
+        })
+        
+        # Count bookings that day
+        bookings_count = await db.bookings.count_documents({
+            "created_at": {"$gte": day_start.isoformat(), "$lte": day_end.isoformat()}
+        })
+        
+        # Calculate revenue (completed bookings)
+        bookings = await db.bookings.find({
+            "created_at": {"$gte": day_start.isoformat(), "$lte": day_end.isoformat()},
+            "status": "completed"
+        }).to_list(1000)
+        revenue = sum(b.get("price_pence", 0) for b in bookings)
+        
+        daily_data.append({
+            "date": day.strftime("%a"),
+            "fullDate": day.strftime("%Y-%m-%d"),
+            "users": users_count,
+            "bookings": bookings_count,
+            "revenue": revenue / 100  # Convert to pounds
+        })
+    
+    # Get booking status breakdown
+    status_counts = {}
+    for status in ["pending", "confirmed", "completed", "cancelled"]:
+        count = await db.bookings.count_documents({"status": status})
+        status_counts[status] = count
+    
+    # Get top services
+    pipeline = [
+        {"$group": {"_id": "$service_name", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 5}
+    ]
+    top_services = await db.bookings.aggregate(pipeline).to_list(5)
+    
+    return {
+        "daily": daily_data,
+        "status_breakdown": status_counts,
+        "top_services": [{"name": s["_id"] or "Unknown", "bookings": s["count"]} for s in top_services]
+    }
+
 @api_router.get("/admin/users")
 async def get_admin_users(current_user: dict = Depends(get_current_user)):
     """Get all users for admin panel"""
