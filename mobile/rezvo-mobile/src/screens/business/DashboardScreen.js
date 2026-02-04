@@ -6,196 +6,160 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import api, { formatPrice } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
 
-const quickStats = [
-  { label: 'Today', value: '3', sublabel: 'bookings', icon: '📅', color: colors.primary },
-  { label: 'This Week', value: '£420', sublabel: 'revenue', icon: '💷', color: colors.success },
-  { label: 'Pending', value: '2', sublabel: 'confirmations', icon: '⏳', color: colors.warning },
-];
+const TEAL = '#00BFA5';
 
 export default function DashboardScreen({ navigation }) {
   const { user } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [todayBookings, setTodayBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({
-    todayBookings: 3,
-    weekRevenue: 42000,
-    pendingCount: 2,
-  });
-  const [upcomingBookings, setUpcomingBookings] = useState([
-    { id: '1', client: 'Emma Watson', service: 'Haircut & Style', time: '10:00', status: 'confirmed' },
-    { id: '2', client: 'John Smith', service: 'Beard Trim', time: '11:30', status: 'pending' },
-    { id: '3', client: 'Sarah Connor', service: 'Hair Colouring', time: '14:00', status: 'confirmed' },
-  ]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboard = async () => {
     try {
-      const response = await api.get('/analytics/dashboard');
-      if (response.data) {
-        setStats(response.data);
-      }
+      const [statsRes, bookingsRes] = await Promise.all([
+        api.get('/business/stats'),
+        api.get('/bookings')
+      ]);
+      setStats(statsRes.data);
+      // Filter today's bookings
+      const today = new Date().toDateString();
+      const todaysBookings = (bookingsRes.data || []).filter(b => 
+        new Date(b.datetime).toDateString() === today
+      );
+      setTodayBookings(todaysBookings);
     } catch (error) {
-      console.log('Using mock dashboard data');
+      console.error('Error fetching dashboard:', error);
     } finally {
+      setLoading(false);
       setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboard();
   }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchDashboardData();
+    fetchDashboard();
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed':
-        return colors.success;
-      case 'pending':
-        return colors.warning;
-      default:
-        return colors.textMuted;
-    }
-  };
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
-        showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
       >
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Welcome back</Text>
-            <Text style={styles.businessName}>
-              {user?.business_name || user?.email?.split('@')[0] || 'Business'}
-            </Text>
+            <Text style={styles.greeting}>Good {new Date().getHours() < 12 ? 'morning' : 'afternoon'}</Text>
+            <Text style={styles.businessName}>{user?.business_name || 'Your Business'}</Text>
           </View>
           <TouchableOpacity style={styles.notificationBtn}>
-            <Text style={styles.notificationIcon}>🔔</Text>
-            <View style={styles.notificationBadge} />
+            <Ionicons name="notifications-outline" size={24} color="#0A1626" />
           </TouchableOpacity>
         </View>
 
-        {/* Quick Stats */}
-        <View style={styles.statsContainer}>
-          {quickStats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
-              <View style={[styles.statIcon, { backgroundColor: `${stat.color}15` }]}>
-                <Text style={styles.statEmoji}>{stat.icon}</Text>
-              </View>
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.sublabel}</Text>
-            </View>
-          ))}
+        {/* Stats Cards */}
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard, { backgroundColor: '#E8F5F3' }]}>
+            <Ionicons name="calendar" size={24} color={TEAL} />
+            <Text style={styles.statValue}>{stats?.today_bookings || 0}</Text>
+            <Text style={styles.statLabel}>Today</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: '#FEF3C7' }]}>
+            <Ionicons name="time" size={24} color="#F59E0B" />
+            <Text style={styles.statValue}>{stats?.pending || 0}</Text>
+            <Text style={styles.statLabel}>Pending</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: '#E0E7FF' }]}>
+            <Ionicons name="cash" size={24} color="#6366F1" />
+            <Text style={styles.statValue}>{formatPrice((stats?.revenue || 0) * 100)}</Text>
+            <Text style={styles.statLabel}>This Week</Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: '#FCE7F3' }]}>
+            <Ionicons name="people" size={24} color="#EC4899" />
+            <Text style={styles.statValue}>{stats?.total_clients || 0}</Text>
+            <Text style={styles.statLabel}>Clients</Text>
+          </View>
         </View>
 
-        {/* Share Link CTA */}
-        <TouchableOpacity style={styles.shareLinkCard}>
-          <View style={styles.shareLinkContent}>
-            <Text style={styles.shareLinkTitle}>Share Your Booking Link</Text>
-            <Text style={styles.shareLinkSubtitle}>
-              Let clients book appointments directly
-            </Text>
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Calendar')}>
+              <View style={[styles.actionIcon, { backgroundColor: '#E8F5F3' }]}>
+                <Ionicons name="calendar" size={22} color={TEAL} />
+              </View>
+              <Text style={styles.actionText}>Calendar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Services')}>
+              <View style={[styles.actionIcon, { backgroundColor: '#FEF3C7' }]}>
+                <Ionicons name="cut" size={22} color="#F59E0B" />
+              </View>
+              <Text style={styles.actionText}>Services</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Settings')}>
+              <View style={[styles.actionIcon, { backgroundColor: '#E0E7FF' }]}>
+                <Ionicons name="share-social" size={22} color="#6366F1" />
+              </View>
+              <Text style={styles.actionText}>Share Link</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.shareLinkButton}>
-            <Text style={styles.shareLinkButtonText}>Share</Text>
-          </View>
-        </TouchableOpacity>
+        </View>
 
         {/* Today's Schedule */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Today's Schedule</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Calendar')}>
-              <Text style={styles.seeAll}>See All</Text>
+              <Text style={styles.seeAll}>See all</Text>
             </TouchableOpacity>
           </View>
-
-          {upcomingBookings.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📅</Text>
+          
+          {todayBookings.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="calendar-outline" size={40} color="#E2E8F0" />
               <Text style={styles.emptyText}>No bookings today</Text>
             </View>
           ) : (
-            <View style={styles.bookingsList}>
-              {upcomingBookings.map((booking) => (
-                <TouchableOpacity key={booking.id} style={styles.bookingCard}>
-                  <View style={styles.bookingTime}>
-                    <Text style={styles.bookingTimeText}>{booking.time}</Text>
-                  </View>
-                  <View style={styles.bookingInfo}>
-                    <Text style={styles.clientName}>{booking.client}</Text>
-                    <Text style={styles.serviceName}>{booking.service}</Text>
-                  </View>
-                  <View style={[styles.statusDot, { backgroundColor: getStatusColor(booking.status) }]} />
-                </TouchableOpacity>
-              ))}
-            </View>
+            todayBookings.slice(0, 3).map((booking) => (
+              <View key={booking.id} style={styles.bookingCard}>
+                <View style={styles.bookingTime}>
+                  <Text style={styles.timeText}>
+                    {new Date(booking.datetime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+                <View style={styles.bookingInfo}>
+                  <Text style={styles.bookingService}>{booking.service_name}</Text>
+                  <Text style={styles.bookingClient}>{booking.client_name}</Text>
+                </View>
+                <View style={[styles.statusDot, { backgroundColor: booking.status === 'confirmed' ? '#10B981' : '#F59E0B' }]} />
+              </View>
+            ))
           )}
         </View>
-
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => navigation.navigate('Services')}
-            >
-              <View style={[styles.actionIcon, { backgroundColor: `${colors.primary}15` }]}>
-                <Text style={styles.actionEmoji}>✂️</Text>
-              </View>
-              <Text style={styles.actionLabel}>Services</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => navigation.navigate('Bookings')}
-            >
-              <View style={[styles.actionIcon, { backgroundColor: `${colors.secondary}15` }]}>
-                <Text style={styles.actionEmoji}>📋</Text>
-              </View>
-              <Text style={styles.actionLabel}>Bookings</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => navigation.navigate('Settings')}
-            >
-              <View style={[styles.actionIcon, { backgroundColor: `${colors.warning}15` }]}>
-                <Text style={styles.actionEmoji}>⏰</Text>
-              </View>
-              <Text style={styles.actionLabel}>Availability</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionCard}
-              onPress={() => navigation.navigate('Settings')}
-            >
-              <View style={[styles.actionIcon, { backgroundColor: `${colors.navy}15` }]}>
-                <Text style={styles.actionEmoji}>📊</Text>
-              </View>
-              <Text style={styles.actionLabel}>Analytics</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={{ height: spacing.xxl }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -204,218 +168,163 @@ export default function DashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
   greeting: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: 2,
+    fontSize: 15,
+    color: '#627D98',
   },
   businessName: {
-    fontSize: typography.sizes['2xl'],
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
+    color: '#0A1626',
+    marginTop: 4,
   },
   notificationBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.surface,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    ...shadows.sm,
-    position: 'relative',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  notificationIcon: {
-    fontSize: 20,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.secondary,
-  },
-  statsContainer: {
+  statsGrid: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
+    flexWrap: 'wrap',
+    paddingHorizontal: 16,
+    marginTop: 16,
+    gap: 12,
   },
   statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.xl,
-    padding: spacing.md,
-    alignItems: 'center',
-    ...shadows.sm,
-  },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  statEmoji: {
-    fontSize: 20,
+    width: '47%',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'flex-start',
   },
   statValue: {
-    fontSize: typography.sizes.xl,
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.text,
-    marginBottom: 2,
+    color: '#0A1626',
+    marginTop: 8,
   },
   statLabel: {
-    fontSize: typography.sizes.xs,
-    color: colors.textMuted,
-  },
-  shareLinkCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-  },
-  shareLinkContent: {
-    flex: 1,
-  },
-  shareLinkTitle: {
-    fontSize: typography.sizes.base,
-    fontWeight: '600',
-    color: colors.surface,
-    marginBottom: 4,
-  },
-  shareLinkSubtitle: {
-    fontSize: typography.sizes.sm,
-    color: 'rgba(255,255,255,0.8)',
-  },
-  shareLinkButton: {
-    backgroundColor: colors.surface,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.full,
-  },
-  shareLinkButtonText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
+    fontSize: 13,
+    color: '#627D98',
+    marginTop: 4,
   },
   section: {
-    marginBottom: spacing.xl,
+    marginTop: 24,
+    paddingHorizontal: 20,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: typography.sizes.lg,
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
+    marginBottom: 12,
   },
   seeAll: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.primary,
+    fontSize: 14,
+    color: TEAL,
+    fontWeight: '500',
   },
-  bookingsList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
+  actionsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  actionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  actionText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#0A1626',
+  },
+  emptyCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  emptyText: {
+    fontSize: 15,
+    color: '#627D98',
+    marginTop: 12,
   },
   bookingCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    ...shadows.sm,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   bookingTime: {
-    backgroundColor: colors.surfaceAlt,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    marginRight: spacing.md,
+    backgroundColor: '#F5F0E8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
-  bookingTimeText: {
-    fontSize: typography.sizes.sm,
+  timeText: {
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.text,
+    color: '#0A1626',
   },
   bookingInfo: {
     flex: 1,
+    marginLeft: 12,
   },
-  clientName: {
-    fontSize: typography.sizes.base,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: 2,
+  bookingService: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0A1626',
   },
-  serviceName: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
+  bookingClient: {
+    fontSize: 13,
+    color: '#627D98',
+    marginTop: 2,
   },
   statusDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  emptyIcon: {
-    fontSize: 32,
-    marginBottom: spacing.sm,
-  },
-  emptyText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: spacing.xl,
-    gap: spacing.sm,
-  },
-  actionCard: {
-    width: '48%',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    alignItems: 'center',
-    ...shadows.sm,
-  },
-  actionIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  actionEmoji: {
-    fontSize: 28,
-  },
-  actionLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '500',
-    color: colors.text,
   },
 });
