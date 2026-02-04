@@ -1,122 +1,111 @@
 # Rezvo.app - Product Requirements Document
 
-## Overview
-Rezvo is a £4.99/month booking tool for UK micro-businesses. Target: mobile hairdressers, food trucks, nail techs, personal trainers, dog groomers, driving instructors.
+## Original Problem Statement
+Build a booking application MVP called `rezvo.app` for UK micro-businesses. The application includes a web-first responsive application for businesses and a native mobile app for both clients and businesses. The design aesthetic is "super modern," inspired by UK challenger banks Monzo and Starling.
 
-**Core Promise:** Generate a shareable booking link in 12 seconds.
-**App Name:** rezvo.app
+## User Personas
+1. **Business Owner** - UK micro-business (hairdresser, nail tech, barber, PT, etc.) who needs simple booking management
+2. **Client** - End customer who wants to book appointments easily
+3. **Founder/Admin** - Platform administrator who monitors the system
 
----
+## Core Requirements
+- **Monetization:** £4.99/month subscription via Stripe (PLANNED)
+- **Core Feature:** Allow businesses to generate shareable booking links
+- **Platforms:** Web application + React Native mobile app
+- **Design:** Light theme with teal (#00BFA5) accents, Space Grotesk & Plus Jakarta Sans fonts
 
 ## What's Been Implemented
 
-### Date: 2026-02-04 (Session 2)
+### Web Application (React)
+- [x] Landing page with modern design and CTA
+- [x] User authentication (JWT-based)
+- [x] Business dashboard with stats
+- [x] Calendar view for availability
+- [x] Services management (CRUD)
+- [x] Bookings management with status updates
+- [x] Analytics dashboard with charts
+- [x] Settings page with business details
+- [x] Shareable booking links with QR codes
+- [x] Public booking page for customers
+- [x] Legal pages: Privacy, Terms, Cookie Policy
+- [x] Cookie consent popup (GDPR compliant)
+- [x] Onboarding wizard UI (4 steps)
 
-**✅ Completed This Session:**
+### Mobile Application (React Native/Expo)
+- [x] Welcome screen with onboarding slides
+- [x] Login/Signup screens with user type toggle
+- [x] **Client Flow:**
+  - Home screen with categories and businesses
+  - Search screen with filters
+  - Bookings list (upcoming/past)
+  - Business detail view
+  - Full booking flow (date, time, details, confirm)
+  - Profile screen (NO switch to business mode)
+- [x] **Business Flow:**
+  - Dashboard with stats and quick actions
+  - Calendar with week view
+  - Bookings management with status actions
+  - Services management with add/edit modal
+  - Settings with share link generation
 
-1. **Monzo/Starling Fonts**
-   - Space Grotesk for headlines
-   - Plus Jakarta Sans for body/UI
+### Backend (FastAPI + MongoDB)
+- [x] Authentication endpoints (signup, login, me)
+- [x] Business management endpoints
+- [x] Services CRUD endpoints
+- [x] Bookings endpoints with status management
+- [x] Public booking endpoints
+- [x] AI-powered suggestions (OpenAI GPT-4o-mini)
+- [x] Email notifications (Resend)
+- [x] Notifications system
+- [x] Error logging system
+- [x] Short link generation and resolution
+- [x] Seed data endpoint (10 dummy customers)
+- [x] Business stats/analytics endpoint
 
-2. **Session Persistence Bug Fixed**
-   - Renamed localStorage keys to `rezvo_token` / `rezvo_user`
-   - Immediate state rehydration
-
-3. **React Native Mobile App** (`/app/mobile/rezvo-mobile`)
-   - Dual-mode: Client App + Business App
-   - 11 screens total (6 client, 5 business)
-   - Teal (#00BFA5) theme matching web
-   - Bottom tab navigation
-
-4. **Mobile App Web Preview** (`/mobile-preview`)
-   - Interactive preview in browser
-   - Toggle between Client/Business modes
-   - Navigate all screens
-
-5. **Email Notifications (Resend Integration)**
-   - Booking confirmation emails (auto-sent)
-   - Reminder emails (24hr before)
-   - Professional HTML templates with Rezvo branding
-   - Non-blocking async sending
-
-6. **AI-Powered Features (OpenAI GPT-4o-mini)**
-   - `/api/ai/suggest-slots` - Smart slot recommendations
-   - `/api/ai/chat` - Business assistant chatbot
-   - Uses Emergent LLM Key
-
----
-
-## API Endpoints
-
-### Auth
-- `POST /api/auth/signup` - Create account
-- `POST /api/auth/login` - Login
-- `GET /api/auth/me` - Get current user
-
-### Business & Services
-- `POST /api/business` - Create business
-- `GET /api/business/{id}` - Get business
-- `CRUD /api/services` - Manage services
-
-### Bookings
-- `GET /api/bookings` - List bookings
-- `POST /api/public/bookings` - Create public booking (auto-sends email)
-- `PATCH /api/bookings/{id}/status` - Update status
-
-### Notifications
-- `POST /api/notifications/send-confirmation` - Manual confirmation
-- `POST /api/notifications/send-reminder` - Send reminder
-- `POST /api/notifications/test-email` - Test email config
-
-### AI Features
-- `POST /api/ai/suggest-slots` - Get smart slot suggestions
-- `POST /api/ai/chat` - Chat with AI assistant
-
-### Share & Analytics
-- `GET /api/links/generate` - Get shareable link
-- `GET /api/analytics` - Dashboard stats
-
----
-
-## Technical Stack
-
-**Backend:** FastAPI, MongoDB, JWT Auth, Resend (email), OpenAI GPT-4o-mini
-**Web Frontend:** React, Tailwind CSS, shadcn/ui, Recharts
-**Mobile:** React Native + Expo (at `/app/mobile/rezvo-mobile`)
-**Fonts:** Space Grotesk, Plus Jakarta Sans
-
----
+### Integrations
+- [x] OpenAI GPT-4o-mini (via Emergent LLM Key)
+- [x] Resend for email notifications
+- [x] React Native / Expo for mobile
 
 ## Test Credentials
-```
-Email: testuser@example.com
-Password: password123
-```
+- **Email:** testuser@example.com
+- **Password:** password123
 
----
+## Database Schema
+- **users:** id, email, passwordHash, role, createdAt, business_id
+- **businesses:** id, ownerId, name, logoUrl, services, availability
+- **services:** id, businessId, name, pricePence, durationMin
+- **bookings:** id, serviceId, clientName, datetime, status
+- **notifications:** id, userId, title, message, type, read
+- **short_links:** id, short_code, business_id, clicks
+- **error_logs:** id, type, message, stack, resolved
 
-## Remaining Work (Deferred)
+## P0 - Next Priority Tasks
+1. Stripe subscription integration (£4.99/month)
+2. Wire onboarding wizard to backend
+3. Push notifications (Expo)
+4. Google Calendar sync
 
-### P1 - Important
-- [ ] Dojo payment integration (user deferred)
-- [ ] Push notifications for mobile (Expo Push)
-- [ ] Google Calendar sync
-- [ ] Stripe subscription billing (£4.99/mo)
+## P1 - Upcoming Tasks
+- Automated booking reminders (cron/scheduled)
+- CRM features (client history, notes)
+- Multi-staff scheduling
+- Customer reviews
 
-### P2 - Nice to Have
-- [ ] Native mobile app deployment (App Store/Play Store)
-- [ ] Multi-staff scheduling
-- [ ] Customer reviews/ratings
-- [ ] SMS notifications (Twilio)
+## P2 - Future/Backlog
+- Dojo payment integration (deferred)
+- Admin super-dashboard
+- SMS notifications (Twilio)
+- Advanced analytics
 
----
+## Known Issues
+- None currently - all features tested and working
 
-## URLs
-- **Web App:** https://quick-slot-1.preview.emergentagent.com
-- **Mobile Preview:** https://quick-slot-1.preview.emergentagent.com/mobile-preview
-- **Public Booking:** https://quick-slot-1.preview.emergentagent.com/book/{business_id}
+## Technical Stack
+- **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI
+- **Mobile:** React Native, Expo, React Navigation
+- **Backend:** FastAPI, MongoDB, Pydantic
+- **Integrations:** OpenAI, Resend
 
----
-
-*Last Updated: 2026-02-04*
-*Version: 1.2.0 (Mobile App + Email + AI)*
+## Last Updated
+February 2025 - Iteration 4 Complete
