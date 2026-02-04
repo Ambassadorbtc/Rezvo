@@ -63,6 +63,7 @@ const CookieConsent = () => {
               <button
                 onClick={acceptAll}
                 className="px-6 py-2.5 bg-[#00BFA5] text-white font-medium rounded-full hover:bg-[#00A896] transition-colors"
+                data-testid="cookie-accept-all"
               >
                 Accept All
               </button>
