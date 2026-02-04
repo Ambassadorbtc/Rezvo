@@ -199,7 +199,8 @@ const AppLayout = ({ children }) => {
         </div>
       </nav>
 
-      {/* Mobile Bottom Nav */}
+      {/* Search Modal */}
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 };
