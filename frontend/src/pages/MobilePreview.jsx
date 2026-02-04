@@ -159,11 +159,11 @@ const MobilePreview = () => {
         <div>
           <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Email</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type="email" 
               placeholder="you@example.com"
-              className="w-full pl-10 pr-3 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
+              className="w-full pl-9 pr-3 py-2.5 border border-[#E2E8F0] rounded-lg bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -172,15 +172,15 @@ const MobilePreview = () => {
         <div>
           <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Password</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type={showPassword ? 'text' : 'password'} 
               placeholder="Enter password"
-              className="w-full pl-10 pr-10 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
+              className="w-full pl-9 pr-9 py-2.5 border border-[#E2E8F0] rounded-lg bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2">
+            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2">
               {showPassword ? <EyeOff className="w-4 h-4 text-[#9FB3C8]" /> : <Eye className="w-4 h-4 text-[#9FB3C8]" />}
             </button>
           </div>
@@ -188,7 +188,7 @@ const MobilePreview = () => {
         <button onClick={() => navigate('forgot-password')} className="text-xs text-[#00BFA5] font-medium">Forgot password?</button>
       </div>
 
-      <button onClick={handleLogin} className="w-full py-3.5 bg-[#00BFA5] text-white rounded-xl font-semibold text-sm">
+      <button onClick={handleLogin} className="w-full py-2.5 bg-[#00BFA5] text-white rounded-lg font-semibold text-sm">
         Sign in
       </button>
       
