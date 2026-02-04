@@ -50,6 +50,7 @@ function AppRoutes() {
       <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
+      <Route path="/expo-test" element={<ExpoTestingPage />} />
       
       {/* Protected Routes */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
