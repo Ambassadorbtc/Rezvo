@@ -19,6 +19,7 @@ function TeamPage() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null, name: '' });
   const fileInputRef = useRef(null);
 
   useEffect(function loadData() { 
@@ -29,7 +30,11 @@ function TeamPage() {
     try {
       const membersRes = await api.get('/team-members');
       const servicesRes = await api.get('/services');
-      setMembers(membersRes.data);
+      // Sort by created_at DESC (newest first)
+      const sortedMembers = (membersRes.data || []).sort(function(a, b) {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      });
+      setMembers(sortedMembers);
       setServices(servicesRes.data);
     } catch (err) {
       toast.error('Failed to load team data');
@@ -52,17 +57,6 @@ function TeamPage() {
       };
       const res = await api.post('/team-members', newMember);
       await fetchData();
-      // Set edit form for the new member
-      setEditForm({
-        name: newMember.name,
-        email: newMember.email || '',
-        phone: newMember.phone || '',
-        role: newMember.role,
-        color: newMember.color,
-        avatar_url: newMember.avatar_url || '',
-        service_ids: newMember.service_ids || [],
-        show_on_booking_page: newMember.show_on_booking_page
-      });
       setExpandedId(res.data.id);
       setEditingId(res.data.id);
       toast.success('Team member added');
@@ -89,7 +83,6 @@ function TeamPage() {
   async function handleSaveEdit(memberId) {
     setSaving(true);
     try {
-      // Convert empty email to null for backend validation
       const dataToSave = {
         ...editForm,
         email: editForm.email && editForm.email.trim() ? editForm.email : null
@@ -123,14 +116,20 @@ function TeamPage() {
     }
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Remove this team member?')) return;
+  function handleDeleteClick(member) {
+    setDeleteConfirm({ open: true, id: member.id, name: member.name });
+  }
+
+  async function handleDeleteConfirm() {
+    if (!deleteConfirm.id) return;
     try {
-      await api.delete('/team-members/' + id);
+      await api.delete('/team-members/' + deleteConfirm.id);
       await fetchData();
       toast.success('Team member removed');
     } catch (err) {
       toast.error('Failed to remove');
+    } finally {
+      setDeleteConfirm({ open: false, id: null, name: '' });
     }
   }
 
@@ -138,6 +137,7 @@ function TeamPage() {
     try {
       await api.patch('/team-members/' + member.id, { show_on_booking_page: !member.show_on_booking_page });
       await fetchData();
+      toast.success(member.show_on_booking_page ? 'Hidden from booking page' : 'Now visible on booking page');
     } catch (err) {
       console.error(err);
     }
@@ -239,7 +239,7 @@ function TeamPage() {
                       onEdit={function() { handleStartEdit(member); }}
                       onSave={function() { handleSaveEdit(member.id); }}
                       onCancel={handleCancelEdit}
-                      onDelete={function() { handleDelete(member.id); }}
+                      onDelete={function() { handleDeleteClick(member); }}
                       onToggleVisibility={function() { handleToggleVisibility(member); }}
                       onUpload={handleImageUpload}
                       onToggleService={toggleService}
@@ -255,6 +255,35 @@ function TeamPage() {
             </div>
           )}
         </div>
+
+        {/* Branded Delete Confirmation Dialog */}
+        {deleteConfirm.open && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={function() { setDeleteConfirm({ open: false, id: null, name: '' }); }} />
+            <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in-95">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-navy-900">Remove Team Member</h3>
+                  <p className="text-sm text-navy-500">This action cannot be undone</p>
+                </div>
+              </div>
+              <p className="text-navy-600 mb-6">Are you sure you want to remove <span className="font-semibold">{deleteConfirm.name}</span> from your team?</p>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={function() { setDeleteConfirm({ open: false, id: null, name: '' }); }} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleDeleteConfirm} className="flex-1 bg-red-500 hover:bg-red-600 text-white">
+                  Remove
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );
