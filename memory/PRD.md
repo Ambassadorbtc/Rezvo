@@ -99,17 +99,20 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - Advanced analytics
 
 ## Founder Admin Panel (TailAdmin-style design)
-- [x] **Dashboard Tab:** Stats cards (Users, Businesses, Bookings, Revenue), Monthly Overview chart placeholder, Platform Health status, Recent Users/Businesses lists
+- [x] **Dashboard Tab:** Stats cards (Users, Businesses, Bookings, Revenue), Weekly bar chart, Status breakdown, Top Services chart, Platform Health
 - [x] **Users Tab:** Searchable table with pagination, role badges, status indicators, view actions
 - [x] **Businesses Tab:** Card grid layout with search, logo/avatar, tagline, status, view actions
 - [x] **Bookings Tab:** Table view of all platform bookings with client, service, date, amount, status
 - [x] **Error Logs Tab:** Error list with severity, timestamp, stack trace viewer, resolve action
-- [x] Clean sidebar navigation with teal accent
-- [x] Light theme matching Rezvo branding
-- **Access:** Any authenticated user with 'admin', 'founder', or 'business' role
+- [x] Analytics API endpoint `/api/admin/analytics` with daily data, status breakdown, top services
+- [x] Clean sidebar navigation with teal accent, light theme
+
+## Search Feature
+- [x] Backend search endpoint `/api/search` - searches bookings, services, and customers
+- [ ] Frontend search modal (temporarily disabled due to Babel plugin conflict)
 
 ## Known Issues
-- None currently - all features tested and working (Iteration 6)
+- SearchModal component causes Babel visual-edits plugin recursion error - temporarily disabled
 
 ## Technical Stack
 - **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI
