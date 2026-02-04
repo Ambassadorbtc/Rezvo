@@ -3,63 +3,29 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import api, { formatDate, formatTime, formatPrice } from '../../lib/api';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+import api, { formatPrice, formatDate, formatTime } from '../../lib/api';
 
-const tabs = ['Upcoming', 'Past', 'Cancelled'];
+const TEAL = '#00BFA5';
 
 export default function BookingsScreen({ navigation }) {
-  const [activeTab, setActiveTab] = useState('Upcoming');
   const [bookings, setBookings] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState('upcoming');
 
   const fetchBookings = async () => {
     try {
-      const response = await api.get('/bookings/client');
+      const response = await api.get('/bookings/my');
       setBookings(response.data || []);
     } catch (error) {
-      console.log('Using mock bookings');
-      // Mock data for demo
-      setBookings([
-        {
-          id: '1',
-          business_name: "Sarah's Hair Studio",
-          service_name: 'Haircut & Style',
-          datetime_iso: new Date(Date.now() + 86400000 * 2).toISOString(),
-          status: 'confirmed',
-          price_pence: 3500,
-        },
-        {
-          id: '2',
-          business_name: 'FitLife PT',
-          service_name: 'Personal Training Session',
-          datetime_iso: new Date(Date.now() + 86400000 * 5).toISOString(),
-          status: 'pending',
-          price_pence: 5000,
-        },
-        {
-          id: '3',
-          business_name: 'Glamour Nails',
-          service_name: 'Gel Manicure',
-          datetime_iso: new Date(Date.now() - 86400000 * 7).toISOString(),
-          status: 'completed',
-          price_pence: 2500,
-        },
-        {
-          id: '4',
-          business_name: 'Zen Massage',
-          service_name: 'Deep Tissue Massage',
-          datetime_iso: new Date(Date.now() - 86400000 * 14).toISOString(),
-          status: 'cancelled',
-          price_pence: 6000,
-        },
-      ]);
+      console.error('Error fetching bookings:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -75,124 +41,135 @@ export default function BookingsScreen({ navigation }) {
     fetchBookings();
   };
 
-  const getFilteredBookings = () => {
-    const now = new Date();
-    return bookings.filter((booking) => {
-      const bookingDate = new Date(booking.datetime_iso);
-      switch (activeTab) {
-        case 'Upcoming':
-          return bookingDate >= now && booking.status !== 'cancelled';
-        case 'Past':
-          return bookingDate < now && booking.status !== 'cancelled';
-        case 'Cancelled':
-          return booking.status === 'cancelled';
-        default:
-          return true;
-      }
-    });
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed':
-        return colors.success;
-      case 'pending':
-        return colors.warning;
-      case 'completed':
-        return colors.primary;
-      case 'cancelled':
-        return colors.error;
-      default:
-        return colors.textMuted;
+      case 'confirmed': return '#10B981';
+      case 'pending': return '#F59E0B';
+      case 'cancelled': return '#EF4444';
+      case 'completed': return '#627D98';
+      default: return '#627D98';
     }
   };
 
-  const renderBooking = ({ item }) => (
-    <TouchableOpacity style={styles.bookingCard}>
-      <View style={styles.bookingHeader}>
-        <View style={styles.dateBox}>
-          <Text style={styles.dateDay}>
-            {new Date(item.datetime_iso).getDate()}
-          </Text>
-          <Text style={styles.dateMonth}>
-            {new Date(item.datetime_iso).toLocaleDateString('en-GB', { month: 'short' })}
-          </Text>
+  const filteredBookings = bookings.filter(b => {
+    const bookingDate = new Date(b.datetime);
+    const now = new Date();
+    if (activeTab === 'upcoming') {
+      return bookingDate >= now && b.status !== 'cancelled';
+    } else {
+      return bookingDate < now || b.status === 'cancelled';
+    }
+  });
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={TEAL} />
         </View>
-        <View style={styles.bookingInfo}>
-          <Text style={styles.businessName}>{item.business_name}</Text>
-          <Text style={styles.serviceName}>{item.service_name}</Text>
-          <Text style={styles.bookingTime}>{formatTime(item.datetime_iso)}</Text>
-        </View>
-        <View style={styles.bookingRight}>
-          <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}15` }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
-              {item.status}
-            </Text>
-          </View>
-          <Text style={styles.priceText}>{formatPrice(item.price_pence)}</Text>
-        </View>
-      </View>
-      {activeTab === 'Upcoming' && (
-        <View style={styles.bookingActions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Reschedule</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, styles.actionButtonOutline]}>
-            <Text style={[styles.actionButtonText, styles.actionButtonTextOutline]}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Bookings</Text>
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tab, activeTab === tab && styles.tabActive]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.tabs}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'upcoming' && styles.tabActive]}
+          onPress={() => setActiveTab('upcoming')}
+        >
+          <Text style={[styles.tabText, activeTab === 'upcoming' && styles.tabTextActive]}>
+            Upcoming
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'past' && styles.tabActive]}
+          onPress={() => setActiveTab('past')}
+        >
+          <Text style={[styles.tabText, activeTab === 'past' && styles.tabTextActive]}>
+            Past
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Bookings List */}
-      <FlatList
-        data={getFilteredBookings()}
-        renderItem={renderBooking}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
+      <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
         }
-        ListEmptyComponent={
+        contentContainerStyle={styles.scrollContent}
+      >
+        {filteredBookings.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📅</Text>
-            <Text style={styles.emptyTitle}>No bookings yet</Text>
-            <Text style={styles.emptyText}>
-              {activeTab === 'Upcoming'
+            <Ionicons name="calendar-outline" size={64} color="#E2E8F0" />
+            <Text style={styles.emptyTitle}>No {activeTab} bookings</Text>
+            <Text style={styles.emptySubtext}>
+              {activeTab === 'upcoming' 
                 ? 'Book your first appointment to get started'
-                : `You don't have any ${activeTab.toLowerCase()} bookings`}
+                : 'Your past bookings will appear here'}
             </Text>
+            {activeTab === 'upcoming' && (
+              <TouchableOpacity 
+                style={styles.bookButton}
+                onPress={() => navigation.navigate('Search')}
+              >
+                <Text style={styles.bookButtonText}>Find Services</Text>
+              </TouchableOpacity>
+            )}
           </View>
-        }
-      />
+        ) : (
+          filteredBookings.map((booking) => (
+            <TouchableOpacity key={booking.id} style={styles.bookingCard}>
+              <View style={styles.bookingHeader}>
+                <View style={styles.businessIcon}>
+                  <Ionicons name="storefront" size={24} color={TEAL} />
+                </View>
+                <View style={styles.bookingInfo}>
+                  <Text style={styles.serviceName}>{booking.service_name}</Text>
+                  <Text style={styles.businessName}>Business Name</Text>
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) + '20' }]}>
+                  <Text style={[styles.statusText, { color: getStatusColor(booking.status) }]}>
+                    {booking.status}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.bookingDetails}>
+                <View style={styles.detailRow}>
+                  <Ionicons name="calendar-outline" size={16} color="#627D98" />
+                  <Text style={styles.detailText}>{formatDate(booking.datetime)}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Ionicons name="time-outline" size={16} color="#627D98" />
+                  <Text style={styles.detailText}>{formatTime(booking.datetime)}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Ionicons name="cash-outline" size={16} color="#627D98" />
+                  <Text style={styles.detailText}>{formatPrice(booking.price_pence)}</Text>
+                </View>
+              </View>
+
+              {activeTab === 'upcoming' && booking.status !== 'cancelled' && (
+                <View style={styles.bookingActions}>
+                  <TouchableOpacity style={styles.actionButton}>
+                    <Ionicons name="create-outline" size={18} color={TEAL} />
+                    <Text style={styles.actionText}>Reschedule</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.actionButton, styles.cancelButton]}>
+                    <Ionicons name="close-outline" size={18} color="#EF4444" />
+                    <Text style={[styles.actionText, styles.cancelText]}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -200,161 +177,170 @@ export default function BookingsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  headerTitle: {
-    fontSize: typography.sizes['2xl'],
-    fontWeight: '700',
-    color: colors.text,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
-  tab: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.surface,
-  },
-  tabActive: {
-    backgroundColor: colors.navy,
-  },
-  tabText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '500',
-    color: colors.textMuted,
-  },
-  tabTextActive: {
-    color: colors.surface,
-  },
-  listContent: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-  },
-  bookingCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    ...shadows.md,
-  },
-  bookingHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  dateBox: {
-    width: 56,
-    height: 56,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.md,
   },
-  dateDay: {
-    fontSize: typography.sizes.xl,
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  headerTitle: {
+    fontSize: 24,
     fontWeight: '700',
-    color: colors.surface,
+    color: '#0A1626',
   },
-  dateMonth: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.8)',
-    textTransform: 'uppercase',
-  },
-  bookingInfo: {
-    flex: 1,
-  },
-  businessName: {
-    fontSize: typography.sizes.base,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  serviceName: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: 4,
-  },
-  bookingTime: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  bookingRight: {
-    alignItems: 'flex-end',
-  },
-  statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-    marginBottom: spacing.xs,
-  },
-  statusText: {
-    fontSize: typography.sizes.xs,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  priceText: {
-    fontSize: typography.sizes.base,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  bookingActions: {
+  tabs: {
     flexDirection: 'row',
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.borderLight,
-    gap: spacing.sm,
+    paddingHorizontal: 20,
+    marginVertical: 12,
+    gap: 8,
   },
-  actionButton: {
+  tab: {
     flex: 1,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.lg,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-  },
-  actionButtonOutline: {
-    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#E2E8F0',
   },
-  actionButtonText: {
-    fontSize: typography.sizes.sm,
+  tabActive: {
+    backgroundColor: TEAL,
+    borderColor: TEAL,
+  },
+  tabText: {
+    fontSize: 15,
     fontWeight: '600',
-    color: colors.surface,
+    color: '#627D98',
   },
-  actionButtonTextOutline: {
-    color: colors.textMuted,
+  tabTextActive: {
+    color: '#FFFFFF',
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   emptyState: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing.xxl * 2,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
+    paddingTop: 60,
   },
   emptyTitle: {
-    fontSize: typography.sizes.xl,
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
+    color: '#627D98',
+    marginTop: 16,
   },
-  emptyText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9FB3C8',
+    marginTop: 4,
     textAlign: 'center',
-    paddingHorizontal: spacing.xl,
+  },
+  bookButton: {
+    marginTop: 24,
+    backgroundColor: TEAL,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
+  },
+  bookButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  bookingCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  bookingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  businessIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bookingInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  serviceName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+  },
+  businessName: {
+    fontSize: 13,
+    color: '#627D98',
+    marginTop: 2,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  bookingDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  detailText: {
+    fontSize: 13,
+    color: '#627D98',
+  },
+  bookingActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: '#F5F0E8',
+    gap: 6,
+  },
+  cancelButton: {
+    backgroundColor: '#FEE2E2',
+  },
+  actionText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: TEAL,
+  },
+  cancelText: {
+    color: '#EF4444',
   },
 });
