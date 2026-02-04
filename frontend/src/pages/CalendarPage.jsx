@@ -427,6 +427,116 @@ const CalendarPage = () => {
             </div>
           </div>
         </div>
+        )}
+
+        {/* Week View */}
+        {viewMode === 'week' && (
+          <div className="flex-1 overflow-auto p-6">
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              {/* Week Header */}
+              <div className="grid grid-cols-7 border-b border-gray-100">
+                {weekDates.map((date, idx) => {
+                  const isToday = isSameDay(date, new Date());
+                  const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
+                  return (
+                    <div key={idx} className={`p-4 text-center border-r border-gray-100 last:border-r-0 ${isToday ? 'bg-teal-50' : ''}`}>
+                      <div className="text-xs font-medium text-navy-500">{dayNames[idx]}</div>
+                      <div className={`text-xl font-bold ${isToday ? 'text-teal-600' : 'text-navy-900'}`}>{format(date, 'd')}</div>
+                      <div className="text-xs text-navy-400">{dayBookings.length} bookings</div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Week Body */}
+              <div className="grid grid-cols-7 min-h-[400px]">
+                {weekDates.map((date, idx) => {
+                  const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
+                  return (
+                    <div key={idx} className="border-r border-gray-100 last:border-r-0 p-2 space-y-2">
+                      {dayBookings.slice(0, 5).map((booking) => {
+                        const colors = getServiceColor(booking.service_id);
+                        return (
+                          <div key={booking.id} className={`${colors.bg} ${colors.border} border-l-2 rounded-lg p-2 text-xs`}>
+                            <div className={`font-semibold ${colors.text}`}>{formatBookingTime(booking.datetime)}</div>
+                            <div className="font-medium text-navy-900 truncate">{booking.client_name}</div>
+                            <div className="text-navy-500 truncate">{booking.service_name}</div>
+                          </div>
+                        );
+                      })}
+                      {dayBookings.length > 5 && (
+                        <button onClick={() => { setSelectedDate(date); setViewMode('day'); }} className="text-xs text-teal-600 font-medium hover:underline">
+                          +{dayBookings.length - 5} more
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Month View */}
+        {viewMode === 'month' && (
+          <div className="flex-1 overflow-auto p-6">
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              {/* Month Header */}
+              <div className="p-4 border-b border-gray-100 text-center">
+                <h2 className="text-xl font-bold text-navy-900">{format(selectedDate, 'MMMM yyyy')}</h2>
+              </div>
+              {/* Days of week header */}
+              <div className="grid grid-cols-7 border-b border-gray-100">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                  <div key={day} className="p-2 text-center text-xs font-medium text-navy-500 border-r border-gray-100 last:border-r-0">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              {/* Calendar grid */}
+              <div className="grid grid-cols-7">
+                {(() => {
+                  const monthStart = startOfMonth(selectedDate);
+                  const monthEnd = endOfMonth(selectedDate);
+                  const startDate = startOfWeek(monthStart);
+                  const days = eachDayOfInterval({ start: startDate, end: addDays(monthEnd, 6 - monthEnd.getDay()) });
+                  
+                  return days.slice(0, 42).map((day, idx) => {
+                    const isCurrentMonth = isSameMonth(day, selectedDate);
+                    const isToday = isSameDay(day, new Date());
+                    const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), day));
+                    
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => { setSelectedDate(day); setViewMode('day'); }}
+                        className={`min-h-[100px] p-2 border-r border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                          !isCurrentMonth ? 'bg-gray-50' : ''
+                        } ${isToday ? 'bg-teal-50' : ''}`}
+                      >
+                        <div className={`text-sm font-medium mb-1 ${isToday ? 'text-teal-600' : isCurrentMonth ? 'text-navy-900' : 'text-navy-300'}`}>
+                          {format(day, 'd')}
+                        </div>
+                        <div className="space-y-1">
+                          {dayBookings.slice(0, 3).map((booking) => {
+                            const colors = getServiceColor(booking.service_id);
+                            return (
+                              <div key={booking.id} className={`${colors.bg} rounded px-1.5 py-0.5 text-xs truncate`}>
+                                <span className={`font-medium ${colors.text}`}>{booking.client_name}</span>
+                              </div>
+                            );
+                          })}
+                          {dayBookings.length > 3 && (
+                            <div className="text-xs text-teal-600 font-medium">+{dayBookings.length - 3} more</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Add Booking Modal */}
         <Dialog open={showAddBooking} onOpenChange={setShowAddBooking}>
