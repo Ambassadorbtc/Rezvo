@@ -1,4 +1,4 @@
-# QuickSlot - Product Requirements Document
+# Rezvo.app - Product Requirements Document
 
 ## Overview
 QuickSlot is a £4.99/month booking tool for UK micro-businesses who can't stomach £40+ schedulers like Booksy. Target: mobile hairdressers, food trucks, nail techs, personal trainers, dog groomers, driving instructors.
