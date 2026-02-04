@@ -114,9 +114,9 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **products:** id, business_id, name, price_pence, stock_quantity
 
 ## Testing URLs
-- **Web Landing:** https://slotwise-6.preview.emergentagent.com
-- **Expo QR Page:** https://slotwise-6.preview.emergentagent.com/expo-test
-- **Mobile Preview:** https://slotwise-6.preview.emergentagent.com/mobile-preview
+- **Web Landing:** https://bookrezvo.preview.emergentagent.com
+- **Expo QR Page:** https://bookrezvo.preview.emergentagent.com/expo-test
+- **Mobile Preview:** https://bookrezvo.preview.emergentagent.com/mobile-preview
 - **Expo Tunnel:** exp://3ckafhi-anonymous-8081.exp.direct
 
 ## P0 - Next Priority Tasks

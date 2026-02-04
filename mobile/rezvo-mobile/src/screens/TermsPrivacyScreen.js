@@ -33,7 +33,7 @@ export default function TermsPrivacyScreen({ navigation }) {
         <View style={styles.card}>
           <TouchableOpacity 
             style={styles.linkItem}
-            onPress={() => openLink('https://slotwise-6.preview.emergentagent.com/terms')}
+            onPress={() => openLink('https://bookrezvo.preview.emergentagent.com/terms')}
           >
             <View style={styles.linkLeft}>
               <View style={[styles.linkIcon, { backgroundColor: '#DBEAFE' }]}>
@@ -51,7 +51,7 @@ export default function TermsPrivacyScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.linkItem}
-            onPress={() => openLink('https://slotwise-6.preview.emergentagent.com/privacy')}
+            onPress={() => openLink('https://bookrezvo.preview.emergentagent.com/privacy')}
           >
             <View style={styles.linkLeft}>
               <View style={[styles.linkIcon, { backgroundColor: '#E8F5F3' }]}>
@@ -69,7 +69,7 @@ export default function TermsPrivacyScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.linkItem}
-            onPress={() => openLink('https://slotwise-6.preview.emergentagent.com/cookies')}
+            onPress={() => openLink('https://bookrezvo.preview.emergentagent.com/cookies')}
           >
             <View style={styles.linkLeft}>
               <View style={[styles.linkIcon, { backgroundColor: '#FEF3E2' }]}>
