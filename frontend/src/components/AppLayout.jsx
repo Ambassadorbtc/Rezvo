@@ -14,7 +14,7 @@ import {
   Shield,
   Search
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import SearchModal from './SearchModal';
 
