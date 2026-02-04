@@ -9,7 +9,7 @@ const formatDateTime = (dateStr) => {
   if (!dateStr) return '';
   try {
     return format(new Date(dateStr), 'd MMM yyyy, HH:mm');
-  } catch {
+  } catch (e) {
     return dateStr;
   }
 };
@@ -36,7 +36,7 @@ const SearchModal = ({ isOpen, onClose }) => {
       if (query.length >= 2) {
         setLoading(true);
         try {
-          const res = await api.get(`/search?q=${encodeURIComponent(query)}`);
+          const res = await api.get('/search?q=' + encodeURIComponent(query));
           setResults(res.data);
         } catch (error) {
           console.error('Search error:', error);
@@ -68,15 +68,12 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh]" onClick={onClose}>
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       
-      {/* Modal */}
       <div 
         className="relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Search Input */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
           <Search className="w-5 h-5 text-gray-400" />
           <Input
@@ -96,7 +93,6 @@ const SearchModal = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -110,12 +106,11 @@ const SearchModal = ({ isOpen, onClose }) => {
             </div>
           ) : !hasResults ? (
             <div className="text-center py-12 px-6">
-              <p className="text-gray-500">No results found for "{query}"</p>
+              <p className="text-gray-500">No results found for &quot;{query}&quot;</p>
               <p className="text-sm text-gray-400 mt-1">Try a different search term</p>
             </div>
           ) : (
             <div className="py-2">
-              {/* Bookings */}
               {results.bookings.length > 0 && (
                 <div className="px-4 py-2">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
@@ -127,7 +122,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                         key={idx}
                         onClick={() => handleResultClick('booking', booking)}
                         className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                        data-testid={`search-result-booking-${idx}`}
+                        data-testid={'search-result-booking-' + idx}
                       >
                         <div className="w-10 h-10 rounded-xl bg-[#00BFA5]/10 flex items-center justify-center flex-shrink-0">
                           <Calendar className="w-5 h-5 text-[#00BFA5]" />
@@ -135,14 +130,14 @@ const SearchModal = ({ isOpen, onClose }) => {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-[#0A1626] truncate">{booking.client_name}</p>
                           <p className="text-sm text-gray-500 truncate">
-                            {booking.service_name} • {booking.datetime ? formatDateTime(booking.datetime) : 'No date'}
+                            {booking.service_name} - {booking.datetime ? formatDateTime(booking.datetime) : 'No date'}
                           </p>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          booking.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' :
+                        <span className={'px-2 py-1 rounded-full text-xs font-medium ' + 
+                          (booking.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' :
                           booking.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                          'bg-gray-100 text-gray-600'
-                        }`}>
+                          'bg-gray-100 text-gray-600')
+                        }>
                           {booking.status}
                         </span>
                         <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -152,7 +147,6 @@ const SearchModal = ({ isOpen, onClose }) => {
                 </div>
               )}
 
-              {/* Services */}
               {results.services.length > 0 && (
                 <div className="px-4 py-2">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
@@ -164,7 +158,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                         key={idx}
                         onClick={() => handleResultClick('service', service)}
                         className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                        data-testid={`search-result-service-${idx}`}
+                        data-testid={'search-result-service-' + idx}
                       >
                         <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">
                           <Scissors className="w-5 h-5 text-purple-500" />
@@ -172,7 +166,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-[#0A1626] truncate">{service.name}</p>
                           <p className="text-sm text-gray-500">
-                            {formatPrice(service.price_pence)} • {service.duration_min} min
+                            {formatPrice(service.price_pence)} - {service.duration_min} min
                           </p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -182,7 +176,6 @@ const SearchModal = ({ isOpen, onClose }) => {
                 </div>
               )}
 
-              {/* Customers */}
               {results.customers.length > 0 && (
                 <div className="px-4 py-2">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
@@ -194,7 +187,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                         key={idx}
                         onClick={() => handleResultClick('customer', customer)}
                         className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                        data-testid={`search-result-customer-${idx}`}
+                        data-testid={'search-result-customer-' + idx}
                       >
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                           <User className="w-5 h-5 text-blue-500" />
@@ -213,9 +206,8 @@ const SearchModal = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
         <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-xs text-gray-400">
-          <span>Press <kbd className="px-1.5 py-0.5 bg-white rounded border border-gray-200 font-mono">ESC</kbd> to close</span>
+          <span>Press ESC to close</span>
           <span>Search powered by Rezvo</span>
         </div>
       </div>
