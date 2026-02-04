@@ -927,17 +927,9 @@ async def get_services_analytics(current_user: dict = Depends(get_current_user))
 
 # ==================== ADMIN ROUTES ====================
 
-@api_router.get("/admin/users")
-async def admin_get_users(current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
-    return users
-
 @api_router.get("/admin/metrics")
 async def admin_get_metrics(current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
+    if current_user.get("role") not in ["admin", "founder", "business"]:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     total_users = await db.users.count_documents({})
@@ -952,7 +944,7 @@ async def admin_get_metrics(current_user: dict = Depends(get_current_user)):
 
 @api_router.patch("/admin/users/{user_id}")
 async def admin_update_user(user_id: str, role: str, current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
+    if current_user.get("role") not in ["admin", "founder", "business"]:
         raise HTTPException(status_code=403, detail="Admin access required")
     
     await db.users.update_one({"id": user_id}, {"$set": {"role": role}})
