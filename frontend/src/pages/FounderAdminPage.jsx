@@ -337,89 +337,22 @@ const FounderAdminPage = () => {
                 {/* Activity Chart */}
                 <Card className="lg:col-span-2 bg-white rounded-2xl shadow-sm border-0">
                   <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-lg font-semibold text-[#0A1626]">Weekly Overview</CardTitle>
-                        <CardDescription>Bookings and user signups over the last 7 days</CardDescription>
-                      </div>
-                    </div>
+                    <CardTitle className="text-lg font-semibold text-[#0A1626]">Weekly Overview</CardTitle>
+                    <CardDescription>Bookings and user signups over the last 7 days</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-64">
-                      {analytics?.daily ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={analytics.daily} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <defs>
-                              <linearGradient id="colorBookings" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#00BFA5" stopOpacity={0.3}/>
-                                <stop offset="95%" stopColor="#00BFA5" stopOpacity={0}/>
-                              </linearGradient>
-                              <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                            <XAxis dataKey="date" stroke="#9CA3AF" fontSize={12} />
-                            <YAxis stroke="#9CA3AF" fontSize={12} />
-                            <Tooltip 
-                              contentStyle={{ 
-                                backgroundColor: 'white', 
-                                border: 'none', 
-                                borderRadius: '12px', 
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
-                              }}
-                            />
-                            <Area type="monotone" dataKey="bookings" stroke="#00BFA5" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" name="Bookings" />
-                            <Area type="monotone" dataKey="users" stroke="#3B82F6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" name="New Users" />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-full flex items-center justify-center bg-gray-50 rounded-xl">
-                          <div className="text-center">
-                            <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                            <p className="text-gray-500">Loading analytics...</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <WeeklyChart data={analytics?.daily} />
                   </CardContent>
                 </Card>
 
-                {/* Booking Status Pie Chart */}
+                {/* Booking Status */}
                 <Card className="bg-white rounded-2xl shadow-sm border-0">
                   <CardHeader className="pb-4">
                     <CardTitle className="text-lg font-semibold text-[#0A1626]">Booking Status</CardTitle>
                     <CardDescription>Distribution of booking statuses</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-52">
-                      {analytics?.status_breakdown ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <RechartsPieChart>
-                            <Pie
-                              data={Object.entries(analytics.status_breakdown).map(([name, value]) => ({ name, value }))}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={40}
-                              outerRadius={70}
-                              paddingAngle={3}
-                              dataKey="value"
-                            >
-                              {Object.entries(analytics.status_breakdown).map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend iconSize={10} wrapperStyle={{ fontSize: '12px' }} />
-                          </RechartsPieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-full flex items-center justify-center">
-                          <p className="text-gray-400">No data yet</p>
-                        </div>
-                      )}
-                    </div>
+                    <StatusChart data={analytics?.status_breakdown} />
                   </CardContent>
                 </Card>
               </div>
