@@ -126,75 +126,73 @@ const MobilePreview = () => {
 
   // ==================== LOGIN SCREEN ====================
   const LoginScreen = () => (
-    <div className="h-full flex flex-col bg-[#FDFBF7] px-5 pt-3">
-      <button onClick={() => navigate('welcome')} className="w-10 h-10 flex items-center justify-center -ml-2 mb-4">
-        <ChevronLeft className="w-6 h-6 text-[#0A1626]" />
+    <div className="h-full flex flex-col bg-[#FDFBF7] px-6 pt-2">
+      <button onClick={() => navigate('welcome')} className="w-10 h-10 flex items-center justify-center -ml-2 mb-3">
+        <ChevronLeft className="w-5 h-5 text-[#0A1626]" />
       </button>
       
-      <div className="flex items-center gap-2.5 mb-6">
-        <div className="w-11 h-11 rounded-xl bg-[#00BFA5] flex items-center justify-center shadow-lg shadow-[#00BFA5]/30">
-          <span className="text-white font-bold text-xl">R</span>
+      <div className="flex flex-col items-center mb-6">
+        <div className="w-11 h-11 rounded-xl bg-[#00BFA5] flex items-center justify-center mb-4">
+          <span className="text-white font-bold text-lg">R</span>
         </div>
-        <span className="text-2xl font-bold text-[#0A1626]">Rezvo</span>
+        <h1 className="text-2xl font-bold text-[#0A1626] tracking-tight">Welcome back</h1>
+        <p className="text-sm text-[#627D98] mt-1">Sign in to your account</p>
       </div>
       
-      <h1 className="text-3xl font-bold text-[#0A1626] mb-1">Welcome Back</h1>
-      <p className="text-[#627D98] mb-5">Sign in to your account</p>
-      
       {/* User Type Toggle */}
-      <div className="flex bg-[#F5F0E8] rounded-xl p-1 mb-5">
+      <div className="flex bg-[#F5F0E8] rounded-xl p-1 mb-6">
         <button 
           onClick={() => setUserType('client')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${userType === 'client' ? 'bg-white shadow-md text-[#0A1626]' : 'text-[#627D98]'}`}
+          className={`flex-1 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${userType === 'client' ? 'bg-[#00BFA5] text-white' : 'text-[#627D98]'}`}
         >
-          <User className="w-4 h-4" /> Client
+          <User className="w-3.5 h-3.5" /> Client
         </button>
         <button 
           onClick={() => setUserType('business')}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${userType === 'business' ? 'bg-white shadow-md text-[#0A1626]' : 'text-[#627D98]'}`}
+          className={`flex-1 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${userType === 'business' ? 'bg-[#00BFA5] text-white' : 'text-[#627D98]'}`}
         >
-          <LayoutDashboard className="w-4 h-4" /> Business
+          <LayoutDashboard className="w-3.5 h-3.5" /> Business
         </button>
       </div>
 
       <div className="space-y-4 mb-4">
         <div>
-          <label className="text-sm font-semibold text-[#0A1626] mb-1.5 block">Email</label>
+          <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Email</label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9FB3C8]" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type="email" 
-              placeholder="Enter your email"
-              className="w-full pl-12 pr-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl bg-white text-[#0A1626] placeholder:text-[#9FB3C8] focus:border-[#00BFA5] focus:outline-none"
+              placeholder="you@example.com"
+              className="w-full pl-10 pr-3 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
         <div>
-          <label className="text-sm font-semibold text-[#0A1626] mb-1.5 block">Password</label>
+          <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Password</label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9FB3C8]" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type={showPassword ? 'text' : 'password'} 
-              placeholder="Enter your password"
-              className="w-full pl-12 pr-12 py-3.5 border-2 border-[#E2E8F0] rounded-xl bg-white text-[#0A1626] placeholder:text-[#9FB3C8] focus:border-[#00BFA5] focus:outline-none"
+              placeholder="Enter password"
+              className="w-full pl-10 pr-10 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2">
-              {showPassword ? <EyeOff className="w-5 h-5 text-[#9FB3C8]" /> : <Eye className="w-5 h-5 text-[#9FB3C8]" />}
+            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2">
+              {showPassword ? <EyeOff className="w-4 h-4 text-[#9FB3C8]" /> : <Eye className="w-4 h-4 text-[#9FB3C8]" />}
             </button>
           </div>
         </div>
-        <button onClick={() => navigate('forgot-password')} className="text-sm text-[#00BFA5] font-semibold">Forgot password?</button>
+        <button onClick={() => navigate('forgot-password')} className="text-xs text-[#00BFA5] font-medium">Forgot password?</button>
       </div>
 
-      <button onClick={handleLogin} className="w-full py-3.5 bg-[#00BFA5] text-white rounded-full font-semibold text-base shadow-lg shadow-[#00BFA5]/30">
-        Log in
+      <button onClick={handleLogin} className="w-full py-3.5 bg-[#00BFA5] text-white rounded-xl font-semibold text-sm">
+        Sign in
       </button>
       
-      <p className="text-center text-sm text-[#627D98] mt-4">
+      <p className="text-center text-xs text-[#627D98] mt-6">
         Don't have an account? <button onClick={() => navigate('signup')} className="text-[#00BFA5] font-semibold">Sign up</button>
       </p>
     </div>
@@ -202,31 +200,45 @@ const MobilePreview = () => {
 
   // ==================== SIGNUP SCREEN ====================
   const SignUpScreen = () => (
-    <div className="h-full flex flex-col bg-[#FDFBF7] px-5 pt-3 overflow-y-auto">
-      <button onClick={() => navigate('welcome')} className="w-10 h-10 flex items-center justify-center -ml-2 mb-4">
-        <ChevronLeft className="w-6 h-6 text-[#0A1626]" />
+    <div className="h-full flex flex-col bg-[#FDFBF7] px-6 pt-2 overflow-y-auto">
+      <button onClick={() => navigate('welcome')} className="w-10 h-10 flex items-center justify-center -ml-2 mb-2">
+        <ChevronLeft className="w-5 h-5 text-[#0A1626]" />
       </button>
       
-      <div className="flex items-center gap-2.5 mb-6">
-        <div className="w-11 h-11 rounded-xl bg-[#00BFA5] flex items-center justify-center shadow-lg shadow-[#00BFA5]/30">
-          <span className="text-white font-bold text-xl">R</span>
+      <div className="flex flex-col items-center mb-5">
+        <div className="w-11 h-11 rounded-xl bg-[#00BFA5] flex items-center justify-center mb-3">
+          <span className="text-white font-bold text-lg">R</span>
         </div>
-        <span className="text-2xl font-bold text-[#0A1626]">Rezvo</span>
+        <h1 className="text-2xl font-bold text-[#0A1626] tracking-tight">Create account</h1>
+        <p className="text-sm text-[#627D98] mt-1">Get started with Rezvo</p>
       </div>
       
-      <h1 className="text-3xl font-bold text-[#0A1626] mb-1">Create Account</h1>
-      <p className="text-[#627D98] mb-5">Sign up to get started</p>
+      {/* User Type Toggle */}
+      <div className="flex bg-[#F5F0E8] rounded-xl p-1 mb-5">
+        <button 
+          onClick={() => setUserType('client')}
+          className={`flex-1 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${userType === 'client' ? 'bg-[#00BFA5] text-white' : 'text-[#627D98]'}`}
+        >
+          <User className="w-3.5 h-3.5" /> Client
+        </button>
+        <button 
+          onClick={() => setUserType('business')}
+          className={`flex-1 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 ${userType === 'business' ? 'bg-[#00BFA5] text-white' : 'text-[#627D98]'}`}
+        >
+          <LayoutDashboard className="w-3.5 h-3.5" /> Business
+        </button>
+      </div>
       
-      <div className="space-y-4 mb-4">
+      <div className="space-y-3.5 mb-4">
         {userType === 'business' && (
           <div>
-            <label className="text-sm font-semibold text-[#0A1626] mb-1.5 block">Business Name</label>
+            <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Business name</label>
             <div className="relative">
-              <LayoutDashboard className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9FB3C8]" />
+              <LayoutDashboard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
               <input 
                 type="text" 
                 placeholder="Your business name"
-                className="w-full pl-12 pr-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl bg-white text-[#0A1626] placeholder:text-[#9FB3C8] focus:border-[#00BFA5] focus:outline-none"
+                className="w-full pl-10 pr-3 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
               />
@@ -234,42 +246,45 @@ const MobilePreview = () => {
           </div>
         )}
         <div>
-          <label className="text-sm font-semibold text-[#0A1626] mb-1.5 block">Email</label>
+          <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Email</label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9FB3C8]" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type="email" 
-              placeholder="Enter your email"
-              className="w-full pl-12 pr-4 py-3.5 border-2 border-[#E2E8F0] rounded-xl bg-white text-[#0A1626] placeholder:text-[#9FB3C8] focus:border-[#00BFA5] focus:outline-none"
+              placeholder="you@example.com"
+              className="w-full pl-10 pr-3 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
         <div>
-          <label className="text-sm font-semibold text-[#0A1626] mb-1.5 block">Password</label>
+          <label className="text-xs font-medium text-[#0A1626] mb-1.5 block">Password</label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9FB3C8]" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9FB3C8]" />
             <input 
               type={showPassword ? 'text' : 'password'} 
-              placeholder="Create a password"
-              className="w-full pl-12 pr-12 py-3.5 border-2 border-[#E2E8F0] rounded-xl bg-white text-[#0A1626] placeholder:text-[#9FB3C8] focus:border-[#00BFA5] focus:outline-none"
+              placeholder="Min. 6 characters"
+              className="w-full pl-10 pr-10 py-3 border border-[#E2E8F0] rounded-xl bg-white text-sm text-[#0A1626] placeholder:text-[#C1C7CD] focus:border-[#00BFA5] focus:outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2">
-              {showPassword ? <EyeOff className="w-5 h-5 text-[#9FB3C8]" /> : <Eye className="w-5 h-5 text-[#9FB3C8]" />}
+            <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2">
+              {showPassword ? <EyeOff className="w-4 h-4 text-[#9FB3C8]" /> : <Eye className="w-4 h-4 text-[#9FB3C8]" />}
             </button>
           </div>
-          <p className="text-xs text-[#9FB3C8] mt-1.5">Must be at least 8 characters</p>
         </div>
       </div>
 
-      <button onClick={handleSignup} className="w-full py-3.5 bg-[#00BFA5] text-white rounded-full font-semibold text-base shadow-lg shadow-[#00BFA5]/30 flex items-center justify-center gap-2">
-        Continue <ArrowRight className="w-5 h-5" />
+      <button onClick={handleSignup} className="w-full py-3.5 bg-[#00BFA5] text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-1.5">
+        Create account <ArrowRight className="w-4 h-4" />
       </button>
       
-      <p className="text-center text-sm text-[#627D98] mt-4 mb-4">
+      <p className="text-center text-[10px] text-[#9FB3C8] mt-3">
+        By signing up, you agree to our <span className="text-[#00BFA5]">Terms</span> and <span className="text-[#00BFA5]">Privacy Policy</span>
+      </p>
+      
+      <p className="text-center text-xs text-[#627D98] mt-4 mb-4">
         Already have an account? <button onClick={() => navigate('login')} className="text-[#00BFA5] font-semibold">Sign in</button>
       </p>
     </div>
