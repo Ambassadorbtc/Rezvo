@@ -51,88 +51,72 @@ const MobilePreview = () => {
   // ==================== WELCOME SCREEN (Premium Design) ====================
   const WelcomeScreen = () => (
     <div className="h-full relative overflow-hidden">
-      {/* Background Image with Gradient */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800)' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/90" />
       </div>
       
-      {/* Content */}
-      <div className="relative h-full flex flex-col px-5 pt-12 pb-6">
+      <div className="relative h-full flex flex-col px-6 pt-12 pb-6">
         {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-[#00BFA5] flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-[#00BFA5] flex items-center justify-center">
+            <span className="text-white font-bold text-sm">R</span>
           </div>
-          <span className="text-xl font-semibold text-white tracking-tight">rezvo</span>
+          <span className="text-lg font-semibold text-white tracking-tight">rezvo</span>
         </div>
         
         {/* Main Content */}
-        <div className="flex-1 flex flex-col justify-end pb-6">
+        <div className="flex-1 flex flex-col justify-end pb-5">
           <div className="mb-3">
-            <p className="text-[40px] font-bold text-white leading-[46px] tracking-tight">Your time,</p>
-            <p className="text-[40px] font-bold text-white leading-[46px] tracking-tight">beautifully</p>
-            <p className="text-[40px] font-bold text-[#00BFA5] leading-[46px] tracking-tight">booked.</p>
+            <p className="text-[34px] font-bold text-white leading-[40px] tracking-tight">Your time,</p>
+            <p className="text-[34px] font-bold text-white leading-[40px] tracking-tight">beautifully</p>
+            <p className="text-[34px] font-bold text-[#00BFA5] leading-[40px] tracking-tight">booked.</p>
           </div>
           
-          <p className="text-base text-white/70 leading-relaxed mb-6">
-            The smarter way to manage appointments<br/>for your business
+          <p className="text-sm text-white/60 leading-5 mb-5">
+            The smarter way to manage<br/>appointments for your business
           </p>
           
           <button 
             onClick={() => navigate('signup')}
-            className="w-full h-14 bg-white text-[#0A1626] rounded-full font-semibold text-base flex items-center justify-center gap-3 mb-3"
+            className="w-full h-12 bg-white text-[#0A1626] rounded-3xl font-semibold text-[15px] flex items-center justify-center gap-2 mb-3"
           >
-            Get Started Free
-            <span className="w-8 h-8 rounded-full bg-[#E8F5F3] flex items-center justify-center">
-              <ArrowRight className="w-4 h-4 text-[#00BFA5]" />
-            </span>
+            Get Started
+            <ArrowRight className="w-4 h-4 text-[#00BFA5]" />
           </button>
           
           <button 
             onClick={() => navigate('login')}
-            className="text-center text-white/80 text-[15px] font-medium py-3"
+            className="text-center text-white/70 text-sm font-medium py-2"
           >
-            I already have an account
+            Sign in
           </button>
         </div>
         
         {/* Bottom Quick Actions */}
         <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-white/20" />
-            <span className="text-xs text-white/50 font-medium">or continue as</span>
-            <div className="flex-1 h-px bg-white/20" />
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="flex-1 h-px bg-white/15" />
+            <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">continue as</span>
+            <div className="flex-1 h-px bg-white/15" />
           </div>
           
-          <div className="space-y-2.5">
+          <div className="flex gap-2.5">
             <button 
               onClick={() => { setUserType('client'); navigate('login'); }}
-              className="w-full flex items-center gap-3.5 bg-white/95 py-3.5 px-4 rounded-2xl"
+              className="flex-1 flex items-center justify-center gap-2 bg-white/95 py-3 rounded-xl"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#F5F0E8] flex items-center justify-center">
-                <User className="w-5 h-5 text-[#00BFA5]" />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[15px] font-semibold text-[#0A1626]">Client</p>
-                <p className="text-xs text-[#627D98]">Book appointments</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#9FB3C8]" />
+              <User className="w-4 h-4 text-[#00BFA5]" />
+              <span className="text-sm font-semibold text-[#0A1626]">Client</span>
             </button>
             <button 
               onClick={() => { setUserType('business'); navigate('signup'); }}
-              className="w-full flex items-center gap-3.5 bg-white/95 py-3.5 px-4 rounded-2xl"
+              className="flex-1 flex items-center justify-center gap-2 bg-white/95 py-3 rounded-xl"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#E8F5F3] flex items-center justify-center">
-                <LayoutDashboard className="w-5 h-5 text-[#00BFA5]" />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-[15px] font-semibold text-[#0A1626]">Business</p>
-                <p className="text-xs text-[#627D98]">Manage bookings</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#9FB3C8]" />
+              <LayoutDashboard className="w-4 h-4 text-[#00BFA5]" />
+              <span className="text-sm font-semibold text-[#0A1626]">Business</span>
             </button>
           </div>
         </div>
