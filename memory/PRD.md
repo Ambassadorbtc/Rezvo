@@ -120,12 +120,11 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - **Backend:** FastAPI, MongoDB, Pydantic
 - **Integrations:** OpenAI, Resend
 
-## Recent Fixes (Iteration 6)
-- **Redesigned Admin Panel:** Rebuilt with TailAdmin-style UI - clean white sidebar, stats cards, data tables with pagination, card grids for businesses
-- Fixed API endpoint mismatch: Frontend was calling `/business/me` but backend had `/business`
-- Fixed duplicate admin routes that blocked non-admin users from admin panel
-- Verified booking flow works correctly with time slot availability
-- All 20 backend tests passing, all UI tests passing
+## Recent Fixes (Iteration 7)
+- Added analytics charts to Admin Panel (using custom CSS charts instead of Recharts due to Babel plugin conflict)
+- Added `/api/admin/analytics` endpoint with daily stats, status breakdown, top services
+- Added `/api/search` backend endpoint for global search
+- Fixed duplicate import error in FounderAdminPage
 
 ## Last Updated
-February 2026 - Iteration 6 Complete
+February 2026 - Iteration 7 Complete
