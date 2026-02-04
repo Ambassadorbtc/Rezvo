@@ -92,12 +92,13 @@ const FounderAdminPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [statsRes, usersRes, businessesRes, logsRes, bookingsRes] = await Promise.all([
+      const [statsRes, usersRes, businessesRes, logsRes, bookingsRes, analyticsRes] = await Promise.all([
         api.get('/admin/stats').catch(() => ({ data: null })),
         api.get('/admin/users').catch(() => ({ data: [] })),
         api.get('/admin/businesses').catch(() => ({ data: [] })),
         api.get('/admin/logs').catch(() => ({ data: { logs: [] } })),
-        api.get('/bookings').catch(() => ({ data: [] }))
+        api.get('/bookings').catch(() => ({ data: [] })),
+        api.get('/admin/analytics').catch(() => ({ data: null }))
       ]);
       
       setStats(statsRes.data);
@@ -105,6 +106,7 @@ const FounderAdminPage = () => {
       setBusinesses(businessesRes.data || []);
       setErrorLogs(logsRes.data?.logs || []);
       setBookings(bookingsRes.data || []);
+      setAnalytics(analyticsRes.data);
     } catch (error) {
       console.error('Failed to load admin data', error);
     } finally {
