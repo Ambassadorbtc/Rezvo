@@ -212,15 +212,36 @@ const CalendarPage = () => {
             <h1 className="text-2xl font-bold text-navy-900">Calendar</h1>
             <p className="text-sm text-navy-500">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setShowTeamModal(true)}
-              className="border-gray-200 rounded-xl gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Team ({teamMembers.length})
-            </Button>
+          <div className="flex items-center gap-4">
+            {/* Team Member Avatars - Link to /team */}
+            <Link to="/team" className="flex items-center gap-1 hover:opacity-80 transition-opacity" title="Manage Team">
+              <div className="flex -space-x-2">
+                {teamMembers.slice(0, 5).map((member, idx) => (
+                  <div 
+                    key={member.id}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold border-2 border-white shadow-sm"
+                    style={{ backgroundColor: member.color || '#00BFA5', zIndex: 5 - idx }}
+                    title={member.name}
+                  >
+                    {member.avatar_url ? (
+                      <img src={member.avatar_url} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      member.name?.charAt(0)?.toUpperCase() || 'T'
+                    )}
+                  </div>
+                ))}
+                {teamMembers.length > 5 && (
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 border-white bg-gray-200 text-gray-600">
+                    +{teamMembers.length - 5}
+                  </div>
+                )}
+              </div>
+              {teamMembers.length === 0 && (
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 border-dashed border-gray-300 text-gray-400">
+                  <Plus className="w-4 h-4" />
+                </div>
+              )}
+            </Link>
             <Button
               onClick={() => setShowAddBooking(true)}
               className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl gap-2"
@@ -232,13 +253,13 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        {/* Date Navigation */}
+        {/* Date Navigation + View Tabs */}
         <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => changeDate(-1)}
+              onClick={() => changeDate(viewMode === 'month' ? -30 : viewMode === 'week' ? -7 : -1)}
               className="rounded-full hover:bg-gray-100"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -253,48 +274,67 @@ const CalendarPage = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => changeDate(1)}
+              onClick={() => changeDate(viewMode === 'month' ? 30 : viewMode === 'week' ? 7 : 1)}
               className="rounded-full hover:bg-gray-100"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
           
-          {/* Week Strip */}
-          <div className="flex items-center gap-1 bg-cream-100 p-1 rounded-xl">
-            {weekDates.map((date, index) => {
-              const isSelected = isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, new Date());
-              const hasBookings = bookings.some(b => 
-                new Date(b.datetime).toDateString() === date.toDateString()
-              );
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => setSelectedDate(date)}
-                  className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
-                    isSelected 
-                      ? 'bg-teal-500 text-white shadow-lg' 
-                      : isToday 
-                        ? 'bg-teal-100 text-teal-700'
-                        : 'hover:bg-white text-navy-600'
-                  }`}
-                >
-                  <span className="text-xs font-medium">{dayNames[index]}</span>
-                  <span className={`text-lg font-bold ${isSelected ? 'text-white' : ''}`}>
-                    {format(date, 'd')}
-                  </span>
-                  {hasBookings && !isSelected && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5" />
-                  )}
-                </button>
-              );
-            })}
+          {/* View Mode Tabs */}
+          <div className="flex items-center bg-gray-100 p-1 rounded-xl">
+            {['day', 'week', 'month'].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  viewMode === mode 
+                    ? 'bg-white text-teal-600 shadow-sm' 
+                    : 'text-navy-500 hover:text-navy-700'
+                }`}
+              >
+                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              </button>
+            ))}
           </div>
           
+          {/* Week Strip (only in day view) */}
+          {viewMode === 'day' && (
+            <div className="flex items-center gap-1 bg-cream-100 p-1 rounded-xl">
+              {weekDates.map((date, index) => {
+                const isSelected = isSameDay(date, selectedDate);
+                const isToday = isSameDay(date, new Date());
+                const hasBookings = bookings.some(b => 
+                  new Date(b.datetime).toDateString() === date.toDateString()
+                );
+                
+                return (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedDate(date)}
+                    className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
+                      isSelected 
+                        ? 'bg-teal-500 text-white shadow-lg' 
+                        : isToday 
+                          ? 'bg-teal-100 text-teal-700'
+                          : 'hover:bg-white text-navy-600'
+                    }`}
+                  >
+                    <span className="text-xs font-medium">{dayNames[index]}</span>
+                    <span className={`text-lg font-bold ${isSelected ? 'text-white' : ''}`}>
+                      {format(date, 'd')}
+                    </span>
+                    {hasBookings && !isSelected && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          
           <div className="text-sm text-navy-500">
-            {bookings.length} booking{bookings.length !== 1 ? 's' : ''} today
+            {bookings.length} booking{bookings.length !== 1 ? 's' : ''} {viewMode === 'day' ? 'today' : 'this ' + viewMode}
           </div>
         </div>
 
