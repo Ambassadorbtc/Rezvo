@@ -69,6 +69,7 @@ function AppRoutes() {
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
       <Route path="/share" element={<ProtectedRoute><ShareLinkPage /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute><FounderAdminPage /></ProtectedRoute>} />
       
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
