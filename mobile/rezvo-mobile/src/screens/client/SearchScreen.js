@@ -1,172 +1,143 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
-  Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
-import { formatPrice } from '../../lib/api';
+import { Ionicons } from '@expo/vector-icons';
+import api from '../../lib/api';
 
-const mockBusinesses = [
-  {
-    id: '1',
-    name: "Sarah's Hair Studio",
-    tagline: 'Professional hairdressing',
-    category: 'Haircut',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80',
-    rating: 4.9,
-    reviews: 127,
-    distance: '0.5 mi',
-    price_from: 3500,
-  },
-  {
-    id: '2',
-    name: 'FitLife PT',
-    tagline: 'Personal training sessions',
-    category: 'Fitness',
-    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80',
-    rating: 4.8,
-    reviews: 89,
-    distance: '1.2 mi',
-    price_from: 5000,
-  },
-  {
-    id: '3',
-    name: 'Glamour Nails',
-    tagline: 'Nail art and treatments',
-    category: 'Nails',
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80',
-    rating: 5.0,
-    reviews: 234,
-    distance: '0.8 mi',
-    price_from: 2500,
-  },
-  {
-    id: '4',
-    name: 'Zen Massage',
-    tagline: 'Relaxation & deep tissue',
-    category: 'Massage',
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80',
-    rating: 4.7,
-    reviews: 156,
-    distance: '2.1 mi',
-    price_from: 6000,
-  },
-];
+const TEAL = '#00BFA5';
 
-const filters = ['All', 'Haircut', 'Nails', 'Fitness', 'Beauty', 'Massage'];
-
-export default function SearchScreen({ navigation }) {
+export default function SearchScreen({ navigation, route }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [businesses, setBusinesses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(route.params?.category || null);
 
-  const filteredBusinesses = mockBusinesses.filter((business) => {
-    const matchesSearch = 
-      business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      business.tagline.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = activeFilter === 'All' || business.category === activeFilter;
-    return matchesSearch && matchesFilter;
-  });
+  const categories = ['All', 'Hair', 'Nails', 'Spa', 'Barber', 'Beauty', 'Massage'];
 
-  const renderBusiness = ({ item }) => (
-    <TouchableOpacity
-      style={styles.businessCard}
-      onPress={() => navigation.navigate('BusinessDetail', { business: item })}
-    >
-      <Image source={{ uri: item.image }} style={styles.businessImage} />
-      <View style={styles.heartButton}>
-        <Text style={styles.heartIcon}>♡</Text>
-      </View>
-      <View style={styles.businessContent}>
-        <View style={styles.businessHeader}>
-          <Text style={styles.businessName}>{item.name}</Text>
-          <View style={styles.ratingBadge}>
-            <Text style={styles.ratingStar}>★</Text>
-            <Text style={styles.ratingText}>{item.rating}</Text>
-          </View>
-        </View>
-        <Text style={styles.businessTagline}>{item.tagline}</Text>
-        <View style={styles.businessFooter}>
-          <Text style={styles.distanceText}>{item.distance}</Text>
-          <Text style={styles.priceText}>From {formatPrice(item.price_from)}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+  const fetchBusinesses = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/public/businesses');
+      let results = response.data || [];
+      
+      // Filter by search query
+      if (searchQuery) {
+        results = results.filter(b => 
+          b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (b.tagline && b.tagline.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+      }
+      
+      setBusinesses(results);
+    } catch (error) {
+      console.error('Error searching:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBusinesses();
+  }, [searchQuery, selectedCategory]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
+      {/* Search Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Search</Text>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#627D98" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search businesses or services..."
+            placeholderTextColor="#9FB3C8"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCapitalize="none"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Ionicons name="close-circle" size={20} color="#627D98" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Text style={styles.searchIcon}>🔍</Text>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for services or businesses..."
-          placeholderTextColor={colors.textLight}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Text style={styles.clearIcon}>✕</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Filters */}
-      <FlatList
-        data={filters}
-        renderItem={({ item }) => (
+      {/* Category Pills */}
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesContainer}
+      >
+        {categories.map((cat) => (
           <TouchableOpacity
+            key={cat}
             style={[
-              styles.filterChip,
-              activeFilter === item && styles.filterChipActive,
+              styles.categoryPill,
+              (selectedCategory === cat || (cat === 'All' && !selectedCategory)) && styles.categoryPillActive
             ]}
-            onPress={() => setActiveFilter(item)}
+            onPress={() => setSelectedCategory(cat === 'All' ? null : cat)}
           >
-            <Text
-              style={[
-                styles.filterText,
-                activeFilter === item && styles.filterTextActive,
-              ]}
-            >
-              {item}
+            <Text style={[
+              styles.categoryPillText,
+              (selectedCategory === cat || (cat === 'All' && !selectedCategory)) && styles.categoryPillTextActive
+            ]}>
+              {cat}
             </Text>
           </TouchableOpacity>
-        )}
-        keyExtractor={(item) => item}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filtersList}
-      />
+        ))}
+      </ScrollView>
 
       {/* Results */}
-      <FlatList
-        data={filteredBusinesses}
-        renderItem={renderBusiness}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.resultsList}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>No results found</Text>
-            <Text style={styles.emptyText}>
-              Try adjusting your search or filters
-            </Text>
+      <ScrollView style={styles.results}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={TEAL} />
           </View>
-        }
-      />
+        ) : businesses.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="search-outline" size={64} color="#E2E8F0" />
+            <Text style={styles.emptyTitle}>No results found</Text>
+            <Text style={styles.emptySubtext}>Try adjusting your search or filters</Text>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.resultsCount}>{businesses.length} businesses found</Text>
+            {businesses.map((business) => (
+              <TouchableOpacity
+                key={business.id}
+                style={styles.businessCard}
+                onPress={() => navigation.navigate('BusinessDetail', { businessId: business.id })}
+              >
+                <View style={styles.businessImage}>
+                  <Ionicons name="storefront" size={32} color={TEAL} />
+                </View>
+                <View style={styles.businessInfo}>
+                  <Text style={styles.businessName}>{business.name}</Text>
+                  <Text style={styles.businessTagline}>{business.tagline || 'Professional services'}</Text>
+                  <View style={styles.businessMeta}>
+                    <Ionicons name="star" size={14} color="#F59E0B" />
+                    <Text style={styles.rating}>4.8</Text>
+                    <View style={styles.dot} />
+                    <Ionicons name="location-outline" size={14} color="#627D98" />
+                    <Text style={styles.distance}>0.5 mi</Text>
+                  </View>
+                </View>
+                <View style={styles.bookBtn}>
+                  <Text style={styles.bookBtnText}>Book</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -174,170 +145,145 @@ export default function SearchScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
   header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  headerTitle: {
-    fontSize: typography.sizes['2xl'],
-    fontWeight: '700',
-    color: colors.text,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.md,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
-  },
-  searchIcon: {
-    fontSize: 18,
-    marginRight: spacing.sm,
+    borderColor: '#E2E8F0',
   },
   searchInput: {
     flex: 1,
-    paddingVertical: spacing.md,
-    fontSize: typography.sizes.base,
-    color: colors.text,
-  },
-  clearIcon: {
+    marginLeft: 12,
     fontSize: 16,
-    color: colors.textMuted,
-    padding: spacing.xs,
+    color: '#0A1626',
   },
-  filtersList: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.md,
-    gap: spacing.sm,
+  categoriesContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 8,
   },
-  filterChip: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.surface,
+  categoryPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.border,
-    marginRight: spacing.sm,
+    borderColor: '#E2E8F0',
   },
-  filterChipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+  categoryPillActive: {
+    backgroundColor: TEAL,
+    borderColor: TEAL,
   },
-  filterText: {
-    fontSize: typography.sizes.sm,
+  categoryPillText: {
+    fontSize: 14,
     fontWeight: '500',
-    color: colors.textMuted,
+    color: '#627D98',
   },
-  filterTextActive: {
-    color: colors.surface,
+  categoryPillTextActive: {
+    color: '#FFFFFF',
   },
-  resultsList: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
-  },
-  businessCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-    marginBottom: spacing.md,
-    ...shadows.md,
-  },
-  businessImage: {
-    width: '100%',
-    height: 160,
-  },
-  heartButton: {
-    position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heartIcon: {
-    fontSize: 18,
-    color: colors.secondary,
-  },
-  businessContent: {
-    padding: spacing.lg,
-  },
-  businessHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  businessName: {
-    fontSize: typography.sizes.lg,
-    fontWeight: '600',
-    color: colors.text,
+  results: {
     flex: 1,
+    paddingHorizontal: 20,
   },
-  ratingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surfaceAlt,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  ratingStar: {
-    fontSize: 12,
-    color: '#F59E0B',
-    marginRight: 2,
-  },
-  ratingText: {
-    fontSize: typography.sizes.sm,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  businessTagline: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  businessFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  loadingContainer: {
+    paddingTop: 60,
     alignItems: 'center',
   },
-  distanceText: {
-    fontSize: typography.sizes.sm,
-    color: colors.textMuted,
-  },
-  priceText: {
-    fontSize: typography.sizes.base,
-    fontWeight: '600',
-    color: colors.primary,
+  resultsCount: {
+    fontSize: 14,
+    color: '#627D98',
+    marginVertical: 12,
   },
   emptyState: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing.xxl * 2,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
+    paddingTop: 80,
   },
   emptyTitle: {
-    fontSize: typography.sizes.xl,
+    fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.xs,
+    color: '#627D98',
+    marginTop: 16,
   },
-  emptyText: {
-    fontSize: typography.sizes.base,
-    color: colors.textMuted,
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9FB3C8',
+    marginTop: 4,
+  },
+  businessCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  businessImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    backgroundColor: '#F5F0E8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  businessInfo: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  businessName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginBottom: 4,
+  },
+  businessTagline: {
+    fontSize: 13,
+    color: '#627D98',
+    marginBottom: 6,
+  },
+  businessMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rating: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0A1626',
+    marginLeft: 4,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E2E8F0',
+    marginHorizontal: 8,
+  },
+  distance: {
+    fontSize: 13,
+    color: '#627D98',
+    marginLeft: 4,
+  },
+  bookBtn: {
+    backgroundColor: TEAL,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  bookBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
