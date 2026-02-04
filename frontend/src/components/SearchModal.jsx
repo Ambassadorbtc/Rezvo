@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Calendar, Scissors, User, Clock, ChevronRight } from 'lucide-react';
+import { Search, X, Calendar, Scissors, User, ChevronRight } from 'lucide-react';
 import { Input } from './ui/input';
-import { Button } from './ui/button';
-import api, { formatPrice, formatDateTime } from '../lib/api';
+import api, { formatPrice } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+
+const formatDateTime = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    return format(new Date(dateStr), 'd MMM yyyy, HH:mm');
+  } catch {
+    return dateStr;
+  }
+};
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
