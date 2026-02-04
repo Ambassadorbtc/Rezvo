@@ -11,33 +11,15 @@ import {
   LogOut,
   Menu,
   X,
-  Shield,
-  Search
+  Shield
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
-import SearchModal from './SearchModal';
 
 const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-
-  // Keyboard shortcut for search (Cmd/Ctrl + K)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-      if (e.key === 'Escape') {
-        setSearchOpen(false);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -63,19 +45,6 @@ const AppLayout = ({ children }) => {
             </div>
             <span className="text-xl font-bold font-heading text-navy-900">Rezvo</span>
           </Link>
-        </div>
-
-        {/* Search Button */}
-        <div className="p-4 border-b border-gray-100">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 text-navy-400 hover:bg-gray-100 hover:text-navy-600 transition-all"
-            data-testid="search-trigger-btn"
-          >
-            <Search className="w-4 h-4" />
-            <span className="text-sm">Search...</span>
-            <kbd className="ml-auto text-xs bg-white px-2 py-1 rounded border border-gray-200">⌘K</kbd>
-          </button>
         </div>
 
         {/* Navigation */}
@@ -213,9 +182,6 @@ const AppLayout = ({ children }) => {
           ))}
         </div>
       </nav>
-
-      {/* Search Modal */}
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 };
