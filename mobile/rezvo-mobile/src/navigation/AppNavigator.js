@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { colors } from '../lib/theme';
 
@@ -11,7 +12,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 
-// Client Screens (Booking App)
+// Client Screens
 import ClientHomeScreen from '../screens/client/HomeScreen';
 import ClientSearchScreen from '../screens/client/SearchScreen';
 import ClientBookingsScreen from '../screens/client/BookingsScreen';
@@ -19,7 +20,7 @@ import ClientProfileScreen from '../screens/client/ProfileScreen';
 import BusinessDetailScreen from '../screens/client/BusinessDetailScreen';
 import BookingFlowScreen from '../screens/client/BookingFlowScreen';
 
-// Business Screens (Owner App)
+// Business Screens
 import BusinessDashboardScreen from '../screens/business/DashboardScreen';
 import BusinessCalendarScreen from '../screens/business/CalendarScreen';
 import BusinessBookingsScreen from '../screens/business/BookingsScreen';
@@ -29,40 +30,27 @@ import BusinessSettingsScreen from '../screens/business/SettingsScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Simple Tab Icon Component
-function TabIcon({ label, focused }) {
-  const icons = {
-    Home: '🏠',
-    Search: '🔍',
-    Bookings: '📅',
-    Profile: '👤',
-    Dashboard: '📊',
-    Calendar: '📆',
-    Services: '✂️',
-    Settings: '⚙️',
-  };
-  
-  return (
-    <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>
-      {icons[label] || '📌'}
-    </Text>
-  );
-}
+const TEAL = '#00BFA5';
 
 // Client Bottom Tabs
 function ClientTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => (
-          <TabIcon label={route.name} focused={focused} />
-        ),
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarIcon: ({ focused }) => {
+          let iconName;
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
+          else if (route.name === 'Bookings') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
+          return <Ionicons name={iconName} size={24} color={TEAL} />;
+        },
+        tabBarActiveTintColor: TEAL,
+        tabBarInactiveTintColor: TEAL,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.borderLight,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E2E8F0',
           paddingTop: 8,
           paddingBottom: 24,
           height: 80,
@@ -82,15 +70,21 @@ function BusinessTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => (
-          <TabIcon label={route.name} focused={focused} />
-        ),
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarIcon: ({ focused }) => {
+          let iconName;
+          if (route.name === 'Dashboard') iconName = focused ? 'grid' : 'grid-outline';
+          else if (route.name === 'Calendar') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Bookings') iconName = focused ? 'list' : 'list-outline';
+          else if (route.name === 'Services') iconName = focused ? 'cut' : 'cut-outline';
+          else if (route.name === 'Settings') iconName = focused ? 'settings' : 'settings-outline';
+          return <Ionicons name={iconName} size={24} color={TEAL} />;
+        },
+        tabBarActiveTintColor: TEAL,
+        tabBarInactiveTintColor: TEAL,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.borderLight,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E2E8F0',
           paddingTop: 8,
           paddingBottom: 24,
           height: 80,
@@ -106,7 +100,6 @@ function BusinessTabs() {
   );
 }
 
-// Auth Stack
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -117,7 +110,6 @@ function AuthStack() {
   );
 }
 
-// Main Client Stack
 function ClientStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -128,7 +120,6 @@ function ClientStack() {
   );
 }
 
-// Main Business Stack
 function BusinessStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -137,20 +128,17 @@ function BusinessStack() {
   );
 }
 
-// Root Navigator
 export default function AppNavigator() {
   const { user, userType, loading } = useAuth();
 
-  // Show loading spinner while checking auth
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={TEAL} />
       </View>
     );
   }
 
-  // Determine which stack to show
   const isLoggedIn = user !== null && user !== undefined;
   const isClient = userType === 'client';
 
@@ -172,6 +160,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: '#FDFBF7',
   },
 });
