@@ -12,26 +12,30 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useGlobalToast } from '../../context/ToastContext';
 import api, { formatPrice } from '../../lib/api';
 
 const TEAL = '#00BFA5';
 
 export default function DashboardScreen({ navigation }) {
   const { user } = useAuth();
+  const { showSuccess, showError } = useGlobalToast();
   const [stats, setStats] = useState({ today_count: 0, pending_count: 0, revenue_pence: 0 });
   const [business, setBusiness] = useState(null);
   const [todayBookings, setTodayBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const fetchDashboard = async () => {
     try {
       setError(null);
-      const [statsRes, businessRes, bookingsRes] = await Promise.all([
+      const [statsRes, businessRes, bookingsRes, conversationsRes] = await Promise.all([
         api.get('/business/stats').catch(() => ({ data: { today_count: 0, pending_count: 0, revenue_pence: 0 } })),
         api.get('/business').catch(() => ({ data: null })),
-        api.get('/bookings').catch(() => ({ data: [] }))
+        api.get('/bookings').catch(() => ({ data: [] })),
+        api.get('/conversations').catch(() => ({ data: [] }))
       ]);
       
       setStats(statsRes.data || { today_count: 0, pending_count: 0, revenue_pence: 0 });
@@ -44,9 +48,16 @@ export default function DashboardScreen({ navigation }) {
         b && b.datetime && new Date(b.datetime).toDateString() === today
       ).slice(0, 5); // Show max 5
       setTodayBookings(todaysBookings);
+      
+      // Calculate notification count
+      const pendingBookings = bookingsData.filter(b => b.status === 'pending').length;
+      const conversations = Array.isArray(conversationsRes.data) ? conversationsRes.data : [];
+      const unreadMessages = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+      setNotificationCount(pendingBookings + unreadMessages);
     } catch (err) {
       console.error('Error fetching dashboard:', err);
       setError('Failed to load dashboard');
+      showError('Failed to load dashboard');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -67,6 +78,7 @@ export default function DashboardScreen({ navigation }) {
       await Share.share({
         message: `Book with ${business?.name || 'us'} on Rezvo: https://rezvo.app/book/${business?.id}`,
       });
+      showSuccess('Share link copied!');
     } catch (error) {
       console.error('Share error:', error);
     }
