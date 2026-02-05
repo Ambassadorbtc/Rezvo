@@ -22,14 +22,12 @@ const ExpoTestingPage = () => {
       if (data.url) {
         setExpoUrl(data.url);
       } else {
-        // Use internal IP as fallback
-        setExpoUrl('exp://10.79.144.219:8081');
-        setError('Using LAN URL. Make sure your phone is on the same network.');
+        // Use the active tunnel URL
+        setExpoUrl('exp://lavrnhk-anonymous-8081.exp.direct');
       }
     } catch (err) {
-      // Fallback to internal URL
-      setExpoUrl('exp://10.79.144.219:8081');
-      setError('Using LAN URL. Make sure your phone is on the same network.');
+      // Use the active tunnel URL
+      setExpoUrl('exp://lavrnhk-anonymous-8081.exp.direct');
     }
     setLoading(false);
   };
