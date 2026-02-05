@@ -300,6 +300,55 @@ const PublicBookingPage = () => {
           <div className="space-y-4" data-testid="step-2">
             <h2 className="text-xl font-bold text-[#0A1626] text-center mb-6">Select date & time</h2>
             
+            {/* Team Member Selection */}
+            {teamMembers.length > 0 && (
+              <Card className="bg-white rounded-2xl shadow-sm border-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base text-[#0A1626]">Choose your professional</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setSelectedTeamMember(null)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${
+                        selectedTeamMember === null 
+                          ? 'border-[#00BFA5] bg-[#00BFA5]/10' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-500" />
+                      </div>
+                      <span className="font-medium text-[#0A1626]">Any available</span>
+                    </button>
+                    {teamMembers.map((member) => (
+                      <button
+                        key={member.id}
+                        onClick={() => setSelectedTeamMember(member)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all ${
+                          selectedTeamMember?.id === member.id 
+                            ? 'border-[#00BFA5] bg-[#00BFA5]/10' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div 
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                          style={{ backgroundColor: member.color || '#00BFA5' }}
+                        >
+                          {member.avatar_url ? (
+                            <img src={member.avatar_url} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            member.name?.charAt(0)?.toUpperCase()
+                          )}
+                        </div>
+                        <span className="font-medium text-[#0A1626]">{member.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             <Card className="bg-white rounded-2xl shadow-sm border-0">
               <CardContent className="p-4">
                 <Calendar
