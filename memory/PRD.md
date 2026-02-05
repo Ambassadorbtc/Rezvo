@@ -8,30 +8,35 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 2. **Client** - End customer who wants to book appointments easily
 3. **Founder/Admin** - Platform administrator who monitors the system
 
-## What's Been Implemented
+## What's Been Implemented ✅
 
-### Web Application (React) ✅
+### Web Application (React)
 - [x] Landing page with modern design
 - [x] User authentication (JWT-based)
 - [x] Business dashboard with stats
-- [x] **Calendar with Day/Week/Month views** (NEW)
-  - Day view with team columns
-  - Week view with bookings grid
-  - Month view with calendar grid
-- [x] **Team Management Page** (REDESIGNED)
+- [x] **Calendar with Day/Week/Month views**
+  - Day view with team member columns
+  - Week view with booking counts
+  - Month view with full calendar
+  - Team avatars in header (link to /team)
+- [x] **Team Management Page**
   - Premium table with inline editing
   - Round profile avatars with colors
-  - Branded delete confirmation dialog (no browser alerts)
-  - New members sorted to top
+  - Branded delete confirmation dialog
   - Profile image upload
   - "Show on booking page" toggle
-- [x] **Calendar team avatars** - Profile icons link to /team (replaced Team button)
+  - Newest members sorted first
+- [x] **Public Booking Page** (ENHANCED)
+  - Team member selection with avatars
+  - "Any available" option
+  - Time slot selection
+  - Complete 3-step booking flow
+  - Shows team member in summary
 - [x] Services management (CRUD)
 - [x] Bookings management
 - [x] Analytics dashboard
 - [x] Settings page
 - [x] Shareable booking links with QR codes
-- [x] Public booking page
 - [x] Legal pages: Privacy, Terms, Cookie Policy
 - [x] Cookie consent popup
 - [x] Onboarding wizard UI
@@ -39,22 +44,22 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 
 ### Mobile Application (React Native/Expo)
 - [x] Welcome/Login/Signup screens
-- [x] Complete Auth Flow (Forgot Password, Verify Code, Reset)
-- [x] Client Flow (Home, Search, Bookings, Profile, Business Detail, Booking Flow)
+- [x] Complete Auth Flow
+- [x] Client Flow (Home, Search, Bookings, Profile, Business Detail, Booking)
 - [x] Business Flow (Dashboard, Calendar, Bookings, Services, Team, Settings)
 - [x] Settings navigation (Help Centre, Contact Support, Terms & Privacy)
 
 ### Backend (FastAPI + MongoDB)
 - [x] Authentication endpoints
 - [x] Password Reset Flow
-- [x] Business management
+- [x] Business management with availability
 - [x] Services CRUD
 - [x] Team Members CRUD with visibility toggle
-- [x] Image Upload (POST /api/upload/avatar)
-- [x] Public Team endpoint (filtered by visibility)
+- [x] Image Upload endpoint
+- [x] Public endpoints (business, services, team, bookings)
 - [x] Calendar API with team view
-- [x] Bookings endpoints
-- [x] AI-powered suggestions (OpenAI GPT-4o-mini)
+- [x] Bookings with team member assignment
+- [x] AI-powered suggestions
 - [x] Email notifications (Resend)
 - [x] Products CRUD
 - [x] Admin analytics
@@ -66,24 +71,24 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 | Dashboard | https://bookrezvo.preview.emergentagent.com/dashboard |
 | Calendar | https://bookrezvo.preview.emergentagent.com/calendar |
 | Team | https://bookrezvo.preview.emergentagent.com/team |
+| Public Booking | https://bookrezvo.preview.emergentagent.com/book/{businessId} |
 | Mobile Preview | https://bookrezvo.preview.emergentagent.com/mobile-preview |
 | Admin | https://bookrezvo.preview.emergentagent.com/admin |
 
 ## Test Credentials
 - **Email:** testuser@example.com
 - **Password:** password123
+- **Business ID:** 3edbbbc1-730a-494e-9626-1a0a5e6309ef
 
 ## Expo Mobile App
 ```bash
 cd /app/mobile/rezvo-mobile && npx expo start --clear
 ```
-Scan QR code with Expo Go app on your phone.
 
 ## P0 - Next Priority Tasks
 1. Wire onboarding wizard to backend
-2. Team selection on public booking page
-3. Full client mobile app backend wiring
-4. Push notifications (Expo)
+2. Push notifications (Expo)
+3. Client mobile app backend wiring
 
 ## P1 - Upcoming Tasks
 - Stripe subscription (£4.99/month)
@@ -99,10 +104,9 @@ Scan QR code with Expo Go app on your phone.
 - Re-enable global search
 
 ## Last Updated
-February 4, 2026 - Session 6:
-- Added Day/Week/Month view tabs to Calendar
-- Replaced "Team (N)" button with team member profile avatars
-- Avatars now link to /team page
-- Replaced browser `confirm()` with branded delete dialog
-- Team members now sorted by creation date (newest first)
-- Expo server restarted for mobile testing
+February 5, 2026 - Session 7:
+- Fixed public booking page - now shows team members and time slots
+- Added team member selection to booking flow
+- Added default availability for all days
+- All tests passing (100% frontend)
+- Complete booking flow verified working
