@@ -180,7 +180,7 @@ export default function NotificationsScreen({ navigation }) {
             <TouchableOpacity 
               key={notif.id}
               style={[styles.notificationCard, !notif.read && styles.unreadCard]}
-              onPress={notif.action}
+              onPress={() => handleNotificationPress(notif)}
               activeOpacity={0.7}
             >
               <View style={[styles.iconContainer, { backgroundColor: notif.color + '20' }]}>
