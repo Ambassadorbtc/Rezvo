@@ -3371,9 +3371,10 @@ async def send_message(conversation_id: str, data: MessageCreate, current_user: 
 
 @api_router.get("/admin/conversations")
 async def get_all_support_conversations(current_user: dict = Depends(get_current_user)):
-    """Get all support conversations (admin only)"""
+    """Get all support conversations (admin/founder only)"""
     user = await db.users.find_one({"id": current_user["sub"]})
-    if not user or user.get("role") != "admin":
+    # Allow admin role OR business owners (founders can manage support)
+    if not user or (user.get("role") != "admin" and user.get("role") != "business"):
         raise HTTPException(status_code=403, detail="Not authorized")
     
     conversations = await db.conversations.find(
@@ -3382,6 +3383,16 @@ async def get_all_support_conversations(current_user: dict = Depends(get_current
     
     result = []
     for conv in conversations:
+        # Get user info for this conversation
+        user_id = None
+        for p in conv.get("participants", []):
+            if p != "support":
+                user_id = p
+                break
+        
+        user_info = await db.users.find_one({"id": user_id}) if user_id else None
+        user_email = user_info.get("email") if user_info else conv.get("participant_names", {}).get(user_id, "Unknown")
+        
         unread = await db.messages.count_documents({
             "conversation_id": conv["id"],
             "sender_id": {"$ne": "support"},
@@ -3391,9 +3402,13 @@ async def get_all_support_conversations(current_user: dict = Depends(get_current
             "id": conv["id"],
             "participants": conv.get("participants", []),
             "participant_names": conv.get("participant_names", {}),
+            "user_email": user_email,
+            "subject": conv.get("subject", "Support Request"),
+            "status": conv.get("status", "open"),
             "business_id": conv.get("business_id"),
             "last_message": conv.get("last_message"),
             "last_message_at": conv.get("last_message_at"),
+            "updated_at": conv.get("last_message_at"),
             "unread_count": unread
         })
     
