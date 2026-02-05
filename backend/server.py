@@ -3683,6 +3683,128 @@ async def get_all_support_conversations(current_user: dict = Depends(get_current
     
     return result
 
+# ==================== LIVE CHAT SETTINGS ====================
+
+class LiveChatSettings(BaseModel):
+    is_online: bool = False
+    auto_hours_enabled: bool = True
+    working_hours: Dict[str, Any] = Field(default_factory=lambda: {
+        "monday": {"start": "09:00", "end": "18:00", "enabled": True},
+        "tuesday": {"start": "09:00", "end": "18:00", "enabled": True},
+        "wednesday": {"start": "09:00", "end": "18:00", "enabled": True},
+        "thursday": {"start": "09:00", "end": "18:00", "enabled": True},
+        "friday": {"start": "09:00", "end": "18:00", "enabled": True},
+        "saturday": {"start": "09:00", "end": "18:00", "enabled": False},
+        "sunday": {"start": "09:00", "end": "18:00", "enabled": False}
+    })
+
+@api_router.get("/admin/live-chat-settings")
+async def get_live_chat_settings(current_user: dict = Depends(get_current_user)):
+    """Get live chat settings (admin only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    settings = await db.platform_settings.find_one({"key": "live_chat"})
+    if not settings:
+        # Create default settings
+        default_settings = {
+            "key": "live_chat",
+            "is_online": False,
+            "auto_hours_enabled": True,
+            "working_hours": {
+                "monday": {"start": "09:00", "end": "18:00", "enabled": True},
+                "tuesday": {"start": "09:00", "end": "18:00", "enabled": True},
+                "wednesday": {"start": "09:00", "end": "18:00", "enabled": True},
+                "thursday": {"start": "09:00", "end": "18:00", "enabled": True},
+                "friday": {"start": "09:00", "end": "18:00", "enabled": True},
+                "saturday": {"start": "09:00", "end": "18:00", "enabled": False},
+                "sunday": {"start": "09:00", "end": "18:00", "enabled": False}
+            },
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.platform_settings.insert_one(default_settings)
+        return {k: v for k, v in default_settings.items() if k != "_id" and k != "key"}
+    
+    return {
+        "is_online": settings.get("is_online", False),
+        "auto_hours_enabled": settings.get("auto_hours_enabled", True),
+        "working_hours": settings.get("working_hours", {}),
+        "updated_at": settings.get("updated_at")
+    }
+
+@api_router.patch("/admin/live-chat-settings")
+async def update_live_chat_settings(data: LiveChatSettings, current_user: dict = Depends(get_current_user)):
+    """Update live chat settings (admin only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.platform_settings.update_one(
+        {"key": "live_chat"},
+        {"$set": {
+            "is_online": data.is_online,
+            "auto_hours_enabled": data.auto_hours_enabled,
+            "working_hours": data.working_hours,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    return {"message": "Live chat settings updated"}
+
+@api_router.post("/admin/live-chat-toggle")
+async def toggle_live_chat(current_user: dict = Depends(get_current_user)):
+    """Toggle live chat online/offline status"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    settings = await db.platform_settings.find_one({"key": "live_chat"})
+    current_status = settings.get("is_online", False) if settings else False
+    
+    await db.platform_settings.update_one(
+        {"key": "live_chat"},
+        {"$set": {
+            "is_online": not current_status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    return {"is_online": not current_status}
+
+@api_router.get("/support/live-chat-status")
+async def get_live_chat_status():
+    """Get current live chat status (public endpoint for mobile/web)"""
+    settings = await db.platform_settings.find_one({"key": "live_chat"})
+    
+    if not settings:
+        return {"is_online": False, "message": "Live chat is currently offline"}
+    
+    is_online = settings.get("is_online", False)
+    auto_hours = settings.get("auto_hours_enabled", True)
+    
+    # If auto hours is enabled, check if we're within working hours
+    if auto_hours and not is_online:
+        working_hours = settings.get("working_hours", {})
+        now = datetime.now(timezone.utc)
+        day_name = now.strftime("%A").lower()
+        day_settings = working_hours.get(day_name, {})
+        
+        if day_settings.get("enabled", False):
+            start_time = day_settings.get("start", "09:00")
+            end_time = day_settings.get("end", "18:00")
+            
+            current_time = now.strftime("%H:%M")
+            if start_time <= current_time <= end_time:
+                is_online = True
+    
+    return {
+        "is_online": is_online,
+        "message": "We're online! Start a chat." if is_online else "We're currently offline. Leave a message and we'll respond within 24 hours."
+    }
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
