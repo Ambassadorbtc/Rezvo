@@ -340,15 +340,94 @@ const AppLayout = ({ children }) => {
             <span className="text-lg font-bold font-heading text-navy-900">Rezvo</span>
           </Link>
           <div className="flex items-center gap-2">
-            {/* Notification Bell */}
-            <Link to="/support" className="relative p-2 hover:bg-gray-100 rounded-xl">
-              <Bell className="w-5 h-5 text-gray-600" />
-              {notificationCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {notificationCount > 9 ? '9+' : notificationCount}
-                </span>
+            {/* Notification Bell with Dropdown */}
+            <div className="relative" ref={notificationRef}>
+              <button 
+                onClick={() => setNotificationOpen(!notificationOpen)}
+                className="relative p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Bell className="w-5 h-5 text-gray-600" />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
+              </button>
+              
+              {/* Notification Dropdown */}
+              {notificationOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                  <div className="p-3 border-b border-gray-100 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">Notifications</h3>
+                    {notificationCount > 0 && (
+                      <button 
+                        onClick={markAllAsRead}
+                        className="text-xs text-teal-600 hover:text-teal-700 font-medium"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-gray-400">
+                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No notifications yet</p>
+                      </div>
+                    ) : (
+                      notifications.slice(0, 10).map((notif) => (
+                        <div
+                          key={notif.id}
+                          onClick={() => {
+                            if (!notif.read) markAsRead(notif.id);
+                            if (notif.link) navigate(notif.link);
+                            setNotificationOpen(false);
+                          }}
+                          className={`p-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors ${
+                            !notif.read ? 'bg-teal-50/50' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              notif.type === 'booking' ? 'bg-teal-100 text-teal-600' :
+                              notif.type === 'message' ? 'bg-blue-100 text-blue-600' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {notif.type === 'booking' ? <Calendar className="w-4 h-4" /> :
+                               notif.type === 'message' ? <MessageCircle className="w-4 h-4" /> :
+                               <Bell className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm ${!notif.read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                                {notif.title}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">{notif.message}</p>
+                              <p className="text-[10px] text-gray-400 mt-1">
+                                {new Date(notif.created_at).toLocaleDateString('en-GB', { 
+                                  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+                                })}
+                              </p>
+                            </div>
+                            {!notif.read && (
+                              <div className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0 mt-2" />
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {notifications.length > 0 && (
+                    <Link 
+                      to="/support" 
+                      onClick={() => setNotificationOpen(false)}
+                      className="block p-3 text-center text-sm text-teal-600 hover:bg-gray-50 font-medium"
+                    >
+                      View all notifications
+                    </Link>
+                  )}
+                </div>
               )}
-            </Link>
+            </div>
             <Button
               variant="ghost"
               size="icon"
