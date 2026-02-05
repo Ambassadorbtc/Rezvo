@@ -27,6 +27,7 @@ export default function ContactSupportScreen({ navigation }) {
       return;
     }
     
+    console.log('[ContactSupport] Creating new ticket:', { subject, message: message.substring(0, 30) });
     setLoading(true);
     try {
       // Create real support conversation via API
@@ -36,6 +37,7 @@ export default function ContactSupportScreen({ navigation }) {
         recipient_type: 'support'
       });
       
+      console.log('[ContactSupport] Ticket created:', res.data);
       showToast('Message sent! Opening chat...', 'success');
       
       // Navigate to SupportChat with the new conversation
@@ -48,7 +50,7 @@ export default function ContactSupportScreen({ navigation }) {
         }
       });
     } catch (error) {
-      console.error('Error creating support ticket:', error);
+      console.error('[ContactSupport] Error creating ticket:', error.response?.data || error.message);
       showToast('Failed to send message. Please try again.', 'error');
     } finally {
       setLoading(false);
