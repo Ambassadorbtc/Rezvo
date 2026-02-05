@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,23 +42,22 @@ const Tab = createBottomTabNavigator();
 const TEAL = '#00BFA5';
 const GRAY = '#9FB3C8';
 
-// Simple icon component to avoid animation issues
-const TabIcon = ({ name, focused }) => (
-  <Ionicons 
-    name={name} 
-    size={24} 
-    color={focused ? TEAL : GRAY} 
-  />
-);
-
 // Client Bottom Tabs
 function ClientTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
+          else if (route.name === 'Bookings') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
         tabBarActiveTintColor: TEAL,
         tabBarInactiveTintColor: GRAY,
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E2E8F0',
@@ -66,44 +65,12 @@ function ClientTabs() {
           paddingBottom: 24,
           height: 80,
         },
-      }}
+      })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={ClientHomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'home' : 'home-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Search" 
-        component={ClientSearchScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'search' : 'search-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Bookings" 
-        component={ClientBookingsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'calendar' : 'calendar-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={ClientProfileScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'person' : 'person-outline'} focused={focused} />
-          ),
-        }}
-      />
+      <Tab.Screen name="Home" component={ClientHomeScreen} />
+      <Tab.Screen name="Search" component={ClientSearchScreen} />
+      <Tab.Screen name="Bookings" component={ClientBookingsScreen} />
+      <Tab.Screen name="Profile" component={ClientProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -112,10 +79,19 @@ function ClientTabs() {
 function BusinessTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          if (route.name === 'Dashboard') iconName = focused ? 'grid' : 'grid-outline';
+          else if (route.name === 'Calendar') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Bookings') iconName = focused ? 'list' : 'list-outline';
+          else if (route.name === 'Services') iconName = focused ? 'cut' : 'cut-outline';
+          else if (route.name === 'Settings') iconName = focused ? 'settings' : 'settings-outline';
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
         tabBarActiveTintColor: TEAL,
         tabBarInactiveTintColor: GRAY,
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E2E8F0',
@@ -123,53 +99,13 @@ function BusinessTabs() {
           paddingBottom: 24,
           height: 80,
         },
-      }}
+      })}
     >
-      <Tab.Screen 
-        name="Dashboard" 
-        component={BusinessDashboardScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'grid' : 'grid-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Calendar" 
-        component={BusinessCalendarScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'calendar' : 'calendar-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Bookings" 
-        component={BusinessBookingsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'list' : 'list-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Services" 
-        component={BusinessServicesScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'cut' : 'cut-outline'} focused={focused} />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Settings" 
-        component={BusinessSettingsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} />
-          ),
-        }}
-      />
+      <Tab.Screen name="Dashboard" component={BusinessDashboardScreen} />
+      <Tab.Screen name="Calendar" component={BusinessCalendarScreen} />
+      <Tab.Screen name="Bookings" component={BusinessBookingsScreen} />
+      <Tab.Screen name="Services" component={BusinessServicesScreen} />
+      <Tab.Screen name="Settings" component={BusinessSettingsScreen} />
     </Tab.Navigator>
   );
 }
@@ -214,14 +150,9 @@ function BusinessStack() {
 }
 
 export default function AppNavigator() {
-  const auth = useAuth();
-  
-  // Ensure loading is a boolean
-  const isLoading = Boolean(auth?.loading);
-  const user = auth?.user;
-  const userType = auth?.userType;
+  const { user, userType, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={TEAL} />
