@@ -3369,6 +3369,35 @@ async def send_message(conversation_id: str, data: MessageCreate, current_user: 
     
     return {"id": message_id, "created_at": now.isoformat()}
 
+@api_router.patch("/messages/{message_id}")
+async def edit_message(message_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Edit a message"""
+    message = await db.messages.find_one({"id": message_id})
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    if message.get("sender_id") != current_user["sub"]:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this message")
+    
+    await db.messages.update_one(
+        {"id": message_id},
+        {"$set": {"content": data.get("content"), "edited": True}}
+    )
+    return {"status": "updated"}
+
+@api_router.delete("/messages/{message_id}")
+async def delete_message(message_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a message"""
+    message = await db.messages.find_one({"id": message_id})
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    if message.get("sender_id") != current_user["sub"]:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this message")
+    
+    await db.messages.delete_one({"id": message_id})
+    return {"status": "deleted"}
+
 @api_router.get("/admin/conversations")
 async def get_all_support_conversations(current_user: dict = Depends(get_current_user)):
     """Get all support conversations (admin/founder only)"""
