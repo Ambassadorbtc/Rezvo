@@ -3248,8 +3248,11 @@ async def get_conversations(current_user: dict = Depends(get_current_user)):
             "id": conv_id,
             "participants": conv.get("participants", []),
             "participant_names": conv.get("participant_names", {}),
+            "subject": conv.get("subject", "Support Request"),
+            "status": conv.get("status", "open"),
             "last_message": conv.get("last_message"),
             "last_message_at": conv.get("last_message_at"),
+            "created_at": conv.get("created_at"),
             "unread_count": unread,
             "type": conv.get("type", "support")
         })
