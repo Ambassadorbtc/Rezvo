@@ -105,17 +105,6 @@ webpackConfig.devServer = (devServerConfig) => {
     };
   }
 
-  // Proxy /expo to Expo web server
-  devServerConfig.proxy = {
-    ...devServerConfig.proxy,
-    '/expo': {
-      target: 'http://localhost:8081',
-      pathRewrite: { '^/expo': '' },
-      ws: true,
-      changeOrigin: true,
-    },
-  };
-
   return devServerConfig;
 };
 
