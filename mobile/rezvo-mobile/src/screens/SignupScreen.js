@@ -8,17 +8,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function SignupScreen({ navigation }) {
   const { signup } = useAuth();
+  const { showToast } = useGlobalToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,19 +30,19 @@ export default function SignupScreen({ navigation }) {
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      showToast('Please fill in all required fields', 'error');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      showToast('Passwords do not match', 'error');
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      showToast('Password must be at least 6 characters', 'error');
       return;
     }
     if (userType === 'business' && !businessName) {
-      Alert.alert('Error', 'Please enter your business name');
+      showToast('Please enter your business name', 'error');
       return;
     }
 
@@ -49,10 +50,7 @@ export default function SignupScreen({ navigation }) {
     try {
       await signup(email, password, userType === 'business' ? businessName : null, userType);
     } catch (error) {
-      Alert.alert(
-        'Signup Failed',
-        error.response?.data?.detail || 'Could not create account'
-      );
+      showToast(error.response?.data?.detail || 'Could not create account', 'error');
     } finally {
       setLoading(false);
     }
