@@ -1251,6 +1251,7 @@ const FounderAdminPage = () => {
                           );
                         })
                       )}
+                      <div ref={messagesEndRef} />
                     </div>
 
                     {/* Enhanced Reply Input */}
