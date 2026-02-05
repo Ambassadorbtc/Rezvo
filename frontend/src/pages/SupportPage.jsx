@@ -162,14 +162,20 @@ const SupportPage = () => {
     setReplyingTo(null);
     
     try {
-      await api.post(`/conversations/${selectedConversation.id}/messages`, {
+      const response = await api.post(`/conversations/${selectedConversation.id}/messages`, {
         content: messageContent,
         reply_to: replyingTo?.id || null
       });
       
-      // Reload to get actual message from server
-      await loadMessages(selectedConversation.id);
-      await loadConversations();
+      // Replace optimistic message with real one (no page refresh)
+      setMessages(prev => prev.map(m => 
+        m.id === optimisticMessage.id 
+          ? { ...optimisticMessage, id: response.data.id, created_at: response.data.created_at }
+          : m
+      ));
+      
+      // Update conversation list in background (no visual refresh)
+      loadConversations();
     } catch (error) {
       // Remove optimistic message on error
       setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
@@ -186,7 +192,7 @@ const SupportPage = () => {
     try {
       await api.patch(`/conversations/${selectedConversation.id}`, { status });
       setSelectedConversation({ ...selectedConversation, status });
-      await loadConversations();
+      loadConversations();
       toast.success(`Ticket ${status === 'open' ? 'reopened' : status}`);
     } catch (error) {
       toast.error('Failed to update status');
