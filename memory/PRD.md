@@ -1,182 +1,205 @@
-# Rezvo.app - Product Requirements Document
+# Rezvo Booking App - Product Requirements Document
 
-## Original Problem Statement
-Build a booking application MVP, `rezvo.app`, for UK micro-businesses. The core of the application is a web-first responsive platform and a native mobile app for both clients and businesses. The design should be "super modern," inspired by challenger banks like Monzo.
+## Overview
+A booking application MVP for UK micro-businesses, providing a web-first responsive platform and a native mobile app for both clients and businesses. Design inspired by challenger banks like Monzo with a modern, clean aesthetic.
 
-## User Personas
-1. **Business Owner** - Manages bookings, team, services, and calendar
-2. **Staff Member** - Views assigned bookings and personal schedule
-3. **Client** - Books appointments through public booking page
-4. **Founder Admin** - Manages all users, businesses, and support tickets
+## Core Information
+- **App Name:** Rezvo
+- **Target Market:** UK micro-businesses
+- **Monetization:** £4.99/month subscription (deferred)
+- **Design Theme:** Light theme with teal accents (#00BFA5)
+- **Fonts:** Space Grotesk, Plus Jakarta Sans
 
-## Core Requirements
-- **Monetization:** £4.99/month subscription via Stripe (deferred)
-- **Core Feature:** Businesses generate shareable booking links
-- **Platforms:** React web app + React Native/Expo mobile app
-- **Design:** Light theme with teal accents, Space Grotesk/Plus Jakarta Sans fonts
+## Application URLs
+| Page | URL |
+|------|-----|
+| Landing Page | https://appointment-pro-51.preview.emergentagent.com |
+| Login | https://appointment-pro-51.preview.emergentagent.com/login |
+| Dashboard | https://appointment-pro-51.preview.emergentagent.com/dashboard |
+| Calendar | https://appointment-pro-51.preview.emergentagent.com/calendar |
+| Team | https://appointment-pro-51.preview.emergentagent.com/team |
+| Services | https://appointment-pro-51.preview.emergentagent.com/services |
+| Products | https://appointment-pro-51.preview.emergentagent.com/products |
+| Bookings | https://appointment-pro-51.preview.emergentagent.com/bookings |
+| Settings | https://appointment-pro-51.preview.emergentagent.com/settings |
+| Analytics | https://appointment-pro-51.preview.emergentagent.com/analytics |
+| Support | https://appointment-pro-51.preview.emergentagent.com/support |
+| Admin Panel | https://appointment-pro-51.preview.emergentagent.com/admin |
+| Booking Page Settings | https://appointment-pro-51.preview.emergentagent.com/booking-page |
+| Public Booking | https://appointment-pro-51.preview.emergentagent.com/book/{businessId} |
+| Mobile Preview | https://appointment-pro-51.preview.emergentagent.com/mobile-preview |
 
-## Tech Stack
-- **Backend:** FastAPI, MongoDB, JWT auth
-- **Frontend (Web):** React, Tailwind CSS, Shadcn/UI
-- **Frontend (Mobile):** React Native, Expo SDK 54
-- **Integrations:** Resend (email), OpenAI GPT-4o-mini
+### Expo Mobile App
+| Access Method | URL |
+|------|-----|
+| Expo Tunnel | https://4mzn58m-anonymous-8081.exp.direct |
+
+### Test Credentials
+- **Email:** testuser@example.com
+- **Password:** password123
+- **Business ID:** 3edbbbc1-730a-494e-9626-1a0a5e6309ef
 
 ---
 
-## What's Been Implemented
+## Implemented Features (as of Feb 5, 2026)
 
-### Session: February 5, 2026 (Latest)
-
-#### Login Page Premium Redesign
-- ✅ Split-screen layout with rotating business images
-- ✅ Images showcase target market (salons, barbers, spas)
-- ✅ Trust badges (SSL, GDPR)
-- ✅ Modern form styling with branded colors
-
-#### Support Messaging System
-- ✅ Backend APIs: `/api/conversations`, `/api/conversations/{id}/messages`
-- ✅ Admin API: `/api/admin/conversations`
-- ✅ Web frontend: `/support` route with full chat interface
-- ✅ Real-time polling for new messages
-
-#### Mobile Calendar Overhaul
-- ✅ Day/Week/Month view tabs
-- ✅ Team member columns with avatars
-- ✅ Tap on time slot to add booking
-- ✅ Booking detail modal (custom, not Alert.alert)
-- ✅ Service-colored booking blocks
-
-#### Mobile Analytics Screen
-- ✅ Revenue, bookings, completion rate metrics
-- ✅ Weekly bookings bar chart
-- ✅ Top services breakdown
-- ✅ Linked from Dashboard stat cards
-
-#### Mobile Settings Improvements
-- ✅ Custom logout confirmation modal
-- ✅ Toast notification utility created
-
-### Previous Sessions
-- ✅ Full authentication system (JWT)
+### Core Platform Features
+- ✅ JWT-based user authentication
 - ✅ Business onboarding wizard
-- ✅ Service management CRUD
-- ✅ Team management with inline editing
-- ✅ Public booking page with team selection
-- ✅ Multi-view calendar (Day/Week/Month) - Web
-- ✅ Global search functionality - Web
-- ✅ Data seeding script
-- ✅ Branded email notifications (Resend)
-- ✅ Expo mobile app crash fix (react-native-screens 4.16.0)
+- ✅ Dashboard with analytics
+- ✅ Team member management with avatars and colors
+- ✅ Services CRUD with pricing and durations
+- ✅ **Products CRUD** with inventory tracking (NEW)
+- ✅ Booking management with status updates
+- ✅ Calendar with Day/Week/Month views
+- ✅ **Calendar drag-and-drop** (between days and time slots)
+- ✅ Analytics page with charts
+- ✅ Settings page
+- ✅ Legal pages (Privacy, Terms, Cookies)
+- ✅ Cookie consent popup
+
+### Booking System
+- ✅ Public booking page with shareable link
+- ✅ **Slicker mobile-friendly booking design** (compact layout)
+- ✅ **Month calendar navigation** for date selection
+- ✅ **Time period filters** (Morning/Afternoon/Evening)
+- ✅ **Time slots up to 9pm**
+- ✅ Multi-service selection with totals
+- ✅ Team member/professional selection
+- ✅ Booking confirmation emails (via Resend)
+
+### Support & Messaging
+- ✅ Support chat page with emoji picker
+- ✅ **In-page message editing** (no popups)
+- ✅ **File attachment functionality**
+- ✅ Message copy, reply, delete actions
+- ✅ **Admin Support Inbox** in Founder Panel
+- ✅ Conversation threading with timestamps
+- ✅ Unread message badges
+
+### Admin/Founder Panel
+- ✅ User management dashboard
+- ✅ Business analytics
+- ✅ Error logs viewer
+- ✅ **Support Inbox with message thread view**
+- ✅ Reply to support conversations
+
+### UI/UX Improvements
+- ✅ **Branded delete confirmation dialogs** (replacing native confirm())
+- ✅ Toast notifications via Sonner
+- ✅ Modern card-based layouts
+- ✅ Responsive design for mobile/tablet/desktop
+- ✅ Global search functionality
+
+### Mobile App (Expo)
+- ✅ React Native / Expo SDK 54
+- ✅ Business owner screens (Dashboard, Calendar, Bookings, Services, Settings)
+- ✅ Client screens (UI mockups)
+- ✅ Push notification setup (pending integration)
+- ✅ Photo upload for profile
 
 ---
 
-## Known Issues & Technical Debt
-
-### Alert.alert() Still Present In:
-- LoginScreen.js
-- SignupScreen.js
-- BookingsScreen.js (business)
-- ServicesScreen.js (business)
-- TeamScreen.js (business)
-- Various auth screens
-
-**Fix:** Use `/app/mobile/rezvo-mobile/src/lib/toast.js` utility
-
-### Workarounds Active
-- `babel-metadata-plugin` disabled in `/app/frontend/craco.config.js`
-
-### Mobile Dependencies (Pinned)
-```
-react-native-screens: 4.16.0 (exact)
-@react-navigation/native: ^6.1.18
-@react-navigation/native-stack: ^6.9.26
-@react-navigation/bottom-tabs: ^6.5.20
-```
-
----
-
-## Prioritized Backlog
-
-### P0 - Critical
-- [ ] Replace remaining Alert.alert() calls in mobile app
+## Pending/In Progress Items
 
 ### P1 - High Priority
-- [ ] Connect Founders Portal to support messaging
-- [ ] Complete profile photo upload in mobile Settings
-- [ ] Add double-click to add booking in web Calendar
-- [ ] Stripe subscription (£4.99/month)
+- ⏳ **Mobile drag-and-drop for calendar** - Not yet implemented
+- ⏳ **Replace remaining Alert.alert** calls in mobile app with branded components
+- ⏳ **Client mobile app API integration** - Screens exist but not connected to backend
+- ⏳ Google Calendar Sync - Backend endpoints exist, needs frontend integration
+- ⏳ Push Notifications - Expo setup done, needs implementation
+- ⏳ Automated Booking Reminders - APScheduler installed, needs job implementation
 
 ### P2 - Medium Priority
-- [ ] Google Calendar sync
-- [ ] Push notifications (Expo)
-- [ ] SMS reminders (Twilio)
-- [ ] Staff separate logins UI
+- ⏳ Staff Separate Logins
+- ⏳ Customer Reviews & Ratings
+- ⏳ Multi-location Support
+- ⏳ Advanced Team Scheduling (shifts, time off)
+- ⏳ SMS Notifications (Twilio) - User deferred
 
-### P3 - Future
-- [ ] Two-way Google Calendar sync
-- [ ] Customer mobile app API connections
-- [ ] Advanced analytics dashboard
-- [ ] Fix babel-metadata-plugin properly
+### P3 - Lower Priority / Future
+- ⏳ Stripe Subscription (£4.99/month) - User deferred
+- ⏳ Re-enable babel-metadata-plugin (disabled due to conflicts)
 
 ---
 
-## API Endpoints
+## Technical Architecture
+
+### Backend
+- **Framework:** FastAPI
+- **Database:** MongoDB
+- **Auth:** JWT tokens
+- **Scheduler:** APScheduler
+- **Email:** Resend API
+
+### Frontend (Web)
+- **Framework:** React 18
+- **Styling:** Tailwind CSS
+- **UI Components:** Shadcn/UI
+- **Charts:** Recharts
+- **Build Tool:** Craco
+
+### Mobile
+- **Framework:** React Native / Expo SDK 54
+- **Navigation:** React Navigation
+- **State:** Context API
+
+### Key Files
+```
+/app/
+├── backend/
+│   └── server.py              # Main FastAPI application
+├── frontend/
+│   └── src/
+│       ├── components/        # Reusable UI components
+│       ├── pages/             # Page components
+│       └── lib/api.js         # API client
+└── mobile/
+    └── rezvo-mobile/
+        └── src/
+            ├── screens/       # Screen components
+            └── navigation/    # Navigation setup
+```
+
+---
+
+## Known Issues
+
+1. **babel-metadata-plugin disabled** - Conflicts with complex JSX components
+2. **Mobile native alerts** - Some screens still use Alert.alert() instead of branded components
+3. **Client mobile flow** - UI mockups only, no API integration
+
+---
+
+## API Endpoints Summary
 
 ### Auth
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/staff-login` - Staff login
+- POST /api/auth/login
+- POST /api/auth/signup
 
 ### Business
-- `GET /api/business` - Get business details
-- `PATCH /api/business` - Update business
-- `POST /api/business/logo` - Upload logo
+- GET/PATCH /api/business
+- POST /api/business/logo
+
+### Services
+- GET/POST/PATCH/DELETE /api/services
+
+### Products
+- GET/POST/PATCH/DELETE /api/products
 
 ### Bookings
-- `GET /api/bookings` - List bookings
-- `POST /api/bookings` - Create booking
-- `PATCH /api/bookings/{id}` - Update booking
+- GET/POST/PATCH /api/bookings
+- POST /api/public/bookings
 
 ### Team
-- `GET /api/team-members` - List team
-- `POST /api/team-members` - Add member
-- `POST /api/team-members/{id}/avatar` - Upload avatar
+- GET/POST/PATCH/DELETE /api/team-members
 
-### Support Messaging (NEW)
-- `GET /api/conversations` - User's conversations
-- `POST /api/conversations` - Start conversation
-- `GET /api/conversations/{id}/messages` - Get messages
-- `POST /api/conversations/{id}/messages` - Send message
-- `GET /api/admin/conversations` - Admin: all support tickets
+### Support/Messaging
+- GET/POST /api/conversations
+- GET/POST /api/conversations/{id}/messages
+- PATCH/DELETE /api/messages/{id}
+- GET /api/admin/conversations
 
-### Reviews
-- `GET /api/reviews` - Business reviews
-- `POST /api/reviews` - Submit review
-- `GET /api/public/business/{id}/reviews` - Public reviews
-
-### Locations
-- `GET /api/locations` - Business locations
-- `POST /api/locations` - Add location
-
-### Scheduling
-- `GET /api/shifts` - Team shifts
-- `POST /api/shifts` - Create shift
-- `GET /api/time-off` - Time off requests
-
----
-
-## Credentials
-
-### Test Account
-- Email: `testuser@example.com`
-- Password: `password123`
-
-### Expo Mobile
-- URL: `exp://tjyr168-anonymous-8081.exp.direct`
-- QR: https://appointment-pro-51.preview.emergentagent.com/expo-test
-
-### Web URLs
-- Login: https://appointment-pro-51.preview.emergentagent.com/login
-- Dashboard: https://appointment-pro-51.preview.emergentagent.com/dashboard
-- Calendar: https://appointment-pro-51.preview.emergentagent.com/calendar
-- Support: https://appointment-pro-51.preview.emergentagent.com/support
+### Analytics
+- GET /api/admin/stats
+- GET /api/admin/analytics
