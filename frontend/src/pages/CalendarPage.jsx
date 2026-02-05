@@ -566,32 +566,34 @@ const CalendarPage = () => {
                         return (
                           <div 
                             key={booking.id} 
-                            className={`rounded-lg text-xs cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden ${
+                            className={`rounded-xl text-xs cursor-grab active:cursor-grabbing hover:shadow-lg transition-all overflow-hidden bg-white border ${
                               isDragging ? 'opacity-50 scale-95' : ''
                             }`}
-                            style={{ backgroundColor: colors.bg }}
+                            style={{ borderColor: `${colors.border}30` }}
                             draggable
                             onDragStart={(e) => handleDragStart(e, booking)}
                             onDragEnd={handleDragEnd}
                             onClick={() => setShowEditBooking(booking)}
                           >
-                            {/* Colored top bar */}
-                            <div className="h-0.5 w-full" style={{ backgroundColor: colors.border }} />
-                            <div className="p-2">
-                              <div className="font-bold" style={{ color: colors.text }}>{formatBookingTime(booking.datetime)}</div>
-                              <div className="font-bold text-gray-900 truncate">{booking.client_name}</div>
-                              <div className="text-gray-600 truncate">{booking.service_name}</div>
-                              {teamMember && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <div 
-                                    className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
-                                    style={{ backgroundColor: teamMember.color || colors.border }}
-                                  >
-                                    {teamMember.name?.charAt(0)}
-                                  </div>
-                                  <span className="text-[10px] text-gray-500 truncate">{teamMember.name}</span>
+                            {/* Colored left border accent */}
+                            <div className="flex">
+                              <div className="w-1 rounded-l-xl flex-shrink-0" style={{ backgroundColor: colors.border }} />
+                              <div className="p-2 flex-1 min-w-0">
+                                {/* Time + Avatar row */}
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                  {teamMember && (
+                                    <div 
+                                      className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0"
+                                      style={{ backgroundColor: teamMember.color || colors.border }}
+                                    >
+                                      {teamMember.name?.charAt(0)}
+                                    </div>
+                                  )}
+                                  <span className="font-semibold" style={{ color: colors.border }}>{formatBookingTime(booking.datetime)}</span>
                                 </div>
-                              )}
+                                <div className="font-semibold text-gray-900 truncate">{booking.client_name}</div>
+                                <div className="text-gray-500 truncate">{booking.service_name}</div>
+                              </div>
                             </div>
                           </div>
                         );
