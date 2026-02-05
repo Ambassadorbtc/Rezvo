@@ -94,7 +94,7 @@ export default function TeamScreen({ navigation }) {
 
   const handleAddMember = async () => {
     if (!name) {
-      Alert.alert('Error', 'Please enter a name');
+      showToast('Please enter a name', 'error');
       return;
     }
 
@@ -110,9 +110,9 @@ export default function TeamScreen({ navigation }) {
       });
       setShowAddModal(false);
       fetchData();
-      Alert.alert('Success', 'Team member added');
+      showToast('Team member added', 'success');
     } catch (error) {
-      Alert.alert('Error', 'Could not add team member');
+      showToast('Could not add team member', 'error');
     } finally {
       setSaving(false);
     }
@@ -120,7 +120,7 @@ export default function TeamScreen({ navigation }) {
 
   const handleUpdateMember = async () => {
     if (!name) {
-      Alert.alert('Error', 'Please enter a name');
+      showToast('Please enter a name', 'error');
       return;
     }
 
@@ -136,30 +136,30 @@ export default function TeamScreen({ navigation }) {
       });
       setShowEditModal(false);
       fetchData();
-      Alert.alert('Success', 'Team member updated');
+      showToast('Team member updated', 'success');
     } catch (error) {
-      Alert.alert('Error', 'Could not update team member');
+      showToast('Could not update team member', 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteMember = () => {
-    Alert.alert(
+    showConfirm(
       'Delete Team Member',
       `Are you sure you want to remove ${selectedMember.name}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/team-members/${selectedMember.id}`);
-              setShowEditModal(false);
-              fetchData();
-            } catch (error) {
-              Alert.alert('Error', 'Could not delete team member');
+      async () => {
+        try {
+          await api.delete(`/team-members/${selectedMember.id}`);
+          setShowEditModal(false);
+          fetchData();
+          showToast('Team member removed', 'success');
+        } catch (error) {
+          showToast('Could not delete team member', 'error');
+        }
+      }
+    );
+  };
             }
           }
         },
