@@ -8,22 +8,23 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../lib/api';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function ForgotPasswordScreen({ navigation }) {
+  const { showToast } = useGlobalToast();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSendCode = async () => {
     if (!email) {
-      Alert.alert('Error', 'Please enter your email address');
+      showToast('Please enter your email address', 'error');
       return;
     }
 
@@ -32,7 +33,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       await api.post('/auth/forgot-password', { email });
       navigation.navigate('VerifyCode', { email });
     } catch (error) {
-      Alert.alert('Error', 'Could not send reset code. Please try again.');
+      showToast('Could not send reset code. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
