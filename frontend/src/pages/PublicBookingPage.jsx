@@ -275,31 +275,68 @@ const PublicBookingPage = () => {
         </div>
       </header>
 
-      {/* Date/Time Selection Modal */}
+      {/* Date/Time Selection Modal - Premium Design */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom duration-200">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-              <h2 className="font-bold text-gray-900">{format(currentMonth, 'MMMM yyyy')}</h2>
-              <div className="flex items-center gap-1">
-                <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg ml-2">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom duration-300">
+            {/* Modal Header with Professional */}
+            <div className="relative bg-gradient-to-br from-teal-500 to-teal-600 px-5 py-6 text-white">
+              <button 
+                onClick={() => setShowModal(false)} 
+                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <h2 className="text-lg font-bold mb-4">Book Your Appointment</h2>
+              
+              {/* Selected Professional */}
+              {selectedTeamMember ? (
+                <div className="flex items-center gap-3 bg-white/20 rounded-2xl px-4 py-3">
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-lg"
+                    style={{ backgroundColor: selectedTeamMember.color || '#fff', color: selectedTeamMember.color ? '#fff' : '#14B8A6' }}
+                  >
+                    {selectedTeamMember.avatar_url ? (
+                      <img src={selectedTeamMember.avatar_url} alt={selectedTeamMember.name} className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      selectedTeamMember.name?.charAt(0)?.toUpperCase()
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{selectedTeamMember.name}</p>
+                    <p className="text-white/80 text-sm">{selectedTeamMember.role || 'Professional'}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 bg-white/20 rounded-2xl px-4 py-3">
+                  <div className="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Any Available</p>
+                    <p className="text-white/80 text-sm">First available professional</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Month Navigation */}
+            <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
+              <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-white rounded-lg transition-colors">
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <h3 className="font-bold text-gray-900">{format(currentMonth, 'MMMM yyyy')}</h3>
+              <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-white rounded-lg transition-colors">
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
             </div>
 
             {/* Calendar Grid */}
-            <div className="p-3">
-              <div className="grid grid-cols-7 gap-1 mb-1">
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                  <div key={i} className="text-center text-[10px] font-medium text-gray-400 py-1">{d}</div>
+            <div className="px-4 py-3">
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
+                  <div key={i} className="text-center text-[10px] font-semibold text-gray-400 uppercase tracking-wide py-1">{d}</div>
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-1">
@@ -316,12 +353,12 @@ const PublicBookingPage = () => {
                       key={idx}
                       onClick={() => isAvailable && setSelectedDate(date)}
                       disabled={!isAvailable}
-                      className={`aspect-square flex items-center justify-center text-sm rounded-lg transition-all ${
+                      className={`aspect-square flex items-center justify-center text-sm rounded-xl transition-all font-medium ${
                         isSelected 
-                          ? 'bg-teal-500 text-white font-bold' 
+                          ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30' 
                           : isAvailable 
                             ? todayDate
-                              ? 'bg-teal-50 text-teal-700 font-medium hover:bg-teal-100'
+                              ? 'bg-teal-50 text-teal-600 ring-2 ring-teal-200'
                               : 'hover:bg-gray-100 text-gray-700'
                             : 'text-gray-300 cursor-not-allowed'
                       }`}
@@ -334,37 +371,46 @@ const PublicBookingPage = () => {
             </div>
 
             {/* Time Period Tabs */}
-            <div className="px-3 pb-2">
-              <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
-                {['morning', 'afternoon', 'evening'].map((period) => (
+            <div className="px-4 pb-3">
+              <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+                {[
+                  { key: 'morning', label: 'Morning', time: '9am-12pm' },
+                  { key: 'afternoon', label: 'Afternoon', time: '12pm-5pm' },
+                  { key: 'evening', label: 'Evening', time: '5pm-9pm' }
+                ].map((period) => (
                   <button
-                    key={period}
-                    onClick={() => setTimeOfDay(period)}
-                    className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
-                      timeOfDay === period
-                        ? 'bg-white text-gray-900 shadow-sm'
+                    key={period.key}
+                    onClick={() => setTimeOfDay(period.key)}
+                    className={`flex-1 py-2.5 rounded-lg transition-all ${
+                      timeOfDay === period.key
+                        ? 'bg-white text-gray-900 shadow-md'
                         : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
-                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                    <span className="block text-xs font-semibold">{period.label}</span>
+                    <span className="block text-[10px] text-gray-400">{period.time}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Time Slots */}
-            <div className="px-3 pb-3 max-h-32 overflow-y-auto">
+            <div className="px-4 pb-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Available Times</p>
               {filteredSlots.length === 0 ? (
-                <div className="text-center py-4 text-sm text-gray-400">No times available</div>
+                <div className="text-center py-6 text-sm text-gray-400 bg-gray-50 rounded-xl">
+                  <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  No times available for this period
+                </div>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
                   {filteredSlots.map((time) => (
                     <button
                       key={time}
                       onClick={() => setSelectedTime(time)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                         selectedTime === time
-                          ? 'bg-teal-500 text-white'
+                          ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -375,41 +421,32 @@ const PublicBookingPage = () => {
               )}
             </div>
 
-            {/* Selected Summary */}
-            {selectedServices.length > 0 && (
-              <div className="px-3 pb-3 border-t border-gray-100 pt-3">
-                <div className="bg-gray-50 rounded-xl p-3 space-y-2">
+            {/* Summary & Continue */}
+            <div className="px-4 pb-6 pt-4 bg-gray-50 border-t border-gray-100">
+              {selectedServices.length > 0 && (
+                <div className="mb-4 space-y-2">
                   {selectedServices.map((service, idx) => (
                     <div key={idx} className="flex justify-between text-sm">
                       <span className="text-gray-600">{service.name}</span>
-                      <span className="font-medium">{formatPrice(service.price_pence)}</span>
+                      <span className="font-semibold text-gray-900">{formatPrice(service.price_pence)}</span>
                     </div>
                   ))}
-                  {selectedTeamMember && (
-                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-1 border-t border-gray-200">
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: selectedTeamMember.color || '#14B8A6' }}>
-                        {selectedTeamMember.name?.charAt(0)}
-                      </div>
-                      <span>{selectedTeamMember.name}</span>
-                    </div>
-                  )}
                 </div>
+              )}
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500">Total (incl. tax)</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatPrice(total)}</p>
+                </div>
+                <Button
+                  onClick={() => setShowModal(false)}
+                  disabled={!selectedTime}
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-8 py-3 font-semibold shadow-lg shadow-teal-500/30 disabled:opacity-50 disabled:shadow-none"
+                >
+                  Continue
+                </Button>
               </div>
-            )}
-
-            {/* Continue Button */}
-            <div className="p-3 border-t border-gray-100 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-500">Total (incl. tax)</p>
-                <p className="text-xl font-bold text-gray-900">{formatPrice(total)}</p>
-              </div>
-              <Button
-                onClick={() => setShowModal(false)}
-                disabled={!selectedTime}
-                className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-6"
-              >
-                Continue
-              </Button>
             </div>
           </div>
         </div>
