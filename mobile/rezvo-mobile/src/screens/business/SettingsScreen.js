@@ -116,6 +116,33 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
+  const handleChangePhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    
+    if (!result.canceled && result.assets[0]) {
+      try {
+        const formData = new FormData();
+        formData.append('file', {
+          uri: result.assets[0].uri,
+          type: 'image/jpeg',
+          name: 'logo.jpg',
+        });
+        await api.post('/business/logo', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        fetchBusiness();
+        showToast('Photo updated!');
+      } catch (error) {
+        showToast('Failed to update photo');
+      }
+    }
+  };
+
   const handleLogout = () => {
     Alert.alert(
       'Log out',
