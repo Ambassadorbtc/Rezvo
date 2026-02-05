@@ -297,6 +297,65 @@ const SettingsPage = () => {
 
           {/* Payments Tab */}
           <TabsContent value="payments">
+
+          {/* Working Hours Tab */}
+          <TabsContent value="hours">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="hours-settings">
+              <CardHeader>
+                <CardTitle className="font-heading text-lg text-navy-900">Working Hours</CardTitle>
+                <CardDescription className="text-navy-500">
+                  Set your business operating hours for each day of the week
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                  <div key={day} className="flex items-center justify-between p-4 rounded-xl bg-cream">
+                    <div className="flex items-center gap-4">
+                      <Switch
+                        checked={workingHours[day]?.enabled}
+                        onCheckedChange={(checked) => updateDayHours(day, 'enabled', checked)}
+                        data-testid={`${day}-enabled-toggle`}
+                      />
+                      <span className="font-medium text-navy-700 capitalize w-24">{day}</span>
+                    </div>
+                    {workingHours[day]?.enabled ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="time"
+                          value={workingHours[day]?.open || '09:00'}
+                          onChange={(e) => updateDayHours(day, 'open', e.target.value)}
+                          className="w-28 bg-white border-gray-200 rounded-lg text-center"
+                          data-testid={`${day}-open-time`}
+                        />
+                        <span className="text-navy-400">to</span>
+                        <Input
+                          type="time"
+                          value={workingHours[day]?.close || '17:00'}
+                          onChange={(e) => updateDayHours(day, 'close', e.target.value)}
+                          className="w-28 bg-white border-gray-200 rounded-lg text-center"
+                          data-testid={`${day}-close-time`}
+                        />
+                      </div>
+                    ) : (
+                      <span className="text-navy-400 text-sm">Closed</span>
+                    )}
+                  </div>
+                ))}
+                
+                <Button
+                  onClick={saveWorkingHours}
+                  disabled={saving}
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-full mt-4"
+                  data-testid="save-hours-btn"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Working Hours
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          </TabsContent>
             <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="payment-settings">
               <CardHeader>
                 <CardTitle className="font-heading text-lg text-navy-900">Dojo Payments</CardTitle>
