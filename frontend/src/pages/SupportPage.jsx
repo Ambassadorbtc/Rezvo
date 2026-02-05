@@ -214,18 +214,28 @@ const SupportPage = () => {
 
     setUploadingFile(true);
     try {
+      // Upload file to server
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const uploadRes = await api.post('/support/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      const fileUrl = uploadRes.data.url;
       const fileMessage = file.type.startsWith('image/') 
-        ? `📷 Image: ${file.name}\n[${(file.size / 1024).toFixed(1)}KB]`
-        : `📎 File: ${file.name}\n[${(file.size / 1024).toFixed(1)}KB]`;
+        ? `📷 Image: ${file.name}\n${fileUrl}`
+        : `📎 File: ${file.name}\n${fileUrl}`;
       
       if (selectedConversation) {
         await api.post(`/conversations/${selectedConversation.id}/messages`, {
           content: fileMessage
         });
         await loadMessages(selectedConversation.id);
-        toast.success('File sent!');
+        toast.success('File uploaded!');
       }
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error('Failed to upload file');
     } finally {
       setUploadingFile(false);
