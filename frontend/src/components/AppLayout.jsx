@@ -30,7 +30,7 @@ const AppLayout = ({ children }) => {
   const [searchLoading, setSearchLoading] = useState(false);
   const searchRef = useRef(null);
 
-  // Keyboard shortcut (Cmd/Ctrl+K)
+  // Keyboard shortcut (Cmd/Ctrl+K) and click outside handling
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -43,8 +43,19 @@ const AppLayout = ({ children }) => {
         setSearchResults(null);
       }
     };
+    
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+      }
+    };
+    
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // Search effect
