@@ -19,7 +19,7 @@ export default function NotificationsScreen({ navigation }) {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { showSuccess, showError } = useGlobalToast();
+  const { showToast } = useGlobalToast();
 
   useEffect(() => {
     fetchNotifications();
@@ -27,62 +27,12 @@ export default function NotificationsScreen({ navigation }) {
 
   const fetchNotifications = async () => {
     try {
-      // Get bookings, conversations, and other notifications
-      const [bookingsRes, conversationsRes] = await Promise.all([
-        api.get('/bookings').catch(() => ({ data: [] })),
-        api.get('/conversations').catch(() => ({ data: [] }))
-      ]);
-      
-      const notifs = [];
-      
-      // Add pending booking notifications
-      const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
-      const pendingBookings = bookings.filter(b => b.status === 'pending');
-      pendingBookings.forEach(b => {
-        notifs.push({
-          id: `booking-${b.id}`,
-          type: 'booking',
-          title: 'New Booking Request',
-          message: `${b.client_name} requested ${b.service_name}`,
-          time: b.created_at || b.datetime,
-          read: false,
-          icon: 'calendar',
-          color: '#3B82F6',
-          action: () => navigation.navigate('Bookings')
-        });
-      });
-      
-      // Add support message notifications
-      const conversations = Array.isArray(conversationsRes.data) ? conversationsRes.data : [];
-      conversations.filter(c => c.unread_count > 0).forEach(c => {
-        notifs.push({
-          id: `support-${c.id}`,
-          type: 'support',
-          title: 'Support Message',
-          message: c.last_message?.substring(0, 50) + '...' || 'New message',
-          time: c.last_message_at,
-          read: false,
-          icon: 'chatbubble',
-          color: '#8B5CF6'
-        });
-      });
-      
-      // Add some sample notifications if empty
-      if (notifs.length === 0) {
-        notifs.push({
-          id: 'welcome',
-          type: 'system',
-          title: 'Welcome to Rezvo!',
-          message: 'Your account is set up and ready to receive bookings.',
-          time: new Date().toISOString(),
-          read: true,
-          icon: 'sparkles',
-          color: TEAL
-        });
-      }
-      
-      // Sort by time
-      notifs.sort((a, b) => new Date(b.time) - new Date(a.time));
+      const res = await api.get('/notifications');
+      const notifs = (res.data?.notifications || []).map(n => ({
+        ...n,
+        icon: getIconForType(n.type),
+        color: getColorForType(n.type),
+      }));
       setNotifications(notifs);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -92,14 +42,79 @@ export default function NotificationsScreen({ navigation }) {
     }
   };
 
+  const getIconForType = (type) => {
+    switch (type) {
+      case 'booking': return 'calendar';
+      case 'message': return 'chatbubble';
+      case 'alert': return 'alert-circle';
+      default: return 'notifications';
+    }
+  };
+
+  const getColorForType = (type) => {
+    switch (type) {
+      case 'booking': return '#00BFA5';
+      case 'message': return '#3B82F6';
+      case 'alert': return '#EF4444';
+      default: return '#8B5CF6';
+    }
+  };
+
+  const handleNotificationPress = async (notif) => {
+    // Mark as read
+    if (!notif.read) {
+      try {
+        await api.patch(`/notifications/${notif.id}/read`);
+        setNotifications(prev => prev.map(n => 
+          n.id === notif.id ? { ...n, read: true } : n
+        ));
+      } catch (e) {
+        console.error('Error marking read:', e);
+      }
+    }
+    
+    // Navigate based on type and link
+    if (notif.link) {
+      const path = notif.link;
+      if (path.includes('/bookings')) {
+        // Extract booking ID if present
+        const bookingId = path.split('/bookings/')[1];
+        navigation.navigate('Bookings', bookingId ? { bookingId } : undefined);
+      } else if (path.includes('/support') || path.includes('/conversations')) {
+        navigation.navigate('Dashboard'); // Navigate to dashboard which has support
+      } else if (path.includes('/calendar')) {
+        navigation.navigate('Calendar');
+      } else {
+        navigation.navigate('Dashboard');
+      }
+    } else {
+      // Default navigation based on type
+      switch (notif.type) {
+        case 'booking':
+          navigation.navigate('Bookings');
+          break;
+        case 'message':
+          navigation.navigate('Dashboard');
+          break;
+        default:
+          navigation.navigate('Dashboard');
+      }
+    }
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
     fetchNotifications();
   };
 
-  const markAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    showSuccess('All notifications marked as read');
+  const markAllRead = async () => {
+    try {
+      await api.patch('/notifications/read-all');
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      showToast('All notifications marked as read', 'success');
+    } catch (e) {
+      showToast('Failed to mark notifications', 'error');
+    }
   };
 
   const formatTime = (dateStr) => {
