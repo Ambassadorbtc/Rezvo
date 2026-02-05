@@ -1075,12 +1075,13 @@ const FounderAdminPage = () => {
                         </div>
                       ) : (
                         messages.map((msg) => {
-                          // For founder/admin view: admin messages on RIGHT, user messages on LEFT
-                          const isFromAdmin = msg.is_admin === true;
+                          // For founder/admin view: OWN messages on RIGHT (blue), owner messages on LEFT (teal)
+                          // Check if message is from current user OR has is_admin flag
+                          const isOwnMessage = msg.sender_id === user?.id || msg.sender_id === user?.sub || msg.is_admin === true;
                           return (
                             <div
                               key={msg.id}
-                              className={`flex ${isFromAdmin ? 'justify-end' : 'justify-start'}`}
+                              className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                             >
                               {/* Owner avatar on left for owner messages */}
                               {!isFromAdmin && (
