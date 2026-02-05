@@ -232,11 +232,66 @@ const FounderAdminPage = () => {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'inbox', label: 'Support Inbox', icon: Mail },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'businesses', label: 'Businesses', icon: Building2 },
     { id: 'bookings', label: 'Bookings', icon: Calendar },
     { id: 'logs', label: 'Error Logs', icon: AlertTriangle },
   ];
+
+  // Support conversations state
+  const [conversations, setConversations] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+
+  const loadConversations = async () => {
+    try {
+      const res = await api.get('/admin/conversations');
+      setConversations(res.data || []);
+    } catch (error) {
+      console.error('Failed to load conversations', error);
+    }
+  };
+
+  const loadMessages = async (conversationId) => {
+    try {
+      const res = await api.get(`/conversations/${conversationId}/messages`);
+      setMessages(res.data || []);
+    } catch (error) {
+      console.error('Failed to load messages', error);
+    }
+  };
+
+  const sendReply = async () => {
+    if (!newMessage.trim() || !selectedConversation) return;
+    setSendingMessage(true);
+    try {
+      await api.post(`/conversations/${selectedConversation.id}/messages`, { content: newMessage });
+      setNewMessage('');
+      loadMessages(selectedConversation.id);
+      loadConversations();
+    } catch (error) {
+      toast.error('Failed to send message');
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'inbox') {
+      loadConversations();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (selectedConversation) {
+      loadMessages(selectedConversation.id);
+    }
+  }, [selectedConversation]);
+
+  const totalUnreadMessages = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
 
   if (loading) {
     return (
