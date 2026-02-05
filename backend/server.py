@@ -752,7 +752,10 @@ async def update_product(product_id: str, data: ProductUpdate, current_user: dic
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
     await db.products.update_one({"id": product_id}, {"$set": update_data})
-    return {"status": "updated"}
+    
+    # Return updated product
+    updated_product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    return updated_product
 
 @api_router.delete("/products/{product_id}")
 async def delete_product(product_id: str, current_user: dict = Depends(get_current_user)):
