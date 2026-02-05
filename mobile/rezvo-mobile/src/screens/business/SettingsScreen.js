@@ -119,6 +119,51 @@ export default function SettingsScreen({ navigation }) {
       setSaving(false);
     }
   };
+  
+  const handleSaveWorkingHours = async () => {
+    setSaving(true);
+    try {
+      await api.patch('/settings/working-hours', { working_hours: workingHours });
+      setShowWorkingHours(false);
+      showToast('Working hours saved!');
+    } catch (error) {
+      showToast('Could not save working hours');
+    } finally {
+      setSaving(false);
+    }
+  };
+  
+  const handleSaveBookingSettings = async () => {
+    setSaving(true);
+    try {
+      await api.patch('/settings/booking', {
+        auto_confirm: autoConfirm,
+        allow_cancellations: allowCancellations,
+        send_reminders: sendReminders,
+        buffer_time: bufferTime,
+      });
+      setShowBookingSettings(false);
+      showToast('Booking settings saved!');
+    } catch (error) {
+      showToast('Could not save booking settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+  
+  const updateDayHours = (day, field, value) => {
+    setWorkingHours(prev => ({
+      ...prev,
+      [day]: { ...prev[day], [field]: value }
+    }));
+  };
+  
+  const getWorkingHoursSummary = () => {
+    const enabledDays = Object.entries(workingHours).filter(([_, data]) => data.enabled);
+    if (enabledDays.length === 0) return 'All days closed';
+    const first = enabledDays[0];
+    return `${first[0].charAt(0).toUpperCase() + first[0].slice(1, 3)}-${enabledDays[enabledDays.length-1][0].charAt(0).toUpperCase() + enabledDays[enabledDays.length-1][0].slice(1, 3)}, ${first[1].open} - ${first[1].close}`;
+  };
 
   const copyToClipboard = async (text) => {
     await Clipboard.setStringAsync(text);
