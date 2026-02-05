@@ -1084,35 +1084,35 @@ const FounderAdminPage = () => {
                               className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                             >
                               {/* Owner avatar on left for owner messages */}
-                              {!isFromAdmin && (
+                              {!isOwnMessage && (
                                 <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
                                   {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
                                 </div>
                               )}
                               
                               <div className={`max-w-[70%] rounded-2xl p-3 ${
-                                isFromAdmin
+                                isOwnMessage
                                   ? 'bg-[#3B82F6] text-white rounded-br-sm'
                                   : 'bg-teal-500 text-white rounded-bl-sm'
                               }`}>
-                                {!isFromAdmin && (
+                                {!isOwnMessage && (
                                   <p className="text-xs font-medium text-white/80 mb-1">
                                     {msg.sender_name || selectedConversation.user_email?.split('@')[0] || 'User'}
                                   </p>
                                 )}
                                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                <div className={`flex items-center gap-1 mt-1.5 ${isFromAdmin ? 'justify-end' : ''}`}>
+                                <div className={`flex items-center gap-1 mt-1.5 ${isOwnMessage ? 'justify-end' : ''}`}>
                                   <p className="text-[10px] text-white/70">
                                     {msg.created_at ? format(new Date(msg.created_at), 'HH:mm') : '-'}
                                   </p>
-                                  {isFromAdmin && (
+                                  {isOwnMessage && (
                                     <CheckCircle className="w-3 h-3 text-white/70" />
                                   )}
                                 </div>
                               </div>
                               
                               {/* Admin avatar on right */}
-                              {isFromAdmin && (
+                              {isOwnMessage && (
                                 <div className="w-8 h-8 rounded-full bg-[#3B82F6] flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0">
                                   <Shield className="w-4 h-4" />
                                 </div>
