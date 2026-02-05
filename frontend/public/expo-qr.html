@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rezvo - Expo QR Code</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -43,16 +42,8 @@
             font-weight: bold;
             font-size: 24px;
         }
-        .logo-text {
-            font-size: 28px;
-            font-weight: 600;
-        }
-        h1 {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #94a3b8;
-        }
+        .logo-text { font-size: 28px; font-weight: 600; }
+        h1 { font-size: 20px; font-weight: 500; margin-bottom: 8px; color: #94a3b8; }
         .qr-container {
             background: white;
             padding: 20px;
@@ -60,10 +51,7 @@
             margin: 24px 0;
             display: inline-block;
         }
-        #qrcode {
-            width: 200px;
-            height: 200px;
-        }
+        #qrcode img { display: block; }
         .url {
             background: rgba(20, 184, 166, 0.2);
             padding: 12px 20px;
@@ -81,17 +69,8 @@
             border-radius: 12px;
             margin-top: 20px;
         }
-        .instructions h3 {
-            font-size: 14px;
-            color: #14b8a6;
-            margin-bottom: 12px;
-        }
-        .instructions ol {
-            padding-left: 20px;
-            color: #94a3b8;
-            font-size: 13px;
-            line-height: 1.8;
-        }
+        .instructions h3 { font-size: 14px; color: #14b8a6; margin-bottom: 12px; }
+        .instructions ol { padding-left: 20px; color: #94a3b8; font-size: 13px; line-height: 1.8; }
         .badge {
             display: inline-block;
             background: #14b8a6;
@@ -112,9 +91,9 @@
         <span class="badge">Development Build</span>
         <h1>Scan to open in Expo Go</h1>
         <div class="qr-container">
-            <canvas id="qrcode"></canvas>
+            <div id="qrcode"></div>
         </div>
-        <div class="url">exp://zhlpa6g-anonymous-8081.exp.direct</div>
+        <div class="url" id="expo-url"></div>
         <div class="instructions">
             <h3>How to connect:</h3>
             <ol>
@@ -125,11 +104,17 @@
             </ol>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        QRCode.toCanvas(document.getElementById('qrcode'), 'exp://zhlpa6g-anonymous-8081.exp.direct', {
+        const expoUrl = 'exp://zhlpa6g-anonymous-8081.exp.direct';
+        document.getElementById('expo-url').textContent = expoUrl;
+        new QRCode(document.getElementById('qrcode'), {
+            text: expoUrl,
             width: 200,
-            margin: 0,
-            color: { dark: '#0f172a', light: '#ffffff' }
+            height: 200,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
         });
     </script>
 </body>
