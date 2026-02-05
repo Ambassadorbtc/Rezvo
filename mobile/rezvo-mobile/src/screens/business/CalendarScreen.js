@@ -365,7 +365,7 @@ export default function CalendarScreen({ navigation }) {
                 <TouchableOpacity 
                   key={member.id} 
                   style={[styles.teamColumn, { width: columnWidth }]}
-                  onPress={() => navigation.navigate('Team')}
+                  onPress={() => navigation.navigate('TeamMember', { memberId: member.id, memberName: member.name })}
                 >
                   <View style={[styles.memberAvatar, { backgroundColor: member.color || TEAL }]}>
                     {member.avatar_url ? (
