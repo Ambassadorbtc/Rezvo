@@ -32,32 +32,61 @@ const AppLayout = ({ children }) => {
   const [searchResults, setSearchResults] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const searchRef = useRef(null);
+  const notificationRef = useRef(null);
 
-  // Fetch notification count
+  // Fetch notifications from API
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const [bookingsRes, conversationsRes] = await Promise.all([
-          api.get('/bookings').catch(() => ({ data: [] })),
-          api.get('/conversations').catch(() => ({ data: [] }))
-        ]);
-        
-        const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
-        const pendingCount = bookings.filter(b => b.status === 'pending').length;
-        
-        const conversations = Array.isArray(conversationsRes.data) ? conversationsRes.data : [];
-        const unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
-        
-        setNotificationCount(pendingCount + unreadCount);
+        const res = await api.get('/notifications');
+        if (res.data) {
+          setNotifications(res.data.notifications || []);
+          setNotificationCount(res.data.unread_count || 0);
+        }
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
     };
     
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // Refresh every 30s
+    const interval = setInterval(fetchNotifications, 15000); // Refresh every 15s
     return () => clearInterval(interval);
+  }, []);
+
+  // Mark notification as read
+  const markAsRead = async (notifId) => {
+    try {
+      await api.patch(`/notifications/${notifId}/read`);
+      setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, read: true } : n));
+      setNotificationCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Mark all as read
+  const markAllAsRead = async () => {
+    try {
+      await api.patch('/notifications/read-all');
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setNotificationCount(0);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
+  };
+
+  // Click outside to close notification dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notificationRef.current && !notificationRef.current.contains(e.target)) {
+        setNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Keyboard shortcut (Cmd/Ctrl+K) and click outside handling
