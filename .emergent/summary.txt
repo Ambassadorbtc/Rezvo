@@ -20,201 +20,243 @@ The user wants to build a booking application MVP, , for UK micro-businesses. Th
     - A fully functional mobile app for business owners and clients.
     - Team member management with profile images and in-page editing.
     - A complete mobile authentication flow (Forgot Password, etc.).
+    - **New Features from this session:** Google Calendar Sync, Push Notifications, Automated Reminders, Staff Logins, Customer Reviews, Multi-location, Advanced Scheduling, and a Support Messaging system.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend, React frontend, and MongoDB. The web application is largely feature-complete, including a redesigned team management page with inline editing, a multi-view calendar (Day/Week/Month), a functional public booking page with team member selection, and a re-enabled global search. A data seeding script has been created to populate the database for testing. The backend includes APIs for team management, image uploads, and onboarding.
-
-However, two critical issues remain: the Expo mobile app still crashes on login, and the global search feature only works because a conflicting babel plugin () has been disabled, which is a temporary workaround.
+A full-stack application with a FastAPI backend, React frontend, and MongoDB. The critical recurring mobile app crash has been fixed by pinning a dependency version. The agent implemented a large batch of new features on both the backend and frontend, including a redesigned web login page, a new support messaging system (partially implemented), a redesigned web calendar, and several UI/UX improvements on the mobile app. However, the latest changes introduced significant new bugs, including a non-functional calendar drag-and-drop and a missing support inbox in the admin panel. The external login issue was also resolved by correcting the backend URL in the frontend's environment file.
 
 **Last working item**:
--   **Last item agent was working:** The agent was working through a user-provided checklist. It successfully restarted the Expo server, investigated (but did not fix) the mobile login crash, verified the onboarding wizard was functional, re-enabled the global search, and created a comprehensive data seeding script. The agent concluded by running a full suite of tests and presenting an updated checklist of completed and remaining work.
+-   **Last item agent was working:** The agent was addressing a user request to fix several issues and add new features. It rewrote the web calendar to add drag-and-drop functionality and premium styling, and updated the Founder Admin Panel to include a support inbox.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** Manual testing by  to debug the mobile crash. After applying a fix, the frontend testing agent should be used to verify the mobile login and navigation.
--   **User Testing Done:** N
+-   **Agent Testing Done:** N (Agent took screenshots but the user immediately reported the features were not working as expected).
+-   **Which testing method agent to use?** Frontend testing agent to verify the calendar's drag-and-drop functionality, styling, and the presence and functionality of the support inbox in the Founder Admin Panel.
+-   **User Testing Done:** Y (User reported the changes did not work).
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** The Expo mobile app crashes immediately after login (P0 - recurring).
--   **Issue 2:** The global search feature relies on a disabled babel plugin (P1 - technical debt).
--   **Issue 3:** The client-facing mobile app screens are not connected to backend APIs (P1).
+-   **Issue 1:** Calendar appointments are not draggable (P0 - Regression).
+-   **Issue 2:** The Support Inbox is missing from the Founder Admin Panel (P0 - Regression).
+-   **Issue 3:** The web calendar styling is not premium as requested (P0 - UI/UX).
+-   **Issue 4:** The global search feature relies on a disabled babel plugin (P1 - technical debt).
+-   **Issue 5:** The client-facing mobile app screens are not connected to backend APIs (P1).
+-   **Issue 6:** Default  and  notifications are still present throughout the mobile and web apps (P2).
 
 **Issues Detail:**
 -   **Issue 1:**
-    -   **Description:** The Expo mobile app is unusable as it crashes instantly after a successful login. This is a recurring critical blocker from the previous session.
-    -   **Attempted fixes:** The agent previously tried removing undefined navigation calls. In this session, it added a basic  to  as a preventative measure, but this did not address the root cause. The user has explicitly requested Expo to be working.
+    -   **Description:** The user reported that appointments on the web calendar are not draggable, even after the agent rewrote the page specifically to add this feature.
+    -   **Attempted fixes:** The agent overwrote  with code intended to enable drag-and-drop. This failed.
     -   **Next debug checklist:**
-        1.  Examine the terminal logs from  for crash reports at the moment of login.
-        2.  Trace the  function in .
-        3.  Investigate the conditional rendering logic in  where the app transitions from  to .
-        4.  Temporarily replace the content of  with a minimal component to isolate the issue.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a P0 critical blocker preventing any mobile app testing or usage.
+        1.  Verify the  or similar library is correctly installed and configured in .
+        2.  Check the browser console for errors when attempting to drag an appointment.
+        3.  Ensure the backend endpoint () is correctly called upon drop, with the new .
+    -   **Why fix this issue and what will be achieved with the fix?** This is a core usability feature for the calendar that the user explicitly requested.
     -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
 -   **Issue 2:**
-    -   **Description:** The global search and the redesigned Team Page were crashing the frontend with a Maximum call stack size exceeded error. This was traced to the  conflicting with complex JSX.
-    -   **Attempted fixes:** The agent disabled the plugin by commenting it out in . This fixed the crash and allowed the features to work.
+    -   **Description:** The user reported that the Support Inbox tab is not visible in the Founder Admin Panel after the agent's update.
+    -   **Attempted fixes:** The agent edited  to add the new tab and component.
     -   **Next debug checklist:**
-        1.  Investigate the purpose of  (related to visual edits).
-        2.  Attempt to find a proper fix, either by configuring the plugin to exclude the problematic components (, ) or by refactoring the components to be simpler.
+        1.  Inspect the code in  to see why the Support Inbox tab is not rendering in the  array or why the conditional rendering for the component is failing.
+        2.  Check the  component itself for rendering errors.
+    -   **Why fix this issue and what will be achieved with the fix?** The support system is a new key feature requested by the user, and this makes it inaccessible.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 3:**
+    -   **Description:** The user is not satisfied with the visual premium quality of the updated calendar.
+    -   **Attempted fixes:** The agent rewrote .
+    -   **Next debug checklist:**
+        1.  Review the user's previous feedback on premium design (e.g., from the  redesign).
+        2.  Focus on spacing, typography, color consistency, and subtle interaction animations.
+        3.  Compare with modern calendar apps for inspiration.
+    -   **Why fix this issue and what will be achieved with the fix?** Meets the user's explicit design requirements.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 4:**
+    -   **Description:** The global search crashes the app if  is enabled in . It is currently disabled.
+    -   **Attempted fixes:** The plugin was disabled as a workaround.
+    -   **Next debug checklist:**
+        1.  Investigate configuring the plugin to exclude problematic components.
+        2.  Refactor components like  and  to be simpler.
         3.  Re-enable the plugin once a stable solution is found.
-    -   **Why fix this issue and what will be achieved with the fix?** To resolve the underlying technical debt and re-enable the plugin's intended functionality without causing application crashes.
+    -   **Why fix this issue and what will be achieved with the fix?** Resolves technical debt and re-enables a platform feature (visual edits).
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend (Web)
--   **Issue 3:**
-    -   **Description:** The mobile screens for clients (e.g., searching for businesses, booking appointments) are UI mockups and are not connected to any backend APIs.
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 5:**
+    -   **Description:** Mobile screens for clients (booking, search) are UI mockups without backend integration.
     -   **Attempted fixes:** None.
     -   **Next debug checklist:**
-        1.  Identify the relevant client screens in .
-        2.  Implement API calling logic within these screens using the  helper.
-        3.  Connect UI elements to fetch and display data (e.g., business list, services, availability).
-    -   **Why fix this issue and what will be achieved with the fix?** To make the client-facing portion of the mobile app functional.
+        1.  Identify client screens in .
+        2.  Implement API calls to fetch businesses, services, and availability.
+    -   **Why fix this issue and what will be achieved with the fix?** Makes the client-facing mobile app functional.
     -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
+-   **Issue 6:**
+    -   **Description:** The user wants all native browser/OS alerts (, , ) removed and replaced with custom, branded UI components.
+    -   **Attempted fixes:** Agent created a  for web and a  hook for mobile but did not replace all instances.
+    -   **Next debug checklist:**
+        1.  Globally search the codebase for , , and .
+        2.  Systematically replace each instance with the appropriate custom component (, , ).
+    -   **Why fix this issue and what will be achieved with the fix?** Provides a consistent, professional, and branded user experience.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both
 
 **In progress Task List**:
--   **Task 1:** Complete the list of missing features (P0)
-    -   **Where to resume:** The highest priority is fixing the P0 mobile app crash. After that, proceed with wiring up the client mobile app.
-    -   **What will be achieved with this?** A fully functional MVP that aligns with the user's initial requirements.
+-   **Task 1:** Implement a support messaging system (P1)
+    -   **Where to resume:** The backend endpoints and a basic frontend page exist. The immediate next step is to fix the Founder Admin Panel to correctly display the Support Inbox.
+    -   **What will be achieved with this?** A functional internal messaging system for founders to handle support tickets.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on something:** Blocked by **Issue 2**.
+-   **Task 2:** Implement a premium mobile calendar (P1)
+    -   **Where to resume:** The agent overwrote  with a new implementation. This new screen needs to be tested and refined.
+    -   **What will be achieved with this?** A mobile calendar with Day/Week/Month views, double-tap to add bookings, and no native alerts.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks (P1):**
-    - **Stripe Subscription:** Implement the £4.99/month payment flow.
-    - **Google Calendar Sync:** Integrate two-way sync with Google Calendar API.
-    - **Push Notifications:** Implement push notifications using Expo's push notification service.
-    - **SMS Notifications (Twilio):** Integrate Twilio for SMS reminders.
-    - **Automated Booking Reminders:** Implement a scheduled task to send email/SMS reminders.
+    - **Google Calendar Sync:** Implement the two-way sync logic. Backend endpoints and dependencies are installed.
+    - **Push Notifications:** Integrate with Expo's push notification service.
+    - **Automated Booking Reminders:** Implement the logic for the  job to send email reminders.
 - **Future Tasks (P2):**
+    - **Stripe Subscription:** Implement the £4.99/month payment flow (User de-prioritized).
+    - **SMS Notifications (Twilio):** Integrate Twilio for SMS reminders (User de-prioritized).
     - **Staff Separate Logins:** Allow team members to log in with their own credentials.
     - **Customer Reviews & Ratings:** Implement a rating system for services.
     - **Multi-location Support:** Add the ability to manage multiple business locations.
     - **Advanced Team Scheduling:** Add features like shift management and custom hours per team member.
 
 **Completed work in this session**
--   **Team Management Overhaul:** Redesigned  based on user feedback to include a premium table with inline editing, round avatars, and correct layout within .
--   **Calendar View Enhancement:** Added Day, Week, and Month view tabs to  and replaced the generic Team button with a stack of team member profile avatars.
--   **Global Search Fixed:** Re-implemented and fixed the global search feature by disabling the conflicting  as a temporary workaround.
--   **Public Booking Page Fixed:** Resolved issues where no time slots were showing by setting default business availability. Added a Choose your professional UI for team member selection during booking.
--   **Branded Notifications:** Replaced native browser  dialogs with a custom  component for a consistent look and feel.
--   **Data Seeding Script:** Created  to populate the database with a full set of test users, businesses, services, team members, and bookings.
--   **Onboarding & Mobile Fixes:** Verified the backend for the onboarding wizard is functional and fixed navigation links on the mobile settings screens.
--   **Continuous Testing:** Successfully used the testing agent after each major feature implementation ( through ).
+-   **Expo Mobile App Crash (FIXED):** Diagnosed and fixed the critical, recurring mobile app crash by identifying a version conflict in  and pinning it to a stable version ().
+-   **External Web Login (FIXED):** Resolved an issue where users couldn't log in from the public URL by correcting  in the frontend  file from  to the preview URL.
+-   **New Feature Backend Implementation:** Added numerous backend models and API endpoints in  for Google Calendar, reviews, staff scheduling (shifts, time off), multi-location support, and a new support messaging system.
+-   **Web UI/UX Overhaul:**
+    -   Redesigned the  with a premium two-column layout and rotating background images.
+    -   Replaced the global search modal with a dropdown search component in .
+    -   Created a new  and integrated it into the main app navigation.
+-   **Mobile UI/UX Improvements:**
+    -   Created a new .
+    -   Made statistic cards on the mobile  tappable, navigating to the new analytics screen.
+    -   Overhauled the mobile  to add view tabs and remove alerts (needs verification).
+    -   Improved the mobile  by tightening the profile card layout and adding photo upload functionality via .
+    -   Began replacing native  calls, creating a custom  hook.
 
 **Earlier issues found/mentioned but not fixed**
--   The root cause of the conflict between  and complex JSX components was not resolved. The plugin was disabled entirely as a workaround.
+-   The root cause of the conflict between  and complex JSX components was not resolved. The plugin remains disabled in .
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Mobile app crashes on login.
--   **Recurrence count:** 2
--   **Status:** IN PROGRESS
+-   **Recurrence count:** 3
+-   **Status:** RESOLVED (but high risk of recurrence; the fix was to pin a dependency, which might need updating with future Expo SDK changes).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Backend:** FastAPI, Pydantic, JWT, MongoDB
--   **Frontend (Web):** React, React Router, Tailwind CSS, Axios, Craco (for webpack config override)
--   **Frontend (Mobile):** React Native, Expo
--   **Tooling:** Babel (plugin conflict debugging)
+-   **Backend:** FastAPI, Pydantic, JWT, MongoDB, 
+-   **Frontend (Web):** React, React Router, Tailwind CSS, Axios, Craco
+-   **Frontend (Mobile):** React Native, Expo (SDK 54), React Navigation
+-   **Tooling:** Babel, Yarn (for dependency management and pinning)
 
 **key DB schema**
--   **team_members:** Updated to include  and .
--   **businesses:** Updated to ensure a default  structure exists.
+-   **reviews:** 
+-   **business_locations:** 
+-   **shifts:** 
+-   **time_off_requests:** 
+-   **support_tickets:** 
+-   **support_messages:** 
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/mobile/rezvo-mobile/src/context/AuthContext.js**: Key file for debugging the login crash.
--   **/app/mobile/rezvo-mobile/src/navigation/AppNavigator.js**: Controls the app's navigation stacks.
--   **/app/mobile/rezvo-mobile/src/screens/business/DashboardScreen.js**: The screen the app crashes trying to load.
--   **/app/frontend/craco.config.js**: The file where  was disabled. This is a critical workaround.
--   **/app/frontend/src/pages/TeamPage.jsx**: The redesigned team management page.
--   **/app/frontend/src/pages/CalendarPage.jsx**: The redesigned calendar with multiple views.
--   **/app/frontend/src/pages/PublicBookingPage.jsx**: The fixed public booking page.
--   **/app/backend/seed_data.py**: The new data seeding script.
--   **/app/backend/server.py**: Contains all backend logic, including new image upload and public team endpoints.
+-   **/app/frontend/src/pages/CalendarPage.jsx**: Needs to be fixed to implement working drag-and-drop and better styling.
+-   **/app/frontend/src/pages/FounderAdminPage.jsx**: Needs to be fixed to show the Support Inbox.
+-   **/app/mobile/rezvo-mobile/package.json**: Shows the pinned  version, which is the critical fix for the mobile crash.
+-   **/app/mobile/rezvo-mobile/src/navigation/AppNavigator.js**: The heart of the mobile navigation, heavily modified to fix the crash.
+-   **/app/backend/server.py**: Now contains almost all backend logic, including the new (untested) feature endpoints.
+-   **/app/frontend/.env**: Was the cause of the external login issue.
 
 **Areas that need refactoring**:
--    is a large monolith and should be broken into modular routers.
--   The  needs a proper fix instead of being disabled. The current state is technical debt that prevents the use of a core platform feature (visual edits).
+-    is now a massive monolith (over 3000 lines) and urgently needs to be broken into modular FastAPI routers.
+-   The  technical debt still exists.
+-   The process of removing all native alerts (, , ) is incomplete and needs to be finished for UI consistency.
 
 **key api endpoints**
 -    **(NEW)**
 -    **(NEW)**
--   
--   Full CRUD for 
+-    (CRUD) **(NEW)**
+-    (CRUD) **(NEW)**
+-    (CRUD, approve/deny) **(NEW)**
+-    (CRUD) **(NEW)**
+-    (CRUD) **(NEW)**
+-    (GET, POST) **(NEW)**
+-   , ,  **(NEW)**
 
 **Critical Info for New Agent**
--   **TOP PRIORITY (P0): FIX THE MOBILE APP CRASH.** This is a recurring, critical blocker. The user cannot log in to the Expo app and has explicitly asked for it to be fixed. All debugging efforts should start here.
--   **WORKAROUND ALERT:** The  is **disabled** in . This was done to prevent frontend crashes on the  and with . Re-enabling it without a proper fix will break the web app. This is a major piece of technical debt.
--   **User Feedback is Key:** The user is highly focused on UI/UX and provides very specific, iterative feedback with image references. Respond to this feedback carefully, as demonstrated by the successful redesign of the .
--   **Data Seeding:** Use 🌱 Starting database seeding...
-✓ Using existing test user and business: 91b50ea4-d8e5-427f-81c8-80ba25b7d196
-✓ Cleared existing seeded data
-✓ Created 6 team members
-✓ Created 6 services
-✓ Created 121 bookings
-✓ Created 5 notifications
-
-==================================================
-✅ Database seeding complete!
-==================================================
-Business ID: 91b50ea4-d8e5-427f-81c8-80ba25b7d196
-Test User: testuser@example.com / password123
-Team Members: 6
-Services: 6
-Bookings: 121
-================================================== to populate the database with a rich set of test data. This is useful after clearing the database or for setting up a fresh environment.
+-   **TOP PRIORITY (P0): Fix the regressions from the last update.** The user reported that the calendar drag-and-drop is broken and the support inbox is missing from the admin panel. Address these immediately.
+-   **Verify Mobile Stability:** The critical mobile crash was fixed by pinning  to . While this seems to have worked, this type of fix can be fragile. The first step on mobile should be to start the Expo server and confirm login still works.
+-   **Backend is Untested:** The agent added a huge number of new models and endpoints to  for features like Google Calendar Sync, reviews, scheduling, etc. None of these have been tested or wired up to the frontend.
+-   **Finish the Alert Refactor:** The user wants all native alerts gone. The agent started this but didn't finish. Create a plan to systematically remove all remaining instances from both web and mobile.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_7.json
--   /app/test_reports/iteration_8.json
--   /app/test_reports/iteration_9.json
--   /app/test_reports/iteration_10.json
--   /app/test_reports/iteration_11.json
--   /app/memory/PRD.md (updated multiple times)
+-   /app/memory/PRD.md (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User (LATEST):** Asked for a checklist of what is missing from the brief. (Agent provided this).
-9.  **User:** Pointed out that booking was not possible on the public share page due to no available times. (Agent fixed this).
-8.  **User:** Provided a list of 5 UI/UX issues: use branded notifications, add Week/Month views to calendar, change team button to profile icons, sort new team members to the top, and restart Expo. (Agent fixed all).
-7.  **User:** Provided 3 points of negative feedback on the new Team page: missing sidebar, modal-based editing is bad, design is not premium. (Agent fixed all with a full redesign).
-6.  **User:** Requested a team navigation item, profile image uploads, and a toggle to show team members on the public booking link. (Agent implemented this).
-5.  **User:** First, provide all application URLs. Then, start building everything outstanding. (Agent provided URLs and began work).
-4.  **Pending Request:** The user's last instruction was Restart expo make sure its working then complete the list. The agent has restarted Expo and completed several items on the list, but the mobile app crash (the highest priority item) remains.
+10. **User (LATEST):** Reported new bugs: calendar appointments are not draggable, the support inbox is missing in the admin panel, and the calendar styling is not premium enough. (INCOMPLETE)
+9.  **User:** Complained about not being able to log in from the external URL. (RESOLVED)
+8.  **User:** Acknowledged UI improvements were implemented and asked for the next steps. (DONE)
+7.  **User:** Saw an empty QR code page and asked the agent to fix it. (RESOLVED)
+6.  **User:** Complained about the QR code page showing a manual URL and things being broken. (RESOLVED)
+5.  **User:** Reported the Expo app was still crashing after the agent's first few attempts. (RESOLVED)
+4.  **User:** Provided an image of the Expo crash error. (RESOLVED)
+3.  **User:** Reported the Expo tunnel was not working on the testing page. (RESOLVED)
+2.  **User:** Requested all application URLs and asked the agent to implement a list of features, excluding Stripe and Twilio. (IN PROGRESS)
+1.  **User:** Asked the agent to fix the Expo server crash once and for all. (RESOLVED)
 
 **Project Health Check:**
 -   **Broken:**
-    -   **Expo Mobile App Login:** The app crashes upon login, making it unusable. This is a P0 critical blocker and a known regression.
+    -   **Web Calendar Drag-and-Drop:** Core functionality of the rewritten page is not working.
+    -   **Founder Admin Support Inbox:** The UI for the new feature is not appearing.
 -   **Mocked:**
-    -   The entire client-side mobile app flow is not wired to the backend.
-    -   Push notifications are not implemented.
+    -   The entire client-side mobile app flow (booking, search).
+    -   All newly added backend features (Google Sync, Reviews, Staff Scheduling, etc.) have no frontend implementation.
 -   **Technical Debt:**
-    -   **Global Web Search / Complex Components:** Rely on the  being disabled. Re-enabling it will cause crashes.
+    -   ** disabled:** The underlying conflict remains unresolved.
+    -   ** monolith:** The main backend file is now extremely large and difficult to maintain.
+    -   **Incomplete Alert Refactor:** Native alerts are still scattered throughout the codebase.
 
 **3rd Party Integrations**
 -   **OpenAI GPT-4o-mini:** Backend implementation. Uses Emergent LLM Key.
 -   **Resend.com:** Backend implementation for email. Requires User API Key.
 -   **React Native / Expo:** Core mobile framework.
 -   **recharts:** Used for charts in the web admin panel.
+-   **apscheduler:** Installed for backend scheduled jobs.
+-   **google-auth-oauthlib:** Installed for Google Calendar integration.
+-   **expo-image-picker:** Installed for mobile image uploads.
 -   **Stripe:** Deferred by user.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (Iterations 7-11)
+-   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** The mobile app login crash is a major regression that was not fixed.
+-   **Known regressions:**
+    -   Web calendar drag-and-drop is broken.
+    -   Founder Admin Panel UI for support inbox is broken.
 
 **Credentials to test flow:**
 -   **Email:** 
 -   **Password:** 
 
 **What agent forgot to execute**
--   The agent did not successfully fix the P0 mobile app login crash, despite it being a recurring issue and a top priority from the initial handoff. It investigated briefly but then moved on to other (lower-priority) tasks from the user's checklist.</analysis>
+-   The agent failed to test the major features (calendar drag-and-drop, admin panel support inbox) it implemented before finishing, leading to immediate user-reported regressions.
+-   The agent did not use the  after a very large batch of changes, which would have likely caught the new bugs.
+-   The agent did not fully complete the requested refactor to remove all native  dialogs from the mobile app.
+-   The agent declared the task complete based on screenshots, ignoring the user's final message which clearly stated that the new features were broken.</analysis>

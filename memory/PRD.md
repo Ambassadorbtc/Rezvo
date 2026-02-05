@@ -173,10 +173,10 @@ react-native-screens: 4.16.0 (exact)
 
 ### Expo Mobile
 - URL: `exp://tjyr168-anonymous-8081.exp.direct`
-- QR: https://rezvo-booking-1.preview.emergentagent.com/expo-test
+- QR: https://appointment-pro-51.preview.emergentagent.com/expo-test
 
 ### Web URLs
-- Login: https://rezvo-booking-1.preview.emergentagent.com/login
-- Dashboard: https://rezvo-booking-1.preview.emergentagent.com/dashboard
-- Calendar: https://rezvo-booking-1.preview.emergentagent.com/calendar
-- Support: https://rezvo-booking-1.preview.emergentagent.com/support
+- Login: https://appointment-pro-51.preview.emergentagent.com/login
+- Dashboard: https://appointment-pro-51.preview.emergentagent.com/dashboard
+- Calendar: https://appointment-pro-51.preview.emergentagent.com/calendar
+- Support: https://appointment-pro-51.preview.emergentagent.com/support

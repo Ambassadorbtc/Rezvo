@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Production URL - same as web app
-const API_URL = 'https://rezvo-booking-1.preview.emergentagent.com/api';
+const API_URL = 'https://appointment-pro-51.preview.emergentagent.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
