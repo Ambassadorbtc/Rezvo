@@ -49,7 +49,7 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ Dashboard with analytics
 - ✅ Team member management with avatars and colors
 - ✅ Services CRUD with pricing and durations
-- ✅ **Products CRUD** with inventory tracking (NEW)
+- ✅ **Products CRUD** with inventory tracking
 - ✅ Booking management with status updates
 - ✅ Calendar with Day/Week/Month views
 - ✅ **Calendar drag-and-drop** (between days and time slots)
@@ -60,7 +60,7 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 
 ### Booking System
 - ✅ Public booking page with shareable link
-- ✅ **Slicker mobile-friendly booking design** (compact layout)
+- ✅ **Compact booking modal** - scrollable with fixed Continue button (Feb 5)
 - ✅ **Month calendar navigation** for date selection
 - ✅ **Time period filters** (Morning/Afternoon/Evening)
 - ✅ **Time slots up to 9pm**
@@ -68,10 +68,18 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ Team member/professional selection
 - ✅ Booking confirmation emails (via Resend)
 
+### Calendar - Premium Fresha-style Design (Feb 5)
+- ✅ **Colored top bar** on booking cards (service color)
+- ✅ **Team member avatar and name** on booking cards
+- ✅ **Client name, service name, price** properly displayed
+- ✅ **No text cutoff** - responsive card heights
+- ✅ Day view with team member columns
+- ✅ Week view with draggable booking cards
+
 ### Support & Messaging
 - ✅ Support chat page with emoji picker
 - ✅ **In-page message editing** (no popups)
-- ✅ **File attachment functionality**
+- ✅ **File attachment buttons**
 - ✅ Message copy, reply, delete actions
 - ✅ **Admin Support Inbox** in Founder Panel
 - ✅ Conversation threading with timestamps
@@ -81,7 +89,9 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ User management dashboard
 - ✅ Business analytics
 - ✅ Error logs viewer
-- ✅ **Support Inbox with message thread view**
+- ✅ **Two-sided chat layout** (Feb 5) - Admin messages right (teal), user messages left (white)
+- ✅ **Emoji and attachment buttons** in reply input
+- ✅ User avatars on messages
 - ✅ Reply to support conversations
 
 ### UI/UX Improvements
@@ -94,6 +104,8 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 ### Mobile App (Expo)
 - ✅ React Native / Expo SDK 54
 - ✅ Business owner screens (Dashboard, Calendar, Bookings, Services, Settings)
+- ✅ **Redesigned week view** (Feb 5) - Card-based layout per day with booking summaries
+- ✅ **Premium booking cards** with colored top bar, team member avatar/name
 - ✅ Client screens (UI mockups)
 - ✅ Push notification setup (pending integration)
 - ✅ Photo upload for profile
