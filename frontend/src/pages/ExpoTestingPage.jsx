@@ -22,10 +22,10 @@ const ExpoTestingPage = () => {
       if (data.url) {
         setExpoUrl(data.url);
       } else {
-        setExpoUrl('exp://45hcmki-anonymous-8081.exp.direct');
+        setExpoUrl('exp://tjyr168-anonymous-8081.exp.direct');
       }
     } catch (err) {
-      setExpoUrl('exp://45hcmki-anonymous-8081.exp.direct');
+      setExpoUrl('exp://tjyr168-anonymous-8081.exp.direct');
     }
     setLoading(false);
   };
