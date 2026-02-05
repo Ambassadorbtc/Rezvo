@@ -8,17 +8,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
+  const { showToast } = useGlobalToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      showToast('Please fill in all fields', 'error');
       return;
     }
 
@@ -35,10 +36,7 @@ export default function LoginScreen({ navigation }) {
     try {
       await login(email, password);
     } catch (error) {
-      Alert.alert(
-        'Login Failed',
-        error.response?.data?.detail || 'Invalid email or password'
-      );
+      showToast(error.response?.data?.detail || 'Invalid email or password', 'error');
     } finally {
       setLoading(false);
     }
