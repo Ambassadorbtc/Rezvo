@@ -31,7 +31,34 @@ const AppLayout = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const searchRef = useRef(null);
+
+  // Fetch notification count
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const [bookingsRes, conversationsRes] = await Promise.all([
+          api.get('/bookings').catch(() => ({ data: [] })),
+          api.get('/conversations').catch(() => ({ data: [] }))
+        ]);
+        
+        const bookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+        const pendingCount = bookings.filter(b => b.status === 'pending').length;
+        
+        const conversations = Array.isArray(conversationsRes.data) ? conversationsRes.data : [];
+        const unreadCount = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+        
+        setNotificationCount(pendingCount + unreadCount);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+    
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   // Keyboard shortcut (Cmd/Ctrl+K) and click outside handling
   useEffect(() => {
