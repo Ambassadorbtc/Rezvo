@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api, { formatPrice } from '../lib/api';
 import AppLayout from '../components/AppLayout';
@@ -7,34 +7,34 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ChevronLeft, ChevronRight, Plus, Clock, User, Phone, Mail, X, Users, Settings, Edit2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, User, Phone, Mail, X, Users, Settings, Edit2, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, addDays, addWeeks, addMonths, startOfWeek, startOfMonth, endOfMonth, isSameDay, isSameMonth, setHours, setMinutes, eachDayOfInterval } from 'date-fns';
 
 // Service colors for visual distinction
 const SERVICE_COLORS = [
-  { bg: 'bg-teal-100', border: 'border-l-teal-500', text: 'text-teal-700' },
-  { bg: 'bg-blue-100', border: 'border-l-blue-500', text: 'text-blue-700' },
-  { bg: 'bg-purple-100', border: 'border-l-purple-500', text: 'text-purple-700' },
-  { bg: 'bg-amber-100', border: 'border-l-amber-500', text: 'text-amber-700' },
-  { bg: 'bg-rose-100', border: 'border-l-rose-500', text: 'text-rose-700' },
-  { bg: 'bg-indigo-100', border: 'border-l-indigo-500', text: 'text-indigo-700' },
-  { bg: 'bg-emerald-100', border: 'border-l-emerald-500', text: 'text-emerald-700' },
-  { bg: 'bg-orange-100', border: 'border-l-orange-500', text: 'text-orange-700' },
+  { bg: 'bg-teal-100', border: 'border-l-teal-500', text: 'text-teal-700', accent: '#00BFA5' },
+  { bg: 'bg-blue-100', border: 'border-l-blue-500', text: 'text-blue-700', accent: '#3B82F6' },
+  { bg: 'bg-purple-100', border: 'border-l-purple-500', text: 'text-purple-700', accent: '#8B5CF6' },
+  { bg: 'bg-amber-100', border: 'border-l-amber-500', text: 'text-amber-700', accent: '#F59E0B' },
+  { bg: 'bg-rose-100', border: 'border-l-rose-500', text: 'text-rose-700', accent: '#F43F5E' },
+  { bg: 'bg-indigo-100', border: 'border-l-indigo-500', text: 'text-indigo-700', accent: '#6366F1' },
+  { bg: 'bg-emerald-100', border: 'border-l-emerald-500', text: 'text-emerald-700', accent: '#10B981' },
+  { bg: 'bg-orange-100', border: 'border-l-orange-500', text: 'text-orange-700', accent: '#F97316' },
 ];
 
 const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState('day'); // day, week, month
+  const [viewMode, setViewMode] = useState('day');
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [showAddBooking, setShowAddBooking] = useState(false);
-  const [showTeamModal, setShowTeamModal] = useState(false);
-  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  const [preselectedTime, setPreselectedTime] = useState('');
+  const [preselectedMember, setPreselectedMember] = useState('');
+  const [draggedBooking, setDraggedBooking] = useState(null);
   
-  // New booking form
   const [newBooking, setNewBooking] = useState({
     service_id: '',
     team_member_id: '',
@@ -44,24 +44,9 @@ const CalendarPage = () => {
     time: '',
     notes: ''
   });
-  
-  // New team member form
-  const [newMember, setNewMember] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'staff',
-    color: '#00BFA5'
-  });
 
-  const MEMBER_COLORS = [
-    '#00BFA5', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', 
-    '#EC4899', '#14B8A6', '#6366F1', '#84CC16', '#F97316'
-  ];
-
-  // Hours for the calendar grid (8am to 8pm)
   const hours = Array.from({ length: 13 }, (_, i) => i + 8);
-  const HOUR_HEIGHT = 60; // pixels per hour
+  const HOUR_HEIGHT = 64;
 
   useEffect(() => {
     loadData();
@@ -90,11 +75,6 @@ const CalendarPage = () => {
     return SERVICE_COLORS[index % SERVICE_COLORS.length];
   };
 
-  const getMemberColor = (memberId) => {
-    const member = teamMembers.find(m => m.id === memberId);
-    return member?.color || '#00BFA5';
-  };
-
   const getBookingsForMember = (memberId) => {
     return bookings.filter(b => 
       b.team_member_id === memberId || 
@@ -104,11 +84,11 @@ const CalendarPage = () => {
 
   const getBookingPosition = (booking) => {
     const date = new Date(booking.datetime);
-    const hours = date.getHours();
+    const bookingHours = date.getHours();
     const minutes = date.getMinutes();
-    const top = (hours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
+    const top = (bookingHours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
     const height = (booking.duration_min / 60) * HOUR_HEIGHT;
-    return { top, height: Math.max(height, 30) };
+    return { top, height: Math.max(height, 40) };
   };
 
   const formatBookingTime = (dateStr) => {
@@ -123,6 +103,45 @@ const CalendarPage = () => {
   const weekDates = getWeekDates();
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  // Double-click to add booking
+  const handleDoubleClick = (hour, memberId = '') => {
+    const time = `${hour.toString().padStart(2, '0')}:00`;
+    setPreselectedTime(time);
+    setPreselectedMember(memberId);
+    setNewBooking(prev => ({ ...prev, time, team_member_id: memberId }));
+    setShowAddBooking(true);
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e, booking) => {
+    setDraggedBooking(booking);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e, targetDate, targetHour) => {
+    e.preventDefault();
+    if (!draggedBooking) return;
+
+    const newDateTime = new Date(targetDate);
+    newDateTime.setHours(targetHour, 0, 0, 0);
+
+    try {
+      await api.patch(`/bookings/${draggedBooking.id}`, {
+        datetime: newDateTime.toISOString()
+      });
+      toast.success('Booking moved!');
+      loadData();
+    } catch (error) {
+      toast.error('Failed to move booking');
+    }
+    setDraggedBooking(null);
+  };
+
   const handleCreateBooking = async () => {
     if (!newBooking.service_id || !newBooking.client_name || !newBooking.client_email || !newBooking.time) {
       toast.error('Please fill in all required fields');
@@ -130,8 +149,8 @@ const CalendarPage = () => {
     }
     
     try {
-      const [hours, mins] = newBooking.time.split(':').map(Number);
-      const bookingDate = setMinutes(setHours(selectedDate, hours), mins);
+      const [bookingHours, mins] = newBooking.time.split(':').map(Number);
+      const bookingDate = setMinutes(setHours(selectedDate, bookingHours), mins);
       
       await api.post('/bookings/with-team', {
         service_id: newBooking.service_id,
@@ -143,39 +162,14 @@ const CalendarPage = () => {
         notes: newBooking.notes
       });
       
-      toast.success('Booking created');
+      toast.success('Booking created!');
       setShowAddBooking(false);
       setNewBooking({ service_id: '', team_member_id: '', client_name: '', client_email: '', client_phone: '', time: '', notes: '' });
+      setPreselectedTime('');
+      setPreselectedMember('');
       loadData();
     } catch (error) {
       toast.error('Failed to create booking');
-    }
-  };
-
-  const handleAddTeamMember = async () => {
-    if (!newMember.name) {
-      toast.error('Please enter a name');
-      return;
-    }
-    
-    try {
-      await api.post('/team-members', newMember);
-      toast.success('Team member added');
-      setNewMember({ name: '', email: '', phone: '', role: 'staff', color: '#00BFA5' });
-      loadData();
-    } catch (error) {
-      toast.error('Failed to add team member');
-    }
-  };
-
-  const handleDeleteTeamMember = async (memberId) => {
-    if (!confirm('Remove this team member?')) return;
-    try {
-      await api.delete(`/team-members/${memberId}`);
-      toast.success('Team member removed');
-      loadData();
-    } catch (error) {
-      toast.error('Failed to remove team member');
     }
   };
 
@@ -200,7 +194,6 @@ const CalendarPage = () => {
     );
   }
 
-  // Calculate columns based on team members
   const displayMembers = teamMembers.length > 0 ? teamMembers : [{ id: 'all', name: 'All Bookings', color: '#00BFA5' }];
 
   return (
@@ -209,11 +202,10 @@ const CalendarPage = () => {
         {/* Top Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
           <div>
-            <h1 className="text-2xl font-bold text-navy-900">Calendar</h1>
-            <p className="text-sm text-navy-500">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
+            <h1 className="text-2xl font-bold text-navy-900 tracking-tight">Calendar</h1>
+            <p className="text-sm text-navy-400 font-medium">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
           </div>
           <div className="flex items-center gap-4">
-            {/* Team Member Avatars - Link to /team */}
             <Link to="/team" className="flex items-center gap-1 hover:opacity-80 transition-opacity" title="Manage Team">
               <div className="flex -space-x-2">
                 {teamMembers.slice(0, 5).map((member, idx) => (
@@ -244,7 +236,7 @@ const CalendarPage = () => {
             </Link>
             <Button
               onClick={() => setShowAddBooking(true)}
-              className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl gap-2"
+              className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl gap-2 shadow-lg shadow-teal-500/20"
               data-testid="add-booking-btn"
             >
               <Plus className="w-4 h-4" />
@@ -253,9 +245,10 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        {/* Date Navigation + View Tabs */}
+        {/* Date Navigation + View Tabs - FIXED LAYOUT */}
         <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-100">
-          <div className="flex items-center gap-2">
+          {/* Left: Navigation */}
+          <div className="flex items-center gap-2 w-[200px]">
             <Button
               variant="ghost"
               size="icon"
@@ -267,7 +260,7 @@ const CalendarPage = () => {
             <Button
               variant="outline"
               onClick={() => setSelectedDate(new Date())}
-              className="rounded-full text-sm px-4"
+              className="rounded-full text-sm px-4 font-semibold"
             >
               Today
             </Button>
@@ -281,13 +274,13 @@ const CalendarPage = () => {
             </Button>
           </div>
           
-          {/* View Mode Tabs */}
+          {/* Center: View Mode Tabs - Always in same position */}
           <div className="flex items-center bg-gray-100 p-1 rounded-xl">
             {['day', 'week', 'month'].map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
                   viewMode === mode 
                     ? 'bg-white text-teal-600 shadow-sm' 
                     : 'text-navy-500 hover:text-navy-700'
@@ -298,43 +291,46 @@ const CalendarPage = () => {
             ))}
           </div>
           
-          {/* Week Strip (only in day view) */}
-          {viewMode === 'day' && (
-            <div className="flex items-center gap-1 bg-cream-100 p-1 rounded-xl">
-              {weekDates.map((date, index) => {
-                const isSelected = isSameDay(date, selectedDate);
-                const isToday = isSameDay(date, new Date());
-                const hasBookings = bookings.some(b => 
-                  new Date(b.datetime).toDateString() === date.toDateString()
-                );
-                
-                return (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedDate(date)}
-                    className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
-                      isSelected 
-                        ? 'bg-teal-500 text-white shadow-lg' 
-                        : isToday 
-                          ? 'bg-teal-100 text-teal-700'
-                          : 'hover:bg-white text-navy-600'
-                    }`}
-                  >
-                    <span className="text-xs font-medium">{dayNames[index]}</span>
-                    <span className={`text-lg font-bold ${isSelected ? 'text-white' : ''}`}>
-                      {format(date, 'd')}
-                    </span>
-                    {hasBookings && !isSelected && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          
-          <div className="text-sm text-navy-500">
-            {bookings.length} booking{bookings.length !== 1 ? 's' : ''} {viewMode === 'day' ? 'today' : 'this ' + viewMode}
+          {/* Right: Week Strip or Spacer */}
+          <div className="w-[400px] flex justify-end">
+            {viewMode === 'day' && (
+              <div className="flex items-center gap-1 bg-cream-100 p-1 rounded-xl">
+                {weekDates.map((date, index) => {
+                  const isSelected = isSameDay(date, selectedDate);
+                  const isToday = isSameDay(date, new Date());
+                  const hasBookings = bookings.some(b => 
+                    new Date(b.datetime).toDateString() === date.toDateString()
+                  );
+                  
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedDate(date)}
+                      className={`flex flex-col items-center px-3 py-2 rounded-lg transition-all ${
+                        isSelected 
+                          ? 'bg-teal-500 text-white shadow-lg' 
+                          : isToday 
+                            ? 'bg-teal-100 text-teal-700'
+                            : 'hover:bg-white text-navy-600'
+                      }`}
+                    >
+                      <span className="text-xs font-semibold">{dayNames[index]}</span>
+                      <span className={`text-lg font-bold ${isSelected ? 'text-white' : ''}`}>
+                        {format(date, 'd')}
+                      </span>
+                      {hasBookings && !isSelected && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {viewMode !== 'day' && (
+              <div className="text-sm text-navy-400 font-medium">
+                {bookings.length} booking{bookings.length !== 1 ? 's' : ''} this {viewMode}
+              </div>
+            )}
           </div>
         </div>
 
@@ -342,12 +338,12 @@ const CalendarPage = () => {
         {viewMode === 'day' && (
           <div className="flex-1 overflow-hidden flex">
             {/* Time Column */}
-            <div className="w-16 border-r border-gray-200 bg-white flex-shrink-0">
-              <div className="h-14 border-b border-gray-200" /> {/* Spacer for header */}
+            <div className="w-20 border-r border-gray-200 bg-white flex-shrink-0">
+              <div className="h-16 border-b border-gray-200" />
               <div className="relative">
                 {hours.map((hour) => (
-                  <div key={hour} className="h-[60px] border-b border-gray-50 flex items-start justify-end pr-2 pt-0">
-                    <span className="text-xs text-navy-400 -mt-2">
+                  <div key={hour} className="h-[64px] border-b border-gray-50 flex items-start justify-end pr-3 pt-0">
+                    <span className="text-xs font-semibold text-navy-400 -mt-2 tracking-wide">
                       {hour.toString().padStart(2, '0')}:00
                     </span>
                   </div>
@@ -364,29 +360,36 @@ const CalendarPage = () => {
                     : bookings;
                   
                   return (
-                    <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
+                    <div key={member.id} className="flex-1 min-w-[220px] border-r border-gray-100 last:border-r-0">
                       {/* Member Header */}
                       <div 
-                        className="h-14 border-b border-gray-200 bg-white flex items-center justify-center gap-2 px-3 sticky top-0"
-                        style={{ borderTopWidth: 3, borderTopColor: member.color }}
+                        className="h-16 border-b border-gray-200 bg-gradient-to-r from-white to-gray-50 flex items-center justify-center gap-3 px-4 sticky top-0"
+                        style={{ borderTopWidth: 4, borderTopColor: member.color }}
                       >
                         <div 
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
                           style={{ backgroundColor: member.color }}
                         >
                           {member.name?.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-navy-900 truncate">{member.name}</p>
-                          <p className="text-xs text-navy-400">{member.role || 'All'}</p>
+                          <p className="text-sm font-bold text-navy-900 truncate">{member.name}</p>
+                          <p className="text-xs text-navy-400 font-medium capitalize">{member.role || 'All'}</p>
                         </div>
                       </div>
                       
                       {/* Time Grid with Bookings */}
                       <div className="relative bg-white">
-                        {/* Hour lines */}
                         {hours.map((hour) => (
-                          <div key={hour} className="h-[60px] border-b border-gray-50" />
+                          <div 
+                            key={hour} 
+                            className="h-[64px] border-b border-gray-50 hover:bg-teal-50/30 transition-colors cursor-pointer"
+                            onDoubleClick={() => handleDoubleClick(hour, member.id !== 'all' ? member.id : '')}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, selectedDate, hour)}
+                          >
+                            <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-gray-100" />
+                          </div>
                         ))}
                         
                         {/* Bookings */}
@@ -397,74 +400,93 @@ const CalendarPage = () => {
                           return (
                             <div
                               key={booking.id}
-                              className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-lg p-2 overflow-hidden cursor-pointer hover:shadow-md transition-shadow`}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, booking)}
+                              className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-xl p-3 overflow-hidden cursor-grab active:cursor-grabbing hover:shadow-xl transition-all group`}
                               style={{ top: `${top}px`, height: `${height}px` }}
                               onClick={() => toast.info(`${booking.client_name} - ${booking.service_name}`)}
                             >
-                              <div className={`text-xs font-semibold ${colors.text}`}>
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <GripVertical className="w-4 h-4 text-gray-400" />
+                              </div>
+                              <div className={`text-xs font-bold ${colors.text} tracking-wide`}>
                                 {formatBookingTime(booking.datetime)}
                               </div>
-                              <div className="text-sm font-medium text-navy-900 truncate">
+                              <div className="text-sm font-bold text-navy-900 truncate mt-0.5">
                                 {booking.client_name}
                               </div>
-                              {height > 50 && (
-                                <div className="text-xs text-navy-500 truncate">
+                              {height > 55 && (
+                                <div className="text-xs text-navy-500 truncate font-medium">
                                   {booking.service_name}
                                 </div>
                               )}
-                              {height > 70 && (
-                                <div className="text-xs text-navy-400 mt-1">
+                              {height > 75 && (
+                                <div className="text-xs text-navy-400 mt-1 font-semibold">
                                   {formatPrice(booking.price_pence)}
                                 </div>
                               )}
                             </div>
                           );
-                      })}
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
         )}
 
         {/* Week View */}
         {viewMode === 'week' && (
           <div className="flex-1 overflow-auto p-6">
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              {/* Week Header */}
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
               <div className="grid grid-cols-7 border-b border-gray-100">
                 {weekDates.map((date, idx) => {
                   const isToday = isSameDay(date, new Date());
                   const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
                   return (
-                    <div key={idx} className={`p-4 text-center border-r border-gray-100 last:border-r-0 ${isToday ? 'bg-teal-50' : ''}`}>
-                      <div className="text-xs font-medium text-navy-500">{dayNames[idx]}</div>
-                      <div className={`text-xl font-bold ${isToday ? 'text-teal-600' : 'text-navy-900'}`}>{format(date, 'd')}</div>
-                      <div className="text-xs text-navy-400">{dayBookings.length} bookings</div>
+                    <div 
+                      key={idx} 
+                      className={`p-4 text-center border-r border-gray-100 last:border-r-0 cursor-pointer hover:bg-gray-50 ${isToday ? 'bg-teal-50' : ''}`}
+                      onDoubleClick={() => { setSelectedDate(date); setViewMode('day'); setShowAddBooking(true); }}
+                    >
+                      <div className="text-xs font-bold text-navy-400 uppercase tracking-wider">{dayNames[idx]}</div>
+                      <div className={`text-2xl font-bold mt-1 ${isToday ? 'text-teal-600' : 'text-navy-900'}`}>{format(date, 'd')}</div>
+                      <div className="text-xs text-navy-400 font-medium mt-1">{dayBookings.length} bookings</div>
                     </div>
                   );
                 })}
               </div>
-              {/* Week Body */}
               <div className="grid grid-cols-7 min-h-[400px]">
                 {weekDates.map((date, idx) => {
                   const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
                   return (
-                    <div key={idx} className="border-r border-gray-100 last:border-r-0 p-2 space-y-2">
+                    <div 
+                      key={idx} 
+                      className="border-r border-gray-100 last:border-r-0 p-3 space-y-2"
+                      onDoubleClick={() => { setSelectedDate(date); setViewMode('day'); setShowAddBooking(true); }}
+                    >
                       {dayBookings.slice(0, 5).map((booking) => {
                         const colors = getServiceColor(booking.service_id);
                         return (
-                          <div key={booking.id} className={`${colors.bg} ${colors.border} border-l-2 rounded-lg p-2 text-xs`}>
-                            <div className={`font-semibold ${colors.text}`}>{formatBookingTime(booking.datetime)}</div>
-                            <div className="font-medium text-navy-900 truncate">{booking.client_name}</div>
-                            <div className="text-navy-500 truncate">{booking.service_name}</div>
+                          <div 
+                            key={booking.id} 
+                            className={`${colors.bg} ${colors.border} border-l-3 rounded-lg p-2.5 text-xs cursor-pointer hover:shadow-md transition-shadow`}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, booking)}
+                          >
+                            <div className={`font-bold ${colors.text}`}>{formatBookingTime(booking.datetime)}</div>
+                            <div className="font-bold text-navy-900 truncate">{booking.client_name}</div>
+                            <div className="text-navy-500 truncate font-medium">{booking.service_name}</div>
                           </div>
                         );
                       })}
                       {dayBookings.length > 5 && (
-                        <button onClick={() => { setSelectedDate(date); setViewMode('day'); }} className="text-xs text-teal-600 font-medium hover:underline">
+                        <button 
+                          onClick={() => { setSelectedDate(date); setViewMode('day'); }} 
+                          className="text-xs text-teal-600 font-bold hover:underline"
+                        >
                           +{dayBookings.length - 5} more
                         </button>
                       )}
@@ -479,20 +501,17 @@ const CalendarPage = () => {
         {/* Month View */}
         {viewMode === 'month' && (
           <div className="flex-1 overflow-auto p-6">
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              {/* Month Header */}
-              <div className="p-4 border-b border-gray-100 text-center">
-                <h2 className="text-xl font-bold text-navy-900">{format(selectedDate, 'MMMM yyyy')}</h2>
+            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+              <div className="p-4 border-b border-gray-100 text-center bg-gradient-to-r from-gray-50 to-white">
+                <h2 className="text-2xl font-bold text-navy-900 tracking-tight">{format(selectedDate, 'MMMM yyyy')}</h2>
               </div>
-              {/* Days of week header */}
               <div className="grid grid-cols-7 border-b border-gray-100">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="p-2 text-center text-xs font-medium text-navy-500 border-r border-gray-100 last:border-r-0">
+                  <div key={day} className="p-3 text-center text-xs font-bold text-navy-400 uppercase tracking-wider border-r border-gray-100 last:border-r-0">
                     {day}
                   </div>
                 ))}
               </div>
-              {/* Calendar grid */}
               <div className="grid grid-cols-7">
                 {(() => {
                   const monthStart = startOfMonth(selectedDate);
@@ -508,25 +527,25 @@ const CalendarPage = () => {
                     return (
                       <div
                         key={idx}
-                        onClick={() => { setSelectedDate(day); setViewMode('day'); }}
-                        className={`min-h-[100px] p-2 border-r border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                          !isCurrentMonth ? 'bg-gray-50' : ''
+                        onDoubleClick={() => { setSelectedDate(day); setViewMode('day'); setShowAddBooking(true); }}
+                        className={`min-h-[110px] p-2 border-r border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                          !isCurrentMonth ? 'bg-gray-50/50' : ''
                         } ${isToday ? 'bg-teal-50' : ''}`}
                       >
-                        <div className={`text-sm font-medium mb-1 ${isToday ? 'text-teal-600' : isCurrentMonth ? 'text-navy-900' : 'text-navy-300'}`}>
+                        <div className={`text-sm font-bold mb-1 ${isToday ? 'text-teal-600' : isCurrentMonth ? 'text-navy-900' : 'text-navy-300'}`}>
                           {format(day, 'd')}
                         </div>
                         <div className="space-y-1">
                           {dayBookings.slice(0, 3).map((booking) => {
                             const colors = getServiceColor(booking.service_id);
                             return (
-                              <div key={booking.id} className={`${colors.bg} rounded px-1.5 py-0.5 text-xs truncate`}>
-                                <span className={`font-medium ${colors.text}`}>{booking.client_name}</span>
+                              <div key={booking.id} className={`${colors.bg} rounded px-2 py-1 text-xs truncate font-medium`}>
+                                <span className={colors.text}>{booking.client_name}</span>
                               </div>
                             );
                           })}
                           {dayBookings.length > 3 && (
-                            <div className="text-xs text-teal-600 font-medium">+{dayBookings.length - 3} more</div>
+                            <div className="text-xs text-teal-600 font-bold">+{dayBookings.length - 3} more</div>
                           )}
                         </div>
                       </div>
@@ -543,11 +562,12 @@ const CalendarPage = () => {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-navy-900">New Booking</DialogTitle>
+              <p className="text-sm text-navy-400">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-navy-700">Service *</Label>
+                  <Label className="text-navy-700 font-semibold">Service *</Label>
                   <Select
                     value={newBooking.service_id}
                     onValueChange={(v) => setNewBooking(prev => ({ ...prev, service_id: v }))}
@@ -565,7 +585,7 @@ const CalendarPage = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-navy-700">Time *</Label>
+                  <Label className="text-navy-700 font-semibold">Time *</Label>
                   <Select
                     value={newBooking.time}
                     onValueChange={(v) => setNewBooking(prev => ({ ...prev, time: v }))}
@@ -584,7 +604,7 @@ const CalendarPage = () => {
               
               {teamMembers.length > 0 && (
                 <div>
-                  <Label className="text-navy-700">Assign To</Label>
+                  <Label className="text-navy-700 font-semibold">Assign To</Label>
                   <Select
                     value={newBooking.team_member_id}
                     onValueChange={(v) => setNewBooking(prev => ({ ...prev, team_member_id: v }))}
@@ -611,7 +631,7 @@ const CalendarPage = () => {
               )}
               
               <div>
-                <Label className="text-navy-700">Client Name *</Label>
+                <Label className="text-navy-700 font-semibold">Client Name *</Label>
                 <Input
                   value={newBooking.client_name}
                   onChange={(e) => setNewBooking(prev => ({ ...prev, client_name: e.target.value }))}
@@ -622,7 +642,7 @@ const CalendarPage = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-navy-700">Email *</Label>
+                  <Label className="text-navy-700 font-semibold">Email *</Label>
                   <Input
                     type="email"
                     value={newBooking.client_email}
@@ -632,7 +652,7 @@ const CalendarPage = () => {
                   />
                 </div>
                 <div>
-                  <Label className="text-navy-700">Phone</Label>
+                  <Label className="text-navy-700 font-semibold">Phone</Label>
                   <Input
                     value={newBooking.client_phone}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, client_phone: e.target.value }))}
@@ -643,7 +663,7 @@ const CalendarPage = () => {
               </div>
               
               <div>
-                <Label className="text-navy-700">Notes</Label>
+                <Label className="text-navy-700 font-semibold">Notes</Label>
                 <Input
                   value={newBooking.notes}
                   onChange={(e) => setNewBooking(prev => ({ ...prev, notes: e.target.value }))}
@@ -662,114 +682,10 @@ const CalendarPage = () => {
                 </Button>
                 <Button
                   onClick={handleCreateBooking}
-                  className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
+                  className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl shadow-lg shadow-teal-500/20"
                 >
                   Create Booking
                 </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Team Management Modal */}
-        <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-navy-900">Team Members</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              {/* Existing Members */}
-              <div className="space-y-2">
-                {teamMembers.length === 0 ? (
-                  <div className="text-center py-8 text-navy-400">
-                    <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>No team members yet</p>
-                    <p className="text-sm">Add your first team member below</p>
-                  </div>
-                ) : (
-                  teamMembers.map((member) => (
-                    <div 
-                      key={member.id} 
-                      className="flex items-center gap-3 p-3 bg-cream-50 rounded-xl"
-                    >
-                      <div 
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
-                        style={{ backgroundColor: member.color }}
-                      >
-                        {member.name?.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-navy-900">{member.name}</p>
-                        <p className="text-sm text-navy-400 capitalize">{member.role}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteTeamMember(member.id)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </div>
-              
-              {/* Add New Member */}
-              <div className="border-t border-gray-200 pt-4">
-                <p className="font-medium text-navy-900 mb-3">Add New Member</p>
-                <div className="space-y-3">
-                  <Input
-                    value={newMember.name}
-                    onChange={(e) => setNewMember(prev => ({ ...prev, name: e.target.value }))}
-                    className="rounded-xl"
-                    placeholder="Name"
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input
-                      type="email"
-                      value={newMember.email}
-                      onChange={(e) => setNewMember(prev => ({ ...prev, email: e.target.value }))}
-                      className="rounded-xl"
-                      placeholder="Email (optional)"
-                    />
-                    <Select
-                      value={newMember.role}
-                      onValueChange={(v) => setNewMember(prev => ({ ...prev, role: v }))}
-                    >
-                      <SelectTrigger className="rounded-xl">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="staff">Staff</SelectItem>
-                        <SelectItem value="manager">Manager</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-sm text-navy-600 mb-2 block">Calendar Color</Label>
-                    <div className="flex gap-2 flex-wrap">
-                      {MEMBER_COLORS.map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => setNewMember(prev => ({ ...prev, color }))}
-                          className={`w-8 h-8 rounded-full transition-transform ${
-                            newMember.color === color ? 'ring-2 ring-offset-2 ring-navy-900 scale-110' : ''
-                          }`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleAddTeamMember}
-                    className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Team Member
-                  </Button>
-                </div>
               </div>
             </div>
           </DialogContent>
