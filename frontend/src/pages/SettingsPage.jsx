@@ -522,6 +522,150 @@ const SettingsPage = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Booking Settings Tab */}
+          <TabsContent value="booking">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="booking-settings">
+              <CardHeader>
+                <CardTitle className="font-heading text-lg text-navy-900">Booking Settings</CardTitle>
+                <CardDescription className="text-navy-500">
+                  Configure how bookings are handled
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
+                  <div>
+                    <Label className="text-navy-700 font-medium">Auto-confirm bookings</Label>
+                    <p className="text-sm text-navy-500">Automatically confirm new bookings</p>
+                  </div>
+                  <Switch
+                    checked={autoConfirm}
+                    onCheckedChange={setAutoConfirm}
+                    data-testid="auto-confirm-toggle"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
+                  <div>
+                    <Label className="text-navy-700 font-medium">Allow cancellations</Label>
+                    <p className="text-sm text-navy-500">Let customers cancel bookings</p>
+                  </div>
+                  <Switch
+                    checked={allowCancellations}
+                    onCheckedChange={setAllowCancellations}
+                    data-testid="allow-cancellations-toggle"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-xl bg-cream">
+                  <div>
+                    <Label className="text-navy-700 font-medium">Send reminders</Label>
+                    <p className="text-sm text-navy-500">Email customers 24h before</p>
+                  </div>
+                  <Switch
+                    checked={sendReminders}
+                    onCheckedChange={setSendReminders}
+                    data-testid="send-reminders-toggle"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-navy-700 font-medium">Buffer time</Label>
+                  <p className="text-sm text-navy-500 mb-2">Time between appointments</p>
+                  <div className="flex gap-2">
+                    {['0', '15', '30', '60'].map((mins) => (
+                      <Button
+                        key={mins}
+                        variant={bufferTime === mins ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setBufferTime(mins)}
+                        className={bufferTime === mins ? 'bg-teal-500 text-white rounded-full' : 'border-gray-200 rounded-full text-navy-600'}
+                        data-testid={`buffer-${mins}min-btn`}
+                      >
+                        {mins === '0' ? 'None' : `${mins} min`}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  onClick={saveBookingSettings}
+                  disabled={saving}
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
+                  data-testid="save-booking-settings-btn"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save Booking Settings
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Support Tab */}
+          <TabsContent value="support">
+            <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="support-settings">
+              <CardHeader>
+                <CardTitle className="font-heading text-lg text-navy-900">Support</CardTitle>
+                <CardDescription className="text-navy-500">
+                  Get help and access important documents
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <a 
+                  href="https://rezvo.app/help"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-xl bg-cream hover:bg-cream/70 transition-colors"
+                  data-testid="help-centre-link"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
+                      <HelpCircle className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-navy-900">Help Centre</div>
+                      <div className="text-sm text-navy-500">Browse FAQs and guides</div>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-5 h-5 text-navy-400" />
+                </a>
+
+                <Link 
+                  to="/support"
+                  className="flex items-center justify-between p-4 rounded-xl bg-cream hover:bg-cream/70 transition-colors"
+                  data-testid="contact-support-link"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
+                      <MessageSquare className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-navy-900">Contact Support</div>
+                      <div className="text-sm text-navy-500">Chat with our support team</div>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-5 h-5 text-navy-400" />
+                </Link>
+
+                <Link 
+                  to="/terms"
+                  className="flex items-center justify-between p-4 rounded-xl bg-cream hover:bg-cream/70 transition-colors"
+                  data-testid="terms-privacy-link"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-navy-900">Terms & Privacy</div>
+                      <div className="text-sm text-navy-500">View our policies</div>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-5 h-5 text-navy-400" />
+                </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </AppLayout>
