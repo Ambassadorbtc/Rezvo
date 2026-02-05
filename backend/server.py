@@ -219,6 +219,80 @@ class PaymentIntentCreate(BaseModel):
     success_url: str
     cancel_url: str
 
+# ==================== STAFF LOGIN MODELS ====================
+
+class StaffLogin(BaseModel):
+    email: EmailStr
+    password: str
+    business_id: str
+
+class StaffCreate(BaseModel):
+    email: EmailStr
+    password: str
+    team_member_id: str
+
+# ==================== REVIEW MODELS ====================
+
+class ReviewCreate(BaseModel):
+    booking_id: str
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = None
+
+class ReviewResponse(BaseModel):
+    id: str
+    business_id: str
+    booking_id: str
+    client_name: str
+    rating: int
+    comment: Optional[str]
+    created_at: str
+    response: Optional[str] = None
+
+# ==================== LOCATION MODELS ====================
+
+class LocationCreate(BaseModel):
+    name: str
+    address: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    is_primary: bool = False
+
+class LocationUpdate(BaseModel):
+    name: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    is_primary: Optional[bool] = None
+    active: Optional[bool] = None
+
+# ==================== SHIFT/SCHEDULE MODELS ====================
+
+class ShiftCreate(BaseModel):
+    team_member_id: str
+    date: str  # ISO date string YYYY-MM-DD
+    start_time: str  # HH:MM format
+    end_time: str  # HH:MM format
+    location_id: Optional[str] = None
+    notes: Optional[str] = None
+
+class ShiftUpdate(BaseModel):
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    location_id: Optional[str] = None
+    notes: Optional[str] = None
+
+class TimeOffRequest(BaseModel):
+    team_member_id: str
+    start_date: str
+    end_date: str
+    reason: Optional[str] = None
+
+# ==================== PUSH NOTIFICATION MODELS ====================
+
+class PushTokenRegister(BaseModel):
+    token: str
+    device_type: str = "expo"  # expo, fcm, apns
+
 class DojoKeyVerify(BaseModel):
     api_key: str
 
