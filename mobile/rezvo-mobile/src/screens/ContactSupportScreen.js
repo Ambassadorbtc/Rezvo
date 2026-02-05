@@ -79,12 +79,15 @@ export default function ContactSupportScreen({ navigation }) {
             <Text style={styles.optionValue}>support@rezvo.app</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.optionCard}>
-            <View style={[styles.optionIcon, { backgroundColor: '#DBEAFE' }]}>
-              <Ionicons name="chatbubble-outline" size={22} color="#3B82F6" />
+          <TouchableOpacity 
+            style={styles.optionCard}
+            onPress={() => navigation.navigate('SupportChat')}
+          >
+            <View style={[styles.optionIcon, { backgroundColor: '#E8F5F3' }]}>
+              <Ionicons name="chatbubble-outline" size={22} color={TEAL} />
             </View>
             <Text style={styles.optionTitle}>Live Chat</Text>
-            <Text style={styles.optionValue}>Coming Soon</Text>
+            <Text style={[styles.optionValue, { color: TEAL }]}>Open Chat →</Text>
           </TouchableOpacity>
         </View>
 
