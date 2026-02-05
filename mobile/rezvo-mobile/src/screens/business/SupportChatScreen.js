@@ -122,16 +122,19 @@ export default function SupportChatScreen({ navigation, route }) {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
+    console.log('[SupportChat] Sending message to:', selectedConversation.id);
     setSending(true);
     try {
-      await api.post(`/conversations/${selectedConversation.id}/messages`, {
+      const res = await api.post(`/conversations/${selectedConversation.id}/messages`, {
         content: newMessage
       });
+      console.log('[SupportChat] Message sent successfully:', res.data);
       
       setNewMessage('');
       await fetchMessages(selectedConversation.id);
       await fetchConversations();
     } catch (error) {
+      console.error('[SupportChat] Error sending message:', error.response?.data || error.message);
       showToast('Failed to send message');
     } finally {
       setSending(false);
