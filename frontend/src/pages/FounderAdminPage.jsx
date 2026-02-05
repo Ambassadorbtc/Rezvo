@@ -1095,11 +1095,21 @@ const FounderAdminPage = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2">
                               <p className="font-medium text-[#0A1626] truncate">{conv.user_email || 'Unknown User'}</p>
-                              {conv.unread_count > 0 && (
-                                <span className="bg-[#00BFA5] text-white text-xs px-2 py-0.5 rounded-full">
-                                  {conv.unread_count}
+                              <div className="flex items-center gap-1">
+                                {conv.unread_count > 0 && (
+                                  <span className="bg-[#00BFA5] text-white text-xs px-2 py-0.5 rounded-full">
+                                    {conv.unread_count}
+                                  </span>
+                                )}
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  conv.status === 'open' ? 'bg-amber-100 text-amber-700' :
+                                  conv.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' :
+                                  conv.status === 'closed' ? 'bg-gray-100 text-gray-600' :
+                                  'bg-amber-100 text-amber-700'
+                                }`}>
+                                  {conv.status || 'open'}
                                 </span>
-                              )}
+                              </div>
                             </div>
                             <p className="text-sm text-gray-500 truncate mt-0.5">{conv.subject || 'Support Request'}</p>
                             <p className="text-xs text-gray-400 mt-1">
