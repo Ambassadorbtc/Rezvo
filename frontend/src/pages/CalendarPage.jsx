@@ -522,14 +522,30 @@ const CalendarPage = () => {
               <div className="grid grid-cols-7 min-h-[400px]">
                 {weekDates.map((date, idx) => {
                   const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
+                  const isDropTarget = dragOverSlot?.date && isSameDay(dragOverSlot.date, date);
                   return (
-                    <div key={idx} className="border-r border-gray-100 last:border-r-0 p-3 space-y-2">
+                    <div 
+                      key={idx} 
+                      className={`border-r border-gray-100 last:border-r-0 p-3 space-y-2 min-h-[300px] transition-colors ${
+                        isDropTarget ? 'bg-teal-100' : ''
+                      }`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        setDragOverSlot({ date });
+                      }}
+                      onDragLeave={() => setDragOverSlot(null)}
+                      onDrop={(e) => handleWeekDrop(e, date)}
+                    >
                       {dayBookings.slice(0, 5).map((booking) => {
                         const colors = getServiceColor(booking.service_id);
+                        const isDragging = draggedBooking?.id === booking.id;
                         return (
                           <div 
                             key={booking.id} 
-                            className="rounded-lg p-2.5 text-xs cursor-pointer hover:shadow-md transition-shadow border-l-3"
+                            className={`rounded-lg p-2.5 text-xs cursor-grab active:cursor-grabbing hover:shadow-md transition-all border-l-3 ${
+                              isDragging ? 'opacity-50 scale-95' : ''
+                            }`}
                             style={{ backgroundColor: colors.bg, borderLeftColor: colors.border }}
                             draggable
                             onDragStart={(e) => handleDragStart(e, booking)}
@@ -549,6 +565,11 @@ const CalendarPage = () => {
                         >
                           +{dayBookings.length - 5} more
                         </button>
+                      )}
+                      {dayBookings.length === 0 && !isDropTarget && (
+                        <div className="h-full flex items-center justify-center text-gray-300 text-xs">
+                          Drop here
+                        </div>
                       )}
                     </div>
                   );
