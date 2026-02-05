@@ -22,12 +22,10 @@ const ExpoTestingPage = () => {
       if (data.url) {
         setExpoUrl(data.url);
       } else {
-        // Use the active tunnel URL
-        setExpoUrl('exp://lavrnhk-anonymous-8081.exp.direct');
+        setExpoUrl('exp://45hcmki-anonymous-8081.exp.direct');
       }
     } catch (err) {
-      // Use the active tunnel URL
-      setExpoUrl('exp://lavrnhk-anonymous-8081.exp.direct');
+      setExpoUrl('exp://45hcmki-anonymous-8081.exp.direct');
     }
     setLoading(false);
   };
