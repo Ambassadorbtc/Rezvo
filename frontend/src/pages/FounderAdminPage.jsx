@@ -160,22 +160,34 @@ const FounderAdminPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [userPage, setUserPage] = useState(1);
   const [businessPage, setBusinessPage] = useState(1);
+  const [conversations, setConversations] = useState([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (selectedConversation) {
+      loadMessages(selectedConversation.id);
+    }
+  }, [selectedConversation]);
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const [statsRes, usersRes, businessesRes, logsRes, bookingsRes, analyticsRes] = await Promise.all([
+      const [statsRes, usersRes, businessesRes, logsRes, bookingsRes, analyticsRes, convsRes] = await Promise.all([
         api.get('/admin/stats').catch(() => ({ data: null })),
         api.get('/admin/users').catch(() => ({ data: [] })),
         api.get('/admin/businesses').catch(() => ({ data: [] })),
         api.get('/admin/logs').catch(() => ({ data: { logs: [] } })),
         api.get('/bookings').catch(() => ({ data: [] })),
-        api.get('/admin/analytics').catch(() => ({ data: null }))
+        api.get('/admin/analytics').catch(() => ({ data: null })),
+        api.get('/admin/conversations').catch(() => ({ data: [] }))
       ]);
       
       setStats(statsRes.data);
@@ -184,10 +196,38 @@ const FounderAdminPage = () => {
       setErrorLogs(logsRes.data?.logs || []);
       setBookings(bookingsRes.data || []);
       setAnalytics(analyticsRes.data);
+      setConversations(convsRes.data || []);
     } catch (error) {
       console.error('Failed to load admin data', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMessages = async (conversationId) => {
+    try {
+      const res = await api.get(`/conversations/${conversationId}/messages`);
+      setMessages(res.data || []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const sendReply = async () => {
+    if (!newMessage.trim() || !selectedConversation) return;
+    
+    setSendingMessage(true);
+    try {
+      await api.post(`/conversations/${selectedConversation.id}/messages`, {
+        content: newMessage
+      });
+      setNewMessage('');
+      await loadMessages(selectedConversation.id);
+      await loadData();
+    } catch (error) {
+      toast.error('Failed to send message');
+    } finally {
+      setSendingMessage(false);
     }
   };
 
