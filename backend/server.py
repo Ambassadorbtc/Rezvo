@@ -2057,6 +2057,90 @@ async def mark_all_notifications_read(current_user: dict = Depends(get_current_u
     )
     return {"success": True}
 
+# Helper function to create notification
+async def create_notification_internal(user_id: str, title: str, message: str, notif_type: str = "info", link: str = None, business_id: str = None):
+    """Internal helper to create notifications"""
+    notif_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    notif_doc = {
+        "id": notif_id,
+        "title": title,
+        "message": message,
+        "type": notif_type,
+        "user_id": user_id,
+        "business_id": business_id,
+        "link": link,
+        "read": False,
+        "created_at": now.isoformat()
+    }
+    await db.notifications.insert_one(notif_doc)
+    return notif_id
+
+# ==================== FILE UPLOAD FOR SUPPORT ====================
+
+@api_router.post("/support/upload")
+async def upload_support_file(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    """Upload a file for support messages"""
+    # Create uploads/support directory
+    support_dir = UPLOADS_DIR / "support"
+    support_dir.mkdir(exist_ok=True)
+    
+    # Generate unique filename
+    file_ext = Path(file.filename).suffix.lower()
+    allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.pdf', '.doc', '.docx', '.txt'}
+    
+    if file_ext not in allowed_extensions:
+        raise HTTPException(status_code=400, detail=f"File type {file_ext} not allowed")
+    
+    # Check file size (max 5MB)
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 5MB)")
+    
+    file_id = str(uuid.uuid4())
+    filename = f"{file_id}{file_ext}"
+    file_path = support_dir / filename
+    
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Save file metadata
+    file_doc = {
+        "id": file_id,
+        "original_name": file.filename,
+        "filename": filename,
+        "path": str(file_path),
+        "content_type": file.content_type,
+        "size": len(contents),
+        "user_id": current_user["sub"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.support_files.insert_one(file_doc)
+    
+    return {
+        "id": file_id,
+        "filename": file.filename,
+        "url": f"/api/support/files/{file_id}",
+        "size": len(contents)
+    }
+
+@api_router.get("/support/files/{file_id}")
+async def get_support_file(file_id: str):
+    """Download a support file"""
+    file_doc = await db.support_files.find_one({"id": file_id}, {"_id": 0})
+    if not file_doc:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    file_path = Path(file_doc["path"])
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    return FileResponse(
+        file_path,
+        filename=file_doc["original_name"],
+        media_type=file_doc.get("content_type", "application/octet-stream")
+    )
+
 # ==================== TEAM MEMBERS ROUTES ====================
 
 @api_router.post("/team-members")
