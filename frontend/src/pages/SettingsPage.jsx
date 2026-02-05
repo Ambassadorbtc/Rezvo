@@ -91,6 +91,12 @@ const SettingsPage = () => {
         if (settingsRes.data.working_hours) {
           setWorkingHours(settingsRes.data.working_hours);
         }
+        if (settingsRes.data.booking_settings) {
+          setAutoConfirm(settingsRes.data.booking_settings.auto_confirm ?? true);
+          setAllowCancellations(settingsRes.data.booking_settings.allow_cancellations ?? true);
+          setSendReminders(settingsRes.data.booking_settings.send_reminders ?? true);
+          setBufferTime(settingsRes.data.booking_settings.buffer_time?.toString() || '15');
+        }
       }
     } catch (error) {
       toast.error('Failed to load settings');
