@@ -89,7 +89,8 @@ export default function CalendarScreen({ navigation }) {
 
   useEffect(() => {
     setTimeout(() => {
-      scrollViewRef.current?.scrollTo({ y: HOUR_HEIGHT, animated: false });
+      // Scroll to show 8am at the top (2 hours from 6am start)
+      scrollViewRef.current?.scrollTo({ y: HOUR_HEIGHT * 2, animated: false });
     }, 100);
   }, []);
 
