@@ -1075,7 +1075,7 @@ const FounderAdminPage = () => {
                         </div>
                       ) : (
                         messages.map((msg) => {
-                          const isAdmin = msg.sender_id === user?.sub || msg.is_admin;
+                          const isAdmin = msg.sender_id === user?.id || msg.sender_id === user?.sub || msg.is_admin;
                           return (
                             <div
                               key={msg.id}
