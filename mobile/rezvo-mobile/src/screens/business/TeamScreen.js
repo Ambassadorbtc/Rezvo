@@ -9,11 +9,11 @@ import {
   ActivityIndicator,
   Modal,
   TextInput,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
+import { useGlobalToast, useConfirm } from '../../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
@@ -23,6 +23,8 @@ const TEAM_COLORS = [
 ];
 
 export default function TeamScreen({ navigation }) {
+  const { showToast } = useGlobalToast();
+  const { showConfirm } = useConfirm();
   const [members, setMembers] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
