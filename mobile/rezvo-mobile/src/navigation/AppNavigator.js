@@ -30,6 +30,7 @@ import BusinessBookingsScreen from '../screens/business/BookingsScreen';
 import BusinessServicesScreen from '../screens/business/ServicesScreen';
 import BusinessSettingsScreen from '../screens/business/SettingsScreen';
 import BusinessTeamScreen from '../screens/business/TeamScreen';
+import BusinessAnalyticsScreen from '../screens/business/AnalyticsScreen';
 
 // Settings Sub-screens
 import HelpCentreScreen from '../screens/HelpCentreScreen';
