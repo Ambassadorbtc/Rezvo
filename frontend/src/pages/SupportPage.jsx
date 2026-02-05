@@ -33,6 +33,7 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 
 const SupportPage = () => {
+  const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
