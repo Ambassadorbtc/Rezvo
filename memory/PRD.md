@@ -24,15 +24,11 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 | Settings | https://appoint-ease-28.preview.emergentagent.com/settings |
 | Analytics | https://appoint-ease-28.preview.emergentagent.com/analytics |
 | Support | https://appoint-ease-28.preview.emergentagent.com/support |
-| Admin Panel | https://appoint-ease-28.preview.emergentagent.com/admin |
+| Founder Admin | https://appoint-ease-28.preview.emergentagent.com/founder-admin |
 | Booking Page Settings | https://appoint-ease-28.preview.emergentagent.com/booking-page |
 | Public Booking | https://appoint-ease-28.preview.emergentagent.com/book/{businessId} |
-| Mobile Preview | https://appoint-ease-28.preview.emergentagent.com/mobile-preview |
-
-### Expo Mobile App
-| Access Method | URL |
-|------|-----|
-| Expo Tunnel | https://4mzn58m-anonymous-8081.exp.direct |
+| Expo QR Code | https://appoint-ease-28.preview.emergentagent.com/expo-qr.html |
+| Expo Web Preview | https://appoint-ease-28.preview.emergentagent.com/expo/ |
 
 ### Test Credentials
 - **Email:** testuser@example.com
