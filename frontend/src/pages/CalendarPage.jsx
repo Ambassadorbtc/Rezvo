@@ -45,7 +45,7 @@ const CalendarPage = () => {
   });
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 8);
-  const HOUR_HEIGHT = 72;
+  const HOUR_HEIGHT = 90;
 
   const loadData = useCallback(async () => {
     try {
