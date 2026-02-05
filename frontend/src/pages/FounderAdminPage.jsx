@@ -1082,9 +1082,9 @@ const FounderAdminPage = () => {
                               key={msg.id}
                               className={`flex ${isFromAdmin ? 'justify-end' : 'justify-start'}`}
                             >
-                              {/* User avatar on left for non-admin messages */}
+                              {/* Owner avatar on left for owner messages */}
                               {!isFromAdmin && (
-                                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
                                   {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
                                 </div>
                               )}
@@ -1092,18 +1092,16 @@ const FounderAdminPage = () => {
                               <div className={`max-w-[70%] rounded-2xl p-3 ${
                                 isFromAdmin
                                   ? 'bg-[#3B82F6] text-white rounded-br-sm'
-                                  : 'bg-white text-[#0A1626] shadow-sm rounded-bl-sm border border-gray-100'
+                                  : 'bg-teal-500 text-white rounded-bl-sm'
                               }`}>
                                 {!isFromAdmin && (
-                                  <p className="text-xs font-medium text-blue-600 mb-1">
+                                  <p className="text-xs font-medium text-white/80 mb-1">
                                     {msg.sender_name || selectedConversation.user_email?.split('@')[0] || 'User'}
                                   </p>
                                 )}
                                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                                 <div className={`flex items-center gap-1 mt-1.5 ${isFromAdmin ? 'justify-end' : ''}`}>
-                                  <p className={`text-[10px] ${
-                                    isFromAdmin ? 'text-white/70' : 'text-gray-400'
-                                  }`}>
+                                  <p className="text-[10px] text-white/70">
                                     {msg.created_at ? format(new Date(msg.created_at), 'HH:mm') : '-'}
                                   </p>
                                   {isFromAdmin && (
