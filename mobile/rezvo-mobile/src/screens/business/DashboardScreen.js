@@ -18,31 +18,35 @@ const TEAL = '#00BFA5';
 
 export default function DashboardScreen({ navigation }) {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({ today_count: 0, pending_count: 0, revenue_pence: 0 });
   const [business, setBusiness] = useState(null);
   const [todayBookings, setTodayBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchDashboard = async () => {
     try {
+      setError(null);
       const [statsRes, businessRes, bookingsRes] = await Promise.all([
         api.get('/business/stats').catch(() => ({ data: { today_count: 0, pending_count: 0, revenue_pence: 0 } })),
         api.get('/business').catch(() => ({ data: null })),
         api.get('/bookings').catch(() => ({ data: [] }))
       ]);
       
-      setStats(statsRes.data);
+      setStats(statsRes.data || { today_count: 0, pending_count: 0, revenue_pence: 0 });
       setBusiness(businessRes.data);
       
       // Filter today's bookings
       const today = new Date().toDateString();
-      const todaysBookings = (bookingsRes.data || []).filter(b => 
-        new Date(b.datetime).toDateString() === today
+      const bookingsData = Array.isArray(bookingsRes.data) ? bookingsRes.data : [];
+      const todaysBookings = bookingsData.filter(b => 
+        b && b.datetime && new Date(b.datetime).toDateString() === today
       ).slice(0, 5); // Show max 5
       setTodayBookings(todaysBookings);
-    } catch (error) {
-      console.error('Error fetching dashboard:', error);
+    } catch (err) {
+      console.error('Error fetching dashboard:', err);
+      setError('Failed to load dashboard');
     } finally {
       setLoading(false);
       setRefreshing(false);
