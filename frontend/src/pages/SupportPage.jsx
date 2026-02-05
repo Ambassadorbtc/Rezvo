@@ -595,7 +595,8 @@ const SupportPage = () => {
                     <div className="space-y-3">
                       {msgs.map((msg) => {
                         // User's own messages on the right (teal), support/admin on left (white)
-                        const isOwn = msg.sender_id === user?.sub || msg.sender_id === user?.id;
+                        // is_admin flag is true when message was sent by admin
+                        const isOwn = !msg.is_admin && (msg.sender_id === user?.sub || msg.sender_id === user?.id);
                         const isEditing = editingMessageId === msg.id;
                         
                         return (
