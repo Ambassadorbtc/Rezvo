@@ -329,6 +329,24 @@ const ServicesPage = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-gray-900">Delete Service</DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600 py-4">Are you sure you want to delete this service? This action cannot be undone.</p>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)} className="rounded-xl">
+                Cancel
+              </Button>
+              <Button onClick={confirmDelete} className="bg-red-500 hover:bg-red-600 text-white rounded-xl">
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
