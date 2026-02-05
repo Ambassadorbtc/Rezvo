@@ -1,19 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Calendar, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Business images showcasing target market
+const businessImages = [
+  {
+    url: 'https://images.unsplash.com/photo-1549663369-22ac6b052faf?w=800&h=1000&fit=crop',
+    caption: 'Barber shops',
+    alt: 'Barber cutting hair'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&h=1000&fit=crop',
+    caption: 'Beauty salons',
+    alt: 'Spa treatment'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&h=1000&fit=crop',
+    caption: 'Wellness services',
+    alt: 'Beauty service'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=1000&fit=crop',
+    caption: 'Hair stylists',
+    alt: 'Hair styling'
+  }
+];
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [currentImage, setCurrentImage] = useState(0);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % businessImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,63 +67,137 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
-      {/* Header */}
-      <header className="p-4 md:p-6">
-        <Link to="/" className="inline-flex items-center gap-2 text-navy-500 hover:text-navy-900 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Back to home
-        </Link>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
-              <Calendar className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-2xl font-bold font-heading text-navy-900">Rezvo</span>
+    <div className="min-h-screen flex">
+      {/* Left Side - Image Panel (hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Rotating background images */}
+        {businessImages.map((img, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentImage ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={img.url}
+              alt={img.alt}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </div>
+        ))}
+        
+        {/* Overlay content */}
+        <div className="relative z-10 flex flex-col justify-end p-12 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
+              <Calendar className="w-8 h-8 text-white" />
+            </div>
+            <span className="text-3xl font-bold font-heading">Rezvo</span>
+          </div>
+          
+          <h2 className="text-4xl font-bold font-heading mb-4 leading-tight">
+            The booking system<br />built for UK micro-businesses
+          </h2>
+          
+          <p className="text-lg text-white/80 mb-8 max-w-md">
+            Join thousands of {businessImages[currentImage].caption.toLowerCase()} using Rezvo to manage appointments effortlessly.
+          </p>
+          
+          {/* Image indicators */}
+          <div className="flex gap-2 mb-4">
+            {businessImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImage(index)}
+                className={`h-1.5 rounded-full transition-all ${
+                  index === currentImage 
+                    ? 'w-8 bg-white' 
+                    : 'w-4 bg-white/40 hover:bg-white/60'
+                }`}
+                aria-label={`View image ${index + 1}`}
+              />
+            ))}
+          </div>
+          
+          <p className="text-sm text-white/60">{businessImages[currentImage].caption}</p>
+        </div>
+      </div>
 
-          <Card className="bg-white rounded-3xl shadow-card border-0" data-testid="login-card">
-            <CardHeader className="text-center pb-4 pt-8 px-8">
-              <CardTitle className="font-display text-2xl font-bold text-navy-900">Welcome back</CardTitle>
-              <CardDescription className="text-navy-500">
-                Log in to manage your bookings
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-8 pb-8">
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex flex-col bg-cream-50">
+        {/* Header */}
+        <header className="p-6">
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-navy-500 hover:text-navy-900 transition-colors text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to home
+          </Link>
+        </header>
+
+        {/* Form Container */}
+        <main className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="w-full max-w-md">
+            {/* Mobile Logo */}
+            <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
+              <div className="w-14 h-14 bg-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/30">
+                <Calendar className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold font-heading text-navy-900">Rezvo</span>
+            </div>
+
+            {/* Form Card */}
+            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100" data-testid="login-card">
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-navy-900 mb-2">Welcome back</h1>
+                <p className="text-navy-500">Log in to manage your bookings</p>
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-navy-700 font-medium">Email</Label>
+                  <Label htmlFor="email" className="text-navy-700 font-semibold text-sm">
+                    Email address
+                  </Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
+                    className="bg-gray-50 border-gray-200 rounded-xl h-12 focus:border-teal-500 focus:ring-teal-500 focus:ring-2 transition-all"
                     data-testid="login-email-input"
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-navy-700 font-medium">Password</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-navy-700 font-semibold text-sm">
+                      Password
+                    </Label>
+                    <Link 
+                      to="/forgot-password" 
+                      className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                    >
+                      Forgot?
+                    </Link>
+                  </div>
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-cream border-gray-200 rounded-xl py-5 focus:border-teal-500 focus:ring-teal-500"
+                    className="bg-gray-50 border-gray-200 rounded-xl h-12 focus:border-teal-500 focus:ring-teal-500 focus:ring-2 transition-all"
                     data-testid="login-password-input"
                   />
                 </div>
+
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-6 font-semibold shadow-button hover:shadow-button-hover transition-all btn-press"
+                  className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full h-12 font-semibold shadow-lg shadow-teal-500/20 hover:shadow-xl hover:shadow-teal-500/30 transition-all"
                   data-testid="login-submit-btn"
                 >
                   {loading ? (
@@ -105,18 +211,39 @@ const LoginPage = () => {
                 </Button>
               </form>
 
-              <div className="mt-6 text-center">
+              <div className="mt-8 pt-6 border-t border-gray-100 text-center">
                 <p className="text-navy-500 text-sm">
                   Don't have an account?{' '}
-                  <Link to="/signup" className="text-teal-600 hover:text-teal-700 font-medium" data-testid="signup-link">
+                  <Link 
+                    to="/signup" 
+                    className="text-teal-600 hover:text-teal-700 font-semibold"
+                    data-testid="signup-link"
+                  >
                     Sign up free
                   </Link>
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-8 flex items-center justify-center gap-6 text-navy-400">
+              <div className="flex items-center gap-2 text-xs">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>SSL Secured</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                </svg>
+                <span>GDPR Compliant</span>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
