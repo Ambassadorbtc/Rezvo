@@ -3286,6 +3286,8 @@ async def create_conversation(data: MessageCreate, current_user: dict = Depends(
             "participants": participants,
             "participant_names": participant_names,
             "type": "support",
+            "subject": data.subject if hasattr(data, 'subject') and data.subject else "Support Request",
+            "status": "open",
             "business_id": user.get("business_id"),
             "created_at": now.isoformat(),
             "last_message": data.content,
