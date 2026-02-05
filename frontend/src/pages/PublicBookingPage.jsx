@@ -121,6 +121,7 @@ const PublicBookingPage = () => {
         client_phone: clientPhone,
         datetime_iso: bookingDate.toISOString(),
         notes,
+        team_member_id: selectedTeamMember?.id || null,
       });
 
       setBookingComplete(true);
