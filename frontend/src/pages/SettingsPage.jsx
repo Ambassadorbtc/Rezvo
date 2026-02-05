@@ -52,6 +52,12 @@ const SettingsPage = () => {
     sunday: { enabled: false, open: '10:00', close: '16:00' },
   });
 
+  // Booking settings state
+  const [autoConfirm, setAutoConfirm] = useState(true);
+  const [allowCancellations, setAllowCancellations] = useState(true);
+  const [sendReminders, setSendReminders] = useState(true);
+  const [bufferTime, setBufferTime] = useState('15');
+
   useEffect(() => {
     loadSettings();
   }, []);
