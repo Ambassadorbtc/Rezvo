@@ -3314,6 +3314,28 @@ async def create_conversation(data: MessageCreate, current_user: dict = Depends(
     
     return {"conversation_id": conversation_id, "message_id": message_id}
 
+@api_router.patch("/conversations/{conversation_id}")
+async def update_conversation(conversation_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Update conversation status"""
+    conv = await db.conversations.find_one({"id": conversation_id})
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    # Check access - owner or admin
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if current_user["sub"] not in conv.get("participants", []) and user.get("role") not in ["admin", "business"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    update_data = {}
+    if "status" in data:
+        update_data["status"] = data["status"]
+        update_data["status_updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    if update_data:
+        await db.conversations.update_one({"id": conversation_id}, {"$set": update_data})
+    
+    return {"status": "updated"}
+
 @api_router.get("/conversations/{conversation_id}/messages")
 async def get_messages(conversation_id: str, current_user: dict = Depends(get_current_user)):
     """Get messages in a conversation"""
