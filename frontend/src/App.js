@@ -23,6 +23,7 @@ import CookiesPage from "./pages/CookiesPage";
 import FounderAdminPage from "./pages/FounderAdminPage";
 import ShortLinkRedirect from "./pages/ShortLinkRedirect";
 import TeamPage from "./pages/TeamPage";
+import SupportPage from "./pages/SupportPage";
 import CookieConsent from "./components/CookieConsent";
 
 import "./App.css";
