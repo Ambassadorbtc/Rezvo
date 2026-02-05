@@ -295,9 +295,6 @@ const SettingsPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Payments Tab */}
-          <TabsContent value="payments">
-
           {/* Working Hours Tab */}
           <TabsContent value="hours">
             <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="hours-settings">
@@ -355,7 +352,8 @@ const SettingsPage = () => {
             </Card>
           </TabsContent>
 
-          </TabsContent>
+          {/* Payments Tab */}
+          <TabsContent value="payments">
             <Card className="bg-white rounded-2xl shadow-card border-0" data-testid="payment-settings">
               <CardHeader>
                 <CardTitle className="font-heading text-lg text-navy-900">Dojo Payments</CardTitle>
