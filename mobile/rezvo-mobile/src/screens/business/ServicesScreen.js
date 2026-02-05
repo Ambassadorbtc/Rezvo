@@ -8,16 +8,18 @@ import {
   TextInput,
   RefreshControl,
   ActivityIndicator,
-  Alert,
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
+import { useGlobalToast, useConfirm } from '../../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function ServicesScreen() {
+  const { showToast } = useGlobalToast();
+  const { showConfirm } = useConfirm();
   const [activeTab, setActiveTab] = useState('services');
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
