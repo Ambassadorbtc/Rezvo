@@ -110,9 +110,13 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 
 ## Pending/In Progress Items
 
+### P0 - Critical (Next Session)
+- ⏳ **Replace remaining Alert.alert** calls in mobile app with branded toast (~40 instances)
+- ⏳ **Functional Notification Bell** - Backend endpoints + frontend integration
+- ⏳ **File Attachment Upload** - Currently UI only, needs backend storage
+
 ### P1 - High Priority
 - ⏳ **Mobile drag-and-drop for calendar** - Not yet implemented
-- ⏳ **Replace remaining Alert.alert** calls in mobile app with branded components
 - ⏳ **Client mobile app API integration** - Screens exist but not connected to backend
 - ⏳ Google Calendar Sync - Backend endpoints exist, needs frontend integration
 - ⏳ Push Notifications - Expo setup done, needs implementation
