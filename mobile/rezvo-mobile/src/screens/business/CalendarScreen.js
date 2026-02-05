@@ -418,24 +418,43 @@ export default function CalendarScreen({ navigation }) {
                       {getMemberBookings(member.id).map((booking) => {
                         const { top, height } = getBookingPosition(booking);
                         const color = getServiceColor(booking.service_id);
+                        const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
                         return (
                           <TouchableOpacity
                             key={booking.id}
                             style={[
                               styles.bookingBlock,
-                              { top, height, backgroundColor: color + '20', borderLeftColor: color }
+                              { top, height, backgroundColor: color + '15' }
                             ]}
                             onPress={() => setShowBookingDetail(booking)}
                           >
-                            <Text style={[styles.bookingTime, { color }]}>
-                              {formatBookingTime(booking.datetime)}
-                            </Text>
-                            <Text style={styles.bookingClient} numberOfLines={1}>
-                              {booking.client_name}
-                            </Text>
-                            <Text style={styles.bookingService} numberOfLines={1}>
-                              {booking.service_name}
-                            </Text>
+                            {/* Colored top bar */}
+                            <View style={[styles.bookingTopBar, { backgroundColor: color }]} />
+                            <View style={styles.bookingContent}>
+                              <Text style={[styles.bookingTime, { color }]}>
+                                {formatBookingTime(booking.datetime)}
+                              </Text>
+                              <Text style={styles.bookingClient} numberOfLines={1}>
+                                {booking.client_name}
+                              </Text>
+                              {height > 50 && (
+                                <Text style={styles.bookingService} numberOfLines={1}>
+                                  {booking.service_name}
+                                </Text>
+                              )}
+                              {height > 65 && teamMember && (
+                                <View style={styles.bookingTeamRow}>
+                                  <View style={[styles.bookingTeamAvatar, { backgroundColor: teamMember.color || color }]}>
+                                    {teamMember.avatar_url ? (
+                                      <Image source={{ uri: teamMember.avatar_url }} style={styles.bookingTeamAvatarImg} />
+                                    ) : (
+                                      <Text style={styles.bookingTeamInitial}>{teamMember.name?.charAt(0)}</Text>
+                                    )}
+                                  </View>
+                                  <Text style={styles.bookingTeamName} numberOfLines={1}>{teamMember.name}</Text>
+                                </View>
+                              )}
+                            </View>
                           </TouchableOpacity>
                         );
                       })}
