@@ -806,6 +806,16 @@ async def create_booking(data: BookingCreate, current_user: dict = Depends(get_c
         "updated_at": now.isoformat()
     }
     await db.bookings.insert_one(booking_doc)
+    
+    # Create notification for business owner
+    await create_notification_internal(
+        user_id=current_user["sub"],
+        title="New Booking",
+        message=f"New booking from {data.client_name} for {service['name']}",
+        notif_type="booking",
+        link=f"/bookings/{booking_id}"
+    )
+    
     return {"id": booking_id, "status": "pending"}
 
 @api_router.get("/bookings")
