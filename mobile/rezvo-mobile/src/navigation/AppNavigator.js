@@ -37,6 +37,7 @@ import NotificationsScreen from '../screens/business/NotificationsScreen';
 import HelpCentreScreen from '../screens/HelpCentreScreen';
 import ContactSupportScreen from '../screens/ContactSupportScreen';
 import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
+import SupportChatScreen from '../screens/business/SupportChatScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
