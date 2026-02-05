@@ -169,6 +169,23 @@ const SettingsPage = () => {
     }
   };
 
+  const saveBookingSettings = async () => {
+    setSaving(true);
+    try {
+      await api.patch('/settings/booking', {
+        auto_confirm: autoConfirm,
+        allow_cancellations: allowCancellations,
+        send_reminders: sendReminders,
+        buffer_time: parseInt(bufferTime),
+      });
+      toast.success('Booking settings saved');
+    } catch (error) {
+      toast.error('Failed to save booking settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const updateDayHours = (day, field, value) => {
     setWorkingHours(prev => ({
       ...prev,
