@@ -148,6 +148,7 @@ const TopServicesChart = ({ data }) => {
 
 const FounderAdminPage = () => {
   const { user, logout } = useAuth();
+  const messagesEndRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -168,6 +169,11 @@ const FounderAdminPage = () => {
   const [supportFilter, setSupportFilter] = useState('all');
   const [supportSearch, setSupportSearch] = useState('');
   const itemsPerPage = 10;
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     loadData();
