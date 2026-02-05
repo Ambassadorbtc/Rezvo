@@ -2168,6 +2168,48 @@ async def get_support_file(file_id: str):
 class WorkingHoursUpdate(BaseModel):
     working_hours: dict
 
+class BookingSettingsUpdate(BaseModel):
+    auto_confirm: bool = True
+    allow_cancellations: bool = True
+    send_reminders: bool = True
+    buffer_time: int = 15
+
+@api_router.patch("/settings/booking")
+async def update_booking_settings(data: BookingSettingsUpdate, current_user: dict = Depends(get_current_user)):
+    """Update booking settings"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.businesses.update_one(
+        {"id": user["business_id"]},
+        {"$set": {
+            "booking_settings": {
+                "auto_confirm": data.auto_confirm,
+                "allow_cancellations": data.allow_cancellations,
+                "send_reminders": data.send_reminders,
+                "buffer_time": data.buffer_time,
+            },
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"success": True}
+
+@api_router.get("/settings/booking")
+async def get_booking_settings(current_user: dict = Depends(get_current_user)):
+    """Get booking settings"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business = await db.businesses.find_one({"id": user["business_id"]}, {"_id": 0, "booking_settings": 1})
+    return business.get("booking_settings", {
+        "auto_confirm": True,
+        "allow_cancellations": True,
+        "send_reminders": True,
+        "buffer_time": 15,
+    })
+
 @api_router.patch("/settings/working-hours")
 async def update_working_hours(data: WorkingHoursUpdate, current_user: dict = Depends(get_current_user)):
     """Update business working hours"""
