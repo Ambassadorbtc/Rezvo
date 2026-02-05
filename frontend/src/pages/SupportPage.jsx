@@ -640,7 +640,7 @@ const SupportPage = () => {
                               </div>
                               
                               <div className={`flex items-center gap-1 mt-0.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                                <span className="text-[10px] text-gray-400">{formatMessageTime(msg.created_at)}</span>
+                                <span className={`text-[10px] ${isOwn ? 'text-gray-400' : 'text-white/70'}`}>{formatMessageTime(msg.created_at)}</span>
                                 {isOwn && <CheckCheck className={`w-3.5 h-3.5 ${msg.read ? 'text-teal-500' : 'text-gray-300'}`} />}
                               </div>
                               
