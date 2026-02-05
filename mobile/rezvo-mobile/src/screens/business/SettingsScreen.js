@@ -75,9 +75,9 @@ export default function SettingsScreen({ navigation }) {
       });
       setShowBusinessDetails(false);
       fetchBusiness();
-      Alert.alert('Success', 'Business details updated');
+      showToast('Business details updated!');
     } catch (error) {
-      Alert.alert('Error', 'Could not save changes');
+      showToast('Could not save changes');
     } finally {
       setSaving(false);
     }
