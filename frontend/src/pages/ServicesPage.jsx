@@ -103,14 +103,20 @@ const ServicesPage = () => {
   };
 
   const handleDelete = async (serviceId) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
+    setDeleteConfirm(serviceId);
+  };
 
+  const confirmDelete = async () => {
+    if (!deleteConfirm) return;
+    
     try {
-      await api.delete(`/services/${serviceId}`);
+      await api.delete(`/services/${deleteConfirm}`);
       toast.success('Service deleted');
       loadServices();
     } catch (error) {
       toast.error('Failed to delete service');
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
