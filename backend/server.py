@@ -2408,6 +2408,780 @@ async def update_service_color(service_id: str, color: str, current_user: dict =
     )
     return {"status": "updated"}
 
+# ==================== GOOGLE CALENDAR INTEGRATION ====================
+
+@api_router.get("/google/auth-url")
+async def get_google_auth_url(current_user: dict = Depends(get_current_user)):
+    """Get Google OAuth URL for calendar integration"""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=400, detail="Google Calendar not configured. Add GOOGLE_CLIENT_ID to environment.")
+    
+    scopes = "https://www.googleapis.com/auth/calendar"
+    auth_url = (
+        f"https://accounts.google.com/o/oauth2/auth?"
+        f"client_id={GOOGLE_CLIENT_ID}&"
+        f"redirect_uri={GOOGLE_REDIRECT_URI}&"
+        f"scope={scopes}&"
+        f"response_type=code&"
+        f"access_type=offline&"
+        f"prompt=consent&"
+        f"state={current_user['sub']}"
+    )
+    return {"authorization_url": auth_url}
+
+@api_router.get("/google/callback")
+async def google_callback(code: str, state: str):
+    """Handle Google OAuth callback"""
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+        raise HTTPException(status_code=400, detail="Google Calendar not configured")
+    
+    # Exchange code for tokens
+    token_resp = http_requests.post('https://oauth2.googleapis.com/token', data={
+        'code': code,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': GOOGLE_REDIRECT_URI,
+        'grant_type': 'authorization_code'
+    }).json()
+    
+    if 'error' in token_resp:
+        logger.error(f"Google OAuth error: {token_resp}")
+        raise HTTPException(status_code=400, detail=token_resp.get('error_description', 'OAuth failed'))
+    
+    # Save tokens to user
+    await db.users.update_one(
+        {"id": state},
+        {"$set": {
+            "google_tokens": token_resp,
+            "google_calendar_connected": True,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    frontend_url = os.environ.get('FRONTEND_URL', '')
+    return RedirectResponse(f"{frontend_url}/settings?google=connected")
+
+@api_router.get("/google/status")
+async def google_calendar_status(current_user: dict = Depends(get_current_user)):
+    """Check if Google Calendar is connected"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    return {
+        "connected": user.get("google_calendar_connected", False),
+        "configured": bool(GOOGLE_CLIENT_ID)
+    }
+
+@api_router.post("/google/disconnect")
+async def disconnect_google_calendar(current_user: dict = Depends(get_current_user)):
+    """Disconnect Google Calendar"""
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$unset": {"google_tokens": ""}, "$set": {"google_calendar_connected": False}}
+    )
+    return {"status": "disconnected"}
+
+async def get_google_credentials(user_id: str):
+    """Get valid Google credentials, refreshing if needed"""
+    user = await db.users.find_one({"id": user_id})
+    if not user or not user.get("google_tokens"):
+        return None
+    
+    tokens = user["google_tokens"]
+    creds = Credentials(
+        token=tokens.get('access_token'),
+        refresh_token=tokens.get('refresh_token'),
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET
+    )
+    
+    if creds.expired and creds.refresh_token:
+        creds.refresh(GoogleRequest())
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"google_tokens.access_token": creds.token}}
+        )
+    
+    return creds
+
+@api_router.get("/google/events")
+async def get_google_calendar_events(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get events from Google Calendar"""
+    creds = await get_google_credentials(current_user["sub"])
+    if not creds:
+        raise HTTPException(status_code=400, detail="Google Calendar not connected")
+    
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        time_min = start_date or datetime.now(timezone.utc).isoformat()
+        time_max = end_date or (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+        
+        events_result = service.events().list(
+            calendarId='primary',
+            timeMin=time_min,
+            timeMax=time_max,
+            maxResults=100,
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+        
+        return {"events": events_result.get('items', [])}
+    except Exception as e:
+        logger.error(f"Google Calendar error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/google/sync-booking/{booking_id}")
+async def sync_booking_to_google(booking_id: str, current_user: dict = Depends(get_current_user)):
+    """Sync a booking to Google Calendar"""
+    creds = await get_google_credentials(current_user["sub"])
+    if not creds:
+        raise HTTPException(status_code=400, detail="Google Calendar not connected")
+    
+    user = await db.users.find_one({"id": current_user["sub"]})
+    booking = await db.bookings.find_one({"id": booking_id, "business_id": user.get("business_id")})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        
+        start_time = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+        end_time = start_time + timedelta(minutes=booking.get("duration_min", 60))
+        
+        event = {
+            'summary': f"{booking['service_name']} - {booking['client_name']}",
+            'description': f"Client: {booking['client_name']}\nEmail: {booking['client_email']}\nPhone: {booking.get('client_phone', 'N/A')}\nNotes: {booking.get('notes', '')}",
+            'start': {'dateTime': start_time.isoformat(), 'timeZone': 'UTC'},
+            'end': {'dateTime': end_time.isoformat(), 'timeZone': 'UTC'},
+        }
+        
+        created_event = service.events().insert(calendarId='primary', body=event).execute()
+        
+        # Store Google event ID
+        await db.bookings.update_one(
+            {"id": booking_id},
+            {"$set": {"google_event_id": created_event['id']}}
+        )
+        
+        return {"status": "synced", "google_event_id": created_event['id']}
+    except Exception as e:
+        logger.error(f"Google Calendar sync error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ==================== PUSH NOTIFICATIONS ====================
+
+@api_router.post("/push/register")
+async def register_push_token(data: PushTokenRegister, current_user: dict = Depends(get_current_user)):
+    """Register a push notification token for the user"""
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$set": {
+            "push_token": data.token,
+            "push_device_type": data.device_type,
+            "push_registered_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"status": "registered"}
+
+@api_router.delete("/push/unregister")
+async def unregister_push_token(current_user: dict = Depends(get_current_user)):
+    """Remove push notification token"""
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$unset": {"push_token": "", "push_device_type": ""}}
+    )
+    return {"status": "unregistered"}
+
+async def send_push_notification(token: str, title: str, body: str, data: dict = None):
+    """Send push notification via Expo's push service"""
+    message = {
+        "to": token,
+        "sound": "default",
+        "title": title,
+        "body": body,
+        "data": data or {}
+    }
+    
+    try:
+        response = http_requests.post(
+            'https://exp.host/--/api/v2/push/send',
+            headers={
+                'Accept': 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            json=message
+        )
+        return response.json()
+    except Exception as e:
+        logger.error(f"Push notification error: {e}")
+        return None
+
+@api_router.post("/push/test")
+async def test_push_notification(current_user: dict = Depends(get_current_user)):
+    """Send a test push notification"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("push_token"):
+        raise HTTPException(status_code=400, detail="No push token registered")
+    
+    result = await send_push_notification(
+        user["push_token"],
+        "Test Notification",
+        "Your push notifications are working!",
+        {"type": "test"}
+    )
+    return {"status": "sent", "result": result}
+
+# ==================== AUTOMATED REMINDERS ====================
+
+async def send_booking_reminders():
+    """Send reminders for bookings happening in the next 24 hours"""
+    tomorrow = datetime.now(timezone.utc) + timedelta(hours=24)
+    today = datetime.now(timezone.utc)
+    
+    # Find bookings in the next 24 hours that haven't had reminders sent
+    bookings = await db.bookings.find({
+        "datetime": {
+            "$gte": today.isoformat(),
+            "$lte": tomorrow.isoformat()
+        },
+        "status": {"$in": ["pending", "confirmed"]},
+        "reminder_sent": {"$ne": True}
+    }).to_list(100)
+    
+    for booking in bookings:
+        # Get business info
+        business = await db.businesses.find_one({"id": booking["business_id"]})
+        business_name = business["name"] if business else "Your Provider"
+        
+        # Send email reminder
+        if booking.get("client_email"):
+            booking_time = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+            html = f"""
+            <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #00BFA5;">Reminder: Your appointment is tomorrow!</h2>
+                <p>Hi {booking['client_name']},</p>
+                <p>This is a friendly reminder about your upcoming appointment:</p>
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p><strong>Service:</strong> {booking['service_name']}</p>
+                    <p><strong>Date:</strong> {booking_time.strftime('%A, %B %d, %Y')}</p>
+                    <p><strong>Time:</strong> {booking_time.strftime('%I:%M %p')}</p>
+                    <p><strong>Business:</strong> {business_name}</p>
+                </div>
+                <p>We look forward to seeing you!</p>
+            </div>
+            """
+            try:
+                resend.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": booking["client_email"],
+                    "subject": f"Reminder: {booking['service_name']} tomorrow at {business_name}",
+                    "html": html
+                })
+            except Exception as e:
+                logger.error(f"Failed to send reminder email: {e}")
+        
+        # Send push notification to business owner
+        owner = await db.users.find_one({"business_id": booking["business_id"]})
+        if owner and owner.get("push_token"):
+            await send_push_notification(
+                owner["push_token"],
+                "Upcoming Booking",
+                f"{booking['client_name']} - {booking['service_name']} tomorrow",
+                {"type": "reminder", "booking_id": booking["id"]}
+            )
+        
+        # Mark reminder as sent
+        await db.bookings.update_one(
+            {"id": booking["id"]},
+            {"$set": {"reminder_sent": True}}
+        )
+    
+    logger.info(f"Sent {len(bookings)} booking reminders")
+
+@api_router.post("/reminders/send-now")
+async def trigger_reminders_now(current_user: dict = Depends(get_current_user)):
+    """Manually trigger reminder sending (admin only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if user.get("role") != "admin" and user.get("role") != "owner":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await send_booking_reminders()
+    return {"status": "reminders_sent"}
+
+# ==================== STAFF SEPARATE LOGINS ====================
+
+@api_router.post("/staff/create-login")
+async def create_staff_login(data: StaffCreate, current_user: dict = Depends(get_current_user)):
+    """Create login credentials for a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Verify team member exists and belongs to this business
+    team_member = await db.team_members.find_one({
+        "id": data.team_member_id,
+        "business_id": user["business_id"]
+    })
+    if not team_member:
+        raise HTTPException(status_code=404, detail="Team member not found")
+    
+    # Check if email already exists
+    existing = await db.users.find_one({"email": data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    staff_user_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    staff_user_doc = {
+        "id": staff_user_id,
+        "email": data.email,
+        "password_hash": hash_password(data.password),
+        "role": "staff",
+        "business_id": user["business_id"],
+        "team_member_id": data.team_member_id,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.users.insert_one(staff_user_doc)
+    
+    # Update team member with user_id
+    await db.team_members.update_one(
+        {"id": data.team_member_id},
+        {"$set": {"user_id": staff_user_id, "email": data.email}}
+    )
+    
+    return {"status": "created", "staff_user_id": staff_user_id}
+
+@api_router.post("/auth/staff-login", response_model=TokenResponse)
+async def staff_login(data: StaffLogin):
+    """Login as a staff member"""
+    user = await db.users.find_one({
+        "email": data.email,
+        "business_id": data.business_id,
+        "role": "staff"
+    })
+    
+    if not user or not verify_password(data.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_token(user["id"], user["email"], "staff")
+    return TokenResponse(
+        access_token=token,
+        user=UserResponse(
+            id=user["id"],
+            email=user["email"],
+            role="staff",
+            business_id=user.get("business_id"),
+            created_at=user["created_at"]
+        )
+    )
+
+@api_router.get("/staff/my-schedule")
+async def get_staff_schedule(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get schedule for logged-in staff member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") != "staff":
+        raise HTTPException(status_code=403, detail="Not a staff member")
+    
+    team_member_id = user.get("team_member_id")
+    if not team_member_id:
+        raise HTTPException(status_code=404, detail="No team member linked")
+    
+    query = {"team_member_id": team_member_id}
+    if start_date:
+        query["date"] = {"$gte": start_date}
+    if end_date:
+        if "date" in query:
+            query["date"]["$lte"] = end_date
+        else:
+            query["date"] = {"$lte": end_date}
+    
+    shifts = await db.shifts.find(query, {"_id": 0}).to_list(100)
+    bookings = await db.bookings.find({
+        "team_member_id": team_member_id,
+        "status": {"$in": ["pending", "confirmed"]}
+    }, {"_id": 0}).to_list(100)
+    
+    return {"shifts": shifts, "bookings": bookings}
+
+# ==================== CUSTOMER REVIEWS ====================
+
+@api_router.post("/reviews")
+async def create_review(data: ReviewCreate):
+    """Create a review for a completed booking (public endpoint)"""
+    booking = await db.bookings.find_one({"id": data.booking_id})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Check if review already exists
+    existing = await db.reviews.find_one({"booking_id": data.booking_id})
+    if existing:
+        raise HTTPException(status_code=400, detail="Review already submitted for this booking")
+    
+    review_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    review_doc = {
+        "id": review_id,
+        "business_id": booking["business_id"],
+        "booking_id": data.booking_id,
+        "service_id": booking.get("service_id"),
+        "team_member_id": booking.get("team_member_id"),
+        "client_name": booking["client_name"],
+        "client_email": booking["client_email"],
+        "rating": data.rating,
+        "comment": data.comment,
+        "response": None,
+        "visible": True,
+        "created_at": now.isoformat()
+    }
+    await db.reviews.insert_one(review_doc)
+    
+    # Update business average rating
+    await update_business_rating(booking["business_id"])
+    
+    return {"id": review_id, "status": "submitted"}
+
+async def update_business_rating(business_id: str):
+    """Recalculate average rating for a business"""
+    pipeline = [
+        {"$match": {"business_id": business_id, "visible": True}},
+        {"$group": {"_id": None, "avg_rating": {"$avg": "$rating"}, "count": {"$sum": 1}}}
+    ]
+    result = await db.reviews.aggregate(pipeline).to_list(1)
+    
+    if result:
+        await db.businesses.update_one(
+            {"id": business_id},
+            {"$set": {
+                "average_rating": round(result[0]["avg_rating"], 1),
+                "review_count": result[0]["count"]
+            }}
+        )
+
+@api_router.get("/reviews")
+async def get_business_reviews(current_user: dict = Depends(get_current_user)):
+    """Get all reviews for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    reviews = await db.reviews.find(
+        {"business_id": user["business_id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return reviews
+
+@api_router.get("/public/business/{business_id}/reviews")
+async def get_public_reviews(business_id: str):
+    """Get visible reviews for a business (public endpoint)"""
+    reviews = await db.reviews.find(
+        {"business_id": business_id, "visible": True},
+        {"_id": 0, "client_email": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    business = await db.businesses.find_one({"id": business_id}, {"_id": 0})
+    
+    return {
+        "reviews": reviews,
+        "average_rating": business.get("average_rating", 0) if business else 0,
+        "review_count": business.get("review_count", 0) if business else 0
+    }
+
+@api_router.post("/reviews/{review_id}/respond")
+async def respond_to_review(review_id: str, response: str, current_user: dict = Depends(get_current_user)):
+    """Business owner responds to a review"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    review = await db.reviews.find_one({
+        "id": review_id,
+        "business_id": user["business_id"]
+    })
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    await db.reviews.update_one(
+        {"id": review_id},
+        {"$set": {"response": response, "responded_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"status": "responded"}
+
+@api_router.patch("/reviews/{review_id}/visibility")
+async def toggle_review_visibility(review_id: str, visible: bool, current_user: dict = Depends(get_current_user)):
+    """Toggle review visibility (hide inappropriate reviews)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.reviews.update_one(
+        {"id": review_id, "business_id": user["business_id"]},
+        {"$set": {"visible": visible}}
+    )
+    
+    # Recalculate rating
+    await update_business_rating(user["business_id"])
+    return {"status": "updated"}
+
+# ==================== MULTI-LOCATION SUPPORT ====================
+
+@api_router.post("/locations")
+async def create_location(data: LocationCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new business location"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    location_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    # If this is set as primary, unset other primary locations
+    if data.is_primary:
+        await db.locations.update_many(
+            {"business_id": user["business_id"]},
+            {"$set": {"is_primary": False}}
+        )
+    
+    location_doc = {
+        "id": location_id,
+        "business_id": user["business_id"],
+        "name": data.name,
+        "address": data.address,
+        "phone": data.phone,
+        "email": data.email,
+        "is_primary": data.is_primary,
+        "active": True,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.locations.insert_one(location_doc)
+    return {"id": location_id, "name": data.name}
+
+@api_router.get("/locations")
+async def get_locations(current_user: dict = Depends(get_current_user)):
+    """Get all locations for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    locations = await db.locations.find(
+        {"business_id": user["business_id"], "active": True},
+        {"_id": 0}
+    ).to_list(50)
+    return locations
+
+@api_router.patch("/locations/{location_id}")
+async def update_location(location_id: str, data: LocationUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a location"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # If setting as primary, unset others
+    if data.is_primary:
+        await db.locations.update_many(
+            {"business_id": user["business_id"]},
+            {"$set": {"is_primary": False}}
+        )
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.locations.update_one(
+        {"id": location_id, "business_id": user["business_id"]},
+        {"$set": update_data}
+    )
+    return {"status": "updated"}
+
+@api_router.delete("/locations/{location_id}")
+async def delete_location(location_id: str, current_user: dict = Depends(get_current_user)):
+    """Soft delete a location"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.locations.update_one(
+        {"id": location_id, "business_id": user["business_id"]},
+        {"$set": {"active": False}}
+    )
+    return {"status": "deleted"}
+
+@api_router.get("/public/business/{business_id}/locations")
+async def get_public_locations(business_id: str):
+    """Get public locations for a business"""
+    locations = await db.locations.find(
+        {"business_id": business_id, "active": True},
+        {"_id": 0}
+    ).to_list(50)
+    return locations
+
+# ==================== ADVANCED SCHEDULING (SHIFTS) ====================
+
+@api_router.post("/shifts")
+async def create_shift(data: ShiftCreate, current_user: dict = Depends(get_current_user)):
+    """Create a shift for a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Verify team member exists
+    team_member = await db.team_members.find_one({
+        "id": data.team_member_id,
+        "business_id": user["business_id"]
+    })
+    if not team_member:
+        raise HTTPException(status_code=404, detail="Team member not found")
+    
+    shift_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    shift_doc = {
+        "id": shift_id,
+        "business_id": user["business_id"],
+        "team_member_id": data.team_member_id,
+        "team_member_name": team_member["name"],
+        "date": data.date,
+        "start_time": data.start_time,
+        "end_time": data.end_time,
+        "location_id": data.location_id,
+        "notes": data.notes,
+        "created_at": now.isoformat()
+    }
+    await db.shifts.insert_one(shift_doc)
+    return {"id": shift_id}
+
+@api_router.get("/shifts")
+async def get_shifts(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    team_member_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Get shifts for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    query = {"business_id": user["business_id"]}
+    if start_date:
+        query["date"] = {"$gte": start_date}
+    if end_date:
+        if "date" in query:
+            query["date"]["$lte"] = end_date
+        else:
+            query["date"] = {"$lte": end_date}
+    if team_member_id:
+        query["team_member_id"] = team_member_id
+    
+    shifts = await db.shifts.find(query, {"_id": 0}).sort("date", 1).to_list(500)
+    return shifts
+
+@api_router.patch("/shifts/{shift_id}")
+async def update_shift(shift_id: str, data: ShiftUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a shift"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    await db.shifts.update_one(
+        {"id": shift_id, "business_id": user["business_id"]},
+        {"$set": update_data}
+    )
+    return {"status": "updated"}
+
+@api_router.delete("/shifts/{shift_id}")
+async def delete_shift(shift_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a shift"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.shifts.delete_one({"id": shift_id, "business_id": user["business_id"]})
+    return {"status": "deleted"}
+
+# ==================== TIME OFF REQUESTS ====================
+
+@api_router.post("/time-off")
+async def request_time_off(data: TimeOffRequest, current_user: dict = Depends(get_current_user)):
+    """Request time off for a team member"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Staff can only request for themselves
+    if user.get("role") == "staff" and user.get("team_member_id") != data.team_member_id:
+        raise HTTPException(status_code=403, detail="Can only request time off for yourself")
+    
+    request_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    request_doc = {
+        "id": request_id,
+        "business_id": user["business_id"],
+        "team_member_id": data.team_member_id,
+        "start_date": data.start_date,
+        "end_date": data.end_date,
+        "reason": data.reason,
+        "status": "pending",
+        "requested_by": current_user["sub"],
+        "created_at": now.isoformat()
+    }
+    await db.time_off_requests.insert_one(request_doc)
+    return {"id": request_id, "status": "pending"}
+
+@api_router.get("/time-off")
+async def get_time_off_requests(current_user: dict = Depends(get_current_user)):
+    """Get time off requests for the business"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        return []
+    
+    query = {"business_id": user["business_id"]}
+    
+    # Staff can only see their own
+    if user.get("role") == "staff":
+        query["team_member_id"] = user.get("team_member_id")
+    
+    requests = await db.time_off_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return requests
+
+@api_router.patch("/time-off/{request_id}/approve")
+async def approve_time_off(request_id: str, current_user: dict = Depends(get_current_user)):
+    """Approve a time off request (owner/manager only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.time_off_requests.update_one(
+        {"id": request_id, "business_id": user["business_id"]},
+        {"$set": {"status": "approved", "approved_by": current_user["sub"], "approved_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"status": "approved"}
+
+@api_router.patch("/time-off/{request_id}/deny")
+async def deny_time_off(request_id: str, reason: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    """Deny a time off request (owner/manager only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.time_off_requests.update_one(
+        {"id": request_id, "business_id": user["business_id"]},
+        {"$set": {"status": "denied", "denied_by": current_user["sub"], "denial_reason": reason}}
+    )
+    return {"status": "denied"}
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
