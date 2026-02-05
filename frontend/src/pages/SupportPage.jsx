@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
