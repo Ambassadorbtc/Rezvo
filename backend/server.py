@@ -3496,6 +3496,17 @@ async def send_message(conversation_id: str, data: MessageCreate, current_user: 
         {"$set": {"last_message": data.content, "last_message_at": now.isoformat()}}
     )
     
+    # Create notification for other participants
+    for participant_id in conv.get("participants", []):
+        if participant_id != current_user["sub"]:
+            await create_notification_internal(
+                user_id=participant_id,
+                title="New Support Message",
+                message=f"You have a new message: {data.content[:50]}{'...' if len(data.content) > 50 else ''}",
+                notif_type="message",
+                link="/support"
+            )
+    
     return {"id": message_id, "created_at": now.isoformat()}
 
 @api_router.patch("/messages/{message_id}")
