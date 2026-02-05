@@ -1191,8 +1191,9 @@ const FounderAdminPage = () => {
                       ) : (
                         messages.map((msg) => {
                           // For founder/admin view: OWN messages on RIGHT (blue), owner messages on LEFT (teal)
-                          // Check if message is from current user OR has is_admin flag
-                          const isOwnMessage = msg.sender_id === user?.id || msg.sender_id === user?.sub || msg.is_admin === true;
+                          // is_admin=true means this is from admin/founder - show on RIGHT
+                          // is_admin=false/undefined means from business owner - show on LEFT
+                          const isOwnMessage = msg.is_admin === true;
                           return (
                             <div
                               key={msg.id}
