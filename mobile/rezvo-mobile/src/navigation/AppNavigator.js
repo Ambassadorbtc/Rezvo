@@ -47,16 +47,17 @@ function ClientTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => {
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
-          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
-          else if (route.name === 'Bookings') iconName = focused ? 'calendar' : 'calendar-outline';
-          else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
-          return <Ionicons name={iconName} size={24} color={TEAL} />;
+          const isFocused = focused === true;
+          if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline';
+          else if (route.name === 'Search') iconName = isFocused ? 'search' : 'search-outline';
+          else if (route.name === 'Bookings') iconName = isFocused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline';
+          return <Ionicons name={iconName} size={24} color={color || TEAL} />;
         },
         tabBarActiveTintColor: TEAL,
-        tabBarInactiveTintColor: TEAL,
+        tabBarInactiveTintColor: '#9FB3C8',
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
@@ -80,17 +81,18 @@ function BusinessTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => {
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
-          if (route.name === 'Dashboard') iconName = focused ? 'grid' : 'grid-outline';
-          else if (route.name === 'Calendar') iconName = focused ? 'calendar' : 'calendar-outline';
-          else if (route.name === 'Bookings') iconName = focused ? 'list' : 'list-outline';
-          else if (route.name === 'Services') iconName = focused ? 'cut' : 'cut-outline';
-          else if (route.name === 'Settings') iconName = focused ? 'settings' : 'settings-outline';
-          return <Ionicons name={iconName} size={24} color={TEAL} />;
+          const isFocused = focused === true;
+          if (route.name === 'Dashboard') iconName = isFocused ? 'grid' : 'grid-outline';
+          else if (route.name === 'Calendar') iconName = isFocused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Bookings') iconName = isFocused ? 'list' : 'list-outline';
+          else if (route.name === 'Services') iconName = isFocused ? 'cut' : 'cut-outline';
+          else if (route.name === 'Settings') iconName = isFocused ? 'settings' : 'settings-outline';
+          return <Ionicons name={iconName} size={24} color={color || TEAL} />;
         },
         tabBarActiveTintColor: TEAL,
-        tabBarInactiveTintColor: TEAL,
+        tabBarInactiveTintColor: '#9FB3C8',
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
