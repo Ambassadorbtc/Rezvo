@@ -1163,16 +1163,11 @@ const FounderAdminPage = () => {
                         <select
                           value={selectedConversation.status || 'open'}
                           onChange={(e) => updateConversationStatus(selectedConversation.id, e.target.value)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer ${
-                            selectedConversation.status === 'open' ? 'bg-amber-100 text-amber-700' :
-                            selectedConversation.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' :
-                            selectedConversation.status === 'closed' ? 'bg-gray-100 text-gray-700' :
-                            'bg-amber-100 text-amber-700'
-                          }`}
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer bg-teal-500 text-white focus:ring-2 focus:ring-teal-300"
                         >
-                          <option value="open">Open</option>
-                          <option value="resolved">Resolved</option>
-                          <option value="closed">Closed</option>
+                          <option value="open" className="bg-white text-gray-800">Open</option>
+                          <option value="resolved" className="bg-white text-gray-800">Resolved</option>
+                          <option value="closed" className="bg-white text-gray-800">Closed</option>
                         </select>
                       </div>
                     </div>
