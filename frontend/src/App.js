@@ -119,19 +119,21 @@ function AppRoutes() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/cookies" element={<CookiesPage />} />
       
-      {/* Protected Routes */}
+      {/* Protected Routes - Business Owners Only */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-      <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-      <Route path="/bookings" element={<ProtectedRoute><BookingsPage /></ProtectedRoute>} />
-      <Route path="/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
-      <Route path="/services" element={<ProtectedRoute><ServicesPage /></ProtectedRoute>} />
-      <Route path="/products" element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-      <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
-      <Route path="/share" element={<ProtectedRoute><ShareLinkPage /></ProtectedRoute>} />
-      <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute><FounderAdminPage /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<BusinessRoute><DashboardPage /></BusinessRoute>} />
+      <Route path="/calendar" element={<BusinessRoute><CalendarPage /></BusinessRoute>} />
+      <Route path="/bookings" element={<BusinessRoute><BookingsPage /></BusinessRoute>} />
+      <Route path="/team" element={<BusinessRoute><TeamPage /></BusinessRoute>} />
+      <Route path="/services" element={<BusinessRoute><ServicesPage /></BusinessRoute>} />
+      <Route path="/products" element={<BusinessRoute><ProductsPage /></BusinessRoute>} />
+      <Route path="/settings" element={<BusinessRoute><SettingsPage /></BusinessRoute>} />
+      <Route path="/analytics" element={<BusinessRoute><AnalyticsPage /></BusinessRoute>} />
+      <Route path="/share" element={<BusinessRoute><ShareLinkPage /></BusinessRoute>} />
+      <Route path="/support" element={<BusinessRoute><SupportPage /></BusinessRoute>} />
+      
+      {/* Admin Only Route */}
+      <Route path="/admin" element={<AdminRoute><FounderAdminPage /></AdminRoute>} />
       
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
