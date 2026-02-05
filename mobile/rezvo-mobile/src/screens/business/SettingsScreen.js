@@ -146,21 +146,39 @@ export default function SettingsScreen({ navigation }) {
           <Text style={styles.headerTitle}>Settings</Text>
         </View>
 
-        {/* Business Profile Card */}
+        {/* Business Profile Card - Compact */}
         <View style={styles.profileCard}>
-          <View style={styles.profileIcon}>
-            <Text style={styles.profileInitial}>{business?.name?.charAt(0) || 'B'}</Text>
+          <TouchableOpacity style={styles.profileIconContainer} onPress={handleChangePhoto}>
+            <View style={styles.profileIcon}>
+              {business?.logo_url ? (
+                <Image source={{ uri: business.logo_url }} style={styles.profileImage} />
+              ) : (
+                <Text style={styles.profileInitial}>{business?.name?.charAt(0) || 'B'}</Text>
+              )}
+            </View>
+            <View style={styles.editIconBadge}>
+              <Ionicons name="camera" size={12} color="#FFFFFF" />
+            </View>
+          </TouchableOpacity>
+          <View style={styles.profileInfo}>
+            <Text style={styles.businessName}>{business?.name || 'Your Business'}</Text>
+            <Text style={styles.businessEmail}>{user?.email}</Text>
           </View>
-          <Text style={styles.businessName}>{business?.name || 'Your Business'}</Text>
-          <Text style={styles.businessEmail}>{user?.email}</Text>
           <TouchableOpacity 
             style={styles.editProfileBtn}
             onPress={() => setShowBusinessDetails(true)}
           >
-            <Ionicons name="create-outline" size={16} color={TEAL} />
-            <Text style={styles.editProfileText}>Edit Profile</Text>
+            <Ionicons name="create-outline" size={14} color={TEAL} />
+            <Text style={styles.editProfileText}>Edit</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Toast notification */}
+        {toastVisible && (
+          <View style={styles.toast}>
+            <Text style={styles.toastText}>{toastMessage}</Text>
+          </View>
+        )}
 
         {/* Share Link Section */}
         <View style={styles.section}>
