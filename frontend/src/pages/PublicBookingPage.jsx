@@ -436,6 +436,21 @@ const PublicBookingPage = () => {
                     <Clock className="w-4 h-4 text-[#00BFA5]" />
                     {selectedTime}
                   </span>
+                  {selectedTeamMember && (
+                    <span className="flex items-center gap-1">
+                      <div 
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        style={{ backgroundColor: selectedTeamMember.color || '#00BFA5' }}
+                      >
+                        {selectedTeamMember.avatar_url ? (
+                          <img src={selectedTeamMember.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          selectedTeamMember.name?.charAt(0)?.toUpperCase()
+                        )}
+                      </div>
+                      {selectedTeamMember.name}
+                    </span>
+                  )}
                 </div>
               </CardContent>
             </Card>
