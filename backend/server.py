@@ -2163,6 +2163,42 @@ async def get_support_file(file_id: str):
         media_type=file_doc.get("content_type", "application/octet-stream")
     )
 
+# ==================== WORKING HOURS SETTINGS ====================
+
+class WorkingHoursUpdate(BaseModel):
+    working_hours: dict
+
+@api_router.patch("/settings/working-hours")
+async def update_working_hours(data: WorkingHoursUpdate, current_user: dict = Depends(get_current_user)):
+    """Update business working hours"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    await db.businesses.update_one(
+        {"id": user["business_id"]},
+        {"$set": {"working_hours": data.working_hours, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True}
+
+@api_router.get("/settings/working-hours")
+async def get_working_hours(current_user: dict = Depends(get_current_user)):
+    """Get business working hours"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    business = await db.businesses.find_one({"id": user["business_id"]}, {"_id": 0, "working_hours": 1})
+    return business.get("working_hours", {
+        "monday": {"enabled": True, "open": "09:00", "close": "17:00"},
+        "tuesday": {"enabled": True, "open": "09:00", "close": "17:00"},
+        "wednesday": {"enabled": True, "open": "09:00", "close": "17:00"},
+        "thursday": {"enabled": True, "open": "09:00", "close": "17:00"},
+        "friday": {"enabled": True, "open": "09:00", "close": "17:00"},
+        "saturday": {"enabled": False, "open": "10:00", "close": "16:00"},
+        "sunday": {"enabled": False, "open": "10:00", "close": "16:00"},
+    })
+
 # ==================== TEAM MEMBERS ROUTES ====================
 
 @api_router.post("/team-members")
