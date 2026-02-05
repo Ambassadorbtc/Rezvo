@@ -90,11 +90,11 @@ export default function ServicesScreen() {
 
   const handleSave = async () => {
     if (!name || !price) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      showToast('Please fill in all required fields', 'error');
       return;
     }
     if (modalType === 'service' && !duration) {
-      Alert.alert('Error', 'Duration is required for services');
+      showToast('Duration is required for services', 'error');
       return;
     }
 
@@ -129,34 +129,27 @@ export default function ServicesScreen() {
 
       setShowModal(false);
       fetchData();
-      Alert.alert('Success', editingItem ? 'Updated successfully' : 'Created successfully');
+      showToast(editingItem ? 'Updated successfully' : 'Created successfully', 'success');
     } catch (error) {
-      Alert.alert('Error', 'Could not save. Please try again.');
+      showToast('Could not save. Please try again.', 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = (item, type) => {
-    Alert.alert(
+    showConfirm(
       `Delete ${type === 'service' ? 'Service' : 'Product'}`,
       `Are you sure you want to delete "${item.name}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/${type === 'service' ? 'services' : 'products'}/${item.id}`);
-              fetchData();
-              Alert.alert('Success', 'Deleted successfully');
-            } catch (error) {
-              Alert.alert('Error', 'Could not delete');
-            }
-          }
-        },
-      ]
+      async () => {
+        try {
+          await api.delete(`/${type === 'service' ? 'services' : 'products'}/${item.id}`);
+          fetchData();
+          showToast('Deleted successfully', 'success');
+        } catch (error) {
+          showToast('Could not delete', 'error');
+        }
+      }
     );
   };
 
