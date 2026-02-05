@@ -225,6 +225,7 @@ class PaymentIntentCreate(BaseModel):
 class MessageCreate(BaseModel):
     content: str
     recipient_type: str = "support"  # support, business, client
+    subject: Optional[str] = None
 
 class ConversationResponse(BaseModel):
     id: str
