@@ -139,6 +139,25 @@ const SettingsPage = () => {
     }
   };
 
+  const saveWorkingHours = async () => {
+    setSaving(true);
+    try {
+      await api.patch('/settings/working-hours', { working_hours: workingHours });
+      toast.success('Working hours saved');
+    } catch (error) {
+      toast.error('Failed to save working hours');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateDayHours = (day, field, value) => {
+    setWorkingHours(prev => ({
+      ...prev,
+      [day]: { ...prev[day], [field]: value }
+    }));
+  };
+
   if (loading) {
     return (
       <AppLayout>
