@@ -44,7 +44,8 @@ const CalendarPage = () => {
     notes: ''
   });
 
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8);
+  // Hours from 6am to 10pm (22:00)
+  const hours = Array.from({ length: 17 }, (_, i) => i + 6);
   const HOUR_HEIGHT = 90;
 
   const loadData = useCallback(async () => {
