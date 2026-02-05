@@ -521,7 +521,7 @@ const PublicBookingPage = () => {
 
       {/* Bottom Bar - Compact */}
       {selectedServices.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[100]">
           <div className="max-w-lg mx-auto px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -533,6 +533,7 @@ const PublicBookingPage = () => {
                 <Button
                   onClick={() => setShowModal(true)}
                   className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-5"
+                  data-testid="select-time-btn"
                 >
                   Select Time
                 </Button>
