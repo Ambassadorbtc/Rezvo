@@ -411,12 +411,14 @@ const FounderAdminPage = () => {
                 <p className="text-xs text-[#00BFA5]">Founder</p>
               </div>
             </div>
-            <Link to="/dashboard">
-              <Button variant="outline" className="w-full mt-3 border-gray-200 text-gray-600 rounded-xl">
-                <ArrowUpRight className="w-4 h-4 mr-2" />
-                Back to App
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              className="w-full mt-3 border-red-200 text-red-600 hover:bg-red-50 rounded-xl"
+              onClick={() => { logout(); window.location.href = '/login'; }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </aside>
