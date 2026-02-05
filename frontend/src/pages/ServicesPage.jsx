@@ -18,6 +18,7 @@ const ServicesPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
