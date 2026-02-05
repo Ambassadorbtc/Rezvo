@@ -24,15 +24,15 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 | Settings | https://timeslot-pro-3.preview.emergentagent.com/settings |
 | Analytics | https://timeslot-pro-3.preview.emergentagent.com/analytics |
 | Support | https://timeslot-pro-3.preview.emergentagent.com/support |
-| Founder Admin | https://timeslot-pro-3.preview.emergentagent.com/founder-admin |
+| Founder Admin | https://timeslot-pro-3.preview.emergentagent.com/admin |
 | Booking Page Settings | https://timeslot-pro-3.preview.emergentagent.com/booking-page |
 | Public Booking | https://timeslot-pro-3.preview.emergentagent.com/book/{businessId} |
 | Expo QR Code | https://timeslot-pro-3.preview.emergentagent.com/expo-qr.html |
 | Expo Web Preview | https://timeslot-pro-3.preview.emergentagent.com/expo/ |
 
 ### Test Credentials
-- **Email:** testuser@example.com
-- **Password:** password123
+- **Business Owner:** testuser@example.com / password123
+- **Founder Admin:** founder@rezvo.app / Founder123!
 - **Business ID:** 3edbbbc1-730a-494e-9626-1a0a5e6309ef
 
 ---
