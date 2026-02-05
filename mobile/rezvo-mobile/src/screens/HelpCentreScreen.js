@@ -80,19 +80,19 @@ export default function HelpCentreScreen({ navigation }) {
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>Quick Help</Text>
         <View style={styles.quickActions}>
-          <TouchableOpacity style={styles.quickAction}>
+          <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('getting-started')}>
             <View style={[styles.quickIcon, { backgroundColor: '#E8F5F3' }]}>
               <Ionicons name="play-circle-outline" size={22} color={TEAL} />
             </View>
             <Text style={styles.quickText}>Getting Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickAction}>
+          <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('bookings')}>
             <View style={[styles.quickIcon, { backgroundColor: '#FEF3E2' }]}>
               <Ionicons name="calendar-outline" size={22} color="#F59E0B" />
             </View>
             <Text style={styles.quickText}>Bookings</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.quickAction}>
+          <TouchableOpacity style={styles.quickAction} onPress={() => handleQuickAction('team')}>
             <View style={[styles.quickIcon, { backgroundColor: '#EDE9FE' }]}>
               <Ionicons name="people-outline" size={22} color="#8B5CF6" />
             </View>
