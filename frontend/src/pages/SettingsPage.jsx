@@ -222,6 +222,10 @@ const SettingsPage = () => {
               <Clock className="w-4 h-4 mr-2" />
               Hours
             </TabsTrigger>
+            <TabsTrigger value="booking" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
+              <Calendar className="w-4 h-4 mr-2" />
+              Booking
+            </TabsTrigger>
             <TabsTrigger value="payments" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <CreditCard className="w-4 h-4 mr-2" />
               Payments
@@ -229,6 +233,10 @@ const SettingsPage = () => {
             <TabsTrigger value="reminders" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <Bell className="w-4 h-4 mr-2" />
               Reminders
+            </TabsTrigger>
+            <TabsTrigger value="support" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Support
             </TabsTrigger>
           </TabsList>
 
