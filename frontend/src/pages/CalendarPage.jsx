@@ -571,21 +571,37 @@ const CalendarPage = () => {
                       {dayBookings.slice(0, 5).map((booking) => {
                         const colors = getServiceColor(booking.service_id);
                         const isDragging = draggedBooking?.id === booking.id;
+                        const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
                         return (
                           <div 
                             key={booking.id} 
-                            className={`rounded-lg p-2.5 text-xs cursor-grab active:cursor-grabbing hover:shadow-md transition-all border-l-3 ${
+                            className={`rounded-lg text-xs cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden ${
                               isDragging ? 'opacity-50 scale-95' : ''
                             }`}
-                            style={{ backgroundColor: colors.bg, borderLeftColor: colors.border }}
+                            style={{ backgroundColor: colors.bg }}
                             draggable
                             onDragStart={(e) => handleDragStart(e, booking)}
                             onDragEnd={handleDragEnd}
                             onClick={() => setShowEditBooking(booking)}
                           >
-                            <div className="font-bold" style={{ color: colors.text }}>{formatBookingTime(booking.datetime)}</div>
-                            <div className="font-bold text-gray-900 truncate">{booking.client_name}</div>
-                            <div className="text-gray-600 truncate">{booking.service_name}</div>
+                            {/* Colored top bar */}
+                            <div className="h-0.5 w-full" style={{ backgroundColor: colors.border }} />
+                            <div className="p-2">
+                              <div className="font-bold" style={{ color: colors.text }}>{formatBookingTime(booking.datetime)}</div>
+                              <div className="font-bold text-gray-900 truncate">{booking.client_name}</div>
+                              <div className="text-gray-600 truncate">{booking.service_name}</div>
+                              {teamMember && (
+                                <div className="flex items-center gap-1 mt-1">
+                                  <div 
+                                    className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                                    style={{ backgroundColor: teamMember.color || colors.border }}
+                                  >
+                                    {teamMember.name?.charAt(0)}
+                                  </div>
+                                  <span className="text-[10px] text-gray-500 truncate">{teamMember.name}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
