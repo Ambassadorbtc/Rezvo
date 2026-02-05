@@ -10,37 +10,23 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 
 ## What's Been Implemented ✅
 
-### Web Application (React)
+### Web Application (React) - COMPLETE
 - [x] Landing page with modern design
 - [x] User authentication (JWT-based)
 - [x] Business dashboard with stats
+- [x] **Global Search** - ⌘K shortcut, searches bookings/services/customers
 - [x] **Calendar with Day/Week/Month views**
-  - Day view with team member columns
-  - Week view with booking counts
-  - Month view with full calendar
-  - Team avatars in header (link to /team)
-- [x] **Team Management Page**
-  - Premium table with inline editing
-  - Round profile avatars with colors
-  - Branded delete confirmation dialog
-  - Profile image upload
-  - "Show on booking page" toggle
-  - Newest members sorted first
-- [x] **Public Booking Page** (ENHANCED)
-  - Team member selection with avatars
-  - "Any available" option
-  - Time slot selection
-  - Complete 3-step booking flow
-  - Shows team member in summary
+- [x] **Team Management** - Inline editing, branded delete dialog, profile images
+- [x] **Public Booking Page** - Team selection, time slots, 3-step flow
 - [x] Services management (CRUD)
 - [x] Bookings management
 - [x] Analytics dashboard
 - [x] Settings page
 - [x] Shareable booking links with QR codes
-- [x] Legal pages: Privacy, Terms, Cookie Policy
-- [x] Cookie consent popup
-- [x] Onboarding wizard UI
+- [x] Legal pages + Cookie consent
+- [x] Onboarding wizard (UI + Backend wired)
 - [x] Founder Admin Panel
+- [x] **Data Seeding Script** - /app/backend/seed_data.py
 
 ### Mobile Application (React Native/Expo)
 - [x] Welcome/Login/Signup screens
@@ -48,10 +34,10 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Client Flow (Home, Search, Bookings, Profile, Business Detail, Booking)
 - [x] Business Flow (Dashboard, Calendar, Bookings, Services, Team, Settings)
 - [x] Settings navigation (Help Centre, Contact Support, Terms & Privacy)
+- [x] Improved error handling in DashboardScreen
 
-### Backend (FastAPI + MongoDB)
-- [x] Authentication endpoints
-- [x] Password Reset Flow
+### Backend (FastAPI + MongoDB) - COMPLETE
+- [x] Authentication + Password Reset
 - [x] Business management with availability
 - [x] Services CRUD
 - [x] Team Members CRUD with visibility toggle
@@ -59,8 +45,10 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 - [x] Public endpoints (business, services, team, bookings)
 - [x] Calendar API with team view
 - [x] Bookings with team member assignment
-- [x] AI-powered suggestions
+- [x] Global Search endpoint
+- [x] AI suggestions (OpenAI GPT-4o-mini)
 - [x] Email notifications (Resend)
+- [x] Onboarding endpoints
 - [x] Products CRUD
 - [x] Admin analytics
 
@@ -85,28 +73,36 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 cd /app/mobile/rezvo-mobile && npx expo start --clear
 ```
 
-## P0 - Next Priority Tasks
-1. Wire onboarding wizard to backend
-2. Push notifications (Expo)
-3. Client mobile app backend wiring
+## Seeding Script
+```bash
+cd /app/backend && python seed_data.py
+```
+Creates: 6 team members, 6 services, 116 bookings, 5 notifications
 
-## P1 - Upcoming Tasks
-- Stripe subscription (£4.99/month)
-- Google Calendar sync
-- Automated booking reminders
-- SMS notifications (Twilio)
+## Remaining Features (P1/P2)
 
-## P2 - Future/Backlog
-- Multi-location support
-- Advanced team scheduling
-- Customer reviews
-- Staff separate logins
-- Re-enable global search
+### P1 - Next Priority
+- [ ] Stripe subscription (£4.99/month)
+- [ ] Google Calendar sync
+- [ ] Push notifications (Expo)
+- [ ] SMS notifications (Twilio)
+- [ ] Automated booking reminders
+
+### P2 - Future/Backlog
+- [ ] Multi-location support
+- [ ] Advanced team scheduling
+- [ ] Customer reviews
+- [ ] Staff separate logins
+
+## Testing Status
+- **Backend:** 100% (21/21 tests passed)
+- **Frontend:** 100% (all UI tests passed)
+- **Iteration:** 11
 
 ## Last Updated
-February 5, 2026 - Session 7:
-- Fixed public booking page - now shows team members and time slots
-- Added team member selection to booking flow
-- Added default availability for all days
-- All tests passing (100% frontend)
-- Complete booking flow verified working
+February 5, 2026 - Session 8:
+- Re-enabled Global Search with ⌘K shortcut
+- Created data seeding script (seed_data.py)
+- Improved mobile DashboardScreen error handling
+- All tests passing (100% backend, 100% frontend)
+- Expo server running for mobile testing
