@@ -721,7 +721,8 @@ export default function SettingsScreen({ navigation }) {
                   <Text style={styles.settingDesc}>Automatically confirm new bookings</Text>
                 </View>
                 <Switch
-                  value={true}
+                  value={autoConfirm}
+                  onValueChange={setAutoConfirm}
                   trackColor={{ false: '#E2E8F0', true: TEAL }}
                   thumbColor="#FFFFFF"
                 />
@@ -733,7 +734,8 @@ export default function SettingsScreen({ navigation }) {
                   <Text style={styles.settingDesc}>Let customers cancel bookings</Text>
                 </View>
                 <Switch
-                  value={true}
+                  value={allowCancellations}
+                  onValueChange={setAllowCancellations}
                   trackColor={{ false: '#E2E8F0', true: TEAL }}
                   thumbColor="#FFFFFF"
                 />
@@ -745,7 +747,8 @@ export default function SettingsScreen({ navigation }) {
                   <Text style={styles.settingDesc}>Email customers 24h before</Text>
                 </View>
                 <Switch
-                  value={true}
+                  value={sendReminders}
+                  onValueChange={setSendReminders}
                   trackColor={{ false: '#E2E8F0', true: TEAL }}
                   thumbColor="#FFFFFF"
                 />
@@ -756,16 +759,39 @@ export default function SettingsScreen({ navigation }) {
                   <Text style={styles.settingLabel}>Buffer time</Text>
                   <Text style={styles.settingDesc}>Time between appointments</Text>
                 </View>
-                <Text style={styles.settingValue}>15 min</Text>
+                <View style={styles.bufferOptions}>
+                  {[0, 15, 30, 60].map((mins) => (
+                    <TouchableOpacity
+                      key={mins}
+                      style={[styles.bufferOption, bufferTime === mins && styles.bufferOptionSelected]}
+                      onPress={() => setBufferTime(mins)}
+                    >
+                      <Text style={[styles.bufferOptionText, bufferTime === mins && styles.bufferOptionTextSelected]}>
+                        {mins === 0 ? 'None' : `${mins}m`}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
             </ScrollView>
 
             <View style={styles.modalFooter}>
               <TouchableOpacity 
-                style={styles.saveModalBtn}
+                style={styles.cancelModalBtn}
                 onPress={() => setShowBookingSettings(false)}
               >
-                <Text style={styles.saveModalBtnText}>Done</Text>
+                <Text style={styles.cancelModalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.saveModalBtn, saving && styles.saveBtnDisabled]}
+                onPress={handleSaveBookingSettings}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.saveModalBtnText}>Save</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
