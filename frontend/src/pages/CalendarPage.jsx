@@ -127,24 +127,60 @@ const CalendarPage = () => {
     setDragOverSlot(null);
   };
 
-  const handleDrop = async (e, targetHour, targetMemberId) => {
+  const handleDrop = async (e, targetHour, targetMemberId, targetDate = null) => {
     e.preventDefault();
     setDragOverSlot(null);
     
     if (!draggedBooking) return;
 
-    const newDateTime = new Date(selectedDate);
-    newDateTime.setHours(targetHour, 0, 0, 0);
+    // Use targetDate if provided (for week view), otherwise use selectedDate
+    const dateToUse = targetDate || selectedDate;
+    const newDateTime = new Date(dateToUse);
+    
+    // Preserve original time if dropping on a day column (week view) without specific hour
+    if (targetHour !== null && targetHour !== undefined) {
+      newDateTime.setHours(targetHour, 0, 0, 0);
+    } else {
+      // Keep original time when moving between days
+      const originalDate = new Date(draggedBooking.datetime);
+      newDateTime.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
+    }
 
     try {
       await api.patch(`/bookings/${draggedBooking.id}`, {
         datetime_iso: newDateTime.toISOString(),
-        team_member_id: targetMemberId && targetMemberId !== 'all' ? targetMemberId : null
+        team_member_id: targetMemberId && targetMemberId !== 'all' ? targetMemberId : draggedBooking.team_member_id
       });
       toast.success('Booking moved!');
       loadData();
     } catch (error) {
       toast.error('Failed to move booking');
+      console.error(error);
+    }
+    setDraggedBooking(null);
+  };
+
+  // Handle drop for week view (date change)
+  const handleWeekDrop = async (e, targetDate) => {
+    e.preventDefault();
+    setDragOverSlot(null);
+    
+    if (!draggedBooking) return;
+
+    // Keep original time, just change the date
+    const originalDate = new Date(draggedBooking.datetime);
+    const newDateTime = new Date(targetDate);
+    newDateTime.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
+
+    try {
+      await api.patch(`/bookings/${draggedBooking.id}`, {
+        datetime_iso: newDateTime.toISOString()
+      });
+      toast.success(`Booking moved to ${format(targetDate, 'EEE, d MMM')}!`);
+      loadData();
+    } catch (error) {
+      toast.error('Failed to move booking');
+      console.error(error);
     }
     setDraggedBooking(null);
   };
