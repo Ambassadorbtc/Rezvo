@@ -594,6 +594,30 @@ async def update_availability(data: AvailabilityUpdate, current_user: dict = Dep
     await db.businesses.update_one({"id": user["business_id"]}, {"$set": update_data})
     return {"status": "updated"}
 
+@api_router.post("/business/logo")
+async def upload_business_logo(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    """Upload business logo image"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or not user.get("business_id"):
+        raise HTTPException(status_code=404, detail="Business not found")
+    
+    # Save file
+    file_ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"logo_{user['business_id']}.{file_ext}"
+    file_path = UPLOADS_DIR / filename
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    # Update business with logo URL
+    logo_url = f"/api/uploads/{filename}"
+    await db.businesses.update_one(
+        {"id": user["business_id"]},
+        {"$set": {"logo_url": logo_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"logo_url": logo_url}
+
 # ==================== SERVICES ROUTES ====================
 
 @api_router.post("/services")
