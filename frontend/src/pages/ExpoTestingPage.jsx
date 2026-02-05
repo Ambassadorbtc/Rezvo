@@ -66,18 +66,7 @@ const ExpoTestingPage = () => {
                   <div className="w-[200px] h-[200px] flex items-center justify-center">
                     <RefreshCw className="w-8 h-8 text-[#00BFA5] animate-spin" />
                   </div>
-                ) : error ? (
-                  <div className="w-[200px] h-[200px] flex flex-col items-center justify-center text-center p-4">
-                    <AlertCircle className="w-8 h-8 text-[#F59E0B] mb-2" />
-                    <p className="text-sm text-[#627D98]">{error}</p>
-                    <button
-                      onClick={fetchTunnelUrl}
-                      className="mt-3 text-sm text-[#00BFA5] hover:underline flex items-center gap-1"
-                    >
-                      <RefreshCw className="w-3 h-3" /> Retry
-                    </button>
-                  </div>
-                ) : (
+                ) : expoUrl ? (
                   <QRCode
                     value={expoUrl}
                     size={200}
@@ -86,8 +75,22 @@ const ExpoTestingPage = () => {
                     fgColor="#0A1626"
                     bgColor="#FFFFFF"
                   />
+                ) : (
+                  <div className="w-[200px] h-[200px] flex flex-col items-center justify-center text-center p-4">
+                    <AlertCircle className="w-8 h-8 text-[#F59E0B] mb-2" />
+                    <p className="text-sm text-[#627D98]">Could not generate QR code</p>
+                    <button
+                      onClick={fetchTunnelUrl}
+                      className="mt-3 text-sm text-[#00BFA5] hover:underline flex items-center gap-1"
+                    >
+                      <RefreshCw className="w-3 h-3" /> Retry
+                    </button>
+                  </div>
                 )}
               </div>
+              {error && (
+                <p className="text-xs text-[#F59E0B] mt-2 text-center">{error}</p>
+              )}
             </div>
 
             {/* Instructions */}
