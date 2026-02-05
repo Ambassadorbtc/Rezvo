@@ -12,7 +12,6 @@ import {
   Plus,
   Smile,
   Paperclip,
-  Image as ImageIcon,
   MoreVertical,
   Check,
   CheckCheck,
@@ -20,10 +19,15 @@ import {
   Trash2,
   Edit3,
   Reply,
-  X
+  X,
+  Clock,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, isToday, isYesterday } from 'date-fns';
+import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 
@@ -42,6 +46,7 @@ const SupportPage = () => {
   const [editText, setEditText] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -100,7 +105,7 @@ const SupportPage = () => {
 
   const handleStartConversation = async () => {
     if (!newMessage.trim()) {
-      toast.success('Please enter a message', { className: 'bg-teal-500 text-white' });
+      toast.error('Please enter a message');
       return;
     }
 
@@ -117,13 +122,19 @@ const SupportPage = () => {
       setShowNewChat(false);
       await loadConversations();
       
-      const newConv = { id: res.data.conversation_id, subject: newChatSubject || 'Support Request' };
+      // Select the newly created conversation
+      const newConv = { 
+        id: res.data.conversation_id, 
+        subject: newChatSubject || 'Support Request',
+        status: 'open',
+        created_at: new Date().toISOString()
+      };
       setSelectedConversation(newConv);
       await loadMessages(res.data.conversation_id);
       
-      toast.success('Message sent!', { className: 'bg-teal-500 text-white' });
+      toast.success('Support ticket created!');
     } catch (error) {
-      toast.error('Failed to send message', { className: 'bg-red-500 text-white' });
+      toast.error('Failed to create support ticket');
     } finally {
       setSending(false);
     }
@@ -144,9 +155,22 @@ const SupportPage = () => {
       await loadMessages(selectedConversation.id);
       await loadConversations();
     } catch (error) {
-      toast.error('Failed to send message', { className: 'bg-red-500 text-white' });
+      toast.error('Failed to send message');
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleUpdateStatus = async (status) => {
+    if (!selectedConversation) return;
+    
+    try {
+      await api.patch(`/conversations/${selectedConversation.id}`, { status });
+      setSelectedConversation({ ...selectedConversation, status });
+      await loadConversations();
+      toast.success(`Ticket ${status === 'open' ? 'reopened' : status}`);
+    } catch (error) {
+      toast.error('Failed to update status');
     }
   };
 
@@ -158,9 +182,9 @@ const SupportPage = () => {
       setEditingMessageId(null);
       setEditText('');
       await loadMessages(selectedConversation.id);
-      toast.success('Message updated', { className: 'bg-teal-500 text-white' });
+      toast.success('Message updated');
     } catch (error) {
-      toast.error('Failed to update message', { className: 'bg-red-500 text-white' });
+      toast.error('Failed to update message');
     }
   };
 
@@ -168,53 +192,41 @@ const SupportPage = () => {
     try {
       await api.delete(`/messages/${messageId}`);
       await loadMessages(selectedConversation.id);
-      toast.success('Message deleted', { className: 'bg-teal-500 text-white' });
+      toast.success('Message deleted');
     } catch (error) {
-      toast.error('Failed to delete message', { className: 'bg-red-500 text-white' });
+      toast.error('Failed to delete message');
     }
   };
 
   const handleCopyMessage = (content) => {
     navigator.clipboard.writeText(content);
-    toast.success('Copied!', { className: 'bg-teal-500 text-white' });
+    toast.success('Copied!');
   };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('File too large (max 5MB)', { className: 'bg-red-500 text-white' });
+      toast.error('File too large (max 5MB)');
       return;
     }
 
     setUploadingFile(true);
     try {
-      // Convert file to base64 for sending
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const base64 = reader.result;
-        const fileMessage = file.type.startsWith('image/') 
-          ? `📷 Image: ${file.name}\n[Image attached - ${(file.size / 1024).toFixed(1)}KB]`
-          : `📎 File: ${file.name}\n[File attached - ${(file.size / 1024).toFixed(1)}KB]`;
-        
-        if (selectedConversation) {
-          await api.post(`/conversations/${selectedConversation.id}/messages`, {
-            content: fileMessage,
-            attachment: {
-              name: file.name,
-              type: file.type,
-              size: file.size
-            }
-          });
-          await loadMessages(selectedConversation.id);
-          toast.success('File sent!', { className: 'bg-teal-500 text-white' });
-        }
-      };
-      reader.readAsDataURL(file);
+      const fileMessage = file.type.startsWith('image/') 
+        ? `📷 Image: ${file.name}\n[${(file.size / 1024).toFixed(1)}KB]`
+        : `📎 File: ${file.name}\n[${(file.size / 1024).toFixed(1)}KB]`;
+      
+      if (selectedConversation) {
+        await api.post(`/conversations/${selectedConversation.id}/messages`, {
+          content: fileMessage
+        });
+        await loadMessages(selectedConversation.id);
+        toast.success('File sent!');
+      }
     } catch (error) {
-      toast.error('Failed to upload file', { className: 'bg-red-500 text-white' });
+      toast.error('Failed to upload file');
     } finally {
       setUploadingFile(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -242,8 +254,14 @@ const SupportPage = () => {
   };
 
   const formatMessageTime = (dateStr) => {
+    return format(new Date(dateStr), 'HH:mm');
+  };
+
+  const formatConversationDate = (dateStr) => {
     const date = new Date(dateStr);
-    return format(date, 'HH:mm');
+    if (isToday(date)) return 'Today';
+    if (isYesterday(date)) return 'Yesterday';
+    return format(date, 'd MMM');
   };
 
   const formatDateHeader = (dateStr) => {
@@ -263,38 +281,85 @@ const SupportPage = () => {
     return groups;
   };
 
-  const filteredConversations = conversations.filter(c =>
-    c.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.last_message?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'open': return <Clock className="w-3 h-3" />;
+      case 'resolved': return <CheckCircle className="w-3 h-3" />;
+      case 'closed': return <XCircle className="w-3 h-3" />;
+      default: return <Clock className="w-3 h-3" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'open': return 'bg-amber-100 text-amber-700';
+      case 'resolved': return 'bg-emerald-100 text-emerald-700';
+      case 'closed': return 'bg-gray-100 text-gray-700';
+      default: return 'bg-amber-100 text-amber-700';
+    }
+  };
+
+  const filteredConversations = conversations.filter(c => {
+    const matchesSearch = c.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.last_message?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const messageGroups = groupMessagesByDate(messages);
+
+  const statusCounts = {
+    all: conversations.length,
+    open: conversations.filter(c => c.status === 'open' || !c.status).length,
+    resolved: conversations.filter(c => c.status === 'resolved').length,
+    closed: conversations.filter(c => c.status === 'closed').length
+  };
 
   return (
     <AppLayout>
       <div className="h-[calc(100vh-64px)] flex bg-gray-50" data-testid="support-page">
         {/* Sidebar */}
-        <div className={`w-full md:w-[340px] bg-white border-r border-gray-200 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`w-full md:w-[380px] bg-white border-r border-gray-200 flex flex-col ${selectedConversation ? 'hidden md:flex' : 'flex'}`}>
           {/* Header */}
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center justify-between mb-3">
-              <h1 className="text-xl font-bold text-gray-900">Messages</h1>
+              <h1 className="text-xl font-bold text-gray-900">Support</h1>
               <Button
-                onClick={() => setShowNewChat(true)}
+                onClick={() => { setShowNewChat(true); setSelectedConversation(null); }}
                 size="sm"
-                className="bg-teal-500 hover:bg-teal-600 text-white rounded-lg h-8 w-8 p-0"
+                className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 mr-1" />
+                New Issue
               </Button>
             </div>
-            <div className="relative">
+            
+            {/* Search */}
+            <div className="relative mb-3">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search..."
+                placeholder="Search tickets..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 rounded-lg bg-gray-100 border-0 h-9 text-sm"
+                className="pl-9 rounded-xl bg-gray-100 border-0 h-9 text-sm"
               />
+            </div>
+
+            {/* Status Filter Tabs */}
+            <div className="flex gap-1 p-1 bg-gray-100 rounded-xl">
+              {['all', 'open', 'resolved', 'closed'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`flex-1 py-1.5 px-2 text-xs font-medium rounded-lg transition-all capitalize ${
+                    statusFilter === status
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {status} ({statusCounts[status]})
+                </button>
+              ))}
             </div>
           </div>
 
@@ -309,40 +374,49 @@ const SupportPage = () => {
                 <div className="w-14 h-14 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-3">
                   <MessageCircle className="w-7 h-7 text-teal-500" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">No messages</h3>
-                <p className="text-sm text-gray-500 mb-3">Start a conversation</p>
+                <h3 className="font-semibold text-gray-900 mb-1">No tickets</h3>
+                <p className="text-sm text-gray-500 mb-3">Create a new support ticket</p>
                 <Button
-                  onClick={() => setShowNewChat(true)}
+                  onClick={() => { setShowNewChat(true); setSelectedConversation(null); }}
                   size="sm"
-                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  New
+                  New Issue
                 </Button>
               </div>
             ) : (
               filteredConversations.map((conv) => (
                 <button
                   key={conv.id}
-                  onClick={() => setSelectedConversation(conv)}
-                  className={`w-full p-3 border-b border-gray-50 hover:bg-gray-50 transition-all text-left ${
+                  onClick={() => { setSelectedConversation(conv); setShowNewChat(false); }}
+                  className={`w-full p-4 border-b border-gray-50 hover:bg-gray-50 transition-all text-left ${
                     selectedConversation?.id === conv.id ? 'bg-teal-50 border-l-3 border-l-teal-500' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="w-5 h-5 text-white" />
+                      <MessageCircle className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="font-semibold text-sm text-gray-900 truncate">{conv.subject || 'Support'}</span>
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="font-semibold text-sm text-gray-900 truncate">{conv.subject || 'Support Request'}</span>
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(conv.status)}`}>
+                          {getStatusIcon(conv.status)}
+                          {conv.status || 'open'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 truncate mb-1">{conv.last_message || 'No messages'}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-gray-400">
+                          {conv.created_at ? formatConversationDate(conv.created_at) : '-'}
+                        </span>
                         {conv.last_message_at && (
-                          <span className="text-[10px] text-gray-400 ml-2 flex-shrink-0">
-                            {formatMessageTime(conv.last_message_at)}
+                          <span className="text-[10px] text-gray-400">
+                            Last: {formatConversationDate(conv.last_message_at)}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 truncate">{conv.last_message || 'No messages'}</p>
                     </div>
                     {conv.unread_count > 0 && (
                       <div className="w-5 h-5 bg-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -364,79 +438,135 @@ const SupportPage = () => {
                 <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MessageCircle className="w-8 h-8 text-teal-500" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-1">Support Chat</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-1">Support Center</h2>
                 <p className="text-sm text-gray-500 mb-4">We typically reply within 24 hours</p>
                 <Button
                   onClick={() => setShowNewChat(true)}
                   className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  New Message
+                  New Support Ticket
                 </Button>
               </div>
             </div>
-          ) : showNewChat && !selectedConversation ? (
+          ) : showNewChat ? (
             <div className="flex-1 flex flex-col">
               <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center gap-3">
                 <button onClick={() => setShowNewChat(false)} className="md:hidden p-2 hover:bg-gray-100 rounded-lg">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <h2 className="font-semibold text-gray-900">New Message</h2>
+                <h2 className="font-semibold text-gray-900">New Support Ticket</h2>
               </div>
               
-              <div className="flex-1 p-4 overflow-y-auto">
-                <div className="max-w-md mx-auto space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                    <Input
-                      placeholder="How can we help?"
-                      value={newChatSubject}
-                      onChange={(e) => setNewChatSubject(e.target.value)}
-                      className="rounded-lg"
-                    />
+              <div className="flex-1 p-6 overflow-y-auto bg-gray-50">
+                <div className="max-w-lg mx-auto bg-white rounded-2xl p-6 shadow-sm">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+                      <Input
+                        placeholder="Brief description of your issue"
+                        value={newChatSubject}
+                        onChange={(e) => setNewChatSubject(e.target.value)}
+                        className="rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+                      <textarea
+                        placeholder="Describe your issue in detail..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        className="w-full h-40 px-4 py-3 rounded-xl bg-white border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleStartConversation}
+                      disabled={sending || !newMessage.trim()}
+                      className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-xl h-11"
+                    >
+                      {sending ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Submit Ticket
+                        </>
+                      )}
+                    </Button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                    <textarea
-                      placeholder="Describe your issue..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      className="w-full h-32 px-3 py-2 rounded-lg bg-white border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
-                    />
-                  </div>
-                  <Button
-                    onClick={handleStartConversation}
-                    disabled={sending || !newMessage.trim()}
-                    className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-lg"
-                  >
-                    {sending ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Send
-                      </>
-                    )}
-                  </Button>
                 </div>
               </div>
             </div>
           ) : (
             <>
               {/* Chat Header */}
-              <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between">
+              <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <button onClick={() => setSelectedConversation(null)} className="md:hidden p-2 hover:bg-gray-100 rounded-lg">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <div className="w-9 h-9 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                    <MessageCircle className="w-4 h-4 text-white" />
                   </div>
                   <div>
                     <h2 className="font-semibold text-gray-900 text-sm">{selectedConversation?.subject || 'Support'}</h2>
-                    <p className="text-xs text-gray-500">Usually replies within 24h</p>
+                    <div className="flex items-center gap-2">
+                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(selectedConversation?.status)}`}>
+                        {getStatusIcon(selectedConversation?.status)}
+                        {selectedConversation?.status || 'open'}
+                      </span>
+                      {selectedConversation?.created_at && (
+                        <span className="text-[10px] text-gray-400">
+                          Created {formatDistanceToNow(new Date(selectedConversation.created_at))} ago
+                        </span>
+                      )}
+                    </div>
                   </div>
+                </div>
+                
+                {/* Status Actions */}
+                <div className="flex items-center gap-2">
+                  {selectedConversation?.status === 'closed' && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleUpdateStatus('open')}
+                      className="bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs"
+                    >
+                      <RotateCcw className="w-3 h-3 mr-1" />
+                      Reopen
+                    </Button>
+                  )}
+                  {(selectedConversation?.status === 'open' || !selectedConversation?.status) && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleUpdateStatus('resolved')}
+                      className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs"
+                    >
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Mark Resolved
+                    </Button>
+                  )}
+                  {selectedConversation?.status === 'resolved' && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateStatus('open')}
+                        className="bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs"
+                      >
+                        <RotateCcw className="w-3 h-3 mr-1" />
+                        Reopen
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateStatus('closed')}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs"
+                      >
+                        <XCircle className="w-3 h-3 mr-1" />
+                        Close
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -464,13 +594,6 @@ const SupportPage = () => {
                             )}
                             
                             <div className="relative max-w-[75%]">
-                              {replyingTo?.id === msg.id && (
-                                <div className="mb-1 px-2 py-1 rounded-lg text-[10px] bg-gray-200 text-gray-600">
-                                  <Reply className="w-3 h-3 inline mr-1" />
-                                  Replying...
-                                </div>
-                              )}
-                              
                               <div className={`rounded-2xl px-3 py-2 ${
                                 isOwn
                                   ? 'bg-teal-500 text-white'
@@ -481,24 +604,15 @@ const SupportPage = () => {
                                     <textarea
                                       value={editText}
                                       onChange={(e) => setEditText(e.target.value)}
-                                      className="w-full bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-sm text-white placeholder:text-white/50 resize-none"
+                                      className="w-full bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-sm resize-none"
                                       autoFocus
                                       rows={2}
                                     />
                                     <div className="flex gap-2">
-                                      <Button
-                                        size="sm"
-                                        onClick={() => handleSaveEdit(msg.id)}
-                                        className="bg-white/20 hover:bg-white/30 text-white text-xs h-6 px-2"
-                                      >
+                                      <Button size="sm" onClick={() => handleSaveEdit(msg.id)} className="bg-white/20 hover:bg-white/30 text-xs h-6 px-2">
                                         Save
                                       </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => { setEditingMessageId(null); setEditText(''); }}
-                                        className="text-white/70 hover:text-white text-xs h-6 px-2"
-                                      >
+                                      <Button size="sm" variant="ghost" onClick={() => { setEditingMessageId(null); setEditText(''); }} className="text-xs h-6 px-2">
                                         Cancel
                                       </Button>
                                     </div>
@@ -506,9 +620,7 @@ const SupportPage = () => {
                                 ) : (
                                   <>
                                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                    {msg.edited && (
-                                      <span className={`text-[10px] ${isOwn ? 'text-white/50' : 'text-gray-400'}`}> (edited)</span>
-                                    )}
+                                    {msg.edited && <span className="text-[10px] opacity-50"> (edited)</span>}
                                   </>
                                 )}
                               </div>
@@ -518,37 +630,20 @@ const SupportPage = () => {
                                 {isOwn && <CheckCheck className={`w-3.5 h-3.5 ${msg.read ? 'text-teal-500' : 'text-gray-300'}`} />}
                               </div>
                               
-                              {/* Hover Actions */}
                               {!isEditing && (
                                 <div className={`absolute top-0 ${isOwn ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-white rounded-lg shadow-md p-1`}>
-                                  <button
-                                    onClick={() => handleCopyMessage(msg.content)}
-                                    className="p-1 hover:bg-gray-100 rounded"
-                                    title="Copy"
-                                  >
+                                  <button onClick={() => handleCopyMessage(msg.content)} className="p-1 hover:bg-gray-100 rounded" title="Copy">
                                     <Copy className="w-3.5 h-3.5 text-gray-500" />
                                   </button>
-                                  <button
-                                    onClick={() => setReplyingTo(msg)}
-                                    className="p-1 hover:bg-gray-100 rounded"
-                                    title="Reply"
-                                  >
+                                  <button onClick={() => setReplyingTo(msg)} className="p-1 hover:bg-gray-100 rounded" title="Reply">
                                     <Reply className="w-3.5 h-3.5 text-gray-500" />
                                   </button>
                                   {isOwn && (
                                     <>
-                                      <button
-                                        onClick={() => { setEditingMessageId(msg.id); setEditText(msg.content); }}
-                                        className="p-1 hover:bg-gray-100 rounded"
-                                        title="Edit"
-                                      >
+                                      <button onClick={() => { setEditingMessageId(msg.id); setEditText(msg.content); }} className="p-1 hover:bg-gray-100 rounded" title="Edit">
                                         <Edit3 className="w-3.5 h-3.5 text-gray-500" />
                                       </button>
-                                      <button
-                                        onClick={() => handleDeleteMessage(msg.id)}
-                                        className="p-1 hover:bg-red-50 rounded"
-                                        title="Delete"
-                                      >
+                                      <button onClick={() => handleDeleteMessage(msg.id)} className="p-1 hover:bg-red-50 rounded" title="Delete">
                                         <Trash2 className="w-3.5 h-3.5 text-red-500" />
                                       </button>
                                     </>
@@ -570,9 +665,7 @@ const SupportPage = () => {
                 <div className="px-4 py-2 bg-gray-100 border-t border-gray-200 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <Reply className="w-4 h-4 text-teal-500" />
-                    <span className="text-gray-600 truncate max-w-[200px]">
-                      {replyingTo.content.substring(0, 40)}...
-                    </span>
+                    <span className="text-gray-600 truncate max-w-[200px]">{replyingTo.content.substring(0, 40)}...</span>
                   </div>
                   <button onClick={() => setReplyingTo(null)} className="p-1 hover:bg-gray-200 rounded">
                     <X className="w-4 h-4 text-gray-500" />
@@ -580,71 +673,81 @@ const SupportPage = () => {
                 </div>
               )}
 
-              {/* Input Area */}
-              <div className="p-3 bg-white border-t border-gray-200">
-                <div className="flex items-end gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*,.pdf,.doc,.docx,.txt"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <button 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
-                    disabled={uploadingFile}
-                    title="Attach file"
-                  >
-                    {uploadingFile ? (
-                      <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Paperclip className="w-5 h-5 text-gray-500" />
-                    )}
-                  </button>
-                  
-                  <div className="flex-1 relative">
-                    <Input
-                      ref={inputRef}
-                      placeholder="Type a message..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      className="pr-10 rounded-xl bg-gray-100 border-0 h-10"
+              {/* Input Area - Only show if not closed */}
+              {selectedConversation?.status !== 'closed' && (
+                <div className="p-3 bg-white border-t border-gray-200">
+                  <div className="flex items-end gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*,.pdf,.doc,.docx,.txt"
+                      onChange={handleFileUpload}
+                      className="hidden"
                     />
-                    <button
-                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                      disabled={uploadingFile}
                     >
-                      <Smile className="w-5 h-5 text-gray-500" />
+                      {uploadingFile ? (
+                        <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Paperclip className="w-5 h-5 text-gray-500" />
+                      )}
                     </button>
                     
-                    {showEmojiPicker && (
-                      <div ref={emojiPickerRef} className="absolute bottom-12 right-0 z-50">
-                        <Picker 
-                          data={data} 
-                          onEmojiSelect={addEmoji}
-                          theme="light"
-                          previewPosition="none"
-                          skinTonePosition="none"
-                        />
-                      </div>
-                    )}
+                    <div className="flex-1 relative">
+                      <Input
+                        ref={inputRef}
+                        placeholder="Type a message..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        className="pr-10 rounded-xl bg-gray-100 border-0 h-10"
+                      />
+                      <button
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <Smile className="w-5 h-5 text-gray-500" />
+                      </button>
+                      
+                      {showEmojiPicker && (
+                        <div ref={emojiPickerRef} className="absolute bottom-12 right-0 z-50">
+                          <Picker data={data} onEmojiSelect={addEmoji} theme="light" previewPosition="none" skinTonePosition="none" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={sending || !newMessage.trim()}
+                      className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl h-10 w-10 p-0 flex-shrink-0"
+                    >
+                      {sending ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </Button>
                   </div>
-                  
+                </div>
+              )}
+
+              {/* Closed Ticket Notice */}
+              {selectedConversation?.status === 'closed' && (
+                <div className="p-4 bg-gray-100 border-t border-gray-200 text-center">
+                  <p className="text-sm text-gray-500 mb-2">This ticket is closed.</p>
                   <Button
-                    onClick={handleSendMessage}
-                    disabled={sending || !newMessage.trim()}
-                    className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl h-10 w-10 p-0 flex-shrink-0"
+                    size="sm"
+                    onClick={() => handleUpdateStatus('open')}
+                    className="bg-amber-500 hover:bg-amber-600 text-white rounded-lg"
                   >
-                    {sending ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Reopen Ticket
                   </Button>
                 </div>
-              </div>
+              )}
             </>
           )}
         </div>
