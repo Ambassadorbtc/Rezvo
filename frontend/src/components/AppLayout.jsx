@@ -310,21 +310,6 @@ const AppLayout = ({ children }) => {
               <span className="font-medium">{item.label}</span>
             </Link>
           ))}
-          
-          {/* Admin Link - Auto-login for testing */}
-          <button
-            onClick={handleAdminAccess}
-            disabled={adminLoading}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mt-4 border-t border-gray-100 pt-6 w-full text-left ${
-              isActive('/admin')
-                ? 'bg-purple-50 text-purple-700'
-                : 'text-navy-600 hover:bg-gray-50 hover:text-navy-900'
-            } ${adminLoading ? 'opacity-50' : ''}`}
-            data-testid="nav-admin"
-          >
-            <Shield className="w-5 h-5" />
-            <span className="font-medium">{adminLoading ? 'Loading...' : 'Admin Panel'}</span>
-          </button>
         </nav>
 
         {/* User Section */}
