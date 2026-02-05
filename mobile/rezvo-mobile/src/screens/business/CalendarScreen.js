@@ -50,7 +50,8 @@ export default function CalendarScreen({ navigation }) {
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedTime, setSelectedTime] = useState('10:00');
 
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8);
+  // Hours from 6am to 10pm (22:00)
+  const hours = Array.from({ length: 17 }, (_, i) => i + 6);
   const timeSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'];
 
   const showToast = (message) => {
