@@ -250,6 +250,32 @@ const FounderAdminPage = () => {
     }
   };
 
+  const updateConversationStatus = async (conversationId, status) => {
+    try {
+      await api.patch(`/conversations/${conversationId}`, { status });
+      toast.success(`Ticket marked as ${status}`);
+      // Update local state
+      setConversations(prev => prev.map(c => 
+        c.id === conversationId ? { ...c, status } : c
+      ));
+      if (selectedConversation?.id === conversationId) {
+        setSelectedConversation(prev => ({ ...prev, status }));
+      }
+    } catch (error) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  // Filter conversations based on status and search
+  const filteredConversations = conversations.filter(conv => {
+    const matchesStatus = supportFilter === 'all' || conv.status === supportFilter;
+    const matchesSearch = !supportSearch || 
+      conv.user_email?.toLowerCase().includes(supportSearch.toLowerCase()) ||
+      conv.subject?.toLowerCase().includes(supportSearch.toLowerCase()) ||
+      conv.last_message?.toLowerCase().includes(supportSearch.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
   const resolveError = async (logId) => {
     try {
       await api.patch(`/admin/logs/${logId}/resolve`);
