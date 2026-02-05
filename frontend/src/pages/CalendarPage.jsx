@@ -447,6 +447,7 @@ const CalendarPage = () => {
                           const { top, height } = getBookingPosition(booking);
                           const colors = getServiceColor(booking.service_id);
                           const isDragging = draggedBooking?.id === booking.id;
+                          const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
                           
                           return (
                             <div
@@ -454,38 +455,68 @@ const CalendarPage = () => {
                               draggable
                               onDragStart={(e) => handleDragStart(e, booking)}
                               onDragEnd={handleDragEnd}
-                              className={`absolute left-2 right-2 rounded-xl p-3 cursor-grab active:cursor-grabbing transition-all group border-l-4 ${
+                              className={`absolute left-2 right-2 rounded-xl cursor-grab active:cursor-grabbing transition-all group overflow-hidden ${
                                 isDragging ? 'opacity-50 scale-95' : 'hover:shadow-xl hover:scale-[1.02]'
                               }`}
                               style={{ 
                                 top: `${top}px`, 
                                 height: `${height}px`,
                                 backgroundColor: colors.bg,
-                                borderLeftColor: colors.border
                               }}
                               onClick={() => setShowEditBooking(booking)}
                             >
-                              {/* Drag handle */}
-                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <GripVertical className="w-4 h-4" style={{ color: colors.border }} />
+                              {/* Colored top bar */}
+                              <div className="h-1 w-full" style={{ backgroundColor: colors.border }} />
+                              
+                              <div className="p-2.5 flex flex-col h-[calc(100%-4px)]">
+                                {/* Time and price row */}
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-[10px] font-bold tracking-wide" style={{ color: colors.text }}>
+                                    {formatBookingTime(booking.datetime)}
+                                  </span>
+                                  {height > 60 && (
+                                    <span className="text-[10px] font-bold" style={{ color: colors.border }}>
+                                      {formatPrice(booking.price_pence)}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {/* Client name */}
+                                <div className="font-bold text-gray-900 text-sm truncate leading-tight">
+                                  {booking.client_name}
+                                </div>
+                                
+                                {/* Service name */}
+                                {height > 50 && (
+                                  <div className="text-xs text-gray-600 truncate mt-0.5">
+                                    {booking.service_name}
+                                  </div>
+                                )}
+                                
+                                {/* Team member with avatar - only show if space allows */}
+                                {height > 70 && teamMember && (
+                                  <div className="flex items-center gap-1.5 mt-auto pt-1">
+                                    <div 
+                                      className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
+                                      style={{ backgroundColor: teamMember.color || colors.border }}
+                                    >
+                                      {teamMember.avatar_url ? (
+                                        <img src={teamMember.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                                      ) : (
+                                        teamMember.name?.charAt(0)
+                                      )}
+                                    </div>
+                                    <span className="text-[10px] text-gray-500 font-medium truncate">
+                                      {teamMember.name}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               
-                              <div className="text-[11px] font-bold tracking-wide" style={{ color: colors.text }}>
-                                {formatBookingTime(booking.datetime)}
+                              {/* Drag handle */}
+                              <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <GripVertical className="w-3 h-3" style={{ color: colors.border }} />
                               </div>
-                              <div className="text-sm font-bold text-gray-900 truncate mt-0.5">
-                                {booking.client_name}
-                              </div>
-                              {height > 55 && (
-                                <div className="text-xs text-gray-600 truncate font-medium mt-0.5">
-                                  {booking.service_name}
-                                </div>
-                              )}
-                              {height > 75 && (
-                                <div className="text-xs font-bold mt-1" style={{ color: colors.border }}>
-                                  {formatPrice(booking.price_pence)}
-                                </div>
-                              )}
                             </div>
                           );
                         })}
