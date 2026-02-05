@@ -67,10 +67,23 @@ const PublicBookingPage = () => {
   };
 
   const getAvailableTimeSlots = () => {
-    if (!selectedDate || !business?.availability) return [];
+    if (!selectedDate) return [];
     
     const dayOfWeek = selectedDate.getDay();
-    const dayAvailability = business.availability.find(a => a.day === dayOfWeek);
+    
+    // Default availability (Mon-Sat 9-17) if none set
+    const defaultAvailability = [
+      { day: 0, start: '10:00', end: '16:00', enabled: true }, // Sunday
+      { day: 1, start: '09:00', end: '17:00', enabled: true }, // Monday
+      { day: 2, start: '09:00', end: '17:00', enabled: true }, // Tuesday
+      { day: 3, start: '09:00', end: '17:00', enabled: true }, // Wednesday
+      { day: 4, start: '09:00', end: '17:00', enabled: true }, // Thursday
+      { day: 5, start: '09:00', end: '17:00', enabled: true }, // Friday
+      { day: 6, start: '09:00', end: '17:00', enabled: true }, // Saturday
+    ];
+    
+    const availability = business?.availability?.length > 0 ? business.availability : defaultAvailability;
+    const dayAvailability = availability.find(a => a.day === dayOfWeek);
     
     if (!dayAvailability || !dayAvailability.enabled) return [];
     
