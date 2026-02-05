@@ -1381,6 +1381,26 @@ async def get_settings(current_user: dict = Depends(get_current_user)):
     if user.get("dojo_api_key"):
         user["dojo_api_key"] = "****" + user["dojo_api_key"][-4:]
     
+    # Get business settings if user has a business
+    if user.get("business_id"):
+        business = await db.businesses.find_one({"id": user["business_id"]}, {"_id": 0, "working_hours": 1, "booking_settings": 1})
+        if business:
+            user["working_hours"] = business.get("working_hours", {
+                "monday": {"enabled": True, "open": "09:00", "close": "17:00"},
+                "tuesday": {"enabled": True, "open": "09:00", "close": "17:00"},
+                "wednesday": {"enabled": True, "open": "09:00", "close": "17:00"},
+                "thursday": {"enabled": True, "open": "09:00", "close": "17:00"},
+                "friday": {"enabled": True, "open": "09:00", "close": "17:00"},
+                "saturday": {"enabled": False, "open": "10:00", "close": "16:00"},
+                "sunday": {"enabled": False, "open": "10:00", "close": "16:00"},
+            })
+            user["booking_settings"] = business.get("booking_settings", {
+                "auto_confirm": True,
+                "allow_cancellations": True,
+                "send_reminders": True,
+                "buffer_time": 15,
+            })
+    
     return user
 
 @api_router.patch("/settings/reminders")
