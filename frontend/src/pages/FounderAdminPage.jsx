@@ -165,6 +165,8 @@ const FounderAdminPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [supportFilter, setSupportFilter] = useState('all');
+  const [supportSearch, setSupportSearch] = useState('');
   const itemsPerPage = 10;
 
   useEffect(() => {
