@@ -19,7 +19,7 @@ import api, { formatPrice } from '../../lib/api';
 
 const { width } = Dimensions.get('window');
 const TEAL = '#00BFA5';
-const HOUR_HEIGHT = 70;
+const HOUR_HEIGHT = 80;
 const TIME_COLUMN_WIDTH = 50;
 const MIN_COLUMN_WIDTH = 140;
 
