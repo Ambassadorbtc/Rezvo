@@ -178,10 +178,14 @@ const SettingsPage = () => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 rounded-full p-1">
+          <TabsList className="bg-white border border-gray-200 rounded-full p-1 flex-wrap">
             <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <Building2 className="w-4 h-4 mr-2" />
               Profile
+            </TabsTrigger>
+            <TabsTrigger value="hours" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
+              <Clock className="w-4 h-4 mr-2" />
+              Hours
             </TabsTrigger>
             <TabsTrigger value="payments" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
               <CreditCard className="w-4 h-4 mr-2" />
