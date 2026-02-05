@@ -241,7 +241,7 @@ async def seed_database():
     print(f"Bookings: {booking_count}")
     print("="*50)
     
-    client.close()
+    await client.close()
 
 if __name__ == "__main__":
     asyncio.run(seed_database())
