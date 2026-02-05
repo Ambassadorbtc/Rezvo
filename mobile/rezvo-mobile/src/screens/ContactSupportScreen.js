@@ -30,14 +30,23 @@ export default function ContactSupportScreen({ navigation }) {
     setLoading(true);
     try {
       // Create real support conversation via API
-      await api.post('/conversations', {
+      const res = await api.post('/conversations', {
         content: message,
         subject: subject,
         recipient_type: 'support'
       });
       
-      showToast('Message sent! We\'ll get back to you within 24 hours.', 'success');
-      navigation.goBack();
+      showToast('Message sent! Opening chat...', 'success');
+      
+      // Navigate to SupportChat with the new conversation
+      navigation.replace('SupportChat', {
+        conversation: {
+          id: res.data.conversation_id,
+          subject: subject,
+          status: 'open',
+          created_at: new Date().toISOString()
+        }
+      });
     } catch (error) {
       console.error('Error creating support ticket:', error);
       showToast('Failed to send message. Please try again.', 'error');
