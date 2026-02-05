@@ -143,6 +143,7 @@ function BusinessStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="BusinessTabs" component={BusinessTabs} />
       <Stack.Screen name="Team" component={BusinessTeamScreen} />
+      <Stack.Screen name="Analytics" component={BusinessAnalyticsScreen} />
       <Stack.Screen name="HelpCentre" component={HelpCentreScreen} />
       <Stack.Screen name="ContactSupport" component={ContactSupportScreen} />
       <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
