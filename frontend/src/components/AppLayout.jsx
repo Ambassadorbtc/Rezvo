@@ -13,7 +13,8 @@ import {
   X,
   Shield,
   UsersRound,
-  Search
+  Search,
+  MessageCircle
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
