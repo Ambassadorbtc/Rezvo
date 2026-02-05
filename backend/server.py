@@ -53,9 +53,17 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 resend.api_key = os.environ.get('RESEND_API_KEY', '')
 
+# Google Calendar Config
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+GOOGLE_REDIRECT_URI = os.environ.get('FRONTEND_URL', '') + '/api/google/callback'
+
 # Uploads directory
 UPLOADS_DIR = ROOT_DIR / 'uploads'
 UPLOADS_DIR.mkdir(exist_ok=True)
+
+# Scheduler for automated reminders
+scheduler = AsyncIOScheduler()
 
 app = FastAPI(title="QuickSlot API", version="1.0.0")
 api_router = APIRouter(prefix="/api")
