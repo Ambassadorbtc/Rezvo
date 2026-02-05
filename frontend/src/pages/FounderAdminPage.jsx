@@ -1043,13 +1043,19 @@ const FounderAdminPage = () => {
                   <>
                     {/* Header */}
                     <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-[#0A1626]">{selectedConversation.subject || 'Support Conversation'}</h3>
-                        <p className="text-sm text-gray-500">{selectedConversation.user_email}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                          {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-[#0A1626]">{selectedConversation.subject || 'Support Conversation'}</h3>
+                          <p className="text-sm text-gray-500">{selectedConversation.user_email}</p>
+                        </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         selectedConversation.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
                         selectedConversation.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                        selectedConversation.status === 'resolved' ? 'bg-blue-100 text-blue-700' :
                         'bg-gray-100 text-gray-700'
                       }`}>
                         {selectedConversation.status || 'Open'}
@@ -1057,53 +1063,106 @@ const FounderAdminPage = () => {
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+                      {/* Date separator */}
+                      <div className="flex justify-center">
+                        <span className="px-3 py-1 bg-white rounded-full text-xs text-gray-500 shadow-sm">Today</span>
+                      </div>
+                      
                       {messages.length === 0 ? (
                         <div className="text-center py-8">
                           <p className="text-gray-400">No messages in this conversation</p>
                         </div>
                       ) : (
-                        messages.map((msg) => (
-                          <div
-                            key={msg.id}
-                            className={`flex ${msg.sender_id === user?.sub || msg.is_admin ? 'justify-end' : 'justify-start'}`}
-                          >
-                            <div className={`max-w-[70%] rounded-2xl p-4 ${
-                              msg.sender_id === user?.sub || msg.is_admin
-                                ? 'bg-[#00BFA5] text-white'
-                                : 'bg-gray-100 text-[#0A1626]'
-                            }`}>
-                              <p className="text-sm">{msg.content}</p>
-                              <p className={`text-xs mt-2 ${
-                                msg.sender_id === user?.sub || msg.is_admin ? 'text-white/70' : 'text-gray-400'
+                        messages.map((msg) => {
+                          const isAdmin = msg.sender_id === user?.sub || msg.is_admin;
+                          return (
+                            <div
+                              key={msg.id}
+                              className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
+                            >
+                              {/* User avatar on left for non-admin */}
+                              {!isAdmin && (
+                                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
+                                  {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                              )}
+                              
+                              <div className={`max-w-[70%] rounded-2xl p-3 ${
+                                isAdmin
+                                  ? 'bg-[#00BFA5] text-white rounded-br-sm'
+                                  : 'bg-white text-[#0A1626] shadow-sm rounded-bl-sm border border-gray-100'
                               }`}>
-                                {msg.created_at ? format(new Date(msg.created_at), 'd MMM, HH:mm') : '-'}
-                              </p>
+                                {!isAdmin && (
+                                  <p className="text-xs font-medium text-blue-600 mb-1">
+                                    {selectedConversation.user_email?.split('@')[0] || 'User'}
+                                  </p>
+                                )}
+                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                <div className={`flex items-center gap-1 mt-1.5 ${isAdmin ? 'justify-end' : ''}`}>
+                                  <p className={`text-[10px] ${
+                                    isAdmin ? 'text-white/70' : 'text-gray-400'
+                                  }`}>
+                                    {msg.created_at ? format(new Date(msg.created_at), 'HH:mm') : '-'}
+                                  </p>
+                                  {isAdmin && (
+                                    <CheckCircle className="w-3 h-3 text-white/70" />
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Admin avatar on right */}
+                              {isAdmin && (
+                                <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0">
+                                  <Shield className="w-4 h-4" />
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
 
-                    {/* Reply Input */}
-                    <div className="p-4 border-t border-gray-100">
-                      <div className="flex gap-3">
-                        <Input
-                          value={newMessage}
-                          onChange={(e) => setNewMessage(e.target.value)}
-                          placeholder="Type your reply..."
-                          className="flex-1 rounded-xl"
-                          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendReply()}
-                        />
+                    {/* Enhanced Reply Input */}
+                    <div className="p-4 border-t border-gray-100 bg-white">
+                      <div className="flex items-end gap-2">
+                        {/* Action buttons */}
+                        <div className="flex gap-1">
+                          <button className="p-2 text-gray-400 hover:text-[#00BFA5] hover:bg-gray-100 rounded-lg transition-colors" title="Attach file">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                          </button>
+                          <button className="p-2 text-gray-400 hover:text-[#00BFA5] hover:bg-gray-100 rounded-lg transition-colors" title="Add emoji">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        {/* Message input */}
+                        <div className="flex-1 relative">
+                          <Input
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Type your reply..."
+                            className="rounded-xl pr-4 py-3 bg-gray-50 border-gray-200 focus:bg-white"
+                            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendReply()}
+                          />
+                        </div>
+                        
+                        {/* Send button */}
                         <Button
                           onClick={sendReply}
                           disabled={!newMessage.trim() || sendingMessage}
-                          className="bg-[#00BFA5] hover:bg-[#00A896] text-white rounded-xl px-6"
+                          className="bg-[#00BFA5] hover:bg-[#00A896] text-white rounded-xl px-5 h-11"
                         >
                           {sendingMessage ? (
                             <RefreshCw className="w-4 h-4 animate-spin" />
                           ) : (
-                            'Send'
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
                           )}
                         </Button>
                       </div>
