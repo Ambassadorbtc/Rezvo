@@ -3203,6 +3203,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_event():
+    """Start the scheduler for automated reminders"""
+    # Run reminders every day at 9 AM
+    scheduler.add_job(send_booking_reminders, CronTrigger(hour=9, minute=0))
+    scheduler.start()
+    logger.info("Scheduler started for automated booking reminders")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    scheduler.shutdown()
     client.close()
