@@ -572,6 +572,17 @@ const SupportPage = () => {
                 
                 {/* Status Actions */}
                 <div className="flex items-center gap-2">
+                  {/* Refresh Button */}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => loadMessages(selectedConversation?.id)}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                    title="Refresh messages"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                  
                   {selectedConversation?.status === 'closed' && (
                     <Button
                       size="sm"
