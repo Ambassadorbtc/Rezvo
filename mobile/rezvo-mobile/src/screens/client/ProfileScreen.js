@@ -6,10 +6,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
+import { useConfirm } from '../../context/ToastContext';
 import { colors, spacing, borderRadius, typography, shadows } from '../../lib/theme';
 
 const menuItems = [
@@ -24,15 +24,13 @@ const menuItems = [
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
+  const { showConfirm } = useConfirm();
 
   const handleLogout = () => {
-    Alert.alert(
+    showConfirm(
       'Log out',
       'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Log out', style: 'destructive', onPress: logout },
-      ]
+      logout
     );
   };
 
