@@ -113,24 +113,33 @@ export default function DashboardScreen({ navigation }) {
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statsRow}>
-            <View style={[styles.statCard, { backgroundColor: '#E8F5F3' }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: '#E8F5F3' }]}
+              onPress={() => navigation.navigate('Analytics')}
+            >
               <View style={styles.statIconContainer}>
                 <Ionicons name="calendar-outline" size={20} color={TEAL} />
               </View>
               <Text style={styles.statValue}>{stats?.today_count || 0}</Text>
               <Text style={styles.statLabel}>Today</Text>
-            </View>
+            </TouchableOpacity>
             
-            <View style={[styles.statCard, { backgroundColor: '#FEF3E2' }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: '#FEF3E2' }]}
+              onPress={() => navigation.navigate('Bookings')}
+            >
               <View style={[styles.statIconContainer, { backgroundColor: '#FDE68A' }]}>
                 <Ionicons name="time-outline" size={20} color="#F59E0B" />
               </View>
               <Text style={styles.statValue}>{stats?.pending_count || 0}</Text>
               <Text style={styles.statLabel}>Pending</Text>
-            </View>
+            </TouchableOpacity>
           </View>
           
-          <View style={styles.revenueCard}>
+          <TouchableOpacity 
+            style={styles.revenueCard}
+            onPress={() => navigation.navigate('Analytics')}
+          >
             <View style={styles.revenueLeft}>
               <Text style={styles.revenueLabel}>This Month</Text>
               <Text style={styles.revenueValue}>{formatPrice(stats?.revenue_pence || 0)}</Text>
@@ -138,7 +147,7 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.revenueTrend}>
               <Ionicons name="trending-up" size={24} color="#10B981" />
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Share Link Card */}
