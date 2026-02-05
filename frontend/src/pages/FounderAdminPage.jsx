@@ -336,6 +336,11 @@ const FounderAdminPage = () => {
                     {errorLogs.filter(l => !l.resolved).length}
                   </span>
                 )}
+                {item.id === 'inbox' && totalUnreadMessages > 0 && (
+                  <span className="ml-auto bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {totalUnreadMessages}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
