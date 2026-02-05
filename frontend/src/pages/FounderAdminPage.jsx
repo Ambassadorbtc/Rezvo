@@ -1120,7 +1120,7 @@ const FounderAdminPage = () => {
                     {/* Header */}
                     <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold">
                           {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div>
@@ -1128,14 +1128,24 @@ const FounderAdminPage = () => {
                           <p className="text-sm text-gray-500">{selectedConversation.user_email}</p>
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        selectedConversation.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
-                        selectedConversation.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                        selectedConversation.status === 'resolved' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
-                        {selectedConversation.status || 'Open'}
-                      </span>
+                      
+                      {/* Status Actions */}
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={selectedConversation.status || 'open'}
+                          onChange={(e) => updateConversationStatus(selectedConversation.id, e.target.value)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer ${
+                            selectedConversation.status === 'open' ? 'bg-amber-100 text-amber-700' :
+                            selectedConversation.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' :
+                            selectedConversation.status === 'closed' ? 'bg-gray-100 text-gray-700' :
+                            'bg-amber-100 text-amber-700'
+                          }`}
+                        >
+                          <option value="open">Open</option>
+                          <option value="resolved">Resolved</option>
+                          <option value="closed">Closed</option>
+                        </select>
+                      </div>
                     </div>
 
                     {/* Messages */}
