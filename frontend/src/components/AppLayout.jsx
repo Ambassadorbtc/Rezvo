@@ -21,9 +21,10 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import api from '../lib/api';
+import { toast } from 'sonner';
 
 const AppLayout = ({ children }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,8 +35,23 @@ const AppLayout = ({ children }) => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
   const searchRef = useRef(null);
   const notificationRef = useRef(null);
+
+  // Auto-login to admin panel (temporary for testing)
+  const handleAdminAccess = async (e) => {
+    e.preventDefault();
+    setAdminLoading(true);
+    try {
+      await login('founder@rezvo.app', 'Founder123!');
+      navigate('/admin');
+    } catch (error) {
+      toast.error('Failed to access admin panel');
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   // Fetch notifications from API
   useEffect(() => {
