@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   LayoutDashboard, 
@@ -12,15 +12,67 @@ import {
   Menu,
   X,
   Shield,
-  UsersRound
+  UsersRound,
+  Search
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
+import api from '../lib/api';
 
 const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const searchRef = useRef(null);
+
+  // Keyboard shortcut (Cmd/Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setSearchQuery('');
+        setSearchResults(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Search effect
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const res = await api.get('/search?q=' + encodeURIComponent(searchQuery));
+        setSearchResults(res.data);
+      } catch (err) {
+        setSearchResults({ bookings: [], services: [], customers: [] });
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleSearchNavigate = (path) => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults(null);
+    navigate(path);
+  };
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
