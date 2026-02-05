@@ -34,6 +34,17 @@ const SettingsPage = () => {
   const [emailReminders, setEmailReminders] = useState(true);
   const [smsReminders, setSmsReminders] = useState(false);
   const [reminderHours, setReminderHours] = useState('24');
+  
+  // Working hours state
+  const [workingHours, setWorkingHours] = useState({
+    monday: { enabled: true, open: '09:00', close: '17:00' },
+    tuesday: { enabled: true, open: '09:00', close: '17:00' },
+    wednesday: { enabled: true, open: '09:00', close: '17:00' },
+    thursday: { enabled: true, open: '09:00', close: '17:00' },
+    friday: { enabled: true, open: '09:00', close: '17:00' },
+    saturday: { enabled: false, open: '10:00', close: '16:00' },
+    sunday: { enabled: false, open: '10:00', close: '16:00' },
+  });
 
   useEffect(() => {
     loadSettings();
