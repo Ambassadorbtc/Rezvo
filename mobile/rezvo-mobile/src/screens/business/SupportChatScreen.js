@@ -37,11 +37,19 @@ export default function SupportChatScreen({ navigation, route }) {
 
   useEffect(() => {
     fetchConversations();
+    // Poll conversations every 5 seconds for real-time sync
+    const interval = setInterval(fetchConversations, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (selectedConversation) {
       fetchMessages(selectedConversation.id);
+      // Poll messages every 3 seconds when viewing a conversation
+      const messageInterval = setInterval(() => {
+        fetchMessages(selectedConversation.id);
+      }, 3000);
+      return () => clearInterval(messageInterval);
     }
   }, [selectedConversation]);
 
