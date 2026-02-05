@@ -55,13 +55,13 @@ Build a booking application MVP called `rezvo.app` for UK micro-businesses. The 
 ## Application URLs
 | Page | URL |
 |------|-----|
-| Landing | https://bookrezvo.preview.emergentagent.com |
-| Dashboard | https://bookrezvo.preview.emergentagent.com/dashboard |
-| Calendar | https://bookrezvo.preview.emergentagent.com/calendar |
-| Team | https://bookrezvo.preview.emergentagent.com/team |
-| Public Booking | https://bookrezvo.preview.emergentagent.com/book/{businessId} |
-| Mobile Preview | https://bookrezvo.preview.emergentagent.com/mobile-preview |
-| Admin | https://bookrezvo.preview.emergentagent.com/admin |
+| Landing | https://rezvo-booking-1.preview.emergentagent.com |
+| Dashboard | https://rezvo-booking-1.preview.emergentagent.com/dashboard |
+| Calendar | https://rezvo-booking-1.preview.emergentagent.com/calendar |
+| Team | https://rezvo-booking-1.preview.emergentagent.com/team |
+| Public Booking | https://rezvo-booking-1.preview.emergentagent.com/book/{businessId} |
+| Mobile Preview | https://rezvo-booking-1.preview.emergentagent.com/mobile-preview |
+| Admin | https://rezvo-booking-1.preview.emergentagent.com/admin |
 
 ## Test Credentials
 - **Email:** testuser@example.com
