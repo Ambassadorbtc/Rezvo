@@ -56,9 +56,15 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(email, password);
+      const userData = await login(email, password);
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      
+      // Redirect based on user role
+      if (userData?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Invalid credentials');
     } finally {
