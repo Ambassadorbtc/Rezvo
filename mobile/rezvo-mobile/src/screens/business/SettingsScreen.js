@@ -218,7 +218,7 @@ export default function SettingsScreen({ navigation }) {
             <View style={styles.linkActions}>
               <TouchableOpacity 
                 style={styles.linkBtn}
-                onPress={() => copyToClipboard(`https://${bookingLink}`)}
+                onPress={() => handleCopyLink(`https://${bookingLink}`)}
               >
                 <Ionicons name="copy-outline" size={18} color={TEAL} />
                 <Text style={styles.linkBtnText}>Copy</Text>
