@@ -102,18 +102,27 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ Business owner screens (Dashboard, Calendar, Bookings, Services, Settings)
 - ✅ **Redesigned week view** (Feb 5) - Card-based layout per day with booking summaries
 - ✅ **Premium booking cards** with colored top bar, team member avatar/name
+- ✅ **Branded Toast Notifications** (Feb 5) - All 40 Alert.alert calls replaced with branded toast
 - ✅ Client screens (UI mockups)
 - ✅ Push notification setup (pending integration)
 - ✅ Photo upload for profile
 
+### Notifications System (Feb 5)
+- ✅ **Notification Bell** - Functional dropdown with unread count badge
+- ✅ **Notification API** - GET /api/notifications, PATCH read/read-all
+- ✅ **Auto-notification on Booking** - Business owner receives notification when new booking created
+- ✅ **Auto-notification on Support Message** - Users notified of new messages
+- ✅ **Mark All Read** functionality
+
+### File Upload System (Feb 5)
+- ✅ **Support File Upload** - POST /api/support/upload endpoint
+- ✅ **File Types:** .jpg, .jpeg, .png, .gif, .pdf, .doc, .docx, .txt
+- ✅ **Max Size:** 5MB per file
+- ✅ **File Download** - GET /api/support/files/{file_id}
+
 ---
 
 ## Pending/In Progress Items
-
-### P0 - Critical (Next Session)
-- ⏳ **Replace remaining Alert.alert** calls in mobile app with branded toast (~40 instances)
-- ⏳ **Functional Notification Bell** - Backend endpoints + frontend integration
-- ⏳ **File Attachment Upload** - Currently UI only, needs backend storage
 
 ### P1 - High Priority
 - ⏳ **Mobile drag-and-drop for calendar** - Not yet implemented
