@@ -76,6 +76,9 @@ const SettingsPage = () => {
           setSmsReminders(settingsRes.data.reminder_settings.sms_enabled);
           setReminderHours(settingsRes.data.reminder_settings.reminder_hours?.toString() || '24');
         }
+        if (settingsRes.data.working_hours) {
+          setWorkingHours(settingsRes.data.working_hours);
+        }
       }
     } catch (error) {
       toast.error('Failed to load settings');
