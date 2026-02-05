@@ -1075,44 +1075,45 @@ const FounderAdminPage = () => {
                         </div>
                       ) : (
                         messages.map((msg) => {
-                          const isAdmin = msg.sender_id === user?.id || msg.sender_id === user?.sub || msg.is_admin;
+                          // For founder/admin view: admin messages on RIGHT, user messages on LEFT
+                          const isFromAdmin = msg.is_admin === true;
                           return (
                             <div
                               key={msg.id}
-                              className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
+                              className={`flex ${isFromAdmin ? 'justify-end' : 'justify-start'}`}
                             >
-                              {/* User avatar on left for non-admin */}
-                              {!isAdmin && (
+                              {/* User avatar on left for non-admin messages */}
+                              {!isFromAdmin && (
                                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0">
                                   {selectedConversation.user_email?.charAt(0).toUpperCase() || 'U'}
                                 </div>
                               )}
                               
                               <div className={`max-w-[70%] rounded-2xl p-3 ${
-                                isAdmin
+                                isFromAdmin
                                   ? 'bg-[#00BFA5] text-white rounded-br-sm'
                                   : 'bg-white text-[#0A1626] shadow-sm rounded-bl-sm border border-gray-100'
                               }`}>
-                                {!isAdmin && (
+                                {!isFromAdmin && (
                                   <p className="text-xs font-medium text-blue-600 mb-1">
-                                    {selectedConversation.user_email?.split('@')[0] || 'User'}
+                                    {msg.sender_name || selectedConversation.user_email?.split('@')[0] || 'User'}
                                   </p>
                                 )}
                                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                                <div className={`flex items-center gap-1 mt-1.5 ${isAdmin ? 'justify-end' : ''}`}>
+                                <div className={`flex items-center gap-1 mt-1.5 ${isFromAdmin ? 'justify-end' : ''}`}>
                                   <p className={`text-[10px] ${
-                                    isAdmin ? 'text-white/70' : 'text-gray-400'
+                                    isFromAdmin ? 'text-white/70' : 'text-gray-400'
                                   }`}>
                                     {msg.created_at ? format(new Date(msg.created_at), 'HH:mm') : '-'}
                                   </p>
-                                  {isAdmin && (
+                                  {isFromAdmin && (
                                     <CheckCircle className="w-3 h-3 text-white/70" />
                                   )}
                                 </div>
                               </div>
                               
                               {/* Admin avatar on right */}
-                              {isAdmin && (
+                              {isFromAdmin && (
                                 <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0">
                                   <Shield className="w-4 h-4" />
                                 </div>
