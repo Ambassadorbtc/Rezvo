@@ -130,7 +130,7 @@ export default function HelpCentreScreen({ navigation }) {
           <Text style={styles.contactSubtitle}>Our support team is here to assist you</Text>
           <TouchableOpacity 
             style={styles.contactBtn}
-            onPress={() => navigation.navigate('ContactSupport')}
+            onPress={() => navigation.navigate('SupportChat')}
           >
             <Text style={styles.contactBtnText}>Contact Support</Text>
           </TouchableOpacity>
