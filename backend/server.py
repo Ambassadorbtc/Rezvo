@@ -3574,6 +3574,7 @@ async def send_message(conversation_id: str, data: MessageCreate, current_user: 
         raise HTTPException(status_code=403, detail="Not authorized")
     
     user = await db.users.find_one({"id": current_user["sub"]})
+    is_admin = current_user.get("role") == "admin"
     now = datetime.now(timezone.utc)
     message_id = str(uuid.uuid4())
     
@@ -3584,6 +3585,7 @@ async def send_message(conversation_id: str, data: MessageCreate, current_user: 
         "sender_name": user.get("email", "User") if user else "Support",
         "content": data.content,
         "read": False,
+        "is_admin": is_admin,
         "created_at": now.isoformat()
     }
     await db.messages.insert_one(message_doc)
