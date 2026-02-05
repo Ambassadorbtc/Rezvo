@@ -44,11 +44,14 @@ const AppLayout = ({ children }) => {
     e.preventDefault();
     setAdminLoading(true);
     try {
+      // Logout current user first
+      logout();
+      // Login as founder
       await login('founder@rezvo.app', 'Founder123!');
-      navigate('/admin');
+      // Force page reload to update all components
+      window.location.href = '/admin';
     } catch (error) {
       toast.error('Failed to access admin panel');
-    } finally {
       setAdminLoading(false);
     }
   };
