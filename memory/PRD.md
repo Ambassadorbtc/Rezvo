@@ -13,21 +13,21 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 ## Application URLs
 | Page | URL |
 |------|-----|
-| Landing Page | https://appointment-pro-51.preview.emergentagent.com |
-| Login | https://appointment-pro-51.preview.emergentagent.com/login |
-| Dashboard | https://appointment-pro-51.preview.emergentagent.com/dashboard |
-| Calendar | https://appointment-pro-51.preview.emergentagent.com/calendar |
-| Team | https://appointment-pro-51.preview.emergentagent.com/team |
-| Services | https://appointment-pro-51.preview.emergentagent.com/services |
-| Products | https://appointment-pro-51.preview.emergentagent.com/products |
-| Bookings | https://appointment-pro-51.preview.emergentagent.com/bookings |
-| Settings | https://appointment-pro-51.preview.emergentagent.com/settings |
-| Analytics | https://appointment-pro-51.preview.emergentagent.com/analytics |
-| Support | https://appointment-pro-51.preview.emergentagent.com/support |
-| Admin Panel | https://appointment-pro-51.preview.emergentagent.com/admin |
-| Booking Page Settings | https://appointment-pro-51.preview.emergentagent.com/booking-page |
-| Public Booking | https://appointment-pro-51.preview.emergentagent.com/book/{businessId} |
-| Mobile Preview | https://appointment-pro-51.preview.emergentagent.com/mobile-preview |
+| Landing Page | https://appoint-ease-28.preview.emergentagent.com |
+| Login | https://appoint-ease-28.preview.emergentagent.com/login |
+| Dashboard | https://appoint-ease-28.preview.emergentagent.com/dashboard |
+| Calendar | https://appoint-ease-28.preview.emergentagent.com/calendar |
+| Team | https://appoint-ease-28.preview.emergentagent.com/team |
+| Services | https://appoint-ease-28.preview.emergentagent.com/services |
+| Products | https://appoint-ease-28.preview.emergentagent.com/products |
+| Bookings | https://appoint-ease-28.preview.emergentagent.com/bookings |
+| Settings | https://appoint-ease-28.preview.emergentagent.com/settings |
+| Analytics | https://appoint-ease-28.preview.emergentagent.com/analytics |
+| Support | https://appoint-ease-28.preview.emergentagent.com/support |
+| Admin Panel | https://appoint-ease-28.preview.emergentagent.com/admin |
+| Booking Page Settings | https://appoint-ease-28.preview.emergentagent.com/booking-page |
+| Public Booking | https://appoint-ease-28.preview.emergentagent.com/book/{businessId} |
+| Mobile Preview | https://appoint-ease-28.preview.emergentagent.com/mobile-preview |
 
 ### Expo Mobile App
 | Access Method | URL |

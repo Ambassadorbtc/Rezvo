@@ -73,6 +73,6 @@
   "context_for_next_testing_agent": "All core features tested and working. Session persistence issue from previous iterations has been resolved. Share link now correctly uses rezvo-booking.preview.emergentagent.com domain. Fonts updated to Space Grotesk (headlines) and Plus Jakarta Sans (body) for Monzo/Starling aesthetic. Test user credentials: testuser@example.com / password123",
   
   "fixes_applied": [
-    "Added FRONTEND_URL=https://appointment-pro-51.preview.emergentagent.com to backend/.env to fix share link URL generation (was showing quickslot.uk)"
+    "Added FRONTEND_URL=https://appoint-ease-28.preview.emergentagent.com to backend/.env to fix share link URL generation (was showing quickslot.uk)"
   ]
 }

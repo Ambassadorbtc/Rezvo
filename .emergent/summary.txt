@@ -1,152 +1,120 @@
 <analysis>**original_problem_statement:**
-The user wants to build a booking application MVP, , for UK micro-businesses. The core of the application is a web-first responsive platform and a native mobile app for both clients and businesses. The design should be super modern, inspired by challenger banks like Monzo.
+The user wants to build a booking application MVP, , for UK micro-businesses. The core of the application is a web-first responsive platform and a native mobile app for both clients and businesses. The design should be super modern.
 
 **PRODUCT REQUIREMENTS:**
-- **Monetization:** A £4.99/month subscription model via Stripe (currently de-prioritized).
 - **Core Feature:** Businesses can generate a shareable link for customers to book services.
 - **Platforms:** A web application (React) and a native mobile app (React Native/Expo).
-- **Design:** A light theme with teal accents and modern fonts (, ).
+- **Design:** A light theme with teal accents and modern fonts.
 - **Key Features Requested:**
     - JWT-based user authentication.
-    - A Founder admin panel for user/business management and analytics.
-    - An onboarding wizard for new businesses.
-    - Dynamic calendars for managing availability, including a team view with day/week/month modes.
-    - A brandable, customer-facing public booking page with team member selection.
+    - A Founder admin panel for user/business management.
+    - A brandable, customer-facing public booking page.
     - A Products feature for businesses to sell items.
-    - Legal pages (Privacy, Terms) and a cookie consent popup.
-    - Functional global search on the web app.
-    - Seeding of dummy data for testing.
-    - Custom-branded notifications via Resend and in-app dialogs.
-    - A fully functional mobile app for business owners and clients.
-    - Team member management with profile images and in-page editing.
-    - A complete mobile authentication flow (Forgot Password, etc.).
-    - **New Features from this session:** Google Calendar Sync, Push Notifications, Automated Reminders, Staff Logins, Customer Reviews, Multi-location, Advanced Scheduling, and a Support Messaging system.
+    - A fully functional support messaging system with premium features (status management, history, file attachments, emoji).
+    - Functional notification center on web and mobile, tied to email alerts.
+    - Branded, custom notifications to replace all native OS/browser alerts.
+- **User's latest requests:**
+    1.  **Support Chat:** Add ticket history (open, resolved, closed), status management (re-open), and the ability for users to create new tickets from the web portal.
+    2.  **Mobile Calendar:** Fix appointment card styling (text position, add professional's name/icon) and implement dynamic drag-and-drop between days.
+    3.  **Mobile Notifications:** Replace all default  notifications with a custom, branded system.
+    4.  **Notification Bell:** Make the notification bell on both web and mobile functional, showing updates for bookings and support messages, and trigger email alerts for customers on key events.
+    5.  **Booking Page:** Refine the booking modal to be more premium, as per the provided image.
+    6.  **Complete All Other Requests:** Systematically work through the backlog of features and fixes.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend, React frontend, and MongoDB. The critical recurring mobile app crash has been fixed by pinning a dependency version. The agent implemented a large batch of new features on both the backend and frontend, including a redesigned web login page, a new support messaging system (partially implemented), a redesigned web calendar, and several UI/UX improvements on the mobile app. However, the latest changes introduced significant new bugs, including a non-functional calendar drag-and-drop and a missing support inbox in the admin panel. The external login issue was also resolved by correcting the backend URL in the frontend's environment file.
+A full-stack application with a FastAPI backend, React frontend, and a React Native/Expo mobile app. The agent has just completed a large batch of work addressing user feedback. This includes a redesigned, more premium public booking page and modal, an enhanced support page with status filtering and a new issue form, and a new Products page on the web app. The Founder Admin Panel has also been fixed to correctly display and interact with support messages. On the mobile side, the agent resolved critical dependency issues, set up a context for a new global toast notification system, and added the UI for a (currently non-functional) notification bell.
 
 **Last working item**:
--   **Last item agent was working:** The agent was addressing a user request to fix several issues and add new features. It rewrote the web calendar to add drag-and-drop functionality and premium styling, and updated the Founder Admin Panel to include a support inbox.
+-   **Last item agent was working:** The agent was about to begin fixing the UI and functionality of the mobile calendar. The user reported that appointment cards have misaligned text and are missing the professional's details, and that drag-and-drop between days is not working. The agent had just viewed the relevant file, , to start implementing these fixes.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N (Agent took screenshots but the user immediately reported the features were not working as expected).
--   **Which testing method agent to use?** Frontend testing agent to verify the calendar's drag-and-drop functionality, styling, and the presence and functionality of the support inbox in the Founder Admin Panel.
--   **User Testing Done:** Y (User reported the changes did not work).
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent to test the mobile app, specifically focusing on the calendar's UI (card styling, text position) and drag-and-drop functionality.
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** Calendar appointments are not draggable (P0 - Regression).
--   **Issue 2:** The Support Inbox is missing from the Founder Admin Panel (P0 - Regression).
--   **Issue 3:** The web calendar styling is not premium as requested (P0 - UI/UX).
--   **Issue 4:** The global search feature relies on a disabled babel plugin (P1 - technical debt).
--   **Issue 5:** The client-facing mobile app screens are not connected to backend APIs (P1).
--   **Issue 6:** Default  and  notifications are still present throughout the mobile and web apps (P2).
+-   **Issue 1 (P0):** The mobile calendar card styling is incorrect; text is not positioned neatly, and the professional's name/icon is missing.
+-   **Issue 2 (P0):** Mobile calendar appointments are not draggable between days.
+-   **Issue 3 (P0):** Default native notifications () are still present across the mobile app (~40 instances).
+-   **Issue 4 (P0):** The notification bell on both the mobile and web dashboards is not functional. It does not fetch or display notifications.
+-   **Issue 5 (P1):** The logic for sending email notifications tied to in-app alerts has not been implemented.
+-   **Issue 6 (P1):** File attachment functionality in the support chat has not been implemented.
+-   **Issue 7 (P2):** Settings sync between mobile and web is incomplete.
+-   **Issue 8 (P2):** The client-facing mobile app screens (booking, search) are not fully connected to backend APIs.
+-   **Issue 9 (P2):** The global search feature relies on a disabled babel plugin, which constitutes technical debt.
 
 **Issues Detail:**
--   **Issue 1:**
-    -   **Description:** The user reported that appointments on the web calendar are not draggable, even after the agent rewrote the page specifically to add this feature.
-    -   **Attempted fixes:** The agent overwrote  with code intended to enable drag-and-drop. This failed.
+-   **Issue 1:** Mobile calendar card styling is incorrect
+    -   **Attempted fixes:** None. The agent was just about to start.
     -   **Next debug checklist:**
-        1.  Verify the  or similar library is correctly installed and configured in .
-        2.  Check the browser console for errors when attempting to drag an appointment.
-        3.  Ensure the backend endpoint () is correctly called upon drop, with the new .
-    -   **Why fix this issue and what will be achieved with the fix?** This is a core usability feature for the calendar that the user explicitly requested.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
--   **Issue 2:**
-    -   **Description:** The user reported that the Support Inbox tab is not visible in the Founder Admin Panel after the agent's update.
-    -   **Attempted fixes:** The agent edited  to add the new tab and component.
-    -   **Next debug checklist:**
-        1.  Inspect the code in  to see why the Support Inbox tab is not rendering in the  array or why the conditional rendering for the component is failing.
-        2.  Check the  component itself for rendering errors.
-    -   **Why fix this issue and what will be achieved with the fix?** The support system is a new key feature requested by the user, and this makes it inaccessible.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 3:**
-    -   **Description:** The user is not satisfied with the visual premium quality of the updated calendar.
-    -   **Attempted fixes:** The agent rewrote .
-    -   **Next debug checklist:**
-        1.  Review the user's previous feedback on premium design (e.g., from the  redesign).
-        2.  Focus on spacing, typography, color consistency, and subtle interaction animations.
-        3.  Compare with modern calendar apps for inspiration.
-    -   **Why fix this issue and what will be achieved with the fix?** Meets the user's explicit design requirements.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 4:**
-    -   **Description:** The global search crashes the app if  is enabled in . It is currently disabled.
-    -   **Attempted fixes:** The plugin was disabled as a workaround.
-    -   **Next debug checklist:**
-        1.  Investigate configuring the plugin to exclude problematic components.
-        2.  Refactor components like  and  to be simpler.
-        3.  Re-enable the plugin once a stable solution is found.
-    -   **Why fix this issue and what will be achieved with the fix?** Resolves technical debt and re-enables a platform feature (visual edits).
+        1.  Modify the rendering logic for booking items in .
+        2.  Ensure the booking data includes the team member's details (name, avatar).
+        3.  Update the component's styles to correctly position text and include the professional's avatar and name.
+    -   **Why fix this issue and what will be achieved with the fix?** To meet the user's explicit UI/UX requirements for a premium feel on the mobile app.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 5:**
-    -   **Description:** Mobile screens for clients (booking, search) are UI mockups without backend integration.
-    -   **Attempted fixes:** None.
+    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
+-   **Issue 2:** Mobile calendar appointments are not draggable
+    -   **Attempted fixes:** None for mobile.
     -   **Next debug checklist:**
-        1.  Identify client screens in .
-        2.  Implement API calls to fetch businesses, services, and availability.
-    -   **Why fix this issue and what will be achieved with the fix?** Makes the client-facing mobile app functional.
+        1.  Integrate a drag-and-drop library (e.g., ) into .
+        2.  Implement  handlers that call the  endpoint with the new date.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a core usability feature requested by the user.
     -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
+    -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Both
--   **Issue 6:**
-    -   **Description:** The user wants all native browser/OS alerts (, , ) removed and replaced with custom, branded UI components.
-    -   **Attempted fixes:** Agent created a  for web and a  hook for mobile but did not replace all instances.
+-   **Issue 3:** Default native notifications still exist on mobile
+    -   **Attempted fixes:** A  was created, but the ~40 instances of  have not been replaced.
     -   **Next debug checklist:**
-        1.  Globally search the codebase for , , and .
-        2.  Systematically replace each instance with the appropriate custom component (, , ).
-    -   **Why fix this issue and what will be achieved with the fix?** Provides a consistent, professional, and branded user experience.
+        1.  Globally search for  in the  directory.
+        2.  Systematically replace each instance with the  hook from the .
+    -   **Why fix this issue and what will be achieved with the fix?** To provide a consistent and professional branded user experience, as requested.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
+-   **Issue 4:** Notification bell is not functional
+    -   **Attempted fixes:** The UI for the bell icon was added to web and mobile dashboards. A placeholder  was created. Backend logic is missing.
+    -   **Next debug checklist:**
+        1.  Create backend endpoints (, ) and a  collection in MongoDB.
+        2.  Trigger notification creation in the backend for key events (e.g., new booking, new support message).
+        3.  Connect the frontend screens to fetch and display notifications and update the unread count badge.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a key feature for user engagement and keeping users informed of important activity.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both
 
 **In progress Task List**:
--   **Task 1:** Implement a support messaging system (P1)
-    -   **Where to resume:** The backend endpoints and a basic frontend page exist. The immediate next step is to fix the Founder Admin Panel to correctly display the Support Inbox.
-    -   **What will be achieved with this?** A functional internal messaging system for founders to handle support tickets.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** Blocked by **Issue 2**.
--   **Task 2:** Implement a premium mobile calendar (P1)
-    -   **Where to resume:** The agent overwrote  with a new implementation. This new screen needs to be tested and refined.
-    -   **What will be achieved with this?** A mobile calendar with Day/Week/Month views, double-tap to add bookings, and no native alerts.
+-   **Task 1:** Implement a branded notification system for mobile (P0)
+    -   **Where to resume:** Replace all  calls throughout the mobile app with the custom  hook.
+    -   **What will be achieved with this?** A unified, professional notification experience on mobile, removing all native OS dialogs.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks (P1):**
-    - **Google Calendar Sync:** Implement the two-way sync logic. Backend endpoints and dependencies are installed.
-    - **Push Notifications:** Integrate with Expo's push notification service.
-    - **Automated Booking Reminders:** Implement the logic for the  job to send email reminders.
+    - **Functional Notification Center:** Implement the backend logic for creating, fetching, and reading notifications to make the notification bell functional.
+    - **Google Calendar Sync:** Implement the two-way sync logic.
+    - **Automated Booking Reminders (Email):** Implement the  job to send email reminders via Resend.
+    - **Push Notifications (Mobile):** Integrate with Expo's push notification service.
 - **Future Tasks (P2):**
-    - **Stripe Subscription:** Implement the £4.99/month payment flow (User de-prioritized).
-    - **SMS Notifications (Twilio):** Integrate Twilio for SMS reminders (User de-prioritized).
-    - **Staff Separate Logins:** Allow team members to log in with their own credentials.
-    - **Customer Reviews & Ratings:** Implement a rating system for services.
-    - **Multi-location Support:** Add the ability to manage multiple business locations.
-    - **Advanced Team Scheduling:** Add features like shift management and custom hours per team member.
+    - **Stripe Subscription**
+    - **Staff Separate Logins**
+    - **Customer Reviews & Ratings**
+    - **Multi-location Support**
 
 **Completed work in this session**
--   **Expo Mobile App Crash (FIXED):** Diagnosed and fixed the critical, recurring mobile app crash by identifying a version conflict in  and pinning it to a stable version ().
--   **External Web Login (FIXED):** Resolved an issue where users couldn't log in from the public URL by correcting  in the frontend  file from  to the preview URL.
--   **New Feature Backend Implementation:** Added numerous backend models and API endpoints in  for Google Calendar, reviews, staff scheduling (shifts, time off), multi-location support, and a new support messaging system.
--   **Web UI/UX Overhaul:**
-    -   Redesigned the  with a premium two-column layout and rotating background images.
-    -   Replaced the global search modal with a dropdown search component in .
-    -   Created a new  and integrated it into the main app navigation.
--   **Mobile UI/UX Improvements:**
-    -   Created a new .
-    -   Made statistic cards on the mobile  tappable, navigating to the new analytics screen.
-    -   Overhauled the mobile  to add view tabs and remove alerts (needs verification).
-    -   Improved the mobile  by tightening the profile card layout and adding photo upload functionality via .
-    -   Began replacing native  calls, creating a custom  hook.
+-   **Premium Web UI/UX Overhaul:**
+    -   Redesigned the Public Booking Page () with a compact layout and a premium, multi-step booking modal.
+    -   Redesigned the Support Page () with status filters (All, Open, Resolved, Closed) and a form to create new tickets.
+    -   Added a Products page () to the web app with full CRUD functionality and added it to the main navigation.
+-   **Backend & Bug Fixes:**
+    -   Enhanced the support system backend with endpoints to update ticket status and edit/delete messages ().
+    -   Fixed the Founder Admin Panel () to correctly fetch and display support conversations and messages.
+    -   Replaced a native  dialog on the web  with a custom .
+-   **Mobile Environment Stabilized:**
+    -   Resolved multiple Expo/Metro dependency conflicts to get the mobile development server running reliably.
+    -   Set up the foundation for a global mobile notification system ().
 
 **Earlier issues found/mentioned but not fixed**
 -   The root cause of the conflict between  and complex JSX components was not resolved. The plugin remains disabled in .
@@ -154,109 +122,82 @@ A full-stack application with a FastAPI backend, React frontend, and MongoDB. Th
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Mobile app crashes on login.
 -   **Recurrence count:** 3
--   **Status:** RESOLVED (but high risk of recurrence; the fix was to pin a dependency, which might need updating with future Expo SDK changes).
+-   **Status:** RESOLVED. The mobile environment appears stable for now after several dependency fixes, but it remains a high-risk area.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Backend:** FastAPI, Pydantic, JWT, MongoDB, 
--   **Frontend (Web):** React, React Router, Tailwind CSS, Axios, Craco
+-   **Backend:** FastAPI, Pydantic, JWT, MongoDB
+-   **Frontend (Web):** React, React Router, Tailwind CSS, Shadcn/UI, Axios
 -   **Frontend (Mobile):** React Native, Expo (SDK 54), React Navigation
--   **Tooling:** Babel, Yarn (for dependency management and pinning)
+-   **State Management:** Heavy use of React Hooks (, ) for managing complex UI state.
 
 **key DB schema**
--   **reviews:** 
--   **business_locations:** 
--   **shifts:** 
--   **time_off_requests:** 
--   **support_tickets:** 
--   **support_messages:** 
-
-**changes in tech stack**
--   None.
+-   **support_tickets:** Updated to include  (e.g., 'open', 'closed'), , and more detailed timestamps.
 
 **All files of reference**
--   **/app/frontend/src/pages/CalendarPage.jsx**: Needs to be fixed to implement working drag-and-drop and better styling.
--   **/app/frontend/src/pages/FounderAdminPage.jsx**: Needs to be fixed to show the Support Inbox.
--   **/app/mobile/rezvo-mobile/package.json**: Shows the pinned  version, which is the critical fix for the mobile crash.
--   **/app/mobile/rezvo-mobile/src/navigation/AppNavigator.js**: The heart of the mobile navigation, heavily modified to fix the crash.
--   **/app/backend/server.py**: Now contains almost all backend logic, including the new (untested) feature endpoints.
--   **/app/frontend/.env**: Was the cause of the external login issue.
+-   **/app/mobile/rezvo-mobile/src/screens/business/CalendarScreen.js**: Target for the next set of critical UI and functionality fixes.
+-   **All files containing  in **: These need to be refactored to use the new .
+-   **/app/frontend/src/components/AppLayout.jsx**: Contains the UI for the web notification bell that needs to be made functional.
+-   **/app/mobile/rezvo-mobile/src/screens/business/DashboardScreen.js**: Contains the UI for the mobile notification bell.
+-   **/app/backend/server.py**: Will need new endpoints to support the notification center.
 
 **Areas that need refactoring**:
--    is now a massive monolith (over 3000 lines) and urgently needs to be broken into modular FastAPI routers.
--   The  technical debt still exists.
--   The process of removing all native alerts (, , ) is incomplete and needs to be finished for UI consistency.
-
-**key api endpoints**
--    **(NEW)**
--    **(NEW)**
--    (CRUD) **(NEW)**
--    (CRUD) **(NEW)**
--    (CRUD, approve/deny) **(NEW)**
--    (CRUD) **(NEW)**
--    (CRUD) **(NEW)**
--    (GET, POST) **(NEW)**
--   , ,  **(NEW)**
+-    is a large monolith and should be broken into modular FastAPI routers.
+-   The mobile app's native  calls must be systematically removed.
 
 **Critical Info for New Agent**
--   **TOP PRIORITY (P0): Fix the regressions from the last update.** The user reported that the calendar drag-and-drop is broken and the support inbox is missing from the admin panel. Address these immediately.
--   **Verify Mobile Stability:** The critical mobile crash was fixed by pinning  to . While this seems to have worked, this type of fix can be fragile. The first step on mobile should be to start the Expo server and confirm login still works.
--   **Backend is Untested:** The agent added a huge number of new models and endpoints to  for features like Google Calendar Sync, reviews, scheduling, etc. None of these have been tested or wired up to the frontend.
--   **Finish the Alert Refactor:** The user wants all native alerts gone. The agent started this but didn't finish. Create a plan to systematically remove all remaining instances from both web and mobile.
+-   **User Priorities are Clear:** The user has provided a numbered list of tasks. Address them in this order: 1. Chat System, 2. Mobile Calendar, 3. Mobile Notifications, 4. Notification Bell, 5. Booking Page Polish.
+-   **Mobile First:** The highest priority items are on the mobile app (Calendar, Notifications). This should be the immediate focus.
+-   **Fragile Mobile Environment:** The mobile app's dependencies have caused significant delays. Be extra cautious when modifying  or installing new libraries in the  directory. Test thoroughly after any change.
+-   **Notifications are a Key Theme:** A significant portion of the user's latest request revolves around building a comprehensive notification system (in-app bell, branded popups, emails). This will require coordinated work on the backend, web frontend, and mobile app.
 
 **documents and test reports created in this job**
+-   /app/test_reports/iteration_13.json
 -   /app/memory/PRD.md (updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User (LATEST):** Reported new bugs: calendar appointments are not draggable, the support inbox is missing in the admin panel, and the calendar styling is not premium enough. (INCOMPLETE)
-9.  **User:** Complained about not being able to log in from the external URL. (RESOLVED)
-8.  **User:** Acknowledged UI improvements were implemented and asked for the next steps. (DONE)
-7.  **User:** Saw an empty QR code page and asked the agent to fix it. (RESOLVED)
-6.  **User:** Complained about the QR code page showing a manual URL and things being broken. (RESOLVED)
-5.  **User:** Reported the Expo app was still crashing after the agent's first few attempts. (RESOLVED)
-4.  **User:** Provided an image of the Expo crash error. (RESOLVED)
-3.  **User:** Reported the Expo tunnel was not working on the testing page. (RESOLVED)
-2.  **User:** Requested all application URLs and asked the agent to implement a list of features, excluding Stripe and Twilio. (IN PROGRESS)
-1.  **User:** Asked the agent to fix the Expo server crash once and for all. (RESOLVED)
+10. **(LATEST) User:** Provided a detailed list of remaining issues and new requests, including fixes for chat, mobile calendar, notifications, and the booking page popup, along with a reference image. **(IN PROGRESS)**
+9.  **User:** Requested the web URL for the mobile preview page. **(RESOLVED)**
+8.  **User:** Pointed out that a comprehensive list of all application URLs was not provided, referencing a previous, more detailed format. **(RESOLVED)**
+7.  **User:** Provided a list of new requests and bug fixes (this was a precursor to the latest, more detailed list). **(IN PROGRESS)**
+6.  **User:** Asked for the updated URLs again. **(RESOLVED)**
+5.  **User:** Confirmed the previous agent did not provide all URLs. **(RESOLVED)**
+4.  **User:** Received an initial set of URLs. **(RESOLVED)**
+3.  **User:** Asked the agent to provide all application URLs and finish outstanding tasks. **(IN PROGRESS)**
+2.  **User:** Approved the agent's initial plan to fix regressions. **(DONE)**
+1.  **Agent:** Sent the initial plan to the user for approval. **(DONE)**
 
 **Project Health Check:**
 -   **Broken:**
-    -   **Web Calendar Drag-and-Drop:** Core functionality of the rewritten page is not working.
-    -   **Founder Admin Support Inbox:** The UI for the new feature is not appearing.
+    -   **Mobile Calendar:** The UI is not styled correctly, and drag-and-drop is non-functional.
+    -   **Notification System:** The notification bell is UI-only. The backend logic to create, fetch, and display notifications is missing.
 -   **Mocked:**
-    -   The entire client-side mobile app flow (booking, search).
-    -   All newly added backend features (Google Sync, Reviews, Staff Scheduling, etc.) have no frontend implementation.
+    -   File attachments in support chat.
+    -   Push notifications and email alerts triggered by in-app events.
 -   **Technical Debt:**
-    -   ** disabled:** The underlying conflict remains unresolved.
-    -   ** monolith:** The main backend file is now extremely large and difficult to maintain.
-    -   **Incomplete Alert Refactor:** Native alerts are still scattered throughout the codebase.
+    -   The monolithic  file.
+    -   The disabled  in the web frontend.
+    -   Approximately 40 instances of native  calls remain in the mobile codebase.
 
 **3rd Party Integrations**
--   **OpenAI GPT-4o-mini:** Backend implementation. Uses Emergent LLM Key.
--   **Resend.com:** Backend implementation for email. Requires User API Key.
+-   **Resend.com:** For emails (backend implemented).
 -   **React Native / Expo:** Core mobile framework.
--   **recharts:** Used for charts in the web admin panel.
--   **apscheduler:** Installed for backend scheduled jobs.
--   **google-auth-oauthlib:** Installed for Google Calendar integration.
--   **expo-image-picker:** Installed for mobile image uploads.
--   **Stripe:** Deferred by user.
+-   **Shadcn/UI:** Component library for the web frontend.
+-   **google-auth-oauthlib:** Installed for future Google Calendar integration.
+-   **:** Installed for web support chat.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
--   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Testing agent used after significant changes:** YES, the agent ran the testing agent which reported minor issues that were subsequently fixed.
 -   **Test files created:** None.
--   **Known regressions:**
-    -   Web calendar drag-and-drop is broken.
-    -   Founder Admin Panel UI for support inbox is broken.
+-   **Known regressions:** The mobile calendar UI and drag-and-drop functionality are broken/incomplete, which was part of the user's latest feedback.
 
 **Credentials to test flow:**
 -   **Email:** 
 -   **Password:** 
 
 **What agent forgot to execute**
--   The agent failed to test the major features (calendar drag-and-drop, admin panel support inbox) it implemented before finishing, leading to immediate user-reported regressions.
--   The agent did not use the  after a very large batch of changes, which would have likely caught the new bugs.
--   The agent did not fully complete the requested refactor to remove all native  dialogs from the mobile app.
--   The agent declared the task complete based on screenshots, ignoring the user's final message which clearly stated that the new features were broken.</analysis>
+-   The agent did not fully complete the request to remove all native alerts from the mobile app.
+-   The agent created UI for features like file attachments and a notification bell but did not implement the corresponding backend functionality.
+-   The agent did not implement the requested logic for tying in-app notifications to email alerts.</analysis>
