@@ -974,6 +974,18 @@ async def create_public_booking(data: BookingCreate):
             html
         ))
     
+    # Create notification for business owner
+    owner = await db.users.find_one({"business_id": service["business_id"]}, {"_id": 0})
+    if owner:
+        await create_notification_internal(
+            user_id=owner["id"],
+            title="New Booking Received!",
+            message=f"{data.client_name} booked {service['name']} for {data.datetime_iso[:10]}",
+            notif_type="booking",
+            link=f"/bookings",
+            business_id=service["business_id"]
+        )
+    
     return {
         "id": booking_id,
         "status": "pending",
