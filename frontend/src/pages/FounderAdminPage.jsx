@@ -1091,7 +1091,7 @@ const FounderAdminPage = () => {
                               
                               <div className={`max-w-[70%] rounded-2xl p-3 ${
                                 isFromAdmin
-                                  ? 'bg-[#00BFA5] text-white rounded-br-sm'
+                                  ? 'bg-blue-500 text-white rounded-br-sm'
                                   : 'bg-white text-[#0A1626] shadow-sm rounded-bl-sm border border-gray-100'
                               }`}>
                                 {!isFromAdmin && (
@@ -1114,7 +1114,7 @@ const FounderAdminPage = () => {
                               
                               {/* Admin avatar on right */}
                               {isFromAdmin && (
-                                <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0">
                                   <Shield className="w-4 h-4" />
                                 </div>
                               )}
