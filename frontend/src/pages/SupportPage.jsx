@@ -145,18 +145,35 @@ const SupportPage = () => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
+    const messageContent = newMessage;
     setSending(true);
+    
+    // Optimistically add message to UI immediately
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
+      sender_id: user?.id || user?.sub,
+      sender_name: user?.email || 'User',
+      content: messageContent,
+      is_admin: false,
+      created_at: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage('');
+    setReplyingTo(null);
+    
     try {
       await api.post(`/conversations/${selectedConversation.id}/messages`, {
-        content: newMessage,
+        content: messageContent,
         reply_to: replyingTo?.id || null
       });
       
-      setNewMessage('');
-      setReplyingTo(null);
+      // Reload to get actual message from server
       await loadMessages(selectedConversation.id);
       await loadConversations();
     } catch (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
+      setNewMessage(messageContent);
       toast.error('Failed to send message');
     } finally {
       setSending(false);
