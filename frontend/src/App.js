@@ -29,7 +29,7 @@ import CookieConsent from "./components/CookieConsent";
 
 import "./App.css";
 
-// Protected Route wrapper
+// Protected Route wrapper for business owners
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -48,15 +48,69 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Admin-only route wrapper
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // Redirect non-admins to dashboard
+  if (user.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
+};
+
+// Business owner route wrapper (redirects admins to admin panel)
+const BusinessRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // Redirect admins to admin panel
+  if (user.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+  
+  return children;
+};
+
+// Helper to get default redirect based on role
+const getDefaultRoute = (user) => {
+  if (!user) return '/login';
+  return user.role === 'admin' ? '/admin' : '/dashboard';
+};
+
 function AppRoutes() {
   const { user } = useAuth();
   
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
-      <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
-      <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
+      <Route path="/" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LandingPage />} />
+      <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LoginPage />} />
+      <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupPage />} />
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/b/:shortCode" element={<ShortLinkRedirect />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
