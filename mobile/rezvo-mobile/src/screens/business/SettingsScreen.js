@@ -618,6 +618,38 @@ export default function SettingsScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        visible={showLogoutConfirm}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowLogoutConfirm(false)}
+      >
+        <View style={styles.confirmOverlay}>
+          <View style={styles.confirmContent}>
+            <View style={styles.confirmIconWrap}>
+              <Ionicons name="log-out-outline" size={32} color="#EF4444" />
+            </View>
+            <Text style={styles.confirmTitle}>Log out?</Text>
+            <Text style={styles.confirmDesc}>Are you sure you want to log out of your account?</Text>
+            <View style={styles.confirmBtns}>
+              <TouchableOpacity 
+                style={styles.confirmCancelBtn}
+                onPress={() => setShowLogoutConfirm(false)}
+              >
+                <Text style={styles.confirmCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.confirmLogoutBtn}
+                onPress={confirmLogout}
+              >
+                <Text style={styles.confirmLogoutText}>Log out</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
