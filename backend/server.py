@@ -3219,6 +3219,185 @@ async def deny_time_off(request_id: str, reason: Optional[str] = None, current_u
     )
     return {"status": "denied"}
 
+# ==================== SUPPORT MESSAGING ====================
+
+@api_router.get("/conversations")
+async def get_conversations(current_user: dict = Depends(get_current_user)):
+    """Get all conversations for the current user"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    user_id = current_user["sub"]
+    
+    conversations = await db.conversations.find(
+        {"participants": user_id}
+    ).sort("last_message_at", -1).to_list(50)
+    
+    result = []
+    for conv in conversations:
+        conv_id = conv.get("id")
+        unread = await db.messages.count_documents({
+            "conversation_id": conv_id,
+            "sender_id": {"$ne": user_id},
+            "read": False
+        })
+        result.append({
+            "id": conv_id,
+            "participants": conv.get("participants", []),
+            "participant_names": conv.get("participant_names", {}),
+            "last_message": conv.get("last_message"),
+            "last_message_at": conv.get("last_message_at"),
+            "unread_count": unread,
+            "type": conv.get("type", "support")
+        })
+    
+    return result
+
+@api_router.post("/conversations")
+async def create_conversation(data: MessageCreate, current_user: dict = Depends(get_current_user)):
+    """Start a new conversation with support"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    now = datetime.now(timezone.utc)
+    conversation_id = str(uuid.uuid4())
+    
+    # Support conversation - between user and admin
+    participants = [current_user["sub"], "support"]
+    participant_names = {
+        current_user["sub"]: user.get("email", "User"),
+        "support": "Rezvo Support"
+    }
+    
+    # Check if existing support conversation exists
+    existing = await db.conversations.find_one({
+        "participants": {"$all": participants},
+        "type": "support"
+    })
+    
+    if existing:
+        conversation_id = existing["id"]
+    else:
+        conv_doc = {
+            "id": conversation_id,
+            "participants": participants,
+            "participant_names": participant_names,
+            "type": "support",
+            "business_id": user.get("business_id"),
+            "created_at": now.isoformat(),
+            "last_message": data.content,
+            "last_message_at": now.isoformat()
+        }
+        await db.conversations.insert_one(conv_doc)
+    
+    # Create first message
+    message_id = str(uuid.uuid4())
+    message_doc = {
+        "id": message_id,
+        "conversation_id": conversation_id,
+        "sender_id": current_user["sub"],
+        "sender_name": user.get("email", "User"),
+        "content": data.content,
+        "read": False,
+        "created_at": now.isoformat()
+    }
+    await db.messages.insert_one(message_doc)
+    
+    # Update conversation last message
+    await db.conversations.update_one(
+        {"id": conversation_id},
+        {"$set": {"last_message": data.content, "last_message_at": now.isoformat()}}
+    )
+    
+    return {"conversation_id": conversation_id, "message_id": message_id}
+
+@api_router.get("/conversations/{conversation_id}/messages")
+async def get_messages(conversation_id: str, current_user: dict = Depends(get_current_user)):
+    """Get messages in a conversation"""
+    conv = await db.conversations.find_one({"id": conversation_id})
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    # Check access
+    if current_user["sub"] not in conv.get("participants", []) and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    messages = await db.messages.find(
+        {"conversation_id": conversation_id},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(200)
+    
+    # Mark as read
+    await db.messages.update_many(
+        {"conversation_id": conversation_id, "sender_id": {"$ne": current_user["sub"]}},
+        {"$set": {"read": True}}
+    )
+    
+    return messages
+
+@api_router.post("/conversations/{conversation_id}/messages")
+async def send_message(conversation_id: str, data: MessageCreate, current_user: dict = Depends(get_current_user)):
+    """Send a message in a conversation"""
+    conv = await db.conversations.find_one({"id": conversation_id})
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    # Check access
+    if current_user["sub"] not in conv.get("participants", []) and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    user = await db.users.find_one({"id": current_user["sub"]})
+    now = datetime.now(timezone.utc)
+    message_id = str(uuid.uuid4())
+    
+    message_doc = {
+        "id": message_id,
+        "conversation_id": conversation_id,
+        "sender_id": current_user["sub"],
+        "sender_name": user.get("email", "User") if user else "Support",
+        "content": data.content,
+        "read": False,
+        "created_at": now.isoformat()
+    }
+    await db.messages.insert_one(message_doc)
+    
+    # Update conversation
+    await db.conversations.update_one(
+        {"id": conversation_id},
+        {"$set": {"last_message": data.content, "last_message_at": now.isoformat()}}
+    )
+    
+    return {"id": message_id, "created_at": now.isoformat()}
+
+@api_router.get("/admin/conversations")
+async def get_all_support_conversations(current_user: dict = Depends(get_current_user)):
+    """Get all support conversations (admin only)"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    conversations = await db.conversations.find(
+        {"type": "support"}
+    ).sort("last_message_at", -1).to_list(100)
+    
+    result = []
+    for conv in conversations:
+        unread = await db.messages.count_documents({
+            "conversation_id": conv["id"],
+            "sender_id": {"$ne": "support"},
+            "read": False
+        })
+        result.append({
+            "id": conv["id"],
+            "participants": conv.get("participants", []),
+            "participant_names": conv.get("participant_names", {}),
+            "business_id": conv.get("business_id"),
+            "last_message": conv.get("last_message"),
+            "last_message_at": conv.get("last_message_at"),
+            "unread_count": unread
+        })
+    
+    return result
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
