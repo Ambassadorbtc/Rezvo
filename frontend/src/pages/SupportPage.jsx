@@ -96,6 +96,16 @@ const SupportPage = () => {
     }
   };
 
+  // Silently refresh conversations without affecting loading state
+  const refreshConversations = async () => {
+    try {
+      const res = await api.get('/conversations');
+      setConversations(res.data || []);
+    } catch (error) {
+      console.error('Error refreshing conversations:', error);
+    }
+  };
+
   const loadMessages = async (conversationId) => {
     try {
       const res = await api.get(`/conversations/${conversationId}/messages`);
@@ -147,6 +157,8 @@ const SupportPage = () => {
 
     const messageContent = newMessage;
     setSending(true);
+    setNewMessage('');
+    setReplyingTo(null);
     
     // Optimistically add message to UI immediately
     const optimisticMessage = {
@@ -158,8 +170,6 @@ const SupportPage = () => {
       created_at: new Date().toISOString()
     };
     setMessages(prev => [...prev, optimisticMessage]);
-    setNewMessage('');
-    setReplyingTo(null);
     
     try {
       const response = await api.post(`/conversations/${selectedConversation.id}/messages`, {
@@ -167,15 +177,15 @@ const SupportPage = () => {
         reply_to: replyingTo?.id || null
       });
       
-      // Replace optimistic message with real one (no page refresh)
+      // Replace optimistic message with real one
       setMessages(prev => prev.map(m => 
         m.id === optimisticMessage.id 
           ? { ...optimisticMessage, id: response.data.id, created_at: response.data.created_at }
           : m
       ));
       
-      // Update conversation list in background (no visual refresh)
-      loadConversations();
+      // Silently update conversation list (no loading state change)
+      refreshConversations();
     } catch (error) {
       // Remove optimistic message on error
       setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
@@ -192,7 +202,7 @@ const SupportPage = () => {
     try {
       await api.patch(`/conversations/${selectedConversation.id}`, { status });
       setSelectedConversation({ ...selectedConversation, status });
-      loadConversations();
+      refreshConversations();
       toast.success(`Ticket ${status === 'open' ? 'reopened' : status}`);
     } catch (error) {
       toast.error('Failed to update status');
