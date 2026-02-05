@@ -72,6 +72,7 @@ function AppRoutes() {
       <Route path="/bookings" element={<ProtectedRoute><BookingsPage /></ProtectedRoute>} />
       <Route path="/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
       <Route path="/services" element={<ProtectedRoute><ServicesPage /></ProtectedRoute>} />
+      <Route path="/products" element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
       <Route path="/share" element={<ProtectedRoute><ShareLinkPage /></ProtectedRoute>} />
