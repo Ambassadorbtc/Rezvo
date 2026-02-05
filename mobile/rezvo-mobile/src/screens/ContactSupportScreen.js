@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useGlobalToast } from '../context/ToastContext';
+import api from '../lib/api';
 
 const TEAL = '#00BFA5';
 
@@ -27,12 +28,22 @@ export default function ContactSupportScreen({ navigation }) {
     }
     
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Create real support conversation via API
+      await api.post('/conversations', {
+        content: message,
+        subject: subject,
+        recipient_type: 'support'
+      });
+      
       showToast('Message sent! We\'ll get back to you within 24 hours.', 'success');
       navigation.goBack();
-    }, 1500);
+    } catch (error) {
+      console.error('Error creating support ticket:', error);
+      showToast('Failed to send message. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
