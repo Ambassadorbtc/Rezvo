@@ -3192,6 +3192,19 @@ async def root():
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
+# ==================== EXPO TUNNEL ====================
+
+@api_router.get("/expo/tunnel-url")
+async def get_expo_tunnel_url():
+    """Get the current Expo tunnel URL for mobile testing"""
+    # Check if we have a stored tunnel URL
+    tunnel_info = await db.system_config.find_one({"key": "expo_tunnel"})
+    if tunnel_info and tunnel_info.get("url"):
+        return {"url": tunnel_info["url"], "updated_at": tunnel_info.get("updated_at")}
+    
+    # Fallback to local network URL
+    return {"url": None, "message": "Tunnel not configured. Use LAN URL or start tunnel."}
+
 # Include router
 app.include_router(api_router)
 
