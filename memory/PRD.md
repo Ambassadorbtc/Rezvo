@@ -13,22 +13,22 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 ## Application URLs
 | Page | URL |
 |------|-----|
-| Landing Page | https://appoint-hub-29.preview.emergentagent.com |
-| Login | https://appoint-hub-29.preview.emergentagent.com/login |
-| Dashboard | https://appoint-hub-29.preview.emergentagent.com/dashboard |
-| Calendar | https://appoint-hub-29.preview.emergentagent.com/calendar |
-| Team | https://appoint-hub-29.preview.emergentagent.com/team |
-| Services | https://appoint-hub-29.preview.emergentagent.com/services |
-| Products | https://appoint-hub-29.preview.emergentagent.com/products |
-| Bookings | https://appoint-hub-29.preview.emergentagent.com/bookings |
-| Settings | https://appoint-hub-29.preview.emergentagent.com/settings |
-| Analytics | https://appoint-hub-29.preview.emergentagent.com/analytics |
-| Support | https://appoint-hub-29.preview.emergentagent.com/support |
-| Founder Admin | https://appoint-hub-29.preview.emergentagent.com/founder-admin |
-| Booking Page Settings | https://appoint-hub-29.preview.emergentagent.com/booking-page |
-| Public Booking | https://appoint-hub-29.preview.emergentagent.com/book/{businessId} |
-| Expo QR Code | https://appoint-hub-29.preview.emergentagent.com/expo-qr.html |
-| Expo Web Preview | https://appoint-hub-29.preview.emergentagent.com/expo/ |
+| Landing Page | https://timeslot-pro-3.preview.emergentagent.com |
+| Login | https://timeslot-pro-3.preview.emergentagent.com/login |
+| Dashboard | https://timeslot-pro-3.preview.emergentagent.com/dashboard |
+| Calendar | https://timeslot-pro-3.preview.emergentagent.com/calendar |
+| Team | https://timeslot-pro-3.preview.emergentagent.com/team |
+| Services | https://timeslot-pro-3.preview.emergentagent.com/services |
+| Products | https://timeslot-pro-3.preview.emergentagent.com/products |
+| Bookings | https://timeslot-pro-3.preview.emergentagent.com/bookings |
+| Settings | https://timeslot-pro-3.preview.emergentagent.com/settings |
+| Analytics | https://timeslot-pro-3.preview.emergentagent.com/analytics |
+| Support | https://timeslot-pro-3.preview.emergentagent.com/support |
+| Founder Admin | https://timeslot-pro-3.preview.emergentagent.com/founder-admin |
+| Booking Page Settings | https://timeslot-pro-3.preview.emergentagent.com/booking-page |
+| Public Booking | https://timeslot-pro-3.preview.emergentagent.com/book/{businessId} |
+| Expo QR Code | https://timeslot-pro-3.preview.emergentagent.com/expo-qr.html |
+| Expo Web Preview | https://timeslot-pro-3.preview.emergentagent.com/expo/ |
 
 ### Test Credentials
 - **Email:** testuser@example.com
