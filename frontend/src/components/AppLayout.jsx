@@ -310,15 +310,26 @@ const AppLayout = ({ children }) => {
             </div>
             <span className="text-lg font-bold font-heading text-navy-900">Rezvo</span>
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-navy-700"
-            data-testid="mobile-menu-btn"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <Link to="/support" className="relative p-2 hover:bg-gray-100 rounded-xl">
+              <Bell className="w-5 h-5 text-gray-600" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {notificationCount > 9 ? '9+' : notificationCount}
+                </span>
+              )}
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-navy-700"
+              data-testid="mobile-menu-btn"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </Button>
+          </div>
         </div>
       </div>
 
