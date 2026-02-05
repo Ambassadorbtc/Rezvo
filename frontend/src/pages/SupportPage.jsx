@@ -602,7 +602,7 @@ const SupportPage = () => {
                         return (
                           <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} group`}>
                             {!isOwn && (
-                              <div className="w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1">
+                              <div className="w-7 h-7 bg-[#3B82F6] rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1">
                                 <User className="w-3.5 h-3.5 text-white" />
                               </div>
                             )}
@@ -611,7 +611,7 @@ const SupportPage = () => {
                               <div className={`rounded-2xl px-3 py-2 ${
                                 isOwn
                                   ? 'bg-teal-500 text-white'
-                                  : 'bg-white text-gray-900 shadow-sm border border-gray-100'
+                                  : 'bg-[#3B82F6] text-white'
                               }`}>
                                 {isEditing ? (
                                   <div className="space-y-2">
