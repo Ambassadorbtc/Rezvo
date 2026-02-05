@@ -31,6 +31,7 @@ import BusinessServicesScreen from '../screens/business/ServicesScreen';
 import BusinessSettingsScreen from '../screens/business/SettingsScreen';
 import BusinessTeamScreen from '../screens/business/TeamScreen';
 import BusinessAnalyticsScreen from '../screens/business/AnalyticsScreen';
+import NotificationsScreen from '../screens/business/NotificationsScreen';
 
 // Settings Sub-screens
 import HelpCentreScreen from '../screens/HelpCentreScreen';
