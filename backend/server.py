@@ -3276,28 +3276,20 @@ async def create_conversation(data: MessageCreate, current_user: dict = Depends(
         "support": "Rezvo Support"
     }
     
-    # Check if existing support conversation exists
-    existing = await db.conversations.find_one({
-        "participants": {"$all": participants},
-        "type": "support"
-    })
-    
-    if existing:
-        conversation_id = existing["id"]
-    else:
-        conv_doc = {
-            "id": conversation_id,
-            "participants": participants,
-            "participant_names": participant_names,
-            "type": "support",
-            "subject": data.subject if hasattr(data, 'subject') and data.subject else "Support Request",
-            "status": "open",
-            "business_id": user.get("business_id"),
-            "created_at": now.isoformat(),
-            "last_message": data.content,
-            "last_message_at": now.isoformat()
-        }
-        await db.conversations.insert_one(conv_doc)
+    # Always create a new conversation for each ticket - don't reuse
+    conv_doc = {
+        "id": conversation_id,
+        "participants": participants,
+        "participant_names": participant_names,
+        "type": "support",
+        "subject": data.subject if hasattr(data, 'subject') and data.subject else "Support Request",
+        "status": "open",
+        "business_id": user.get("business_id"),
+        "created_at": now.isoformat(),
+        "last_message": data.content,
+        "last_message_at": now.isoformat()
+    }
+    await db.conversations.insert_one(conv_doc)
     
     # Create first message
     message_id = str(uuid.uuid4())
