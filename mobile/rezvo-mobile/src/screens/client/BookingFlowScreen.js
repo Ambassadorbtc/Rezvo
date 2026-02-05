@@ -6,16 +6,17 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
+import { useGlobalToast } from '../../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function BookingFlowScreen({ navigation, route }) {
+  const { showToast } = useGlobalToast();
   const { businessId, serviceId, serviceName, price, duration } = route.params;
   
   const [step, setStep] = useState(1);
@@ -53,7 +54,7 @@ export default function BookingFlowScreen({ navigation, route }) {
 
   const handleConfirmBooking = async () => {
     if (!clientName || !clientEmail || !clientPhone) {
-      Alert.alert('Error', 'Please fill in all contact details');
+      showToast('Please fill in all contact details', 'error');
       return;
     }
 
@@ -72,13 +73,10 @@ export default function BookingFlowScreen({ navigation, route }) {
         notes: notes
       });
 
-      Alert.alert(
-        'Booking Confirmed!',
-        'You will receive a confirmation email shortly.',
-        [{ text: 'OK', onPress: () => navigation.popToTop() }]
-      );
+      showToast('Booking confirmed! Check your email for confirmation.', 'success');
+      navigation.popToTop();
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.detail || 'Could not complete booking');
+      showToast(error.response?.data?.detail || 'Could not complete booking', 'error');
     } finally {
       setLoading(false);
     }
