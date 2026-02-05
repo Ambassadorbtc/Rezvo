@@ -216,15 +216,32 @@ const FounderAdminPage = () => {
   const sendReply = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
     
+    const messageContent = newMessage;
     setSendingMessage(true);
+    
+    // Optimistically add message to UI immediately
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
+      sender_id: user?.id || user?.sub,
+      sender_name: user?.email || 'Support',
+      content: messageContent,
+      is_admin: true,
+      created_at: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage('');
+    
     try {
       await api.post(`/conversations/${selectedConversation.id}/messages`, {
-        content: newMessage
+        content: messageContent
       });
-      setNewMessage('');
+      // Reload to get actual message from server
       await loadMessages(selectedConversation.id);
       await loadData();
     } catch (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
+      setNewMessage(messageContent);
       toast.error('Failed to send message');
     } finally {
       setSendingMessage(false);
