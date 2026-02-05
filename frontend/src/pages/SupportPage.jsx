@@ -57,13 +57,19 @@ const SupportPage = () => {
 
   useEffect(() => {
     loadConversations();
-    const interval = setInterval(loadConversations, 10000);
+    // Poll conversations every 5 seconds for real-time feel
+    const interval = setInterval(loadConversations, 5000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (selectedConversation) {
       loadMessages(selectedConversation.id);
+      // Poll messages every 3 seconds when conversation is open
+      const messageInterval = setInterval(() => {
+        loadMessages(selectedConversation.id);
+      }, 3000);
+      return () => clearInterval(messageInterval);
     }
   }, [selectedConversation]);
 
