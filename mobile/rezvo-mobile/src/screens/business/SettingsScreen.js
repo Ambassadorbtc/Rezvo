@@ -1199,6 +1199,9 @@ const styles = StyleSheet.create({
   },
   dayHours: {
     marginRight: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   hoursText: {
     fontSize: 14,
@@ -1207,6 +1210,92 @@ const styles = StyleSheet.create({
   closedText: {
     fontSize: 14,
     color: '#9FB3C8',
+  },
+  timeBtn: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  timeBtnText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: TEAL,
+  },
+  toText: {
+    fontSize: 12,
+    color: '#9FB3C8',
+  },
+  timePickerContent: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    padding: 20,
+    width: '100%',
+    maxWidth: 320,
+    maxHeight: '70%',
+  },
+  timePickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0A1626',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  timePickerList: {
+    maxHeight: 300,
+  },
+  timePickerItem: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 4,
+  },
+  timePickerItemSelected: {
+    backgroundColor: TEAL,
+  },
+  timePickerItemText: {
+    fontSize: 16,
+    color: '#0A1626',
+    textAlign: 'center',
+  },
+  timePickerItemTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  timePickerCancelBtn: {
+    marginTop: 12,
+    paddingVertical: 14,
+    borderRadius: 50,
+    backgroundColor: '#F5F0E8',
+    alignItems: 'center',
+  },
+  timePickerCancelText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#627D98',
+  },
+  bufferOptions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  bufferOption: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#F5F0E8',
+  },
+  bufferOptionSelected: {
+    backgroundColor: TEAL,
+  },
+  bufferOptionText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#627D98',
+  },
+  bufferOptionTextSelected: {
+    color: '#FFFFFF',
   },
   settingRow: {
     flexDirection: 'row',
