@@ -7,6 +7,7 @@ Build a booking application MVP, `rezvo.app`, for UK micro-businesses. The core 
 1. **Business Owner** - Manages bookings, team, services, and calendar
 2. **Staff Member** - Views assigned bookings and personal schedule
 3. **Client** - Books appointments through public booking page
+4. **Founder Admin** - Manages all users, businesses, and support tickets
 
 ## Core Requirements
 - **Monetization:** £4.99/month subscription via Stripe (deferred)
@@ -24,34 +25,36 @@ Build a booking application MVP, `rezvo.app`, for UK micro-businesses. The core 
 
 ## What's Been Implemented
 
-### Session: February 5, 2026
+### Session: February 5, 2026 (Latest)
 
-#### Expo Mobile App Fix (P0 CRITICAL)
-- ✅ Fixed "expected dynamic type 'boolean'" crash
-- ✅ Root cause: react-native-screens 4.22.0 incompatible with Expo SDK 54
-- ✅ Solution: Pinned react-native-screens to exact version 4.16.0
-- ✅ Mobile app now works correctly
+#### Login Page Premium Redesign
+- ✅ Split-screen layout with rotating business images
+- ✅ Images showcase target market (salons, barbers, spas)
+- ✅ Trust badges (SSL, GDPR)
+- ✅ Modern form styling with branded colors
 
-#### UI/UX Improvements
-1. ✅ Removed native Alert notifications - using custom toasts
-2. ✅ Tightened mobile Settings profile card
-3. ✅ Added profile photo editing with expo-image-picker
-4. ✅ Search as dropdown instead of modal (web)
-5. ✅ Fixed Calendar Day/Week/Month tab position jumping
-6. ✅ Enhanced calendar typography and styling
-7. ✅ Added draggable appointments (drag & drop)
-8. ✅ Added double-click to create booking
-9. ✅ Fixed Help Centre quick action buttons
+#### Support Messaging System
+- ✅ Backend APIs: `/api/conversations`, `/api/conversations/{id}/messages`
+- ✅ Admin API: `/api/admin/conversations`
+- ✅ Web frontend: `/support` route with full chat interface
+- ✅ Real-time polling for new messages
 
-#### Backend Features Added
-- ✅ Business logo upload endpoint
-- ✅ Google Calendar integration (needs API keys)
-- ✅ Push notification system (Expo)
-- ✅ Automated booking reminders (scheduler)
-- ✅ Staff separate logins
-- ✅ Customer reviews & ratings
-- ✅ Multi-location support
-- ✅ Advanced scheduling (shifts, time-off)
+#### Mobile Calendar Overhaul
+- ✅ Day/Week/Month view tabs
+- ✅ Team member columns with avatars
+- ✅ Tap on time slot to add booking
+- ✅ Booking detail modal (custom, not Alert.alert)
+- ✅ Service-colored booking blocks
+
+#### Mobile Analytics Screen
+- ✅ Revenue, bookings, completion rate metrics
+- ✅ Weekly bookings bar chart
+- ✅ Top services breakdown
+- ✅ Linked from Dashboard stat cards
+
+#### Mobile Settings Improvements
+- ✅ Custom logout confirmation modal
+- ✅ Toast notification utility created
 
 ### Previous Sessions
 - ✅ Full authentication system (JWT)
@@ -59,19 +62,28 @@ Build a booking application MVP, `rezvo.app`, for UK micro-businesses. The core 
 - ✅ Service management CRUD
 - ✅ Team management with inline editing
 - ✅ Public booking page with team selection
-- ✅ Multi-view calendar (Day/Week/Month)
-- ✅ Global search functionality
+- ✅ Multi-view calendar (Day/Week/Month) - Web
+- ✅ Global search functionality - Web
 - ✅ Data seeding script
 - ✅ Branded email notifications (Resend)
+- ✅ Expo mobile app crash fix (react-native-screens 4.16.0)
 
 ---
 
 ## Known Issues & Technical Debt
 
-### Workaround Active
+### Alert.alert() Still Present In:
+- LoginScreen.js
+- SignupScreen.js
+- BookingsScreen.js (business)
+- ServicesScreen.js (business)
+- TeamScreen.js (business)
+- Various auth screens
+
+**Fix:** Use `/app/mobile/rezvo-mobile/src/lib/toast.js` utility
+
+### Workarounds Active
 - `babel-metadata-plugin` disabled in `/app/frontend/craco.config.js`
-- Prevents crashes on TeamPage and SearchModal
-- Re-enabling will cause "Maximum call stack size exceeded" error
 
 ### Mobile Dependencies (Pinned)
 ```
@@ -85,31 +97,37 @@ react-native-screens: 4.16.0 (exact)
 
 ## Prioritized Backlog
 
+### P0 - Critical
+- [ ] Replace remaining Alert.alert() calls in mobile app
+
 ### P1 - High Priority
+- [ ] Connect Founders Portal to support messaging
+- [ ] Complete profile photo upload in mobile Settings
+- [ ] Add double-click to add booking in web Calendar
 - [ ] Stripe subscription (£4.99/month)
-- [ ] Google Calendar sync (needs API keys from user)
-- [ ] Push notifications (Expo push service)
-- [ ] Twilio SMS reminders
 
 ### P2 - Medium Priority
-- [ ] Staff separate logins (backend ready)
-- [ ] Customer reviews UI (backend ready)
-- [ ] Multi-location UI (backend ready)
-- [ ] Advanced scheduling UI (backend ready)
+- [ ] Google Calendar sync
+- [ ] Push notifications (Expo)
+- [ ] SMS reminders (Twilio)
+- [ ] Staff separate logins UI
 
 ### P3 - Future
 - [ ] Two-way Google Calendar sync
-- [ ] Customer mobile app screens
-- [ ] Analytics dashboard enhancements
+- [ ] Customer mobile app API connections
+- [ ] Advanced analytics dashboard
 - [ ] Fix babel-metadata-plugin properly
 
 ---
 
 ## API Endpoints
 
-### Core
+### Auth
 - `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
+- `POST /api/auth/staff-login` - Staff login
+
+### Business
 - `GET /api/business` - Get business details
 - `PATCH /api/business` - Update business
 - `POST /api/business/logo` - Upload logo
@@ -117,20 +135,33 @@ react-native-screens: 4.16.0 (exact)
 ### Bookings
 - `GET /api/bookings` - List bookings
 - `POST /api/bookings` - Create booking
-- `PATCH /api/bookings/{id}` - Update booking (supports drag/drop)
-- `POST /api/bookings/{id}/cancel` - Cancel booking
+- `PATCH /api/bookings/{id}` - Update booking
 
 ### Team
 - `GET /api/team-members` - List team
 - `POST /api/team-members` - Add member
 - `POST /api/team-members/{id}/avatar` - Upload avatar
 
-### New Features
-- `GET /api/google/auth-url` - Google OAuth
-- `POST /api/push/register` - Register push token
+### Support Messaging (NEW)
+- `GET /api/conversations` - User's conversations
+- `POST /api/conversations` - Start conversation
+- `GET /api/conversations/{id}/messages` - Get messages
+- `POST /api/conversations/{id}/messages` - Send message
+- `GET /api/admin/conversations` - Admin: all support tickets
+
+### Reviews
 - `GET /api/reviews` - Business reviews
+- `POST /api/reviews` - Submit review
+- `GET /api/public/business/{id}/reviews` - Public reviews
+
+### Locations
 - `GET /api/locations` - Business locations
+- `POST /api/locations` - Add location
+
+### Scheduling
 - `GET /api/shifts` - Team shifts
+- `POST /api/shifts` - Create shift
+- `GET /api/time-off` - Time off requests
 
 ---
 
@@ -143,3 +174,9 @@ react-native-screens: 4.16.0 (exact)
 ### Expo Mobile
 - URL: `exp://tjyr168-anonymous-8081.exp.direct`
 - QR: https://rezvo-booking-1.preview.emergentagent.com/expo-test
+
+### Web URLs
+- Login: https://rezvo-booking-1.preview.emergentagent.com/login
+- Dashboard: https://rezvo-booking-1.preview.emergentagent.com/dashboard
+- Calendar: https://rezvo-booking-1.preview.emergentagent.com/calendar
+- Support: https://rezvo-booking-1.preview.emergentagent.com/support
