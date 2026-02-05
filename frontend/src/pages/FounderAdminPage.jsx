@@ -984,6 +984,140 @@ const FounderAdminPage = () => {
               )}
             </div>
           )}
+
+          {/* Support Inbox Tab */}
+          {activeTab === 'inbox' && (
+            <div className="h-[calc(100vh-180px)] flex gap-6">
+              {/* Conversations List */}
+              <div className="w-96 bg-white rounded-2xl shadow-sm border-0 flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-gray-100">
+                  <h3 className="font-semibold text-[#0A1626]">Support Conversations</h3>
+                  <p className="text-sm text-gray-500">{conversations.length} total</p>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  {conversations.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <Mail className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No support messages yet</p>
+                    </div>
+                  ) : (
+                    conversations.map((conv) => (
+                      <button
+                        key={conv.id}
+                        onClick={() => setSelectedConversation(conv)}
+                        className={`w-full p-4 text-left border-b border-gray-50 hover:bg-gray-50 transition-colors ${
+                          selectedConversation?.id === conv.id ? 'bg-teal-50 border-l-4 border-l-[#00BFA5]' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00BFA5] to-[#00A896] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {conv.user_email?.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="font-medium text-[#0A1626] truncate">{conv.user_email || 'Unknown User'}</p>
+                              {conv.unread_count > 0 && (
+                                <span className="bg-[#00BFA5] text-white text-xs px-2 py-0.5 rounded-full">
+                                  {conv.unread_count}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 truncate mt-0.5">{conv.subject || 'Support Request'}</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {conv.updated_at ? format(new Date(conv.updated_at), 'd MMM, HH:mm') : '-'}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Message Thread */}
+              <div className="flex-1 bg-white rounded-2xl shadow-sm border-0 flex flex-col overflow-hidden">
+                {selectedConversation ? (
+                  <>
+                    {/* Header */}
+                    <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-[#0A1626]">{selectedConversation.subject || 'Support Conversation'}</h3>
+                        <p className="text-sm text-gray-500">{selectedConversation.user_email}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        selectedConversation.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
+                        selectedConversation.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                        'bg-gray-100 text-gray-700'
+                      }`}>
+                        {selectedConversation.status || 'Open'}
+                      </span>
+                    </div>
+
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      {messages.length === 0 ? (
+                        <div className="text-center py-8">
+                          <p className="text-gray-400">No messages in this conversation</p>
+                        </div>
+                      ) : (
+                        messages.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className={`flex ${msg.sender_id === user?.sub || msg.is_admin ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div className={`max-w-[70%] rounded-2xl p-4 ${
+                              msg.sender_id === user?.sub || msg.is_admin
+                                ? 'bg-[#00BFA5] text-white'
+                                : 'bg-gray-100 text-[#0A1626]'
+                            }`}>
+                              <p className="text-sm">{msg.content}</p>
+                              <p className={`text-xs mt-2 ${
+                                msg.sender_id === user?.sub || msg.is_admin ? 'text-white/70' : 'text-gray-400'
+                              }`}>
+                                {msg.created_at ? format(new Date(msg.created_at), 'd MMM, HH:mm') : '-'}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Reply Input */}
+                    <div className="p-4 border-t border-gray-100">
+                      <div className="flex gap-3">
+                        <Input
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Type your reply..."
+                          className="flex-1 rounded-xl"
+                          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendReply()}
+                        />
+                        <Button
+                          onClick={sendReply}
+                          disabled={!newMessage.trim() || sendingMessage}
+                          className="bg-[#00BFA5] hover:bg-[#00A896] text-white rounded-xl px-6"
+                        >
+                          {sendingMessage ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            'Send'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-[#0A1626] mb-2">Select a Conversation</h3>
+                      <p className="text-gray-500">Choose a conversation from the list to view messages</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
