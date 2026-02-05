@@ -11,6 +11,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CalendarPage from "./pages/CalendarPage";
 import BookingsPage from "./pages/BookingsPage";
 import ServicesPage from "./pages/ServicesPage";
+import ProductsPage from "./pages/ProductsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import ShareLinkPage from "./pages/ShareLinkPage";
