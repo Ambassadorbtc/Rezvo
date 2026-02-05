@@ -357,7 +357,7 @@ export default function SettingsScreen({ navigation }) {
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuText}>Working Hours</Text>
-              <Text style={styles.menuSubtext}>Mon-Fri, 9:00 - 17:00</Text>
+              <Text style={styles.menuSubtext}>{getWorkingHoursSummary()}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
