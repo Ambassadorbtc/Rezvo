@@ -597,31 +597,103 @@ export default function SettingsScreen({ navigation }) {
             </View>
 
             <ScrollView style={styles.modalBody}>
-              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, index) => (
+              {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
                 <View key={day} style={styles.dayRow}>
-                  <Text style={styles.dayName}>{day}</Text>
-                  <View style={styles.dayHours}>
-                    {index < 5 ? (
-                      <Text style={styles.hoursText}>09:00 - 17:00</Text>
-                    ) : (
-                      <Text style={styles.closedText}>Closed</Text>
-                    )}
-                  </View>
-                  <TouchableOpacity>
-                    <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
-                  </TouchableOpacity>
+                  <Switch
+                    value={workingHours[day]?.enabled}
+                    onValueChange={(value) => updateDayHours(day, 'enabled', value)}
+                    trackColor={{ false: '#E2E8F0', true: TEAL }}
+                    thumbColor="#FFFFFF"
+                  />
+                  <Text style={[styles.dayName, { flex: 1, marginLeft: 12 }]}>{day.charAt(0).toUpperCase() + day.slice(1)}</Text>
+                  {workingHours[day]?.enabled ? (
+                    <View style={styles.dayHours}>
+                      <TouchableOpacity 
+                        style={styles.timeBtn}
+                        onPress={() => setShowDayPicker({ day, field: 'open' })}
+                      >
+                        <Text style={styles.timeBtnText}>{workingHours[day]?.open || '09:00'}</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.toText}>to</Text>
+                      <TouchableOpacity 
+                        style={styles.timeBtn}
+                        onPress={() => setShowDayPicker({ day, field: 'close' })}
+                      >
+                        <Text style={styles.timeBtnText}>{workingHours[day]?.close || '17:00'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <Text style={styles.closedText}>Closed</Text>
+                  )}
                 </View>
               ))}
             </ScrollView>
 
             <View style={styles.modalFooter}>
               <TouchableOpacity 
-                style={styles.saveModalBtn}
+                style={styles.cancelModalBtn}
                 onPress={() => setShowWorkingHours(false)}
               >
-                <Text style={styles.saveModalBtnText}>Done</Text>
+                <Text style={styles.cancelModalBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.saveModalBtn, saving && styles.saveBtnDisabled]}
+                onPress={handleSaveWorkingHours}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.saveModalBtnText}>Save</Text>
+                )}
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Time Picker Modal */}
+      <Modal
+        visible={!!showDayPicker}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowDayPicker(null)}
+      >
+        <View style={styles.confirmOverlay}>
+          <View style={styles.timePickerContent}>
+            <Text style={styles.timePickerTitle}>
+              Select {showDayPicker?.field === 'open' ? 'Opening' : 'Closing'} Time
+            </Text>
+            <ScrollView style={styles.timePickerList}>
+              {['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'].map((time) => (
+                <TouchableOpacity
+                  key={time}
+                  style={[
+                    styles.timePickerItem,
+                    showDayPicker && workingHours[showDayPicker.day]?.[showDayPicker.field] === time && styles.timePickerItemSelected
+                  ]}
+                  onPress={() => {
+                    if (showDayPicker) {
+                      updateDayHours(showDayPicker.day, showDayPicker.field, time);
+                    }
+                    setShowDayPicker(null);
+                  }}
+                >
+                  <Text style={[
+                    styles.timePickerItemText,
+                    showDayPicker && workingHours[showDayPicker.day]?.[showDayPicker.field] === time && styles.timePickerItemTextSelected
+                  ]}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity 
+              style={styles.timePickerCancelBtn}
+              onPress={() => setShowDayPicker(null)}
+            >
+              <Text style={styles.timePickerCancelText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
