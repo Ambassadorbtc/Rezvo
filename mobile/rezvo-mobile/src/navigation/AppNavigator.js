@@ -150,6 +150,7 @@ function BusinessStack() {
       <Stack.Screen name="HelpCentre" component={HelpCentreScreen} />
       <Stack.Screen name="ContactSupport" component={ContactSupportScreen} />
       <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
+      <Stack.Screen name="SupportChat" component={SupportChatScreen} />
     </Stack.Navigator>
   );
 }
