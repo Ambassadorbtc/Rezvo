@@ -212,6 +212,7 @@ class BookingUpdate(BaseModel):
     datetime_iso: Optional[str] = None
     status: Optional[str] = None
     notes: Optional[str] = None
+    team_member_id: Optional[str] = None
 
 class PaymentIntentCreate(BaseModel):
     booking_id: str
