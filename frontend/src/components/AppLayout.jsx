@@ -101,17 +101,105 @@ const AppLayout = ({ children }) => {
           </Link>
         </div>
 
-        {/* Search Button */}
-        <div className="p-4 border-b border-gray-100">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 text-navy-400 hover:bg-gray-100 hover:text-navy-600 transition-all"
-            data-testid="search-trigger-btn"
-          >
-            <Search className="w-4 h-4" />
-            <span className="text-sm">Search...</span>
-            <kbd className="ml-auto text-xs bg-white px-2 py-1 rounded border border-gray-200">⌘K</kbd>
-          </button>
+        {/* Search Button - Dropdown Style */}
+        <div className="p-4 border-b border-gray-100 relative">
+          <div className="relative" ref={searchRef}>
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 text-navy-400 hover:bg-gray-100 hover:text-navy-600 transition-all"
+              data-testid="search-trigger-btn"
+            >
+              <Search className="w-4 h-4" />
+              <span className="text-sm">Search...</span>
+              <kbd className="ml-auto text-xs bg-white px-2 py-1 rounded border border-gray-200">⌘K</kbd>
+            </button>
+            
+            {/* Search Dropdown */}
+            {searchOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                  <Search className="w-4 h-4 text-gray-400" />
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="Search bookings, services..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 border-0 outline-none text-sm bg-transparent"
+                    data-testid="search-input"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => { setSearchQuery(''); setSearchResults(null); }} className="p-1 hover:bg-gray-100 rounded">
+                      <X className="w-4 h-4 text-gray-400" />
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {searchLoading && (
+                    <div className="flex justify-center py-6">
+                      <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                  {!searchLoading && searchQuery.length < 2 && (
+                    <div className="text-center py-6">
+                      <p className="text-sm text-gray-500">Type to search...</p>
+                    </div>
+                  )}
+                  {!searchLoading && searchQuery.length >= 2 && searchResults && (
+                    <div className="p-2">
+                      {searchResults.bookings?.length > 0 && (
+                        <div className="mb-3">
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1">Bookings</h3>
+                          {searchResults.bookings.slice(0, 4).map((b, i) => (
+                            <button key={i} onClick={() => handleSearchNavigate('/bookings')} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 text-left">
+                              <Calendar className="w-4 h-4 text-teal-500" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{b.client_name}</p>
+                                <p className="text-xs text-gray-500 truncate">{b.service_name}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {searchResults.services?.length > 0 && (
+                        <div className="mb-3">
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1">Services</h3>
+                          {searchResults.services.slice(0, 4).map((s, i) => (
+                            <button key={i} onClick={() => handleSearchNavigate('/services')} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 text-left">
+                              <Scissors className="w-4 h-4 text-purple-500" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{s.name}</p>
+                                <p className="text-xs text-gray-500">£{(s.price_pence / 100).toFixed(2)}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {searchResults.customers?.length > 0 && (
+                        <div>
+                          <h3 className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1">Customers</h3>
+                          {searchResults.customers.slice(0, 4).map((c, i) => (
+                            <button key={i} onClick={() => handleSearchNavigate('/bookings')} className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 text-left">
+                              <Users className="w-4 h-4 text-blue-500" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{c.name}</p>
+                                <p className="text-xs text-gray-500 truncate">{c.email}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {(!searchResults.bookings?.length && !searchResults.services?.length && !searchResults.customers?.length) && (
+                        <div className="text-center py-6">
+                          <p className="text-sm text-gray-500">No results found</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Navigation */}
