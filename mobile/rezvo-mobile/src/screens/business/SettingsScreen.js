@@ -32,6 +32,7 @@ export default function SettingsScreen({ navigation }) {
   const [showBusinessDetails, setShowBusinessDetails] = useState(false);
   const [showWorkingHours, setShowWorkingHours] = useState(false);
   const [showBookingSettings, setShowBookingSettings] = useState(false);
+  const [showDayPicker, setShowDayPicker] = useState(null); // day name to edit
   
   // Edit form
   const [editName, setEditName] = useState('');
@@ -41,10 +42,45 @@ export default function SettingsScreen({ navigation }) {
   const [editEmail, setEditEmail] = useState('');
   const [editAddress, setEditAddress] = useState('');
   const [saving, setSaving] = useState(false);
+  
+  // Working hours state
+  const [workingHours, setWorkingHours] = useState({
+    monday: { enabled: true, open: '09:00', close: '17:00' },
+    tuesday: { enabled: true, open: '09:00', close: '17:00' },
+    wednesday: { enabled: true, open: '09:00', close: '17:00' },
+    thursday: { enabled: true, open: '09:00', close: '17:00' },
+    friday: { enabled: true, open: '09:00', close: '17:00' },
+    saturday: { enabled: false, open: '10:00', close: '16:00' },
+    sunday: { enabled: false, open: '10:00', close: '16:00' },
+  });
+  
+  // Booking settings state
+  const [autoConfirm, setAutoConfirm] = useState(true);
+  const [allowCancellations, setAllowCancellations] = useState(true);
+  const [sendReminders, setSendReminders] = useState(true);
+  const [bufferTime, setBufferTime] = useState(15);
 
   useEffect(() => {
     fetchBusiness();
+    fetchSettings();
   }, []);
+  
+  const fetchSettings = async () => {
+    try {
+      const response = await api.get('/settings');
+      if (response.data.working_hours) {
+        setWorkingHours(response.data.working_hours);
+      }
+      if (response.data.booking_settings) {
+        setAutoConfirm(response.data.booking_settings.auto_confirm ?? true);
+        setAllowCancellations(response.data.booking_settings.allow_cancellations ?? true);
+        setSendReminders(response.data.booking_settings.send_reminders ?? true);
+        setBufferTime(response.data.booking_settings.buffer_time || 15);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   const fetchBusiness = async () => {
     try {
