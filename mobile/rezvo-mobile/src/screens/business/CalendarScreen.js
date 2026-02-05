@@ -484,52 +484,94 @@ export default function CalendarScreen({ navigation }) {
         </>
       )}
 
-      {/* WEEK VIEW */}
+      {/* WEEK VIEW - Redesigned */}
       {viewMode === 'week' && (
         <ScrollView 
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />}
           style={styles.weekViewContainer}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.weekGrid}>
-            {weekDates.map((date, index) => {
-              const isToday = date.toDateString() === new Date().toDateString();
-              const dayBookings = getBookingsForDate(date);
-              
-              return (
-                <TouchableOpacity 
-                  key={index} 
-                  style={[styles.weekDayColumn, isToday && styles.weekDayToday]}
-                  onPress={() => { setSelectedDate(date); setViewMode('day'); }}
-                >
-                  <View style={styles.weekDayHeader}>
-                    <Text style={[styles.weekDayName, isToday && styles.weekDayNameToday]}>{dayNames[index]}</Text>
-                    <Text style={[styles.weekDayDate, isToday && styles.weekDayDateToday]}>{date.getDate()}</Text>
+          {/* Week days as horizontal scrollable cards */}
+          {weekDates.map((date, index) => {
+            const isToday = date.toDateString() === new Date().toDateString();
+            const dayBookings = getBookingsForDate(date);
+            
+            return (
+              <TouchableOpacity 
+                key={index} 
+                style={[styles.weekDayCard, isToday && styles.weekDayCardToday]}
+                onPress={() => { setSelectedDate(date); setViewMode('day'); }}
+                activeOpacity={0.7}
+              >
+                {/* Day header */}
+                <View style={styles.weekDayCardHeader}>
+                  <View style={[styles.weekDayBadge, isToday && styles.weekDayBadgeToday]}>
+                    <Text style={[styles.weekDayBadgeName, isToday && styles.weekDayBadgeNameToday]}>
+                      {dayNames[index]}
+                    </Text>
+                    <Text style={[styles.weekDayBadgeDate, isToday && styles.weekDayBadgeDateToday]}>
+                      {date.getDate()}
+                    </Text>
                   </View>
-                  <View style={styles.weekDayBookings}>
+                  <View style={styles.weekDayMeta}>
+                    <Text style={styles.weekDayCount}>
+                      {dayBookings.length} booking{dayBookings.length !== 1 ? 's' : ''}
+                    </Text>
+                    <Ionicons name="chevron-forward" size={18} color="#9FB3C8" />
+                  </View>
+                </View>
+                
+                {/* Bookings list */}
+                {dayBookings.length > 0 ? (
+                  <View style={styles.weekBookingsList}>
                     {dayBookings.slice(0, 3).map((booking) => {
                       const color = getServiceColor(booking.service_id);
+                      const member = teamMembers.find(m => m.id === booking.team_member_id);
                       return (
                         <TouchableOpacity 
                           key={booking.id} 
-                          style={[styles.weekBookingItem, { borderLeftColor: color, backgroundColor: color + '15' }]}
+                          style={[styles.weekBookingCard, { borderLeftColor: color }]}
                           onPress={() => setShowBookingDetail(booking)}
                         >
-                          <Text style={[styles.weekBookingTime, { color }]}>{formatBookingTime(booking.datetime)}</Text>
-                          <Text style={styles.weekBookingClient} numberOfLines={1}>{booking.client_name}</Text>
+                          <View style={styles.weekBookingMain}>
+                            <View style={styles.weekBookingInfo}>
+                              <Text style={[styles.weekBookingTime, { color }]}>
+                                {formatBookingTime(booking.datetime)}
+                              </Text>
+                              <Text style={styles.weekBookingClient} numberOfLines={1}>
+                                {booking.client_name}
+                              </Text>
+                              <Text style={styles.weekBookingService} numberOfLines={1}>
+                                {booking.service_name}
+                              </Text>
+                            </View>
+                            {member && (
+                              <View style={[styles.weekBookingAvatar, { backgroundColor: member.color || TEAL }]}>
+                                {member.avatar_url ? (
+                                  <Image source={{ uri: member.avatar_url }} style={styles.weekBookingAvatarImg} />
+                                ) : (
+                                  <Text style={styles.weekBookingAvatarText}>{member.name?.charAt(0)}</Text>
+                                )}
+                              </View>
+                            )}
+                          </View>
                         </TouchableOpacity>
                       );
                     })}
                     {dayBookings.length > 3 && (
-                      <Text style={styles.moreBookings}>+{dayBookings.length - 3} more</Text>
-                    )}
-                    {dayBookings.length === 0 && (
-                      <Text style={styles.noBookings}>No bookings</Text>
+                      <Text style={styles.weekMoreText}>+{dayBookings.length - 3} more</Text>
                     )}
                   </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+                ) : (
+                  <View style={styles.weekEmptyState}>
+                    <Ionicons name="calendar-outline" size={20} color="#D1D5DB" />
+                    <Text style={styles.weekEmptyText}>No bookings</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+          <View style={{ height: 100 }} />
         </ScrollView>
       )}
 
