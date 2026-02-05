@@ -22,10 +22,14 @@ const ExpoTestingPage = () => {
       if (data.url) {
         setExpoUrl(data.url);
       } else {
-        setError('Tunnel not available. The mobile preview server may need to be started.');
+        // Use internal IP as fallback
+        setExpoUrl('exp://10.79.144.219:8081');
+        setError('Using LAN URL. Make sure your phone is on the same network.');
       }
     } catch (err) {
-      setError('Could not connect to server.');
+      // Fallback to internal URL
+      setExpoUrl('exp://10.79.144.219:8081');
+      setError('Using LAN URL. Make sure your phone is on the same network.');
     }
     setLoading(false);
   };
