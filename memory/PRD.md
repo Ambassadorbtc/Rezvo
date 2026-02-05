@@ -80,15 +80,18 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ **Admin Support Inbox** in Founder Panel
 - ✅ Conversation threading with timestamps
 - ✅ Unread message badges
+- ✅ **Fixed Chat Alignment** (Feb 5) - Owner view: own messages RIGHT/TEAL, founder messages LEFT/BLUE
+- ✅ **Teal Status Dropdown** (Feb 5) - Unified teal background for status selector in both portals
 
 ### Admin/Founder Panel
 - ✅ User management dashboard
 - ✅ Business analytics
 - ✅ Error logs viewer
-- ✅ **Two-sided chat layout** (Feb 5) - Admin messages right (teal), user messages left (white)
+- ✅ **Fixed Chat Alignment** (Feb 5) - Founder view: own messages RIGHT/BLUE, owner messages LEFT/TEAL
 - ✅ **Emoji and attachment buttons** in reply input
 - ✅ User avatars on messages
 - ✅ Reply to support conversations
+- ✅ **Teal Status Dropdown** (Feb 5) - Modern dropdown replacing conditional buttons
 
 ### UI/UX Improvements
 - ✅ **Branded delete confirmation dialogs** (replacing native confirm())
