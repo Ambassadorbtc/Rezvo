@@ -219,6 +219,19 @@ class PaymentIntentCreate(BaseModel):
     success_url: str
     cancel_url: str
 
+# ==================== SUPPORT MESSAGE MODELS ====================
+
+class MessageCreate(BaseModel):
+    content: str
+    recipient_type: str = "support"  # support, business, client
+
+class ConversationResponse(BaseModel):
+    id: str
+    participants: List[str]
+    last_message: Optional[str]
+    last_message_at: Optional[str]
+    unread_count: int
+
 # ==================== STAFF LOGIN MODELS ====================
 
 class StaffLogin(BaseModel):
