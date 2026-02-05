@@ -42,6 +42,23 @@ const FAQ_ITEMS = [
 export default function HelpCentreScreen({ navigation }) {
   const [expandedIndex, setExpandedIndex] = React.useState(null);
 
+  const handleQuickAction = (action) => {
+    switch(action) {
+      case 'getting-started':
+        // Show getting started FAQ
+        setExpandedIndex(0);
+        break;
+      case 'bookings':
+        // Navigate to calendar with booking creation
+        navigation.navigate('Calendar');
+        break;
+      case 'team':
+        // Navigate to team settings
+        navigation.navigate('Team');
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
