@@ -6,22 +6,23 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function ContactSupportScreen({ navigation }) {
+  const { showToast } = useGlobalToast();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!subject || !message) {
-      Alert.alert('Missing Information', 'Please fill in all fields');
+      showToast('Please fill in all fields', 'error');
       return;
     }
     
@@ -29,11 +30,8 @@ export default function ContactSupportScreen({ navigation }) {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      Alert.alert(
-        'Message Sent',
-        'Thank you for contacting us. We\'ll get back to you within 24 hours.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+      showToast('Message sent! We\'ll get back to you within 24 hours.', 'success');
+      navigation.goBack();
     }, 1500);
   };
 

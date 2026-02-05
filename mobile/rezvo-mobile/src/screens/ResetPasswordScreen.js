@@ -8,16 +8,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../lib/api';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function ResetPasswordScreen({ navigation, route }) {
+  const { showToast } = useGlobalToast();
   const { resetToken } = route.params || {};
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,15 +27,15 @@ export default function ResetPasswordScreen({ navigation, route }) {
 
   const handleReset = async () => {
     if (!password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      showToast('Please fill in all fields', 'error');
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      showToast('Password must be at least 6 characters', 'error');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      showToast('Passwords do not match', 'error');
       return;
     }
 
@@ -46,7 +47,7 @@ export default function ResetPasswordScreen({ navigation, route }) {
       });
       navigation.navigate('PasswordResetSuccess');
     } catch (error) {
-      Alert.alert('Error', 'Could not reset password. Please try again.');
+      showToast('Could not reset password. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

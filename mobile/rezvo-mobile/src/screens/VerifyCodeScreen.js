@@ -7,16 +7,17 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../lib/api';
+import { useGlobalToast } from '../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
 export default function VerifyCodeScreen({ navigation, route }) {
+  const { showToast } = useGlobalToast();
   const { email } = route.params || {};
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,7 @@ export default function VerifyCodeScreen({ navigation, route }) {
   const handleVerify = async () => {
     const fullCode = code.join('');
     if (fullCode.length !== 6) {
-      Alert.alert('Error', 'Please enter the complete 6-digit code');
+      showToast('Please enter the complete 6-digit code', 'error');
       return;
     }
 
@@ -65,7 +66,7 @@ export default function VerifyCodeScreen({ navigation, route }) {
         resetToken: response.data.reset_token 
       });
     } catch (error) {
-      Alert.alert('Error', 'Invalid or expired code. Please try again.');
+      showToast('Invalid or expired code. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
