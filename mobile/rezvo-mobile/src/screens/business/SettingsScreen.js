@@ -6,12 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Share,
-  Alert,
   ActivityIndicator,
   Linking,
   Switch,
   TextInput,
   Modal,
+  Image,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
