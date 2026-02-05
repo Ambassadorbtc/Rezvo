@@ -76,9 +76,9 @@ export default function VerifyCodeScreen({ navigation, route }) {
     try {
       await api.post('/auth/forgot-password', { email });
       setResendTimer(60);
-      Alert.alert('Success', 'A new code has been sent to your email');
+      showToast('A new code has been sent to your email', 'success');
     } catch (error) {
-      Alert.alert('Error', 'Could not resend code. Please try again.');
+      showToast('Could not resend code. Please try again.', 'error');
     }
   };
 
