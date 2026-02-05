@@ -613,7 +613,7 @@ const CalendarPage = () => {
                       <SelectValue placeholder="Select team member" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {teamMembers.map((m) => (
                         <SelectItem key={m.id} value={m.id}>
                           <div className="flex items-center gap-2">
