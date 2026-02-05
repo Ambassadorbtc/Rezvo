@@ -160,12 +160,6 @@ export default function TeamScreen({ navigation }) {
       }
     );
   };
-            }
-          }
-        },
-      ]
-    );
-  };
 
   const toggleService = (serviceId) => {
     if (selectedServices.includes(serviceId)) {
