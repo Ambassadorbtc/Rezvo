@@ -206,6 +206,16 @@ const FounderAdminPage = () => {
     }
   };
 
+  // Silently refresh conversations without loading state
+  const refreshConversations = async () => {
+    try {
+      const res = await api.get('/admin/conversations');
+      setConversations(res.data || []);
+    } catch (error) {
+      console.error('Error refreshing conversations:', error);
+    }
+  };
+
   const loadMessages = async (conversationId) => {
     try {
       const res = await api.get(`/conversations/${conversationId}/messages`);
@@ -220,6 +230,7 @@ const FounderAdminPage = () => {
     
     const messageContent = newMessage;
     setSendingMessage(true);
+    setNewMessage('');
     
     // Optimistically add message to UI immediately
     const optimisticMessage = {
@@ -231,22 +242,21 @@ const FounderAdminPage = () => {
       created_at: new Date().toISOString()
     };
     setMessages(prev => [...prev, optimisticMessage]);
-    setNewMessage('');
     
     try {
       const response = await api.post(`/conversations/${selectedConversation.id}/messages`, {
         content: messageContent
       });
       
-      // Replace optimistic message with real one (no page refresh)
+      // Replace optimistic message with real one
       setMessages(prev => prev.map(m => 
         m.id === optimisticMessage.id 
           ? { ...optimisticMessage, id: response.data.id, created_at: response.data.created_at }
           : m
       ));
       
-      // Update conversation list in background (no visual refresh)
-      loadData();
+      // Silently update conversation list (no loading state)
+      refreshConversations();
     } catch (error) {
       // Remove optimistic message on error
       setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
