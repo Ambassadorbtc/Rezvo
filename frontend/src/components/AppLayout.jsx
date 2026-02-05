@@ -93,6 +93,7 @@ const AppLayout = ({ children }) => {
     { path: '/bookings', label: 'Bookings', icon: Users },
     { path: '/team', label: 'Team', icon: UsersRound },
     { path: '/services', label: 'Services', icon: Scissors },
+    { path: '/products', label: 'Products', icon: Package },
     { path: '/share', label: 'Booking Page', icon: Link2 },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/support', label: 'Support', icon: MessageCircle },
