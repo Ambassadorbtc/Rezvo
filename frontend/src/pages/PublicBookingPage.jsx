@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import api, { formatPrice } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -12,20 +11,15 @@ import {
   ChevronRight,
   Loader2,
   Phone,
-  Mail,
   MapPin,
-  Instagram,
-  Facebook,
-  Globe,
   Star,
   User,
   X,
-  Plus,
-  Trash2
+  Plus
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Toaster } from '../components/ui/sonner';
-import { format, setHours, setMinutes, addDays, startOfWeek, isSameDay, isToday } from 'date-fns';
+import { format, setHours, setMinutes, addDays, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, isBefore, startOfDay } from 'date-fns';
 
 const PublicBookingPage = () => {
   const { businessId } = useParams();
@@ -37,7 +31,7 @@ const PublicBookingPage = () => {
   const [bookingComplete, setBookingComplete] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // Selected items - support multiple services
+  // Selected items
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedTeamMember, setSelectedTeamMember] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -46,11 +40,9 @@ const PublicBookingPage = () => {
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPhone, setClientPhone] = useState('');
-  const [notes, setNotes] = useState('');
   
-  // Week navigation
-  const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 0 }));
-  const scrollRef = useRef(null);
+  // Calendar month navigation
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     loadBusinessData();
@@ -73,11 +65,14 @@ const PublicBookingPage = () => {
     }
   };
 
-  const getWeekDates = () => {
-    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const getMonthDays = () => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    return eachDayOfInterval({ start, end });
   };
 
   const getDayAvailability = (date) => {
+    if (isBefore(startOfDay(date), startOfDay(new Date()))) return false;
     if (!business?.availability) return true;
     const dayOfWeek = date.getDay();
     const dayAvail = business.availability.find(a => a.day === dayOfWeek);
@@ -90,11 +85,11 @@ const PublicBookingPage = () => {
     const dayOfWeek = selectedDate.getDay();
     const defaultAvailability = [
       { day: 0, start: '10:00', end: '16:00', enabled: true },
-      { day: 1, start: '09:00', end: '20:00', enabled: true },
-      { day: 2, start: '09:00', end: '20:00', enabled: true },
-      { day: 3, start: '09:00', end: '20:00', enabled: true },
-      { day: 4, start: '09:00', end: '20:00', enabled: true },
-      { day: 5, start: '09:00', end: '20:00', enabled: true },
+      { day: 1, start: '09:00', end: '21:00', enabled: true },
+      { day: 2, start: '09:00', end: '21:00', enabled: true },
+      { day: 3, start: '09:00', end: '21:00', enabled: true },
+      { day: 4, start: '09:00', end: '21:00', enabled: true },
+      { day: 5, start: '09:00', end: '21:00', enabled: true },
       { day: 6, start: '09:00', end: '18:00', enabled: true },
     ];
     
@@ -105,10 +100,10 @@ const PublicBookingPage = () => {
     
     const slots = [];
     const startParts = dayAvailability.start?.split(':') || ['09', '00'];
-    const endParts = dayAvailability.end?.split(':') || ['20', '00'];
+    const endParts = dayAvailability.end?.split(':') || ['21', '00'];
     const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
     const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
-    const serviceDuration = selectedServices.reduce((sum, s) => sum + (s.duration_min || 60), 0) || 60;
+    const serviceDuration = selectedServices.reduce((sum, s) => sum + (s.duration_min || 60), 0) || 30;
     
     for (let time = startMin; time + serviceDuration <= endMin; time += 15) {
       const hours = Math.floor(time / 60);
@@ -124,7 +119,7 @@ const PublicBookingPage = () => {
       const hour = parseInt(time.split(':')[0]);
       if (timeOfDay === 'morning') return hour >= 6 && hour < 12;
       if (timeOfDay === 'afternoon') return hour >= 12 && hour < 17;
-      if (timeOfDay === 'evening') return hour >= 17 && hour < 22;
+      if (timeOfDay === 'evening') return hour >= 17 && hour < 24;
       return true;
     });
   };
@@ -136,19 +131,17 @@ const PublicBookingPage = () => {
     return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
-  const addService = (service) => {
-    if (!selectedServices.find(s => s.id === service.id)) {
+  const toggleService = (service) => {
+    if (selectedServices.find(s => s.id === service.id)) {
+      setSelectedServices(selectedServices.filter(s => s.id !== service.id));
+    } else {
       setSelectedServices([...selectedServices, service]);
     }
   };
 
-  const removeService = (serviceId) => {
-    setSelectedServices(selectedServices.filter(s => s.id !== serviceId));
-  };
-
   const calculateTotal = () => {
     const subtotal = selectedServices.reduce((sum, s) => sum + (s.price_pence || 0), 0);
-    const tax = Math.round(subtotal * 0.1); // 10% tax
+    const tax = Math.round(subtotal * 0.1);
     return { subtotal, tax, total: subtotal + tax };
   };
 
@@ -164,15 +157,6 @@ const PublicBookingPage = () => {
     return `${hours}h ${minutes}min`;
   };
 
-  const getEndTime = () => {
-    if (!selectedTime) return '';
-    const [hours, minutes] = selectedTime.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes + calculateDuration();
-    const endHours = Math.floor(totalMinutes / 60);
-    const endMins = totalMinutes % 60;
-    return formatTimeDisplay(`${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`);
-  };
-
   const handleSubmit = async () => {
     if (selectedServices.length === 0 || !selectedDate || !selectedTime || !clientName || !clientEmail) {
       toast.error('Please fill in all required fields');
@@ -184,7 +168,6 @@ const PublicBookingPage = () => {
       const [hours, minutes] = selectedTime.split(':').map(Number);
       const bookingDate = setMinutes(setHours(selectedDate, hours), minutes);
 
-      // Book all services
       for (const service of selectedServices) {
         await api.post('/public/bookings', {
           service_id: service.id,
@@ -192,7 +175,6 @@ const PublicBookingPage = () => {
           client_email: clientEmail,
           client_phone: clientPhone,
           datetime_iso: bookingDate.toISOString(),
-          notes,
           team_member_id: selectedTeamMember?.id || null,
         });
       }
@@ -210,7 +192,7 @@ const PublicBookingPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#1B9AAA] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -219,9 +201,9 @@ const PublicBookingPage = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="text-center">
-          <CalendarIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Business not found</h2>
-          <p className="text-gray-500">This booking page doesn't exist or has been removed.</p>
+          <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-gray-900 mb-1">Business not found</h2>
+          <p className="text-sm text-gray-500">This booking page doesn't exist.</p>
         </div>
       </div>
     );
@@ -229,36 +211,30 @@ const PublicBookingPage = () => {
 
   if (bookingComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#1B9AAA]/10 to-white flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center" data-testid="booking-success">
-          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6">
-            <Check className="w-10 h-10 text-emerald-600" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-white flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center" data-testid="booking-success">
+          <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+            <Check className="w-7 h-7 text-emerald-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
-          <p className="text-gray-500 mb-8">We've sent a confirmation to {clientEmail}</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Booking Confirmed!</h2>
+          <p className="text-sm text-gray-500 mb-6">Confirmation sent to {clientEmail}</p>
           
-          <div className="bg-gray-50 rounded-2xl p-6 text-left space-y-4">
+          <div className="bg-gray-50 rounded-xl p-4 text-left text-sm space-y-2">
             {selectedServices.map((service, idx) => (
               <div key={idx} className="flex justify-between">
                 <span className="text-gray-600">{service.name}</span>
-                <span className="font-semibold text-gray-900">{formatPrice(service.price_pence)}</span>
+                <span className="font-medium text-gray-900">{formatPrice(service.price_pence)}</span>
               </div>
             ))}
-            <div className="border-t border-gray-200 pt-4 flex justify-between">
+            <div className="border-t border-gray-200 pt-2 flex justify-between">
               <span className="text-gray-600">Date & Time</span>
-              <span className="font-semibold text-gray-900">
-                {format(selectedDate, 'EEE, d MMM')} at {formatTimeDisplay(selectedTime)}
+              <span className="font-medium text-gray-900">
+                {format(selectedDate, 'EEE, d MMM')} • {formatTimeDisplay(selectedTime)}
               </span>
             </div>
-            {selectedTeamMember && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Staff</span>
-                <span className="font-semibold text-gray-900">{selectedTeamMember.name}</span>
-              </div>
-            )}
-            <div className="border-t border-gray-200 pt-4 flex justify-between text-lg">
-              <span className="font-semibold text-gray-900">Total</span>
-              <span className="font-bold text-[#1B9AAA]">{formatPrice(calculateTotal().total)}</span>
+            <div className="border-t border-gray-200 pt-2 flex justify-between font-semibold">
+              <span className="text-gray-900">Total</span>
+              <span className="text-teal-600">{formatPrice(calculateTotal().total)}</span>
             </div>
           </div>
         </div>
@@ -267,120 +243,107 @@ const PublicBookingPage = () => {
     );
   }
 
-  const weekDates = getWeekDates();
+  const monthDays = getMonthDays();
   const availableSlots = getAvailableTimeSlots();
   const filteredSlots = filterTimesByPeriod(availableSlots);
   const { subtotal, tax, total } = calculateTotal();
+  const firstDayOffset = startOfMonth(currentMonth).getDay();
 
   return (
-    <div className="min-h-screen bg-white" data-testid="public-booking-page">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50" data-testid="public-booking-page">
+      {/* Compact Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {business.logo_url ? (
-                <img src={business.logo_url} alt={business.name} className="w-12 h-12 rounded-xl object-cover" />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1B9AAA] to-[#168B9A] flex items-center justify-center">
-                  <span className="text-xl font-bold text-white">{business.name?.charAt(0)}</span>
-                </div>
-              )}
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">{business.name}</h1>
-                <div className="flex items-center gap-1">
-                  {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  ))}
-                  <span className="text-xs text-gray-500 ml-1">5.0 (128)</span>
-                </div>
+        <div className="max-w-lg mx-auto px-4 py-3">
+          <div className="flex items-center gap-3">
+            {business.logo_url ? (
+              <img src={business.logo_url} alt={business.name} className="w-10 h-10 rounded-lg object-cover" />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center">
+                <span className="text-lg font-bold text-white">{business.name?.charAt(0)}</span>
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-base font-bold text-gray-900 truncate">{business.name}</h1>
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                ))}
+                <span className="text-xs text-gray-500 ml-1">5.0</span>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Date Selection Modal */}
+      {/* Date/Time Selection Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-4 sm:pt-8 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 mb-8 relative animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">{format(selectedDate, 'MMMM yyyy')}</h2>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-
-            {/* Week Day Selector */}
-            <div className="px-4 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setWeekStart(addDays(weekStart, -7))}
-                  className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5 text-gray-500" />
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <h2 className="font-bold text-gray-900">{format(currentMonth, 'MMMM yyyy')}</h2>
+              <div className="flex items-center gap-1">
+                <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
-                
-                <div className="flex-1 flex gap-1 overflow-x-auto py-2" ref={scrollRef}>
-                  {weekDates.map((date, idx) => {
-                    const isSelected = isSameDay(date, selectedDate);
-                    const isAvailable = getDayAvailability(date) && date >= new Date(new Date().setHours(0,0,0,0));
-                    const todayDate = isToday(date);
-                    
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => isAvailable && setSelectedDate(date)}
-                        disabled={!isAvailable}
-                        className={`flex-1 min-w-[52px] flex flex-col items-center py-3 px-2 rounded-xl transition-all ${
-                          isSelected 
-                            ? 'bg-[#1B9AAA] text-white shadow-lg shadow-[#1B9AAA]/30' 
-                            : isAvailable 
-                              ? 'hover:bg-gray-100 text-gray-700'
-                              : 'opacity-40 cursor-not-allowed'
-                        }`}
-                      >
-                        <span className={`text-xs font-medium uppercase ${isSelected ? 'text-white/80' : 'text-gray-400'}`}>
-                          {format(date, 'EEE')}
-                        </span>
-                        <span className={`text-lg font-bold mt-1 ${isSelected ? 'text-white' : ''}`}>
-                          {format(date, 'd')}
-                        </span>
-                        {todayDate && !isSelected && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1" />
-                        )}
-                        {isAvailable && !isSelected && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                <button 
-                  onClick={() => setWeekStart(addDays(weekStart, 7))}
-                  className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg ml-2">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Time of Day Filter */}
-            <div className="px-6 py-4 border-b border-gray-100">
-              <div className="flex gap-2 justify-center">
+            {/* Calendar Grid */}
+            <div className="p-3">
+              <div className="grid grid-cols-7 gap-1 mb-1">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                  <div key={i} className="text-center text-[10px] font-medium text-gray-400 py-1">{d}</div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {Array(firstDayOffset).fill(null).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
+                {monthDays.map((date, idx) => {
+                  const isSelected = isSameDay(date, selectedDate);
+                  const isAvailable = getDayAvailability(date);
+                  const todayDate = isToday(date);
+                  
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => isAvailable && setSelectedDate(date)}
+                      disabled={!isAvailable}
+                      className={`aspect-square flex items-center justify-center text-sm rounded-lg transition-all ${
+                        isSelected 
+                          ? 'bg-teal-500 text-white font-bold' 
+                          : isAvailable 
+                            ? todayDate
+                              ? 'bg-teal-50 text-teal-700 font-medium hover:bg-teal-100'
+                              : 'hover:bg-gray-100 text-gray-700'
+                            : 'text-gray-300 cursor-not-allowed'
+                      }`}
+                    >
+                      {format(date, 'd')}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Time Period Tabs */}
+            <div className="px-3 pb-2">
+              <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
                 {['morning', 'afternoon', 'evening'].map((period) => (
                   <button
                     key={period}
                     onClick={() => setTimeOfDay(period)}
-                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+                    className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
                       timeOfDay === period
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -390,114 +353,60 @@ const PublicBookingPage = () => {
             </div>
 
             {/* Time Slots */}
-            <div className="p-6 border-b border-gray-100">
+            <div className="px-3 pb-3 max-h-32 overflow-y-auto">
               {filteredSlots.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  No available times for this period
-                </div>
+                <div className="text-center py-4 text-sm text-gray-400">No times available</div>
               ) : (
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  <button 
-                    className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0 transition-colors"
-                    onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-                  >
-                    <ChevronLeft className="w-5 h-5 text-gray-500" />
-                  </button>
-                  
-                  <div className="flex gap-2 overflow-x-auto flex-1" ref={scrollRef}>
-                    {filteredSlots.slice(0, 8).map((time) => (
-                      <button
-                        key={time}
-                        onClick={() => setSelectedTime(time)}
-                        className={`px-5 py-3 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
-                          selectedTime === time
-                            ? 'bg-[#1B9AAA] text-white shadow-lg shadow-[#1B9AAA]/30'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {formatTimeDisplay(time)}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <button 
-                    className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0 transition-colors"
-                    onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-                  >
-                    <ChevronRight className="w-5 h-5 text-gray-500" />
-                  </button>
+                <div className="flex flex-wrap gap-2">
+                  {filteredSlots.map((time) => (
+                    <button
+                      key={time}
+                      onClick={() => setSelectedTime(time)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        selectedTime === time
+                          ? 'bg-teal-500 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {formatTimeDisplay(time)}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Selected Services Summary */}
+            {/* Selected Summary */}
             {selectedServices.length > 0 && (
-              <div className="p-6 bg-gray-50 space-y-3">
-                {selectedServices.map((service, idx) => (
-                  <div key={idx} className="bg-white rounded-xl p-4 flex items-center justify-between shadow-sm">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{service.name}</h4>
-                      <p className="text-sm text-gray-500">
-                        {selectedTime && `${formatTimeDisplay(selectedTime)} - ${getEndTime()}`}
-                      </p>
-                      {selectedTeamMember && (
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-gray-400">Staff:</span>
-                          <div className="flex items-center gap-1.5">
-                            <div 
-                              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
-                              style={{ backgroundColor: selectedTeamMember.color || '#1B9AAA' }}
-                            >
-                              {selectedTeamMember.avatar_url ? (
-                                <img src={selectedTeamMember.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                              ) : (
-                                selectedTeamMember.name?.charAt(0)
-                              )}
-                            </div>
-                            <span className="text-xs font-medium text-gray-700">{selectedTeamMember.name}</span>
-                          </div>
-                        </div>
-                      )}
+              <div className="px-3 pb-3 border-t border-gray-100 pt-3">
+                <div className="bg-gray-50 rounded-xl p-3 space-y-2">
+                  {selectedServices.map((service, idx) => (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span className="text-gray-600">{service.name}</span>
+                      <span className="font-medium">{formatPrice(service.price_pence)}</span>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900">{formatPrice(service.price_pence)}+</p>
+                  ))}
+                  {selectedTeamMember && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-1 border-t border-gray-200">
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: selectedTeamMember.color || '#14B8A6' }}>
+                        {selectedTeamMember.name?.charAt(0)}
+                      </div>
+                      <span>{selectedTeamMember.name}</span>
                     </div>
-                  </div>
-                ))}
-                
-                <button 
-                  onClick={() => setShowModal(false)}
-                  className="w-full text-left text-[#1B9AAA] font-semibold text-sm flex items-center gap-2 hover:underline"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add another service
-                </button>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* Total & Continue */}
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm text-gray-500">
-                  Total (Includes tax: {formatPrice(tax)}) :
-                </div>
-                <div className="text-right">
-                  <span className="text-3xl font-bold text-gray-900">{formatPrice(total)}+</span>
-                  <p className="text-sm text-gray-500">{formatDuration(calculateDuration())}</p>
-                </div>
+            {/* Continue Button */}
+            <div className="p-3 border-t border-gray-100 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-500">Total (incl. tax)</p>
+                <p className="text-xl font-bold text-gray-900">{formatPrice(total)}</p>
               </div>
-              
               <Button
-                onClick={() => {
-                  if (!selectedTime) {
-                    toast.error('Please select a time');
-                    return;
-                  }
-                  // Show client details form
-                  setShowModal(false);
-                }}
-                disabled={!selectedTime || selectedServices.length === 0}
-                className="w-full bg-[#1B9AAA] hover:bg-[#168B9A] text-white rounded-2xl py-6 font-semibold text-lg shadow-lg shadow-[#1B9AAA]/30"
+                onClick={() => setShowModal(false)}
+                disabled={!selectedTime}
+                className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-6"
               >
                 Continue
               </Button>
@@ -506,80 +415,64 @@ const PublicBookingPage = () => {
         </div>
       )}
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        {/* Services Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Select Services</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
+      <main className="max-w-lg mx-auto px-4 py-4">
+        {/* Services - Compact Grid */}
+        <div className="mb-4">
+          <h2 className="text-sm font-bold text-gray-900 mb-2">Select Services</h2>
+          <div className="space-y-2">
             {services.map((service) => {
               const isSelected = selectedServices.find(s => s.id === service.id);
               return (
                 <div
                   key={service.id}
-                  className={`bg-white rounded-2xl border-2 p-5 cursor-pointer transition-all hover:shadow-lg ${
-                    isSelected ? 'border-[#1B9AAA] shadow-lg shadow-[#1B9AAA]/10' : 'border-gray-100 hover:border-gray-200'
+                  onClick={() => toggleService(service)}
+                  className={`flex items-center gap-3 p-3 bg-white rounded-xl border-2 cursor-pointer transition-all ${
+                    isSelected ? 'border-teal-500 bg-teal-50/50' : 'border-transparent hover:border-gray-200'
                   }`}
-                  onClick={() => isSelected ? removeService(service.id) : addService(service)}
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 text-lg">{service.name}</h3>
-                      {service.description && (
-                        <p className="text-sm text-gray-500 mt-1">{service.description}</p>
-                      )}
-                    </div>
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                      isSelected ? 'bg-[#1B9AAA] border-[#1B9AAA]' : 'border-gray-300'
-                    }`}>
-                      {isSelected && <Check className="w-4 h-4 text-white" />}
-                    </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                    isSelected ? 'bg-teal-500 border-teal-500' : 'border-gray-300'
+                  }`}>
+                    {isSelected && <Check className="w-3 h-3 text-white" />}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="w-4 h-4" />
-                      <span>{service.duration_min} min</span>
-                    </div>
-                    <div className="text-xl font-bold text-[#1B9AAA]">
-                      {formatPrice(service.price_pence)}
-                    </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900">{service.name}</h3>
+                    <p className="text-xs text-gray-500">{service.duration_min} min</p>
                   </div>
+                  <span className="text-sm font-bold text-teal-600">{formatPrice(service.price_pence)}</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Team Members */}
+        {/* Team Members - Compact */}
         {teamMembers.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Choose Your Professional</h2>
-            <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="mb-4">
+            <h2 className="text-sm font-bold text-gray-900 mb-2">Choose Professional</h2>
+            <div className="flex gap-2 overflow-x-auto pb-1">
               <button
                 onClick={() => setSelectedTeamMember(null)}
-                className={`flex items-center gap-3 px-5 py-3 rounded-2xl border-2 transition-all flex-shrink-0 ${
-                  selectedTeamMember === null 
-                    ? 'border-[#1B9AAA] bg-[#1B9AAA]/5' 
-                    : 'border-gray-200 hover:border-gray-300'
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all flex-shrink-0 ${
+                  selectedTeamMember === null ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <User className="w-5 h-5 text-gray-500" />
+                <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="w-3.5 h-3.5 text-gray-500" />
                 </div>
-                <span className="font-medium text-gray-900">Any available</span>
+                <span className="text-sm font-medium text-gray-700">Any</span>
               </button>
               {teamMembers.map((member) => (
                 <button
                   key={member.id}
                   onClick={() => setSelectedTeamMember(member)}
-                  className={`flex items-center gap-3 px-5 py-3 rounded-2xl border-2 transition-all flex-shrink-0 ${
-                    selectedTeamMember?.id === member.id 
-                      ? 'border-[#1B9AAA] bg-[#1B9AAA]/5' 
-                      : 'border-gray-200 hover:border-gray-300'
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all flex-shrink-0 ${
+                    selectedTeamMember?.id === member.id ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ backgroundColor: member.color || '#1B9AAA' }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-medium"
+                    style={{ backgroundColor: member.color || '#14B8A6' }}
                   >
                     {member.avatar_url ? (
                       <img src={member.avatar_url} alt={member.name} className="w-full h-full rounded-full object-cover" />
@@ -587,89 +480,74 @@ const PublicBookingPage = () => {
                       member.name?.charAt(0)?.toUpperCase()
                     )}
                   </div>
-                  <span className="font-medium text-gray-900">{member.name}</span>
+                  <span className="text-sm font-medium text-gray-700">{member.name?.split(' ')[0]}</span>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Client Details */}
+        {/* Client Details - Compact */}
         {selectedServices.length > 0 && selectedTime && (
-          <div className="mb-8 bg-gray-50 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Your Details</h2>
-            <div className="space-y-4">
-              <div>
-                <Label className="text-gray-700 font-medium">Name *</Label>
+          <div className="mb-4 bg-white rounded-xl p-4">
+            <h2 className="text-sm font-bold text-gray-900 mb-3">Your Details</h2>
+            <div className="space-y-3">
+              <Input
+                placeholder="Your name *"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                className="rounded-lg text-sm h-10"
+              />
+              <div className="grid grid-cols-2 gap-2">
                 <Input
-                  placeholder="Enter your name"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="mt-1.5 rounded-xl bg-white border-gray-200 py-5"
+                  type="email"
+                  placeholder="Email *"
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  className="rounded-lg text-sm h-10"
                 />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-700 font-medium">Email *</Label>
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={clientEmail}
-                    onChange={(e) => setClientEmail(e.target.value)}
-                    className="mt-1.5 rounded-xl bg-white border-gray-200 py-5"
-                  />
-                </div>
-                <div>
-                  <Label className="text-gray-700 font-medium">Phone (optional)</Label>
-                  <Input
-                    type="tel"
-                    placeholder="+44 7XXX XXXXXX"
-                    value={clientPhone}
-                    onChange={(e) => setClientPhone(e.target.value)}
-                    className="mt-1.5 rounded-xl bg-white border-gray-200 py-5"
-                  />
-                </div>
+                <Input
+                  type="tel"
+                  placeholder="Phone"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  className="rounded-lg text-sm h-10"
+                />
               </div>
             </div>
           </div>
         )}
       </main>
 
-      {/* Bottom Booking Bar */}
+      {/* Bottom Bar - Compact */}
       {selectedServices.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between gap-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+          <div className="max-w-lg mx-auto px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-gray-500">
-                  {selectedServices.length} service{selectedServices.length > 1 ? 's' : ''} • {formatDuration(calculateDuration())}
-                </p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(total)}</p>
+                <p className="text-xs text-gray-500">{selectedServices.length} service{selectedServices.length > 1 ? 's' : ''} • {formatDuration(calculateDuration())}</p>
+                <p className="text-lg font-bold text-gray-900">{formatPrice(total)}</p>
               </div>
               
               {!selectedTime ? (
                 <Button
                   onClick={() => setShowModal(true)}
-                  className="bg-[#1B9AAA] hover:bg-[#168B9A] text-white rounded-2xl px-8 py-6 font-semibold shadow-lg shadow-[#1B9AAA]/30"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-5"
                 >
-                  Select Date & Time
+                  Select Time
                 </Button>
               ) : (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">{format(selectedDate, 'EEE, d MMM')}</p>
-                    <p className="font-semibold text-gray-900">{formatTimeDisplay(selectedTime)}</p>
+                    <p className="text-xs text-gray-500">{format(selectedDate, 'EEE, d MMM')}</p>
+                    <p className="text-sm font-semibold text-gray-900">{formatTimeDisplay(selectedTime)}</p>
                   </div>
                   <Button
                     onClick={handleSubmit}
                     disabled={submitting || !clientName || !clientEmail}
-                    className="bg-[#1B9AAA] hover:bg-[#168B9A] text-white rounded-2xl px-8 py-6 font-semibold shadow-lg shadow-[#1B9AAA]/30"
+                    className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl px-5"
                   >
-                    {submitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      'Confirm Booking'
-                    )}
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Book Now'}
                   </Button>
                 </div>
               )}
@@ -679,28 +557,10 @@ const PublicBookingPage = () => {
       )}
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-100 mt-8 pb-32">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {business.phone && (
-                <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-gray-500 hover:text-[#1B9AAA]">
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm">{business.phone}</span>
-                </a>
-              )}
-              {business.address && (
-                <div className="flex items-center gap-2 text-gray-500">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm">{business.address}</span>
-                </div>
-              )}
-            </div>
-            <p className="text-gray-400 text-sm">
-              Powered by <span className="text-[#1B9AAA] font-semibold">Rezvo</span>
-            </p>
-          </div>
-        </div>
+      <footer className="pb-24 pt-4 text-center">
+        <p className="text-xs text-gray-400">
+          Powered by <span className="text-teal-500 font-medium">Rezvo</span>
+        </p>
       </footer>
 
       <Toaster />
