@@ -22,7 +22,7 @@ const TEAM_COLORS = [
   '#EC4899', '#14B8A6', '#6366F1', '#84CC16', '#F97316'
 ];
 
-export default function TeamScreen({ navigation }) {
+export default function TeamScreen({ navigation, route }) {
   const { showToast } = useGlobalToast();
   const { showConfirm } = useConfirm();
   const [members, setMembers] = useState([]);
@@ -33,6 +33,9 @@ export default function TeamScreen({ navigation }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
   const [saving, setSaving] = useState(false);
+  
+  // Get selected member ID from navigation params
+  const selectedMemberId = route?.params?.selectedMemberId;
   
   // Form state
   const [name, setName] = useState('');
@@ -50,6 +53,14 @@ export default function TeamScreen({ navigation }) {
       ]);
       setMembers(membersRes.data || []);
       setServices(servicesRes.data || []);
+      
+      // Auto-open edit modal if selectedMemberId is provided
+      if (selectedMemberId && membersRes.data) {
+        const member = membersRes.data.find(m => m.id === selectedMemberId);
+        if (member) {
+          handleEditMember(member);
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
