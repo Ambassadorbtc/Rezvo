@@ -48,11 +48,7 @@ const CalendarPage = () => {
   const hours = Array.from({ length: 13 }, (_, i) => i + 8);
   const HOUR_HEIGHT = 64;
 
-  useEffect(() => {
-    loadData();
-  }, [selectedDate]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const [bookingsRes, servicesRes, membersRes] = await Promise.all([
@@ -68,7 +64,11 @@ const CalendarPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedDate]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const getServiceColor = (serviceId) => {
     const index = services.findIndex(s => s.id === serviceId);
