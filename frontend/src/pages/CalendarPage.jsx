@@ -442,12 +442,13 @@ const CalendarPage = () => {
                           );
                         })}
                         
-                        {/* Bookings */}
+                        {/* Bookings - Premium Fresha-style Cards */}
                         {memberBookings.map((booking) => {
                           const { top, height } = getBookingPosition(booking);
                           const colors = getServiceColor(booking.service_id);
                           const isDragging = draggedBooking?.id === booking.id;
                           const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
+                          const minHeight = Math.max(height, 45); // Minimum 45px for readability
                           
                           return (
                             <div
@@ -455,49 +456,27 @@ const CalendarPage = () => {
                               draggable
                               onDragStart={(e) => handleDragStart(e, booking)}
                               onDragEnd={handleDragEnd}
-                              className={`absolute left-2 right-2 rounded-xl cursor-grab active:cursor-grabbing transition-all group overflow-hidden ${
-                                isDragging ? 'opacity-50 scale-95' : 'hover:shadow-xl hover:scale-[1.02]'
+                              className={`absolute left-1 right-1 rounded-xl cursor-grab active:cursor-grabbing transition-all group overflow-hidden shadow-sm hover:shadow-lg ${
+                                isDragging ? 'opacity-50 scale-95 z-50' : 'hover:z-10'
                               }`}
                               style={{ 
                                 top: `${top}px`, 
-                                height: `${height}px`,
-                                backgroundColor: colors.bg,
+                                minHeight: `${minHeight}px`,
+                                height: `${minHeight}px`,
+                                backgroundColor: '#fff',
+                                border: `1px solid ${colors.border}20`,
                               }}
                               onClick={() => setShowEditBooking(booking)}
                             >
-                              {/* Colored top bar */}
-                              <div className="h-1 w-full" style={{ backgroundColor: colors.border }} />
+                              {/* Colored left border accent */}
+                              <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ backgroundColor: colors.border }} />
                               
-                              <div className="p-2.5 flex flex-col h-[calc(100%-4px)]">
-                                {/* Time and price row */}
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="text-[10px] font-bold tracking-wide" style={{ color: colors.text }}>
-                                    {formatBookingTime(booking.datetime)}
-                                  </span>
-                                  {height > 60 && (
-                                    <span className="text-[10px] font-bold" style={{ color: colors.border }}>
-                                      {formatPrice(booking.price_pence)}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {/* Client name */}
-                                <div className="font-bold text-gray-900 text-sm truncate leading-tight">
-                                  {booking.client_name}
-                                </div>
-                                
-                                {/* Service name */}
-                                {height > 50 && (
-                                  <div className="text-xs text-gray-600 truncate mt-0.5">
-                                    {booking.service_name}
-                                  </div>
-                                )}
-                                
-                                {/* Team member with avatar - only show if space allows */}
-                                {height > 70 && teamMember && (
-                                  <div className="flex items-center gap-1.5 mt-auto pt-1">
+                              <div className="pl-3 pr-2 py-2 h-full flex flex-col justify-center">
+                                {/* Row 1: Time + Team Member Avatar */}
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  {teamMember && (
                                     <div 
-                                      className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
+                                      className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0 ring-2 ring-white shadow-sm"
                                       style={{ backgroundColor: teamMember.color || colors.border }}
                                     >
                                       {teamMember.avatar_url ? (
@@ -506,16 +485,28 @@ const CalendarPage = () => {
                                         teamMember.name?.charAt(0)
                                       )}
                                     </div>
-                                    <span className="text-[10px] text-gray-500 font-medium truncate">
-                                      {teamMember.name}
-                                    </span>
+                                  )}
+                                  <span className="text-[11px] font-semibold" style={{ color: colors.border }}>
+                                    {formatBookingTime(booking.datetime)}
+                                  </span>
+                                </div>
+                                
+                                {/* Row 2: Client Name */}
+                                <div className="font-semibold text-gray-900 text-[13px] truncate leading-tight">
+                                  {booking.client_name}
+                                </div>
+                                
+                                {/* Row 3: Service (only if space) */}
+                                {minHeight > 55 && (
+                                  <div className="text-[11px] text-gray-500 truncate mt-0.5">
+                                    {booking.service_name}
                                   </div>
                                 )}
                               </div>
                               
                               {/* Drag handle */}
-                              <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <GripVertical className="w-3 h-3" style={{ color: colors.border }} />
+                              <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <GripVertical className="w-3 h-3 text-gray-300" />
                               </div>
                             </div>
                           );
