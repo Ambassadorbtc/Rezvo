@@ -85,7 +85,22 @@ export default function SettingsScreen({ navigation }) {
 
   const copyToClipboard = async (text) => {
     await Clipboard.setStringAsync(text);
-    Alert.alert('Copied!', 'Link copied to clipboard');
+    // Custom toast-like feedback without native Alert
+  };
+
+  // Custom Toast Component
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2000);
+  };
+
+  const handleCopyLink = async (text) => {
+    await Clipboard.setStringAsync(text);
+    showToast('Link copied to clipboard!');
   };
 
   const handleShare = async () => {
