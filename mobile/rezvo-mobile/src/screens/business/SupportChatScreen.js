@@ -55,10 +55,12 @@ export default function SupportChatScreen({ navigation, route }) {
 
   const fetchConversations = async () => {
     try {
+      console.log('[SupportChat] Fetching conversations...');
       const res = await api.get('/conversations');
+      console.log('[SupportChat] Got conversations:', res.data?.length || 0);
       setConversations(res.data || []);
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      console.error('[SupportChat] Error fetching conversations:', error.response?.data || error.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -67,14 +69,16 @@ export default function SupportChatScreen({ navigation, route }) {
 
   const fetchMessages = async (conversationId) => {
     try {
+      console.log('[SupportChat] Fetching messages for:', conversationId);
       const res = await api.get(`/conversations/${conversationId}/messages`);
+      console.log('[SupportChat] Got messages:', res.data?.length || 0);
       setMessages(res.data || []);
       // Scroll to bottom after loading
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('[SupportChat] Error fetching messages:', error.response?.data || error.message);
     }
   };
 
