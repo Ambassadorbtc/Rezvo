@@ -583,46 +583,16 @@ const SupportPage = () => {
                     <RotateCcw className="w-4 h-4" />
                   </Button>
                   
-                  {selectedConversation?.status === 'closed' && (
-                    <Button
-                      size="sm"
-                      onClick={() => handleUpdateStatus('open')}
-                      className="bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs"
-                    >
-                      <RotateCcw className="w-3 h-3 mr-1" />
-                      Reopen
-                    </Button>
-                  )}
-                  {(selectedConversation?.status === 'open' || !selectedConversation?.status) && (
-                    <Button
-                      size="sm"
-                      onClick={() => handleUpdateStatus('resolved')}
-                      className="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs"
-                    >
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Mark Resolved
-                    </Button>
-                  )}
-                  {selectedConversation?.status === 'resolved' && (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleUpdateStatus('open')}
-                        className="bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs"
-                      >
-                        <RotateCcw className="w-3 h-3 mr-1" />
-                        Reopen
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleUpdateStatus('closed')}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs"
-                      >
-                        <XCircle className="w-3 h-3 mr-1" />
-                        Close
-                      </Button>
-                    </>
-                  )}
+                  {/* Status Dropdown */}
+                  <select
+                    value={selectedConversation?.status || 'open'}
+                    onChange={(e) => handleUpdateStatus(e.target.value)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border-0 cursor-pointer bg-teal-500 text-white focus:ring-2 focus:ring-teal-300"
+                  >
+                    <option value="open" className="bg-white text-gray-800">Open</option>
+                    <option value="resolved" className="bg-white text-gray-800">Resolved</option>
+                    <option value="closed" className="bg-white text-gray-800">Closed</option>
+                  </select>
                 </div>
               </div>
 
