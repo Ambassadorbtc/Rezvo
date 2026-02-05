@@ -15,7 +15,8 @@ import {
   UsersRound,
   Search,
   MessageCircle,
-  Package
+  Package,
+  Bell
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
