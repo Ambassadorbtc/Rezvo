@@ -1040,16 +1040,47 @@ const FounderAdminPage = () => {
               <div className="w-96 bg-white rounded-2xl shadow-sm border-0 flex flex-col overflow-hidden">
                 <div className="p-4 border-b border-gray-100">
                   <h3 className="font-semibold text-[#0A1626]">Support Conversations</h3>
-                  <p className="text-sm text-gray-500">{conversations.length} total</p>
+                  <p className="text-sm text-gray-500">{filteredConversations.length} of {conversations.length} tickets</p>
+                  
+                  {/* Search */}
+                  <div className="relative mt-3">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search tickets..."
+                      value={supportSearch}
+                      onChange={(e) => setSupportSearch(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent"
+                    />
+                  </div>
+                  
+                  {/* Status Filter Tabs */}
+                  <div className="flex gap-1 mt-3 p-1 bg-gray-100 rounded-lg">
+                    {['all', 'open', 'resolved', 'closed'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setSupportFilter(status)}
+                        className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors capitalize ${
+                          supportFilter === status
+                            ? 'bg-white text-[#0A1626] shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className="flex-1 overflow-y-auto">
-                  {conversations.length === 0 ? (
+                  {filteredConversations.length === 0 ? (
                     <div className="p-8 text-center">
                       <Mail className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No support messages yet</p>
+                      <p className="text-gray-500">
+                        {supportSearch || supportFilter !== 'all' ? 'No tickets match your filter' : 'No support messages yet'}
+                      </p>
                     </div>
                   ) : (
-                    conversations.map((conv) => (
+                    filteredConversations.map((conv) => (
                       <button
                         key={conv.id}
                         onClick={() => setSelectedConversation(conv)}
