@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api, { formatPrice } from '../../lib/api';
+import { useGlobalToast, useConfirm } from '../../context/ToastContext';
 
 const TEAL = '#00BFA5';
 
@@ -23,6 +23,8 @@ const STATUS_CONFIG = {
 };
 
 export default function BookingsScreen({ navigation }) {
+  const { showToast } = useGlobalToast();
+  const { showConfirm } = useConfirm();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -50,23 +52,18 @@ export default function BookingsScreen({ navigation }) {
   };
 
   const handleStatusChange = async (booking, newStatus) => {
-    Alert.alert(
+    showConfirm(
       `${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)} Booking`,
       `Are you sure you want to ${newStatus} this booking?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Yes', 
-          onPress: async () => {
-            try {
-              await api.patch(`/bookings/${booking.id}`, { status: newStatus });
-              fetchBookings();
-            } catch (error) {
-              Alert.alert('Error', 'Could not update booking');
-            }
-          }
-        },
-      ]
+      async () => {
+        try {
+          await api.patch(`/bookings/${booking.id}`, { status: newStatus });
+          fetchBookings();
+          showToast('Booking updated successfully', 'success');
+        } catch (error) {
+          showToast('Could not update booking', 'error');
+        }
+      }
     );
   };
 
