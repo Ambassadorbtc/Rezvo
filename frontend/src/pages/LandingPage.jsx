@@ -354,7 +354,7 @@ const LandingPage = () => {
                 ))}
               </ul>
 
-              <Link to="/welcome">
+              <Link to="/signup">
                 <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-6 text-lg font-semibold shadow-button hover:shadow-button-hover transition-all btn-press" data-testid="pricing-cta-btn">
                   Start 14-day free trial
                 </Button>
