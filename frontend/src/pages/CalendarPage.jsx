@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { ChevronLeft, ChevronRight, Plus, Clock, User, GripVertical, Edit2, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, User, GripVertical, Edit2, Trash2, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, addDays, startOfWeek, startOfMonth, endOfMonth, isSameDay, isSameMonth, setHours, setMinutes, eachDayOfInterval } from 'date-fns';
 
