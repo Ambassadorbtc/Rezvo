@@ -14,6 +14,8 @@ import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import VerifyCodeScreen from '../screens/VerifyCodeScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import PasswordResetSuccessScreen from '../screens/PasswordResetSuccessScreen';
+import PhoneVerifyScreen from '../screens/PhoneVerifyScreen';
+import CompleteProfileScreen from '../screens/CompleteProfileScreen';
 
 // Client Screens
 import ClientHomeScreen from '../screens/client/HomeScreen';
