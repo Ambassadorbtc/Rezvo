@@ -352,72 +352,61 @@ export default function CalendarScreen({ navigation }) {
 
       {/* DAY VIEW */}
       {viewMode === 'day' && (
-        <>
-          {/* Team Members Header */}
-          {teamMembers.length > 0 && (
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.teamHeader}
-            >
-              <View style={{ width: TIME_COLUMN_WIDTH }} />
-              {teamMembers.map((member) => (
-                <TouchableOpacity 
-                  key={member.id} 
-                  style={[styles.teamColumn, { width: columnWidth }]}
-                  onPress={() => navigation.navigate('Team', { selectedMemberId: member.id })}
-                >
-                  <View style={[styles.memberAvatar, { backgroundColor: member.color || TEAL }]}>
-                    {member.avatar_url ? (
-                      <Image source={{ uri: member.avatar_url }} style={styles.memberAvatarImg} />
-                    ) : (
-                      <Text style={styles.memberInitial}>{member.name?.charAt(0)}</Text>
-                    )}
-                  </View>
-                  <Text style={styles.memberName} numberOfLines={1}>{member.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          )}
-
-          {/* Calendar Grid */}
-          <ScrollView
-            ref={scrollViewRef}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
-            }
-            showsVerticalScrollIndicator={false}
+        <ScrollView
+          ref={scrollViewRef}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={TEAL} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={true}
+            contentContainerStyle={styles.gridContainer}
           >
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.gridContainer}
-            >
-              <View style={styles.calendarGrid}>
-                {/* Time Column */}
-                <View style={styles.timeColumn}>
-                  {hours.map((hour) => (
-                    <View key={hour} style={styles.timeSlot}>
-                      <Text style={styles.timeText}>
-                        {hour.toString().padStart(2, '0')}:00
-                      </Text>
-                    </View>
-                  ))}
-                </View>
+            <View style={styles.calendarGrid}>
+              {/* Time Column */}
+              <View style={styles.timeColumn}>
+                {/* Empty header space */}
+                <View style={styles.teamHeaderCell} />
+                {hours.map((hour) => (
+                  <View key={hour} style={styles.timeSlot}>
+                    <Text style={styles.timeText}>
+                      {hour.toString().padStart(2, '0')}:00
+                    </Text>
+                  </View>
+                ))}
+              </View>
 
-                {/* Team Member Columns or Single Column */}
-                {teamMembers.length > 0 ? (
-                  teamMembers.map((member) => (
-                    <View key={member.id} style={[styles.dayColumn, { width: columnWidth }]}>
-                      {hours.map((hour) => (
-                        <Pressable 
-                          key={hour} 
-                          style={styles.hourLine}
-                          onPress={() => handleTimeSlotPress(hour, member.id)}
-                        />
-                      ))}
-                      
-                      {getMemberBookings(member.id).map((booking) => {
+              {/* Team Member Columns or Single Column */}
+              {teamMembers.length > 0 ? (
+                teamMembers.map((member) => (
+                  <View key={member.id} style={[styles.dayColumn, { width: columnWidth }]}>
+                    {/* Team Member Header - Part of the grid */}
+                    <TouchableOpacity 
+                      style={[styles.teamHeaderCell, { borderBottomWidth: 3, borderBottomColor: member.color || TEAL }]}
+                      onPress={() => navigation.navigate('Team', { selectedMemberId: member.id })}
+                    >
+                      <View style={[styles.memberAvatar, { backgroundColor: member.color || TEAL }]}>
+                        {member.avatar_url ? (
+                          <Image source={{ uri: member.avatar_url }} style={styles.memberAvatarImg} />
+                        ) : (
+                          <Text style={styles.memberInitial}>{member.name?.charAt(0)}</Text>
+                        )}
+                      </View>
+                      <Text style={styles.memberName} numberOfLines={1}>{member.name}</Text>
+                    </TouchableOpacity>
+                    
+                    {/* Hour grid lines */}
+                    {hours.map((hour) => (
+                      <Pressable 
+                        key={hour} 
+                        style={styles.hourLine}
+                        onPress={() => handleTimeSlotPress(hour, member.id)}
+                      />
+                    ))}
+                    
+                    {getMemberBookings(member.id).map((booking) => {
                         const { top, height } = getBookingPosition(booking);
                         const color = getServiceColor(booking.service_id);
                         const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
