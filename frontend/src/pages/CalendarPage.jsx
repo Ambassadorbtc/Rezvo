@@ -258,17 +258,17 @@ const CalendarPage = () => {
 
   return (
     <AppLayout>
-      <div className="h-[calc(100vh-64px)] flex flex-col bg-[#FDFBF7]" data-testid="calendar-page">
+      <div className="h-[calc(100vh-64px)] md:h-[calc(100vh-0px)] flex flex-col bg-[#FDFBF7]" data-testid="calendar-page">
         {/* Premium Header */}
         <div className="bg-white border-b border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between px-8 py-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-8 py-3 sm:py-5 gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Calendar</h1>
-              <p className="text-sm text-gray-500 mt-0.5 font-medium">{format(selectedDate, 'EEEE, MMMM d, yyyy')}</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Calendar</h1>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 font-medium">{format(selectedDate, 'EEE, MMM d, yyyy')}</p>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Team avatars */}
-              <Link to="/team" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {/* Team avatars - hidden on mobile */}
+              <Link to="/team" className="hidden sm:flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div className="flex -space-x-2">
                   {teamMembers.slice(0, 4).map((member, idx) => (
                     <div 
@@ -287,17 +287,18 @@ const CalendarPage = () => {
               </Link>
               <Button
                 onClick={() => setShowAddBooking(true)}
-                className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl gap-2 shadow-lg shadow-teal-500/25 px-6"
+                className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl gap-2 shadow-lg shadow-teal-500/25 px-4 sm:px-6 text-sm"
                 data-testid="add-booking-btn"
               >
                 <Plus className="w-4 h-4" />
-                New Booking
+                <span className="hidden sm:inline">New Booking</span>
+                <span className="sm:hidden">New</span>
               </Button>
             </div>
           </div>
 
           {/* Navigation Bar */}
-          <div className="flex items-center justify-between px-8 py-3 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-8 py-2 sm:py-3 bg-gray-50/50 gap-2 sm:gap-0">
             {/* Left: Date Nav */}
             <div className="flex items-center gap-3">
               <button
