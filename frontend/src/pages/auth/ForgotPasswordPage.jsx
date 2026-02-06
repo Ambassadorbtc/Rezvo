@@ -484,6 +484,72 @@ const ForgotPasswordPage = () => {
             </>
           )}
 
+          {step === 'emailCode' && (
+            <>
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Mail className="w-8 h-8 text-blue-600" />
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 text-center">
+                Check your email
+              </h1>
+              <p className="text-gray-500 mb-8 text-center">
+                Enter the 6-digit code sent to {email}
+              </p>
+
+              <div className="flex justify-center gap-2 sm:gap-3 mb-8">
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => (otpInputRefs.current[index] = el)}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value.replace(/\D/g, ''))}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    onPaste={handleOtpPaste}
+                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold text-gray-900 bg-white border-2 border-gray-100 rounded-xl focus:border-teal-500 focus:outline-none"
+                    data-testid={`email-code-${index}`}
+                  />
+                ))}
+              </div>
+
+              <Button
+                onClick={handleVerifyEmailCode}
+                disabled={loading || otp.some(d => !d)}
+                className="w-full h-14 bg-teal-500 hover:bg-teal-600 text-white text-lg font-semibold rounded-2xl shadow-lg shadow-teal-500/30"
+                data-testid="verify-email-code-btn"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  'Verify Code'
+                )}
+              </Button>
+
+              <div className="mt-6 text-center">
+                {resendTimer > 0 ? (
+                  <p className="text-gray-400 text-sm">
+                    Resend code in {resendTimer}s
+                  </p>
+                ) : (
+                  <button
+                    onClick={handleResendOtp}
+                    disabled={loading}
+                    className="text-teal-600 font-medium text-sm flex items-center justify-center gap-2 mx-auto hover:text-teal-700"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Resend Code
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+
           {step === 'newPassword' && (
             <>
               <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
