@@ -155,6 +155,8 @@ function BusinessStack() {
       <Stack.Screen name="Team" component={BusinessTeamScreen} />
       <Stack.Screen name="Analytics" component={BusinessAnalyticsScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="ShareLink" component={ShareLinkScreen} />
+      <Stack.Screen name="Products" component={ProductsScreen} />
       <Stack.Screen name="HelpCentre" component={HelpCentreScreen} />
       <Stack.Screen name="ContactSupport" component={ContactSupportScreen} />
       <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
