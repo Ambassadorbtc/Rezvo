@@ -508,7 +508,6 @@ export default function CalendarScreen({ navigation }) {
                 )}
               </View>
             </ScrollView>
-          </ScrollView>
           <View style={{ height: 100 }} />
         </ScrollView>
       )}
