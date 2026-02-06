@@ -76,10 +76,19 @@
         .mobile-screen img { width: 100%; display: block; }
         .footer { text-align: center; padding: 30px 15px; color: rgba(255,255,255,0.4); font-size: 12px; }
         .footer a { color: #00BFA5; text-decoration: none; }
+        .stats-bar {
+            background: linear-gradient(135deg, rgba(0,191,165,0.1), rgba(0,136,204,0.1));
+            padding: 20px; margin: 30px 15px; border-radius: 12px;
+            display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+        }
+        .stat { text-align: center; }
+        .stat-value { font-size: 28px; font-weight: 700; color: #00BFA5; }
+        .stat-label { font-size: 12px; color: rgba(255,255,255,0.5); }
         @media (max-width: 768px) {
             .nav { display: none; }
             .mobile-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .mobile-screen { width: 140px; }
+            .stats-bar { gap: 20px; }
         }
     </style>
 </head>
@@ -93,24 +102,32 @@
             <a href="#business">Business Portal</a>
             <a href="#booking">Booking Flow</a>
             <a href="#admin">Admin</a>
-            <a href="#mobile">Mobile App</a>
+            <a href="#mobile-app">Mobile App</a>
             <a href="#responsive">Responsive</a>
         </nav>
     </header>
     
     <main class="main">
+        <!-- STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-value">89+</div><div class="stat-label">Screenshots</div></div>
+            <div class="stat"><div class="stat-value">10+</div><div class="stat-label">User Flows</div></div>
+            <div class="stat"><div class="stat-value">3</div><div class="stat-label">Platforms</div></div>
+        </div>
+
         <!-- PUBLIC PAGES -->
         <section id="public" class="section">
             <div class="section-header">
                 <span class="section-tag">Public Pages</span>
                 <h2 class="section-title">Marketing & Public Pages</h2>
+                <p class="section-subtitle">Pages accessible without authentication</p>
             </div>
             
             <div class="frame">
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Landing Page</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app</span></div>
-                    <img src="showcase/web_01_landing.png" class="frame-img">
+                    <img src="showcase/showcase_landing.png" class="frame-img" alt="Landing Page">
                 </div>
             </div>
             
@@ -118,7 +135,7 @@
                 <div class="frame-label"><span class="frame-number">2</span><span class="frame-name">Terms of Service</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/terms</span></div>
-                    <img src="showcase/web_08_terms.png" class="frame-img">
+                    <img src="showcase/showcase_terms.png" class="frame-img" alt="Terms of Service">
                 </div>
             </div>
             
@@ -126,7 +143,7 @@
                 <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Privacy Policy</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/privacy</span></div>
-                    <img src="showcase/web_09_privacy.png" class="frame-img">
+                    <img src="showcase/showcase_privacy.png" class="frame-img" alt="Privacy Policy">
                 </div>
             </div>
             
@@ -134,7 +151,7 @@
                 <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Cookie Policy</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/cookies</span></div>
-                    <img src="showcase/web_pub_cookies.png" class="frame-img">
+                    <img src="showcase/showcase_cookies.png" class="frame-img" alt="Cookie Policy">
                 </div>
             </div>
         </section>
@@ -151,7 +168,7 @@
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Login Page</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/login</span></div>
-                    <img src="showcase/web_02_login.png" class="frame-img">
+                    <img src="showcase/showcase_login.png" class="frame-img" alt="Login Page">
                 </div>
             </div>
             
@@ -159,39 +176,47 @@
                 <div class="frame-label"><span class="frame-number">2</span><span class="frame-name">Signup - Choose Method (Google/Email)</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/signup</span></div>
-                    <img src="showcase/web_03_signup.png" class="frame-img">
+                    <img src="showcase/showcase_signup_main.png" class="frame-img" alt="Signup Choose Method">
                 </div>
             </div>
             
             <div class="frame">
-                <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Signup - Profile Setup</span></div>
+                <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Signup - Email Form</span></div>
+                <div class="frame-container">
+                    <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/signup (email form)</span></div>
+                    <img src="showcase/flow_02_signup_email.png" class="frame-img" alt="Signup Email Form">
+                </div>
+            </div>
+            
+            <div class="frame">
+                <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Signup - Profile Setup</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/signup/profile</span></div>
-                    <img src="showcase/web_04_signup_profile.png" class="frame-img">
+                    <img src="showcase/web_04_signup_profile.png" class="frame-img" alt="Profile Setup">
                 </div>
             </div>
             
             <div class="frame">
-                <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Signup - Phone Verification (SMS OTP)</span></div>
+                <div class="frame-label"><span class="frame-number">5</span><span class="frame-name">Signup - Phone Verification (SMS OTP)</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/signup/verify-phone</span></div>
-                    <img src="showcase/web_05_signup_phone.png" class="frame-img">
+                    <img src="showcase/web_05_signup_phone.png" class="frame-img" alt="Phone Verification">
                 </div>
             </div>
             
             <div class="frame">
-                <div class="frame-label"><span class="frame-number">5</span><span class="frame-name">Signup - Business Type Selection (22 Categories)</span></div>
+                <div class="frame-label"><span class="frame-number">6</span><span class="frame-name">Signup - Business Type Selection (22 Categories)</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/signup/business-type</span></div>
-                    <img src="showcase/signup_business_type_page.png" class="frame-img">
+                    <img src="showcase/signup_business_type_page.png" class="frame-img" alt="Business Type Selection">
                 </div>
             </div>
             
             <div class="frame">
-                <div class="frame-label"><span class="frame-number">6</span><span class="frame-name">Forgot Password</span></div>
+                <div class="frame-label"><span class="frame-number">7</span><span class="frame-name">Forgot Password</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/forgot-password</span></div>
-                    <img src="showcase/web_07_forgot_password.png" class="frame-img">
+                    <img src="showcase/showcase_forgot_password.png" class="frame-img" alt="Forgot Password">
                 </div>
             </div>
         </section>
@@ -208,7 +233,7 @@
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Step 1: Your Business</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/onboarding (Step 1/4)</span></div>
-                    <img src="showcase/web_onboard_01_business.png" class="frame-img">
+                    <img src="showcase/web_onboard_01_business.png" class="frame-img" alt="Onboarding Step 1">
                 </div>
             </div>
             
@@ -216,7 +241,7 @@
                 <div class="frame-label"><span class="frame-number">2</span><span class="frame-name">Step 2: Add Your First Service</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/onboarding (Step 2/4)</span></div>
-                    <img src="showcase/web_onboard_02_service.png" class="frame-img">
+                    <img src="showcase/web_onboard_02_service.png" class="frame-img" alt="Onboarding Step 2">
                 </div>
             </div>
             
@@ -224,7 +249,7 @@
                 <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Step 3: Set Your Availability</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/onboarding (Step 3/4)</span></div>
-                    <img src="showcase/web_onboard_03_availability.png" class="frame-img">
+                    <img src="showcase/web_onboard_03_availability.png" class="frame-img" alt="Onboarding Step 3">
                 </div>
             </div>
             
@@ -232,7 +257,7 @@
                 <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Step 4: Payment Setup (Dojo)</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/onboarding (Step 4/4)</span></div>
-                    <img src="showcase/web_onboard_04_payment.png" class="frame-img">
+                    <img src="showcase/web_onboard_04_payment.png" class="frame-img" alt="Onboarding Step 4">
                 </div>
             </div>
         </section>
@@ -242,14 +267,14 @@
             <div class="section-header">
                 <span class="section-tag">Business Portal</span>
                 <h2 class="section-title">Business Owner Dashboard</h2>
-                <p class="section-subtitle">Complete management suite</p>
+                <p class="section-subtitle">Complete management suite for business owners</p>
             </div>
             
             <div class="frame">
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Dashboard</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/dashboard</span></div>
-                    <img src="showcase/web_11_dashboard.png" class="frame-img">
+                    <img src="showcase/web_11_dashboard.png" class="frame-img" alt="Dashboard">
                 </div>
             </div>
             
@@ -257,7 +282,7 @@
                 <div class="frame-label"><span class="frame-number">2</span><span class="frame-name">Calendar</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/calendar</span></div>
-                    <img src="showcase/web_12_calendar.png" class="frame-img">
+                    <img src="showcase/web_12_calendar.png" class="frame-img" alt="Calendar">
                 </div>
             </div>
             
@@ -265,7 +290,7 @@
                 <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Bookings</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/bookings</span></div>
-                    <img src="showcase/web_13_bookings.png" class="frame-img">
+                    <img src="showcase/web_13_bookings.png" class="frame-img" alt="Bookings">
                 </div>
             </div>
             
@@ -273,7 +298,7 @@
                 <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Team Management</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/team</span></div>
-                    <img src="showcase/web_14_team.png" class="frame-img">
+                    <img src="showcase/web_14_team.png" class="frame-img" alt="Team Management">
                 </div>
             </div>
             
@@ -281,7 +306,7 @@
                 <div class="frame-label"><span class="frame-number">5</span><span class="frame-name">Services</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/services</span></div>
-                    <img src="showcase/web_15_services.png" class="frame-img">
+                    <img src="showcase/web_15_services.png" class="frame-img" alt="Services">
                 </div>
             </div>
             
@@ -289,7 +314,7 @@
                 <div class="frame-label"><span class="frame-number">6</span><span class="frame-name">Products</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/products</span></div>
-                    <img src="showcase/web_16_products.png" class="frame-img">
+                    <img src="showcase/web_16_products.png" class="frame-img" alt="Products">
                 </div>
             </div>
             
@@ -297,7 +322,7 @@
                 <div class="frame-label"><span class="frame-number">7</span><span class="frame-name">Share Booking Link (QR Code)</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/share</span></div>
-                    <img src="showcase/business_share_link.png" class="frame-img">
+                    <img src="showcase/business_share_link.png" class="frame-img" alt="Share Link">
                 </div>
             </div>
             
@@ -305,7 +330,7 @@
                 <div class="frame-label"><span class="frame-number">8</span><span class="frame-name">Analytics</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/analytics</span></div>
-                    <img src="showcase/web_18_analytics.png" class="frame-img">
+                    <img src="showcase/web_18_analytics.png" class="frame-img" alt="Analytics">
                 </div>
             </div>
             
@@ -313,7 +338,7 @@
                 <div class="frame-label"><span class="frame-number">9</span><span class="frame-name">Support Chat</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/support</span></div>
-                    <img src="showcase/web_19_support.png" class="frame-img">
+                    <img src="showcase/web_19_support.png" class="frame-img" alt="Support Chat">
                 </div>
             </div>
             
@@ -321,7 +346,7 @@
                 <div class="frame-label"><span class="frame-number">10</span><span class="frame-name">Settings</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/settings</span></div>
-                    <img src="showcase/web_20_settings.png" class="frame-img">
+                    <img src="showcase/web_20_settings.png" class="frame-img" alt="Settings">
                 </div>
             </div>
         </section>
@@ -331,14 +356,14 @@
             <div class="section-header">
                 <span class="section-tag">Customer Booking</span>
                 <h2 class="section-title">Public Booking Flow</h2>
-                <p class="section-subtitle">What customers see when they book</p>
+                <p class="section-subtitle">What customers see when they book via share link</p>
             </div>
             
             <div class="frame">
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Select Service</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/book/business-name</span></div>
-                    <img src="showcase/web_10_public_booking.png" class="frame-img">
+                    <img src="showcase/web_10_public_booking.png" class="frame-img" alt="Public Booking">
                 </div>
             </div>
         </section>
@@ -348,14 +373,14 @@
             <div class="section-header">
                 <span class="section-tag">Admin Portal</span>
                 <h2 class="section-title">Founder Admin Dashboard</h2>
-                <p class="section-subtitle">Platform management</p>
+                <p class="section-subtitle">Platform-wide management and monitoring</p>
             </div>
             
             <div class="frame">
                 <div class="frame-label"><span class="frame-number">1</span><span class="frame-name">Admin Dashboard & Stats</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/founder-admin</span></div>
-                    <img src="showcase/admin_01_dashboard.png" class="frame-img">
+                    <img src="showcase/admin_01_dashboard.png" class="frame-img" alt="Admin Dashboard">
                 </div>
             </div>
             
@@ -363,7 +388,7 @@
                 <div class="frame-label"><span class="frame-number">2</span><span class="frame-name">User Management</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/founder-admin (Users)</span></div>
-                    <img src="showcase/admin_02_users.png" class="frame-img">
+                    <img src="showcase/admin_02_users.png" class="frame-img" alt="User Management">
                 </div>
             </div>
             
@@ -371,7 +396,7 @@
                 <div class="frame-label"><span class="frame-number">3</span><span class="frame-name">Support Inbox</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/founder-admin (Support)</span></div>
-                    <img src="showcase/admin_03_support.png" class="frame-img">
+                    <img src="showcase/admin_03_support.png" class="frame-img" alt="Support Inbox">
                 </div>
             </div>
             
@@ -379,13 +404,13 @@
                 <div class="frame-label"><span class="frame-number">4</span><span class="frame-name">Platform Settings</span></div>
                 <div class="frame-container">
                     <div class="frame-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">rezvo.app/founder-admin (Settings)</span></div>
-                    <img src="showcase/admin_04_settings.png" class="frame-img">
+                    <img src="showcase/admin_04_settings.png" class="frame-img" alt="Platform Settings">
                 </div>
             </div>
         </section>
         
         <!-- NATIVE MOBILE APP -->
-        <section id="mobile" class="section">
+        <section id="mobile-app" class="section">
             <div class="section-header">
                 <span class="section-tag">Native Mobile App</span>
                 <h2 class="section-title">Rezvo Mobile (iOS & Android)</h2>
@@ -395,83 +420,108 @@
             <div class="mobile-grid">
                 <div class="mobile-frame">
                     <div class="mobile-label"><span class="frame-number">1</span><span class="frame-name">Welcome</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_01_welcome.png"></div></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_01_welcome.png" alt="Welcome"></div></div>
                 </div>
                 <div class="mobile-frame">
                     <div class="mobile-label"><span class="frame-number">2</span><span class="frame-name">Login</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_02_login.png"></div></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_02_login.png" alt="Login"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">3</span><span class="frame-name">Signup - Phone</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_flow_02_phone_entry.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">3</span><span class="frame-name">Signup</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_03_signup.png" alt="Signup"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">4</span><span class="frame-name">Dashboard</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_04_dashboard.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">4</span><span class="frame-name">Phone Entry</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_flow_02_phone_entry.png" alt="Phone Entry"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">5</span><span class="frame-name">Calendar</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_05_calendar.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">5</span><span class="frame-name">Dashboard</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_04_dashboard.png" alt="Dashboard"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">6</span><span class="frame-name">Bookings</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_06_bookings.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">6</span><span class="frame-name">Calendar</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_05_calendar.png" alt="Calendar"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">7</span><span class="frame-name">More Menu</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_07_more.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">7</span><span class="frame-name">Bookings</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_06_bookings.png" alt="Bookings"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">8</span><span class="frame-name">Settings</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_08_settings.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">8</span><span class="frame-name">More Menu</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_07_more.png" alt="More Menu"></div></div>
+                </div>
+                <div class="mobile-frame">
+                    <div class="mobile-label"><span class="frame-number">9</span><span class="frame-name">Settings</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_08_settings.png" alt="Settings"></div></div>
+                </div>
+                <div class="mobile-frame">
+                    <div class="mobile-label"><span class="frame-number">10</span><span class="frame-name">Notifications</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/app_09_notifications.png" alt="Notifications"></div></div>
                 </div>
             </div>
+            
+            <div class="section-header" style="padding-top: 30px;">
+                <p class="section-subtitle">📱 Business Type Screen (NEW - Added to Mobile Signup Flow)</p>
+            </div>
+            <p style="text-align: center; color: rgba(255,255,255,0.5); font-size: 13px; padding: 0 20px;">
+                The Business Type selection screen has been implemented in the mobile app. It matches the web version with all 22 business categories.
+                The mobile app signup flow now includes: Welcome → Phone Entry → OTP Verify → Complete Profile → <strong style="color: #00BFA5;">Business Type Selection</strong> → Dashboard
+            </p>
         </section>
         
         <!-- RESPONSIVE WEB -->
         <section id="responsive" class="section">
             <div class="section-header">
                 <span class="section-tag">Responsive Web</span>
-                <h2 class="section-title">Mobile-Responsive Web</h2>
-                <p class="section-subtitle">Web app on mobile browsers</p>
+                <h2 class="section-title">Mobile-Responsive Web Views</h2>
+                <p class="section-subtitle">Web app optimized for mobile browsers</p>
             </div>
             
             <div class="mobile-grid">
                 <div class="mobile-frame">
                     <div class="mobile-label"><span class="frame-number">1</span><span class="frame-name">Landing</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_01_landing.png"></div></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/showcase_mobile_landing.png" alt="Mobile Landing"></div></div>
                 </div>
                 <div class="mobile-frame">
                     <div class="mobile-label"><span class="frame-number">2</span><span class="frame-name">Login</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_02_login.png"></div></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/showcase_mobile_login.png" alt="Mobile Login"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">3</span><span class="frame-name">Dashboard</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_03_dashboard.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">3</span><span class="frame-name">Signup</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/showcase_mobile_signup.png" alt="Mobile Signup"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">4</span><span class="frame-name">Calendar</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_04_calendar.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">4</span><span class="frame-name">Forgot Password</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/showcase_mobile_forgot_password.png" alt="Mobile Forgot Password"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">5</span><span class="frame-name">Bookings</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_05_bookings.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">5</span><span class="frame-name">Dashboard</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_03_dashboard.png" alt="Mobile Dashboard"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">6</span><span class="frame-name">Support</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_06_support.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">6</span><span class="frame-name">Calendar</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_04_calendar.png" alt="Mobile Calendar"></div></div>
                 </div>
                 <div class="mobile-frame">
-                    <div class="mobile-label"><span class="frame-number">7</span><span class="frame-name">Settings</span></div>
-                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_07_settings.png"></div></div>
+                    <div class="mobile-label"><span class="frame-number">7</span><span class="frame-name">Bookings</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_05_bookings.png" alt="Mobile Bookings"></div></div>
+                </div>
+                <div class="mobile-frame">
+                    <div class="mobile-label"><span class="frame-number">8</span><span class="frame-name">Support</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_06_support.png" alt="Mobile Support"></div></div>
+                </div>
+                <div class="mobile-frame">
+                    <div class="mobile-label"><span class="frame-number">9</span><span class="frame-name">Settings</span></div>
+                    <div class="mobile-container"><div class="mobile-screen"><img src="showcase/mobile_07_settings.png" alt="Mobile Settings"></div></div>
                 </div>
             </div>
         </section>
     </main>
     
     <footer class="footer">
-        <p><strong>Rezvo App Showcase</strong> — 50+ Pages & Screens</p>
-        <p style="margin-top:6px"><a href="https://micro-biz-book.preview.emergentagent.com">View Live App</a></p>
+        <p><strong>Rezvo App Showcase</strong> — 89+ Pages & Screens</p>
+        <p style="margin-top:6px"><a href="https://micro-biz-book.preview.emergentagent.com">View Live App</a> · <a href="https://micro-biz-book.preview.emergentagent.com/expo-qr.html">Mobile QR Code</a></p>
+        <p style="margin-top:10px; font-size: 11px;">Built for UK micro-businesses · React + FastAPI + React Native</p>
     </footer>
     
     <script>
