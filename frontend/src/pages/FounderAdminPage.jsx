@@ -578,72 +578,72 @@ const FounderAdminPage = () => {
               {/* Stats Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 <Card className="bg-white rounded-2xl shadow-sm border-0 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Users</p>
-                        <p className="text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_users || users.length}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <ArrowUpRight className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm text-emerald-500 font-medium">+{thisMonthUsers} this month</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm text-gray-500 font-medium">Total Users</p>
+                        <p className="text-xl sm:text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_users || users.length}</p>
+                        <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                          <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                          <span className="text-xs sm:text-sm text-emerald-500 font-medium">+{thisMonthUsers}</span>
                         </div>
                       </div>
-                      <div className="w-14 h-14 rounded-2xl bg-[#00BFA5]/10 flex items-center justify-center">
-                        <Users className="w-7 h-7 text-[#00BFA5]" />
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#00BFA5]/10 flex items-center justify-center flex-shrink-0">
+                        <Users className="w-5 h-5 sm:w-7 sm:h-7 text-[#00BFA5]" />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-white rounded-2xl shadow-sm border-0 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Businesses</p>
-                        <p className="text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_businesses || businesses.length}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <ArrowUpRight className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm text-emerald-500 font-medium">Active</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm text-gray-500 font-medium">Businesses</p>
+                        <p className="text-xl sm:text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_businesses || businesses.length}</p>
+                        <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                          <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                          <span className="text-xs sm:text-sm text-emerald-500 font-medium">Active</span>
                         </div>
                       </div>
-                      <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center">
-                        <Building2 className="w-7 h-7 text-blue-500" />
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-5 h-5 sm:w-7 sm:h-7 text-blue-500" />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-white rounded-2xl shadow-sm border-0 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Bookings</p>
-                        <p className="text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_bookings || bookings.length}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <ArrowUpRight className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm text-emerald-500 font-medium">+{thisMonthBookings} this month</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm text-gray-500 font-medium">Bookings</p>
+                        <p className="text-xl sm:text-3xl font-bold text-[#0A1626] mt-1">{stats?.total_bookings || bookings.length}</p>
+                        <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                          <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                          <span className="text-xs sm:text-sm text-emerald-500 font-medium">+{thisMonthBookings}</span>
                         </div>
                       </div>
-                      <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center">
-                        <Calendar className="w-7 h-7 text-purple-500" />
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-purple-50 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 sm:w-7 sm:h-7 text-purple-500" />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-white rounded-2xl shadow-sm border-0 hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-500 font-medium">Platform Revenue</p>
-                        <p className="text-3xl font-bold text-[#0A1626] mt-1">{formatPrice(totalRevenue)}</p>
-                        <div className="flex items-center gap-1 mt-2">
-                          <TrendingUp className="w-4 h-4 text-emerald-500" />
-                          <span className="text-sm text-emerald-500 font-medium">Growing</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm text-gray-500 font-medium">Revenue</p>
+                        <p className="text-xl sm:text-3xl font-bold text-[#0A1626] mt-1">{formatPrice(totalRevenue)}</p>
+                        <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                          <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
+                          <span className="text-xs sm:text-sm text-emerald-500 font-medium">Growing</span>
                         </div>
                       </div>
-                      <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center">
-                        <PoundSterling className="w-7 h-7 text-amber-500" />
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                        <PoundSterling className="w-5 h-5 sm:w-7 sm:h-7 text-amber-500" />
                       </div>
                     </div>
                   </CardContent>
