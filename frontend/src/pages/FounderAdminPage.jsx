@@ -1377,6 +1377,137 @@ const FounderAdminPage = () => {
               </div>
             </div>
           )}
+
+          {/* Live Chat Settings Tab */}
+          {activeTab === 'chat-settings' && (
+            <div className="max-w-2xl mx-auto space-y-6">
+              {/* Live Status Toggle */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Live Chat Status
+                  </CardTitle>
+                  <CardDescription>
+                    Toggle live chat availability for customers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full ${liveChatSettings.is_online ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                      <div>
+                        <p className="font-semibold text-[#0A1626]">
+                          {liveChatSettings.is_online ? 'Online' : 'Offline'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {liveChatSettings.is_online ? 'Customers can start live chats' : 'Customers will leave messages'}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={toggleLiveChat}
+                      className={liveChatSettings.is_online ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}
+                    >
+                      {liveChatSettings.is_online ? 'Go Offline' : 'Go Online'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Auto Hours Setting */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Working Hours
+                  </CardTitle>
+                  <CardDescription>
+                    Set automatic online/offline schedule
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-[#0A1626]">Auto Hours Mode</p>
+                      <p className="text-sm text-gray-500">Automatically go online during set hours</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={liveChatSettings.auto_hours_enabled}
+                        onChange={(e) => setLiveChatSettings(prev => ({
+                          ...prev,
+                          auto_hours_enabled: e.target.checked
+                        }))}
+                      />
+                      <div className="w-11 h-6 bg-gray-300 peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                    </label>
+                  </div>
+
+                  <div className="space-y-3">
+                    {Object.entries(liveChatSettings.working_hours || {}).map(([day, hours]) => (
+                      <div key={day} className="flex items-center gap-4 p-3 border rounded-lg">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={hours?.enabled || false}
+                            onChange={(e) => updateWorkingHours(day, 'enabled', e.target.checked)}
+                          />
+                          <div className="w-9 h-5 bg-gray-300 peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-500"></div>
+                        </label>
+                        <span className="w-24 capitalize font-medium text-[#0A1626]">{day}</span>
+                        <div className="flex items-center gap-2 flex-1">
+                          <input
+                            type="time"
+                            value={hours?.start || '09:00'}
+                            onChange={(e) => updateWorkingHours(day, 'start', e.target.value)}
+                            className="px-2 py-1 border rounded text-sm"
+                            disabled={!hours?.enabled}
+                          />
+                          <span className="text-gray-500">to</span>
+                          <input
+                            type="time"
+                            value={hours?.end || '18:00'}
+                            onChange={(e) => updateWorkingHours(day, 'end', e.target.value)}
+                            className="px-2 py-1 border rounded text-sm"
+                            disabled={!hours?.enabled}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button 
+                    onClick={saveLiveChatSettings}
+                    disabled={savingChatSettings}
+                    className="w-full bg-teal-500 hover:bg-teal-600"
+                  >
+                    {savingChatSettings ? 'Saving...' : 'Save Working Hours'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Info Card */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="pt-6">
+                  <div className="flex gap-3">
+                    <AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-blue-900">How it works</p>
+                      <p className="text-sm text-blue-700 mt-1">
+                        When you're online, customers see a green "Online" indicator and can start live chats.
+                        When offline, they'll leave messages that you can respond to later. 
+                        All messages are also sent via email for your convenience.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </main>
 
