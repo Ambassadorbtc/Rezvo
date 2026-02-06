@@ -45,8 +45,7 @@ const AuthCallbackPage = () => {
         setMessage('Fetching your profile...');
         
         // Fetch user info from Emergent Auth via our backend proxy (avoids CORS issues)
-        // GET /api/auth/emergent-session/{session_id}
-        let userInfo = { email: null, name: null, picture: null, session_token: null };
+        let userInfo = { email: null, name: null, picture: null, session_token: null, sub: null };
         try {
           const authResponse = await api.get(`/auth/emergent-session/${sessionId}`);
           console.log('Emergent Auth response:', authResponse.data);
@@ -54,7 +53,8 @@ const AuthCallbackPage = () => {
             email: authResponse.data.email,
             name: authResponse.data.name,
             picture: authResponse.data.picture,
-            session_token: authResponse.data.session_token
+            session_token: authResponse.data.session_token,
+            sub: authResponse.data.sub || authResponse.data.id  // Google's unique user ID
           };
         } catch (e) {
           console.error('Failed to fetch session info:', e);
@@ -65,6 +65,10 @@ const AuthCallbackPage = () => {
           throw new Error('Could not retrieve email from Google authentication');
         }
 
+        // Clear any existing auth data to prevent conflicts
+        localStorage.removeItem('rezvo_token');
+        localStorage.removeItem('rezvo_user');
+
         // Get stored profile data from signup flow
         const profileStr = sessionStorage.getItem('signup_profile');
         const profile = profileStr ? JSON.parse(profileStr) : {};
@@ -74,6 +78,7 @@ const AuthCallbackPage = () => {
         // Register/login with Google auth
         const response = await api.post('/auth/google-signup', {
           google_token: sessionId,
+          google_id: userInfo.sub,  // Pass Google's unique ID for verification
           email: userInfo.email,
           name: userInfo.name || profile.fullName,
           full_name: profile.fullName || userInfo.name,
@@ -83,48 +88,78 @@ const AuthCallbackPage = () => {
           auth_method: 'google'
         });
 
+        const { token, is_new_user, onboarding_completed } = response.data;
+
         // Store JWT token - MUST use 'rezvo_token' key to match AuthContext
-        localStorage.setItem('rezvo_token', response.data.token);
-        // Also clear any cached user data so AuthContext fetches fresh
+        localStorage.setItem('rezvo_token', token);
+        // Clear cached user data so AuthContext fetches fresh
         localStorage.removeItem('rezvo_user');
         
         // Clear signup session data
         sessionStorage.removeItem('auth_method');
         sessionStorage.removeItem('signup_user_type');
         sessionStorage.removeItem('signup_profile');
+        sessionStorage.removeItem('signup_phone');
+        sessionStorage.removeItem('google_user_email');
+        sessionStorage.removeItem('google_user_name');
 
         setStatus('success');
-        setMessage('Account created successfully!');
         
-        toast.success('Welcome to Rezvo!');
-        
-        // If profile was filled, go to phone verify, otherwise go to profile
-        const hasProfile = profile.fullName && profile.businessName;
-        
-        // Use window.location for hard redirect to avoid auth context race conditions
-        setTimeout(() => {
-          if (hasProfile) {
-            // Profile filled, go to phone verification
-            window.location.href = '/signup/verify-phone';
-          } else {
-            // Need to fill profile first - store Google user info
-            sessionStorage.setItem('auth_method', 'google');
-            sessionStorage.setItem('google_user_email', userInfo.email);
-            sessionStorage.setItem('google_user_name', userInfo.name || '');
-            window.location.href = '/signup/profile';
-          }
-        }, 1500);
+        // Determine where to redirect based on user state
+        if (!is_new_user && onboarding_completed) {
+          // Existing user who completed onboarding - go to dashboard
+          setMessage('Welcome back!');
+          toast.success('Welcome back to Rezvo!');
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 1500);
+        } else if (!is_new_user && !onboarding_completed) {
+          // Existing user who hasn't completed onboarding
+          setMessage('Continuing setup...');
+          toast.success('Welcome back! Let\'s complete your setup.');
+          setTimeout(() => {
+            window.location.href = '/signup/business-type';
+          }, 1500);
+        } else {
+          // New user
+          setMessage('Account created successfully!');
+          toast.success('Welcome to Rezvo!');
+          
+          const hasProfile = profile.fullName && profile.businessName;
+          setTimeout(() => {
+            if (hasProfile) {
+              // Profile filled, go to phone verification
+              window.location.href = '/signup/verify-phone';
+            } else {
+              // Need to fill profile first - store Google user info
+              sessionStorage.setItem('auth_method', 'google');
+              sessionStorage.setItem('google_user_email', userInfo.email);
+              sessionStorage.setItem('google_user_name', userInfo.name || '');
+              window.location.href = '/signup/profile';
+            }
+          }, 1500);
+        }
 
       } catch (error) {
         console.error('Auth callback error:', error);
         setStatus('error');
-        setMessage(error.response?.data?.detail || error.message || 'Authentication failed');
         
-        toast.error('Failed to complete signup');
+        // Handle specific error cases
+        const errorMessage = error.response?.data?.detail || error.message || 'Authentication failed';
+        setMessage(errorMessage);
+        
+        // Show appropriate toast
+        if (error.response?.status === 409) {
+          toast.error('Please login with your email and password');
+        } else if (error.response?.status === 403) {
+          toast.error('Google account mismatch');
+        } else {
+          toast.error('Failed to complete signup');
+        }
         
         setTimeout(() => {
-          navigate('/signup');
-        }, 2000);
+          navigate('/login');
+        }, 3000);
       }
     };
 
