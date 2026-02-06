@@ -108,11 +108,11 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 - **Business Owner:** testuser@example.com / password123
 
 ## Key URLs
-- Web App: https://micro-biz-book.preview.emergentagent.com
-- Signup Page: https://micro-biz-book.preview.emergentagent.com/signup
-- Login Page: https://micro-biz-book.preview.emergentagent.com/login
+- Web App: https://easysched-3.preview.emergentagent.com
+- Signup Page: https://easysched-3.preview.emergentagent.com/signup
+- Login Page: https://easysched-3.preview.emergentagent.com/login
 - Expo QR: https://x-pynq4-anonymous-8081.exp.direct
-- API Base: https://micro-biz-book.preview.emergentagent.com/api
+- API Base: https://easysched-3.preview.emergentagent.com/api
 
 ## Key Files Modified This Session
 - `/app/frontend/src/pages/auth/AuthCallbackPage.jsx` - Fixed Google Auth endpoint

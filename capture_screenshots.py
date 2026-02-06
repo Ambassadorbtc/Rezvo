@@ -3,7 +3,7 @@
 import asyncio
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://micro-biz-book.preview.emergentagent.com"
+BASE_URL = "https://easysched-3.preview.emergentagent.com"
 OUTPUT_DIR = "/app/frontend/public/showcase"
 
 # Web pages to capture (desktop 1920x1080)

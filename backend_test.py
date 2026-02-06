@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 class QuickSlotAPITester:
-    def __init__(self, base_url: str = "https://micro-biz-book.preview.emergentagent.com/api"):
+    def __init__(self, base_url: str = "https://easysched-3.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
