@@ -531,14 +531,14 @@ const CalendarPage = () => {
                   );
                 })}
               </div>
-              <div className="grid grid-cols-7 min-h-[400px]">
+              <div className="grid grid-cols-7">
                 {weekDates.map((date, idx) => {
                   const dayBookings = bookings.filter(b => isSameDay(new Date(b.datetime), date));
                   const isDropTarget = dragOverSlot?.date && isSameDay(dragOverSlot.date, date);
                   return (
                     <div 
                       key={idx} 
-                      className={`border-r border-gray-100 last:border-r-0 p-3 space-y-2 min-h-[300px] transition-colors ${
+                      className={`border-r border-gray-100 last:border-r-0 p-3 space-y-2 min-h-[200px] transition-colors ${
                         isDropTarget ? 'bg-teal-100' : ''
                       }`}
                       onDragOver={(e) => {
@@ -549,7 +549,8 @@ const CalendarPage = () => {
                       onDragLeave={() => setDragOverSlot(null)}
                       onDrop={(e) => handleWeekDrop(e, date)}
                     >
-                      {dayBookings.slice(0, 5).map((booking) => {
+                      {/* Show ALL bookings - no limit */}
+                      {dayBookings.map((booking) => {
                         const colors = getServiceColor(booking.service_id);
                         const isDragging = draggedBooking?.id === booking.id;
                         const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
@@ -565,11 +566,9 @@ const CalendarPage = () => {
                             onDragEnd={handleDragEnd}
                             onClick={() => setShowEditBooking(booking)}
                           >
-                            {/* Colored left border accent */}
                             <div className="flex">
                               <div className="w-1 rounded-l-xl flex-shrink-0" style={{ backgroundColor: colors.border }} />
                               <div className="p-2 flex-1 min-w-0">
-                                {/* Time + Avatar row */}
                                 <div className="flex items-center gap-1.5 mb-0.5">
                                   {teamMember && (
                                     <div 
@@ -588,14 +587,6 @@ const CalendarPage = () => {
                           </div>
                         );
                       })}
-                      {dayBookings.length > 5 && (
-                        <button 
-                          onClick={() => { setSelectedDate(date); setViewMode('day'); }} 
-                          className="text-xs text-teal-600 font-bold hover:underline"
-                        >
-                          +{dayBookings.length - 5} more
-                        </button>
-                      )}
                       {dayBookings.length === 0 && !isDropTarget && (
                         <div className="h-full flex items-center justify-center text-gray-300 text-xs">
                           Drop here
