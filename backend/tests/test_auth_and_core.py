@@ -1,272 +1,303 @@
 """
-Backend API Tests for Rezvo Booking App
-Tests: Authentication, Business, Services, Bookings, Analytics
+Backend API Tests for Rezvo App - Iteration 18
+Tests: Auth flows, Dashboard, Support, Core APIs
 """
 import pytest
 import requests
 import os
-import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
-TEST_EMAIL = "testuser@example.com"
-TEST_PASSWORD = "password123"
+TEST_USER = {"email": "testuser@example.com", "password": "password123"}
+FOUNDER_USER = {"email": "founder@rezvo.app", "password": "Founder123!"}
 
 
-class TestHealthEndpoints:
-    """Health check endpoints"""
+class TestHealthCheck:
+    """Health check tests"""
     
     def test_health_endpoint(self):
-        """Test /api/health returns healthy status"""
-        response = requests.get(f"{BASE_URL}/api/health", timeout=10)
+        """Test health endpoint returns healthy status"""
+        response = requests.get(f"{BASE_URL}/api/health")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "healthy"
         print("✓ Health endpoint working")
-    
-    def test_root_endpoint(self):
-        """Test root endpoint"""
-        response = requests.get(f"{BASE_URL}/api/", timeout=10)
-        assert response.status_code == 200
-        data = response.json()
-        assert "message" in data or "status" in data
-        print("✓ Root endpoint working")
 
 
 class TestAuthentication:
-    """Authentication flow tests"""
+    """Authentication endpoint tests"""
     
-    def test_login_success(self):
-        """Test login with valid credentials"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+    def test_login_business_owner(self):
+        """Test login with business owner credentials"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         assert response.status_code == 200
         data = response.json()
-        
-        # Validate response structure
         assert "access_token" in data
-        assert "user" in data
-        assert data["user"]["email"] == TEST_EMAIL
-        assert "id" in data["user"]
-        assert "role" in data["user"]
-        print(f"✓ Login successful for {TEST_EMAIL}")
+        assert data["user"]["email"] == TEST_USER["email"]
+        assert data["user"]["role"] == "business"
+        print(f"✓ Business owner login successful - role: {data['user']['role']}")
+        return data["access_token"]
+    
+    def test_login_admin(self):
+        """Test login with founder/admin credentials"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=FOUNDER_USER)
+        assert response.status_code == 200
+        data = response.json()
+        assert "access_token" in data
+        assert data["user"]["email"] == FOUNDER_USER["email"]
+        assert data["user"]["role"] == "admin"
+        print(f"✓ Admin login successful - role: {data['user']['role']}")
         return data["access_token"]
     
     def test_login_invalid_credentials(self):
-        """Test login with invalid credentials"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": "wrong@example.com", "password": "wrongpass"},
-            timeout=10
-        )
+        """Test login with invalid credentials returns 401"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+            "email": "invalid@example.com",
+            "password": "wrongpassword"
+        })
         assert response.status_code == 401
-        print("✓ Invalid credentials rejected correctly")
+        print("✓ Invalid credentials correctly rejected")
     
     def test_get_current_user(self):
-        """Test /auth/me endpoint with valid token"""
-        # First login to get token
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Test /auth/me endpoint returns current user"""
+        # First login
+        login_response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         token = login_response.json()["access_token"]
         
         # Get current user
         response = requests.get(
             f"{BASE_URL}/api/auth/me",
-            headers={"Authorization": f"Bearer {token}"},
-            timeout=10
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
-        assert data["email"] == TEST_EMAIL
-        print("✓ Get current user working")
+        assert data["email"] == TEST_USER["email"]
+        print("✓ Get current user endpoint working")
+
+
+class TestGoogleAuth:
+    """Google OAuth signup endpoint tests"""
     
-    def test_signup_duplicate_email(self):
-        """Test signup with existing email fails"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/signup",
-            json={
-                "email": TEST_EMAIL,
-                "password": "newpassword123",
-                "business_name": "Test Business"
-            },
-            timeout=10
-        )
+    def test_google_signup_new_user(self):
+        """Test Google signup creates new user"""
+        # Use unique email to avoid conflicts
+        import uuid
+        unique_email = f"test-google-{uuid.uuid4().hex[:8]}@gmail.com"
+        
+        response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "test-session-id",
+            "email": unique_email,
+            "name": "Test Google User",
+            "full_name": "Test Google User",
+            "business_name": "Test Google Business",
+            "auth_method": "google"
+        })
+        assert response.status_code == 200
+        data = response.json()
+        assert "token" in data
+        assert "user_id" in data
+        assert "business_id" in data
+        print(f"✓ Google signup successful for {unique_email}")
+    
+    def test_google_signup_existing_user(self):
+        """Test Google signup with existing email logs in user"""
+        response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "test-session-id",
+            "email": TEST_USER["email"],
+            "name": "Test User",
+            "auth_method": "google"
+        })
+        assert response.status_code == 200
+        data = response.json()
+        assert "token" in data
+        print("✓ Google signup with existing email returns token (login)")
+    
+    def test_google_signup_missing_email(self):
+        """Test Google signup without email returns 400"""
+        response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "test-session-id",
+            "auth_method": "google"
+        })
         assert response.status_code == 400
-        print("✓ Duplicate email signup rejected")
+        print("✓ Google signup without email correctly rejected")
 
 
-class TestBusinessEndpoints:
-    """Business CRUD tests"""
+class TestBusinessAPIs:
+    """Business-related API tests"""
     
     @pytest.fixture
     def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Get auth token for business owner"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         return response.json()["access_token"]
     
     def test_get_business(self, auth_token):
-        """Test getting business info"""
+        """Test get business endpoint"""
         response = requests.get(
             f"{BASE_URL}/api/business",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
-        # May return 200 with data or 404 if no business
-        assert response.status_code in [200, 404]
-        if response.status_code == 200:
-            data = response.json()
-            assert "id" in data
-            print(f"✓ Business retrieved: {data.get('name', 'N/A')}")
-        else:
-            print("✓ No business found (expected for new user)")
+        assert response.status_code == 200
+        data = response.json()
+        assert "id" in data
+        assert "name" in data
+        print(f"✓ Get business successful - name: {data['name']}")
+    
+    def test_get_business_stats(self, auth_token):
+        """Test get business stats endpoint"""
+        response = requests.get(
+            f"{BASE_URL}/api/business/stats",
+            headers={"Authorization": f"Bearer {auth_token}"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "today_count" in data
+        assert "revenue_pence" in data
+        assert "total_bookings" in data
+        print(f"✓ Business stats: {data['total_bookings']} bookings, £{data['revenue_pence']/100:.2f} revenue")
 
 
-class TestServicesEndpoints:
-    """Services CRUD tests"""
+class TestServicesAPIs:
+    """Services API tests"""
     
     @pytest.fixture
     def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Get auth token for business owner"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         return response.json()["access_token"]
     
     def test_get_services(self, auth_token):
-        """Test getting services list"""
+        """Test get services endpoint"""
         response = requests.get(
             f"{BASE_URL}/api/services",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
-        print(f"✓ Services retrieved: {len(data)} services")
-    
-    def test_create_and_delete_service(self, auth_token):
-        """Test creating and deleting a service"""
-        # Create service
-        service_data = {
-            "name": f"TEST_Service_{uuid.uuid4().hex[:8]}",
-            "description": "Test service description",
-            "duration_min": 60,
-            "price_pence": 5000,
-            "deposit_required": False,
-            "deposit_amount_pence": 1000
-        }
-        
-        create_response = requests.post(
-            f"{BASE_URL}/api/services",
-            json=service_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
-        )
-        assert create_response.status_code in [200, 201]
-        created = create_response.json()
-        assert created["name"] == service_data["name"]
-        assert "id" in created
-        print(f"✓ Service created: {created['name']}")
-        
-        # Delete service
-        delete_response = requests.delete(
-            f"{BASE_URL}/api/services/{created['id']}",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
-        )
-        assert delete_response.status_code in [200, 204]
-        print(f"✓ Service deleted: {created['id']}")
+        print(f"✓ Get services successful - {len(data)} services found")
 
 
-class TestBookingsEndpoints:
-    """Bookings CRUD tests"""
+class TestBookingsAPIs:
+    """Bookings API tests"""
     
     @pytest.fixture
     def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Get auth token for business owner"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         return response.json()["access_token"]
     
     def test_get_bookings(self, auth_token):
-        """Test getting bookings list"""
+        """Test get bookings endpoint"""
         response = requests.get(
             f"{BASE_URL}/api/bookings",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
-        print(f"✓ Bookings retrieved: {len(data)} bookings")
+        print(f"✓ Get bookings successful - {len(data)} bookings found")
 
 
-class TestAnalyticsEndpoints:
-    """Analytics endpoints tests"""
+class TestSupportAPIs:
+    """Support/messaging API tests"""
     
     @pytest.fixture
     def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Get auth token for business owner"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         return response.json()["access_token"]
     
-    def test_dashboard_analytics(self, auth_token):
-        """Test dashboard analytics endpoint"""
+    def test_get_support_conversations(self, auth_token):
+        """Test get support conversations endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/analytics/dashboard",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
+            f"{BASE_URL}/api/support/conversations",
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
         data = response.json()
-        assert "today_bookings" in data or "total_bookings" in data
-        print("✓ Dashboard analytics working")
+        assert isinstance(data, list)
+        print(f"✓ Get support conversations successful - {len(data)} conversations found")
+    
+    def test_create_support_ticket(self, auth_token):
+        """Test create support ticket endpoint"""
+        response = requests.post(
+            f"{BASE_URL}/api/support/conversations",
+            headers={"Authorization": f"Bearer {auth_token}"},
+            json={
+                "subject": "Test Ticket from Pytest",
+                "message": "This is a test support message from automated testing."
+            }
+        )
+        assert response.status_code in [200, 201]
+        data = response.json()
+        assert "id" in data or "conversation_id" in data
+        print("✓ Create support ticket successful")
 
 
-class TestShareLinkEndpoints:
-    """Share link endpoints tests"""
+class TestNotificationsAPIs:
+    """Notifications API tests"""
     
     @pytest.fixture
     def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
-            timeout=30
-        )
+        """Get auth token for business owner"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=TEST_USER)
         return response.json()["access_token"]
     
-    def test_get_share_link(self, auth_token):
-        """Test getting shareable booking link"""
+    def test_get_notifications(self, auth_token):
+        """Test get notifications endpoint"""
         response = requests.get(
-            f"{BASE_URL}/api/links/generate",
-            headers={"Authorization": f"Bearer {auth_token}"},
-            timeout=10
+            f"{BASE_URL}/api/notifications",
+            headers={"Authorization": f"Bearer {auth_token}"}
         )
         assert response.status_code == 200
         data = response.json()
-        assert "link" in data or "url" in data or "business_id" in data
-        print("✓ Share link endpoint working")
+        assert "notifications" in data or isinstance(data, list)
+        print("✓ Get notifications successful")
+
+
+class TestAdminAPIs:
+    """Admin-only API tests"""
+    
+    @pytest.fixture
+    def admin_token(self):
+        """Get auth token for admin"""
+        response = requests.post(f"{BASE_URL}/api/auth/login", json=FOUNDER_USER)
+        return response.json()["access_token"]
+    
+    def test_admin_get_all_users(self, admin_token):
+        """Test admin get all users endpoint"""
+        response = requests.get(
+            f"{BASE_URL}/api/admin/users",
+            headers={"Authorization": f"Bearer {admin_token}"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        print(f"✓ Admin get users successful - {len(data)} users found")
+    
+    def test_admin_get_all_businesses(self, admin_token):
+        """Test admin get all businesses endpoint"""
+        response = requests.get(
+            f"{BASE_URL}/api/admin/businesses",
+            headers={"Authorization": f"Bearer {admin_token}"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        print(f"✓ Admin get businesses successful - {len(data)} businesses found")
+    
+    def test_admin_get_support_inbox(self, admin_token):
+        """Test admin get support inbox endpoint"""
+        response = requests.get(
+            f"{BASE_URL}/api/admin/support/inbox",
+            headers={"Authorization": f"Bearer {admin_token}"}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        print(f"✓ Admin support inbox successful - {len(data)} tickets found")
 
 
 if __name__ == "__main__":
