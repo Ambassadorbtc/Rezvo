@@ -142,6 +142,8 @@ function AppRoutes() {
       <Route path="/verify-phone" element={<Navigate to="/signup/verify-phone" replace />} />
       
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
+      <Route path="/booking/cancel/:token" element={<CancelBookingPage />} />
+      <Route path="/booking/reschedule/:token" element={<RescheduleBookingPage />} />
       <Route path="/b/:shortCode" element={<ShortLinkRedirect />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
       <Route path="/expo-test" element={<ExpoTestingPage />} />
