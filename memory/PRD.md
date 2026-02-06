@@ -28,14 +28,37 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 - **Frontend Mobile:** React Native, Expo (tunnel mode)
 - **Database:** MongoDB (test_database)
 - **SMS:** Sendly.live API for OTP
+- **Email:** Resend API for transactional emails
 - **OAuth:** Emergent-managed Google Auth
 
 ## What's Been Implemented
 
-### Feb 6, 2026 - Session 2 (Current)
-- ✅ **FIXED: Google Auth flow** - Updated AuthCallbackPage.jsx to use correct Emergent Auth endpoint (`https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data` with X-Session-ID header)
-- ✅ **FIXED: Expo Auto-Start** - Added supervisor config `/etc/supervisor/conf.d/mobile.conf` for automatic Expo server management
-- ✅ **FIXED: Session ID race condition** - Added synchronous hash detection in App.js routes for session_id
+### Feb 6, 2026 - Session 3 (Current)
+- ✅ **FIXED: Google Auth Bug** - New users were logging into existing accounts
+  - Added `google_id` field to validate unique Google users
+  - Email/password users now blocked from Google login with clear error
+  - Different Google accounts can't access same email
+- ✅ **Complete Forgot Password Flow** - Both email and phone options
+  - Email: 6-digit code → verify → new password
+  - Phone: SMS OTP → verify → new password
+  - Clean UI with method selection screen
+- ✅ **No-Reply Email System with Action Links**
+  - Booking confirmation emails now include Cancel/Reschedule buttons
+  - Unique `cancel_token` generated for each booking
+  - New pages: `/booking/cancel/:token` and `/booking/reschedule/:token`
+- ✅ **Mobile App Feature Parity**
+  - Added ShareLinkScreen (QR code and sharing options)
+  - Added ProductsScreen (sell products to customers)
+  - Updated SettingsScreen with navigation to new features
+- ✅ **Showcase.html** - Comprehensive screenshot gallery with 96+ images
+  - Complete 8-step booking flow captured
+  - Mobile Business Type screen added
+  - All web and mobile screens documented
+
+### Feb 6, 2026 - Session 2
+- ✅ **FIXED: Google Auth flow** - Updated AuthCallbackPage.jsx to use correct Emergent Auth endpoint
+- ✅ **FIXED: Expo Auto-Start** - Added supervisor config for automatic Expo server management
+- ✅ **FIXED: Session ID race condition** - Added synchronous hash detection in App.js routes
 - ✅ **FIXED: StrictMode double-processing** - Added useRef flag in AuthCallbackPage.jsx
 
 ### Feb 6, 2026 - SMS OTP Authentication
