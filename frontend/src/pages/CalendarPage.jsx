@@ -380,10 +380,9 @@ const CalendarPage = () => {
         {/* Calendar Content */}
         {viewMode === 'day' && (
           <div className="flex-1 flex flex-col overflow-hidden bg-white m-6 rounded-2xl border border-gray-100 shadow-lg">
-            {/* Fixed horizontal scroll container for both header and grid */}
             <div className="flex-1 overflow-y-auto">
               <div className="flex">
-                {/* Time Column - Fixed */}
+                {/* Time Column */}
                 <div className="w-20 border-r border-gray-100 flex-shrink-0 bg-gray-50/30 sticky left-0 z-20">
                   <div className="h-16 border-b border-gray-100 bg-gray-50/30" />
                   <div className="relative">
@@ -397,7 +396,7 @@ const CalendarPage = () => {
                   </div>
                 </div>
 
-                {/* Team Member Columns - Scrollable horizontally */}
+                {/* Team Member Columns */}
                 <div className="flex-1 overflow-x-auto">
                   <div className="flex min-w-max">
                     {displayMembers.map((member) => {
@@ -410,113 +409,102 @@ const CalendarPage = () => {
                             className="h-16 border-b border-gray-100 flex items-center justify-center gap-3 px-4 sticky top-0 bg-white z-10"
                             style={{ borderTopWidth: 4, borderTopColor: member.color }}
                           >
-                        <div 
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
-                          style={{ backgroundColor: member.color }}
-                        >
-                          {member.avatar_url ? (
-                            <img src={member.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                          ) : (
-                            member.name?.charAt(0)
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate">{member.name}</p>
-                          <p className="text-xs text-gray-500 font-medium">{member.role || 'Team'}</p>
-                        </div>
-                      </div>
-                      
-                      {/* Time Grid */}
-                      <div className="relative bg-white">
-                        {hours.map((hour) => {
-                          const isDropTarget = dragOverSlot?.hour === hour && dragOverSlot?.memberId === member.id;
-                          return (
                             <div 
-                              key={hour} 
-                              className={`h-[72px] border-b border-gray-50 cursor-pointer transition-colors ${
-                                isDropTarget ? 'bg-teal-100' : 'hover:bg-teal-50/30'
-                              }`}
-                              onDoubleClick={() => handleDoubleClick(hour, member.id !== 'all' ? member.id : '')}
-                              onDragOver={(e) => handleDragOver(e, hour, member.id)}
-                              onDragLeave={handleDragLeave}
-                              onDrop={(e) => handleDrop(e, hour, member.id !== 'all' ? member.id : null)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
+                              style={{ backgroundColor: member.color }}
                             >
-                              <div className="absolute inset-x-0 h-px bg-gray-50" style={{ top: HOUR_HEIGHT / 2 }} />
+                              {member.avatar_url ? (
+                                <img src={member.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                              ) : (
+                                member.name?.charAt(0)
+                              )}
                             </div>
-                          );
-                        })}
-                        
-                        {/* Bookings - Premium Fresha-style Cards */}
-                        {memberBookings.map((booking) => {
-                          const { top, height } = getBookingPosition(booking);
-                          const colors = getServiceColor(booking.service_id);
-                          const isDragging = draggedBooking?.id === booking.id;
-                          const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
-                          const minHeight = Math.max(height, 70); // Minimum 70px to show all text
-                          
-                          return (
-                            <div
-                              key={booking.id}
-                              draggable
-                              onDragStart={(e) => handleDragStart(e, booking)}
-                              onDragEnd={handleDragEnd}
-                              className={`absolute left-1 right-1 rounded-xl cursor-grab active:cursor-grabbing transition-all group overflow-hidden shadow-sm hover:shadow-lg ${
-                                isDragging ? 'opacity-50 scale-95 z-50' : 'hover:z-10'
-                              }`}
-                              style={{ 
-                                top: `${top}px`, 
-                                minHeight: `${minHeight}px`,
-                                height: `${minHeight}px`,
-                                backgroundColor: '#fff',
-                                border: `1px solid ${colors.border}20`,
-                              }}
-                              onClick={() => setShowEditBooking(booking)}
-                            >
-                              {/* Colored left border accent */}
-                              <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ backgroundColor: colors.border }} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-gray-900 truncate">{member.name}</p>
+                              <p className="text-xs text-gray-500 font-medium">{member.role || 'Team'}</p>
+                            </div>
+                          </div>
+                      
+                          {/* Time Grid */}
+                          <div className="relative bg-white">
+                            {hours.map((hour) => {
+                              const isDropTarget = dragOverSlot?.hour === hour && dragOverSlot?.memberId === member.id;
+                              return (
+                                <div 
+                                  key={hour} 
+                                  className={`h-[72px] border-b border-gray-50 cursor-pointer transition-colors ${
+                                    isDropTarget ? 'bg-teal-100' : 'hover:bg-teal-50/30'
+                                  }`}
+                                  onDoubleClick={() => handleDoubleClick(hour, member.id !== 'all' ? member.id : '')}
+                                  onDragOver={(e) => handleDragOver(e, hour, member.id)}
+                                  onDragLeave={handleDragLeave}
+                                  onDrop={(e) => handleDrop(e, hour, member.id !== 'all' ? member.id : null)}
+                                >
+                                  <div className="absolute inset-x-0 h-px bg-gray-50" style={{ top: HOUR_HEIGHT / 2 }} />
+                                </div>
+                              );
+                            })}
+                            
+                            {/* Bookings */}
+                            {memberBookings.map((booking) => {
+                              const { top, height } = getBookingPosition(booking);
+                              const colors = getServiceColor(booking.service_id);
+                              const isDragging = draggedBooking?.id === booking.id;
+                              const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
+                              const minHeight = Math.max(height, 70);
                               
-                              <div className="pl-3 pr-2 py-2 h-full flex flex-col justify-center">
-                                {/* Row 1: Time + Team Member Avatar */}
-                                <div className="flex items-center gap-2 mb-0.5">
-                                  {teamMember && (
-                                    <div 
-                                      className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0 ring-2 ring-white shadow-sm"
-                                      style={{ backgroundColor: teamMember.color || colors.border }}
-                                    >
-                                      {teamMember.avatar_url ? (
-                                        <img src={teamMember.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                                      ) : (
-                                        teamMember.name?.charAt(0)
+                              return (
+                                <div
+                                  key={booking.id}
+                                  draggable
+                                  onDragStart={(e) => handleDragStart(e, booking)}
+                                  onDragEnd={handleDragEnd}
+                                  className={`absolute left-1 right-1 rounded-xl cursor-grab active:cursor-grabbing transition-all group overflow-hidden shadow-sm hover:shadow-lg ${
+                                    isDragging ? 'opacity-50 scale-95 z-50' : 'hover:z-10'
+                                  }`}
+                                  style={{ 
+                                    top: `${top}px`, 
+                                    minHeight: `${minHeight}px`,
+                                    height: `${minHeight}px`,
+                                    backgroundColor: '#fff',
+                                    border: `1px solid ${colors.border}20`,
+                                  }}
+                                  onClick={() => setShowEditBooking(booking)}
+                                >
+                                  <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ backgroundColor: colors.border }} />
+                                  <div className="pl-3 pr-2 py-2 h-full flex flex-col justify-center">
+                                    <div className="flex items-center gap-2 mb-0.5">
+                                      {teamMember && (
+                                        <div 
+                                          className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
+                                          style={{ backgroundColor: teamMember.color || colors.border }}
+                                        >
+                                          {teamMember.name?.charAt(0)}
+                                        </div>
                                       )}
+                                      <span className="text-[11px] font-semibold" style={{ color: colors.border }}>
+                                        {formatBookingTime(booking.datetime)}
+                                      </span>
                                     </div>
-                                  )}
-                                  <span className="text-[11px] font-semibold" style={{ color: colors.border }}>
-                                    {formatBookingTime(booking.datetime)}
-                                  </span>
+                                    <div className="font-semibold text-gray-900 text-[13px] truncate leading-tight">
+                                      {booking.client_name}
+                                    </div>
+                                    <div className="text-[11px] text-gray-500 truncate mt-0.5">
+                                      {booking.service_name}
+                                    </div>
+                                  </div>
+                                  <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <GripVertical className="w-3 h-3 text-gray-300" />
+                                  </div>
                                 </div>
-                                
-                                {/* Row 2: Client Name */}
-                                <div className="font-semibold text-gray-900 text-[13px] truncate leading-tight">
-                                  {booking.client_name}
-                                </div>
-                                
-                                {/* Row 3: Service - always show */}
-                                <div className="text-[11px] text-gray-500 truncate mt-0.5">
-                                  {booking.service_name}
-                                </div>
-                              </div>
-                              
-                              {/* Drag handle */}
-                              <div className="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <GripVertical className="w-3 h-3 text-gray-300" />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
