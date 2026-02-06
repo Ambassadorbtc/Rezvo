@@ -417,7 +417,7 @@ const LandingPage = () => {
           <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
             Join hundreds of UK micro-businesses who've ditched expensive, complicated tools.
           </p>
-          <Link to="/welcome">
+          <Link to="/signup">
             <Button size="lg" className="bg-teal-500 hover:bg-teal-400 text-white rounded-full px-10 py-6 text-lg font-semibold shadow-button hover:shadow-button-hover transition-all btn-press" data-testid="final-cta-btn">
               Get started free
               <ArrowRight className="ml-2 w-5 h-5" />
