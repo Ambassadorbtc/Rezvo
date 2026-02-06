@@ -571,12 +571,12 @@ const FounderAdminPage = () => {
           </div>
         </header>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Dashboard Tab */}
           {activeTab === 'dashboard' && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 <Card className="bg-white rounded-2xl shadow-sm border-0 hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
