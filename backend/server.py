@@ -834,10 +834,13 @@ async def forgot_password_verify_otp(data: VerifyOtpRequest):
         raise HTTPException(status_code=400, detail="Invalid verification request")
     
     expires_at = otp_record.get("expires_at")
-    if isinstance(expires_at, str):
-        expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
-    if expires_at < now:
-        raise HTTPException(status_code=400, detail="OTP has expired")
+    if expires_at:
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+        elif expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < now:
+            raise HTTPException(status_code=400, detail="OTP has expired")
     
     if otp_record["code"] != data.code:
         raise HTTPException(status_code=400, detail="Invalid verification code")
