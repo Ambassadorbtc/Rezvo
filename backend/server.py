@@ -1528,6 +1528,130 @@ async def create_public_booking(data: BookingCreate):
         "confirmation_email_queued": bool(data.client_email)
     }
 
+# ==================== BOOKING CANCEL/RESCHEDULE VIA TOKEN ====================
+
+@api_router.get("/booking/token/{token}")
+async def get_booking_by_token(token: str):
+    """Get booking details by cancel token (for cancel/reschedule pages)"""
+    booking = await db.bookings.find_one({"cancel_token": token}, {"_id": 0})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Get business name
+    business = await db.businesses.find_one({"id": booking["business_id"]}, {"_id": 0, "name": 1})
+    
+    return {
+        "id": booking["id"],
+        "service_name": booking["service_name"],
+        "client_name": booking["client_name"],
+        "datetime": booking["datetime"],
+        "date": booking["date"],
+        "start_time": booking["start_time"],
+        "duration_min": booking["duration_min"],
+        "price_pence": booking["price_pence"],
+        "status": booking["status"],
+        "business_name": business["name"] if business else "Unknown",
+        "business_id": booking["business_id"]
+    }
+
+@api_router.post("/booking/cancel/{token}")
+async def cancel_booking_by_token(token: str):
+    """Cancel a booking using the cancel token from email"""
+    booking = await db.bookings.find_one({"cancel_token": token})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    if booking["status"] == "cancelled":
+        raise HTTPException(status_code=400, detail="Booking is already cancelled")
+    
+    # Check if booking is in the past
+    booking_datetime = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+    if booking_datetime < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Cannot cancel a past booking")
+    
+    # Update booking status
+    await db.bookings.update_one(
+        {"cancel_token": token},
+        {"$set": {
+            "status": "cancelled",
+            "cancelled_at": datetime.now(timezone.utc).isoformat(),
+            "cancelled_by": "client"
+        }}
+    )
+    
+    # Notify business owner
+    owner = await db.users.find_one({"business_id": booking["business_id"]}, {"_id": 0})
+    if owner:
+        await create_notification_internal(
+            user_id=owner["id"],
+            title="Booking Cancelled",
+            message=f"{booking['client_name']} cancelled their {booking['service_name']} booking",
+            notif_type="booking",
+            link="/bookings",
+            business_id=booking["business_id"]
+        )
+    
+    return {"message": "Booking cancelled successfully", "status": "cancelled"}
+
+class RescheduleRequest(BaseModel):
+    new_datetime: str
+
+@api_router.post("/booking/reschedule/{token}")
+async def reschedule_booking_by_token(token: str, data: RescheduleRequest):
+    """Reschedule a booking using the cancel token from email"""
+    booking = await db.bookings.find_one({"cancel_token": token})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    if booking["status"] == "cancelled":
+        raise HTTPException(status_code=400, detail="Cannot reschedule a cancelled booking")
+    
+    # Parse and validate new datetime
+    try:
+        new_datetime = datetime.fromisoformat(data.new_datetime.replace('Z', '+00:00'))
+    except:
+        raise HTTPException(status_code=400, detail="Invalid datetime format")
+    
+    if new_datetime < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Cannot reschedule to a past date")
+    
+    # Update booking
+    new_date_str = new_datetime.strftime('%Y-%m-%d')
+    new_start_time = new_datetime.strftime('%H:%M')
+    end_datetime = new_datetime + timedelta(minutes=booking["duration_min"])
+    new_end_time = end_datetime.strftime('%H:%M')
+    
+    await db.bookings.update_one(
+        {"cancel_token": token},
+        {"$set": {
+            "datetime": data.new_datetime,
+            "date": new_date_str,
+            "start_time": new_start_time,
+            "end_time": new_end_time,
+            "rescheduled_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Notify business owner
+    owner = await db.users.find_one({"business_id": booking["business_id"]}, {"_id": 0})
+    if owner:
+        await create_notification_internal(
+            user_id=owner["id"],
+            title="Booking Rescheduled",
+            message=f"{booking['client_name']} rescheduled their {booking['service_name']} to {new_date_str}",
+            notif_type="booking",
+            link="/bookings",
+            business_id=booking["business_id"]
+        )
+    
+    return {
+        "message": "Booking rescheduled successfully",
+        "new_datetime": data.new_datetime,
+        "new_date": new_date_str,
+        "new_start_time": new_start_time
+    }
+
 # ==================== SHAREABLE LINKS ====================
 
 @api_router.get("/links/generate")
