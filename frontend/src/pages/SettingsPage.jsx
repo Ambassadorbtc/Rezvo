@@ -213,30 +213,30 @@ const SettingsPage = () => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="bg-white border border-gray-200 rounded-full p-1 flex-wrap">
-            <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <Building2 className="w-4 h-4 mr-2" />
-              Profile
+          <TabsList className="bg-white border border-gray-200 rounded-2xl p-1.5 w-full overflow-x-auto flex-nowrap whitespace-nowrap scrollbar-hide">
+            <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <Building2 className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="hours" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <Clock className="w-4 h-4 mr-2" />
-              Hours
+            <TabsTrigger value="hours" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <Clock className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Hours</span>
             </TabsTrigger>
-            <TabsTrigger value="booking" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <Calendar className="w-4 h-4 mr-2" />
-              Booking
+            <TabsTrigger value="booking" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <Calendar className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Booking</span>
             </TabsTrigger>
-            <TabsTrigger value="payments" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Payments
+            <TabsTrigger value="payments" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <CreditCard className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Payments</span>
             </TabsTrigger>
-            <TabsTrigger value="reminders" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <Bell className="w-4 h-4 mr-2" />
-              Reminders
+            <TabsTrigger value="reminders" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <Bell className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Reminders</span>
             </TabsTrigger>
-            <TabsTrigger value="support" className="rounded-full data-[state=active]:bg-teal-500 data-[state=active]:text-white">
-              <HelpCircle className="w-4 h-4 mr-2" />
-              Support
+            <TabsTrigger value="support" className="rounded-xl data-[state=active]:bg-teal-500 data-[state=active]:text-white text-xs sm:text-sm px-2 sm:px-4">
+              <HelpCircle className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Support</span>
             </TabsTrigger>
           </TabsList>
 
