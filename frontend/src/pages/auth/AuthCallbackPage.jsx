@@ -44,31 +44,18 @@ const AuthCallbackPage = () => {
 
         setMessage('Fetching your profile...');
         
-        // Fetch user info from Emergent Auth using the correct endpoint
-        // GET https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data
-        // Header: X-Session-ID: <session_id>
+        // Fetch user info from Emergent Auth via our backend proxy (avoids CORS issues)
+        // GET /api/auth/emergent-session/{session_id}
         let userInfo = { email: null, name: null, picture: null, session_token: null };
         try {
-          const authResponse = await fetch('https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data', {
-            method: 'GET',
-            headers: {
-              'X-Session-ID': sessionId
-            }
-          });
-          if (authResponse.ok) {
-            const authData = await authResponse.json();
-            console.log('Emergent Auth response:', authData);
-            userInfo = {
-              email: authData.email,
-              name: authData.name,
-              picture: authData.picture,
-              session_token: authData.session_token
-            };
-          } else {
-            const errorText = await authResponse.text();
-            console.error('Emergent Auth error:', authResponse.status, errorText);
-            throw new Error('Failed to validate session with Emergent Auth');
-          }
+          const authResponse = await api.get(`/auth/emergent-session/${sessionId}`);
+          console.log('Emergent Auth response:', authResponse.data);
+          userInfo = {
+            email: authResponse.data.email,
+            name: authResponse.data.name,
+            picture: authResponse.data.picture,
+            session_token: authResponse.data.session_token
+          };
         } catch (e) {
           console.error('Failed to fetch session info:', e);
           throw new Error('Could not verify your Google authentication. Please try again.');
