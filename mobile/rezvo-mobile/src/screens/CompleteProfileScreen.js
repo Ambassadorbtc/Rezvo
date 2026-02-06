@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,12 +25,14 @@ export default function CompleteProfileScreen({ navigation, route }) {
   const { phone, verificationId } = route.params || {};
   
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [authMethod, setAuthMethod] = useState(null); // null | 'email'
   
   const [formData, setFormData] = useState({
     fullName: '',
     businessName: '',
     address: '',
+    postcode: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -37,6 +40,33 @@ export default function CompleteProfileScreen({ navigation, route }) {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleGoogleSignup = async () => {
+    if (!formData.fullName.trim() || !formData.businessName.trim()) {
+      showToast('Please fill in your name and business name first', 'error');
+      return;
+    }
+    
+    setGoogleLoading(true);
+    try {
+      // Store form data for after Google auth callback
+      // In a real app, you'd use deep linking to handle the callback
+      const webAuthUrl = 'https://bizbook-27.preview.emergentagent.com/auth-callback';
+      const googleAuthUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(webAuthUrl)}`;
+      
+      // Open Google auth in browser
+      const supported = await Linking.canOpenURL(googleAuthUrl);
+      if (supported) {
+        await Linking.openURL(googleAuthUrl);
+      } else {
+        showToast('Cannot open Google authentication', 'error');
+      }
+    } catch (error) {
+      showToast('Failed to open Google authentication', 'error');
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const handleEmailSignup = async () => {
@@ -47,6 +77,14 @@ export default function CompleteProfileScreen({ navigation, route }) {
     }
     if (!formData.businessName.trim()) {
       showToast('Please enter your business name', 'error');
+      return;
+    }
+    if (!formData.address.trim()) {
+      showToast('Please enter your business address', 'error');
+      return;
+    }
+    if (!formData.postcode.trim()) {
+      showToast('Please enter your postcode', 'error');
       return;
     }
     if (!formData.email.trim()) {
@@ -64,12 +102,14 @@ export default function CompleteProfileScreen({ navigation, route }) {
 
     setLoading(true);
     try {
+      const fullAddress = `${formData.address}, ${formData.postcode}`;
       const response = await api.post('/auth/register', {
         email: formData.email,
         password: formData.password,
         full_name: formData.fullName,
         business_name: formData.businessName,
-        address: formData.address,
+        address: fullAddress,
+        postcode: formData.postcode,
         phone: phone,
         auth_method: 'email'
       });
@@ -170,9 +210,9 @@ export default function CompleteProfileScreen({ navigation, route }) {
                 </View>
               </View>
 
-              {/* Address */}
+              {/* Street Address */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Business Address <Text style={styles.optionalText}>(Optional)</Text></Text>
+                <Text style={styles.inputLabel}>Street Address</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="location-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
                   <TextInput
@@ -181,6 +221,23 @@ export default function CompleteProfileScreen({ navigation, route }) {
                     placeholderTextColor="#C1C7CD"
                     value={formData.address}
                     onChangeText={(v) => handleInputChange('address', v)}
+                  />
+                </View>
+              </View>
+
+              {/* Postcode */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Postcode</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons name="mail-outline" size={18} color="#9FB3C8" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="SW1A 1AA"
+                    placeholderTextColor="#C1C7CD"
+                    value={formData.postcode}
+                    onChangeText={(v) => handleInputChange('postcode', v.toUpperCase())}
+                    autoCapitalize="characters"
+                    maxLength={8}
                   />
                 </View>
               </View>
@@ -194,6 +251,24 @@ export default function CompleteProfileScreen({ navigation, route }) {
 
               {!authMethod ? (
                 <>
+                  {/* Google Button */}
+                  <TouchableOpacity 
+                    style={[styles.authButton, styles.googleButton]}
+                    onPress={handleGoogleSignup}
+                    disabled={googleLoading || !formData.fullName || !formData.businessName}
+                  >
+                    {googleLoading ? (
+                      <ActivityIndicator color="#0A1626" size="small" />
+                    ) : (
+                      <>
+                        <View style={styles.googleIconContainer}>
+                          <Text style={styles.googleIcon}>G</Text>
+                        </View>
+                        <Text style={styles.authButtonText}>Continue with Google</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+
                   {/* Email Button */}
                   <TouchableOpacity 
                     style={styles.authButton}
@@ -398,10 +473,6 @@ const styles = StyleSheet.create({
     color: '#0A1626',
     marginBottom: 6,
   },
-  optionalText: {
-    color: '#9FB3C8',
-    fontWeight: '400',
-  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -446,6 +517,22 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     gap: 10,
     marginBottom: 12,
+  },
+  googleButton: {
+    borderColor: '#E2E8F0',
+  },
+  googleIconContainer: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#4285F4',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  googleIcon: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   authButtonText: {
     fontSize: 15,
