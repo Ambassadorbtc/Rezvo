@@ -832,7 +832,13 @@ async def google_signup(data: GoogleSignupRequest):
         await db.otp_verifications.delete_many({"phone": data.phone, "type": "signup"})
     
     token = create_token(user_id, email, "owner")
-    return {"token": token, "user_id": user_id, "business_id": business_id}
+    return {
+        "token": token, 
+        "user_id": user_id, 
+        "business_id": business_id,
+        "is_new_user": True,
+        "onboarding_completed": False
+    }
 
 # ==================== FORGOT PASSWORD OTP ROUTES ====================
 
