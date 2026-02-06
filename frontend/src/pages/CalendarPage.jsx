@@ -520,6 +520,7 @@ const CalendarPage = () => {
                 })}
               </div>
             </div>
+            </div>
           </div>
         )}
 
