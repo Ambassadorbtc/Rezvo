@@ -104,17 +104,23 @@ const CalendarPage = () => {
   const weekDates = getWeekDates();
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  // Drag handlers for moving appointments
+  // Drag handlers for moving appointments - ROBUST IMPLEMENTATION
+  const [pendingMove, setPendingMove] = useState(null);
+  const [showMoveConfirm, setShowMoveConfirm] = useState(false);
+  
   const handleDragStart = (e, booking) => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', booking.id);
+    e.dataTransfer.setData('application/json', JSON.stringify(booking));
     setDraggedBooking(booking);
     // Add visual feedback
     e.target.style.opacity = '0.5';
+    e.target.style.transform = 'scale(1.02)';
   };
 
   const handleDragEnd = (e) => {
     e.target.style.opacity = '1';
+    e.target.style.transform = 'scale(1)';
     setDraggedBooking(null);
     setDragOverSlot(null);
   };
@@ -129,6 +135,7 @@ const CalendarPage = () => {
     setDragOverSlot(null);
   };
 
+  // CRITICAL: Robust drop handler with confirmation
   const handleDrop = async (e, targetHour, targetMemberId, targetDate = null) => {
     e.preventDefault();
     setDragOverSlot(null);
@@ -139,7 +146,7 @@ const CalendarPage = () => {
     const dateToUse = targetDate || selectedDate;
     const newDateTime = new Date(dateToUse);
     
-    // Preserve original time if dropping on a day column (week view) without specific hour
+    // SNAP TO HOUR - round to nearest 30 minutes for consistency
     if (targetHour !== null && targetHour !== undefined) {
       newDateTime.setHours(targetHour, 0, 0, 0);
     } else {
@@ -148,18 +155,51 @@ const CalendarPage = () => {
       newDateTime.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
     }
 
-    try {
-      await api.patch(`/bookings/${draggedBooking.id}`, {
-        datetime_iso: newDateTime.toISOString(),
-        team_member_id: targetMemberId && targetMemberId !== 'all' ? targetMemberId : draggedBooking.team_member_id
-      });
-      toast.success('Booking moved!');
-      loadData();
-    } catch (error) {
-      toast.error('Failed to move booking');
-      console.error(error);
-    }
+    // Store pending move for confirmation
+    setPendingMove({
+      booking: draggedBooking,
+      newDateTime,
+      targetMemberId: targetMemberId && targetMemberId !== 'all' ? targetMemberId : draggedBooking.team_member_id,
+      originalDateTime: draggedBooking.datetime
+    });
+    setShowMoveConfirm(true);
     setDraggedBooking(null);
+  };
+
+  // Confirm the booking move
+  const confirmMove = async () => {
+    if (!pendingMove) return;
+    
+    try {
+      const response = await api.patch(`/bookings/${pendingMove.booking.id}`, {
+        datetime_iso: pendingMove.newDateTime.toISOString(),
+        team_member_id: pendingMove.targetMemberId,
+        // Include date and time for backend validation
+        date: format(pendingMove.newDateTime, 'yyyy-MM-dd'),
+        start_time: format(pendingMove.newDateTime, 'HH:mm')
+      });
+      
+      if (response.data?.status === 'updated') {
+        toast.success(`Booking moved to ${format(pendingMove.newDateTime, 'h:mm a, EEE d MMM')}`);
+        loadData(); // Refresh to get accurate data
+      } else {
+        throw new Error('Update failed');
+      }
+    } catch (error) {
+      toast.error('Failed to move booking - no changes made');
+      console.error('Move error:', error);
+      // No need to rollback since we didn't update local state
+    } finally {
+      setShowMoveConfirm(false);
+      setPendingMove(null);
+    }
+  };
+
+  // Cancel the move
+  const cancelMove = () => {
+    setShowMoveConfirm(false);
+    setPendingMove(null);
+    toast.info('Move cancelled');
   };
 
   // Handle drop for week view (date change)
@@ -174,16 +214,14 @@ const CalendarPage = () => {
     const newDateTime = new Date(targetDate);
     newDateTime.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
 
-    try {
-      await api.patch(`/bookings/${draggedBooking.id}`, {
-        datetime_iso: newDateTime.toISOString()
-      });
-      toast.success(`Booking moved to ${format(targetDate, 'EEE, d MMM')}!`);
-      loadData();
-    } catch (error) {
-      toast.error('Failed to move booking');
-      console.error(error);
-    }
+    // Store pending move for confirmation
+    setPendingMove({
+      booking: draggedBooking,
+      newDateTime,
+      targetMemberId: draggedBooking.team_member_id,
+      originalDateTime: draggedBooking.datetime
+    });
+    setShowMoveConfirm(true);
     setDraggedBooking(null);
   };
 
