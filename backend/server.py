@@ -311,6 +311,54 @@ class PushTokenRegister(BaseModel):
 class DojoKeyVerify(BaseModel):
     api_key: str
 
+# ==================== OTP MODELS ====================
+
+class SendOtpRequest(BaseModel):
+    phone: str
+
+class VerifyOtpRequest(BaseModel):
+    phone: str
+    code: str
+    verification_id: str
+
+class RegisterWithOtp(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+    business_name: str
+    address: Optional[str] = None
+    phone: str
+    auth_method: str = "email"  # email or google
+
+class GoogleSignupRequest(BaseModel):
+    google_token: str
+    email: Optional[str] = None
+    name: Optional[str] = None
+    full_name: Optional[str] = None
+    business_name: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    auth_method: str = "google"
+
+class ForgotPasswordOtpRequest(BaseModel):
+    phone: str
+
+class ResetPasswordOtpRequest(BaseModel):
+    phone: str
+    verification_id: str
+    new_password: str
+
+class OnboardingData(BaseModel):
+    business_type: str
+    address: Optional[str] = None
+    postcode: Optional[str] = None
+    city: Optional[str] = None
+    team_members: List[dict] = []
+
+# Sendly API Configuration
+SENDLY_API_KEY = os.environ.get('SENDLY_API_KEY', '')
+SENDLY_API_URL = 'https://sendly.live/api/v1/messages'
+
 # ==================== HELPERS ====================
 
 def hash_password(password: str) -> str:
