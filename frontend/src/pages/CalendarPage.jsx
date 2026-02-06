@@ -300,22 +300,22 @@ const CalendarPage = () => {
           {/* Navigation Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-8 py-2 sm:py-3 bg-gray-50/50 gap-2 sm:gap-0">
             {/* Left: Date Nav */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => changeDate(viewMode === 'month' ? -30 : viewMode === 'week' ? -7 : -1)}
-                className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600" />
               </button>
               <button
                 onClick={() => setSelectedDate(new Date())}
-                className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                className="px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
               >
                 Today
               </button>
               <button
                 onClick={() => changeDate(viewMode === 'month' ? 30 : viewMode === 'week' ? 7 : 1)}
-                className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600" />
               </button>
@@ -327,7 +327,7 @@ const CalendarPage = () => {
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                     viewMode === mode 
                       ? 'bg-teal-500 text-white shadow-md' 
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -338,8 +338,8 @@ const CalendarPage = () => {
               ))}
             </div>
             
-            {/* Right: Week Strip or Stats */}
-            <div className="w-[400px] flex justify-end">
+            {/* Right: Week Strip or Stats - hidden on mobile */}
+            <div className="hidden lg:flex w-[400px] justify-end">
               {viewMode === 'day' && (
                 <div className="flex items-center gap-1 bg-white border border-gray-200 p-1.5 rounded-xl shadow-sm">
                   {weekDates.map((date, index) => {
@@ -380,16 +380,16 @@ const CalendarPage = () => {
 
         {/* Calendar Content */}
         {viewMode === 'day' && (
-          <div className="flex-1 flex flex-col overflow-hidden bg-white m-6 rounded-2xl border border-gray-100 shadow-lg">
-            <div className="flex-1 overflow-y-auto">
-              <div className="flex">
+          <div className="flex-1 flex flex-col overflow-hidden bg-white m-2 sm:m-6 rounded-2xl border border-gray-100 shadow-lg">
+            <div className="flex-1 overflow-y-auto overflow-x-auto">
+              <div className="flex min-w-[600px]">
                 {/* Time Column */}
-                <div className="w-20 border-r border-gray-100 flex-shrink-0 bg-gray-50/30 sticky left-0 z-20">
-                  <div className="h-16 border-b border-gray-100 bg-gray-50/30" />
+                <div className="w-16 sm:w-20 border-r border-gray-100 flex-shrink-0 bg-gray-50/30 sticky left-0 z-20">
+                  <div className="h-12 sm:h-16 border-b border-gray-100 bg-gray-50/30" />
                   <div className="relative">
                     {hours.map((hour) => (
-                      <div key={hour} className="h-[72px] border-b border-gray-50 flex items-start justify-end pr-4 pt-0">
-                        <span className="text-xs font-semibold text-gray-400 -mt-2 tracking-wide">
+                      <div key={hour} className="h-[60px] sm:h-[72px] border-b border-gray-50 flex items-start justify-end pr-2 sm:pr-4 pt-0">
+                        <span className="text-[10px] sm:text-xs font-semibold text-gray-400 -mt-2 tracking-wide">
                           {hour.toString().padStart(2, '0')}:00
                         </span>
                       </div>
