@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   Animated,
   Linking,
-  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,8 +35,14 @@ export default function ContactSupportScreen({ navigation }) {
     fetchLiveChatStatus();
     
     // Poll for live chat status every 30 seconds
-    const interval = setInterval(fetchLiveChatStatus, 30000);
-    return () => clearInterval(interval);
+    const statusInterval = setInterval(fetchLiveChatStatus, 30000);
+    // Poll for conversations every 10 seconds
+    const convInterval = setInterval(fetchConversations, 10000);
+    
+    return () => {
+      clearInterval(statusInterval);
+      clearInterval(convInterval);
+    };
   }, []);
 
   useEffect(() => {
@@ -46,19 +51,21 @@ export default function ContactSupportScreen({ navigation }) {
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 0.4,
-            duration: 800,
+            toValue: 0.3,
+            duration: 600,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 800,
+            duration: 600,
             useNativeDriver: true,
           }),
         ])
       );
       pulse.start();
       return () => pulse.stop();
+    } else {
+      pulseAnim.setValue(1);
     }
   }, [liveChatStatus.is_online]);
 
@@ -82,11 +89,34 @@ export default function ContactSupportScreen({ navigation }) {
     }
   };
 
-  const handleEmailPress = () => {
-    Linking.openURL('mailto:support@rezvo.app?subject=' + encodeURIComponent(subject || 'Support Request'));
+  const handleEmailPress = async () => {
+    // Open email client
+    const emailSubject = subject || 'Support Request';
+    const emailBody = message || '';
+    const mailtoUrl = `mailto:support@rezvo.app?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    
+    try {
+      await Linking.openURL(mailtoUrl);
+      
+      // Also create a conversation in the system if there's content
+      if (subject && message) {
+        await api.post('/conversations', {
+          content: `[Sent via Email]\n\n${message}`,
+          subject: subject,
+          recipient_type: 'support'
+        });
+        showToast('Email opened & message logged', 'success');
+        setSubject('');
+        setMessage('');
+        fetchConversations();
+      }
+    } catch (error) {
+      showToast('Could not open email app', 'error');
+    }
   };
 
   const handleLiveChatPress = () => {
+    // Navigate to SupportChat (the live chat window)
     navigation.navigate('SupportChat');
   };
 
@@ -104,7 +134,7 @@ export default function ContactSupportScreen({ navigation }) {
         recipient_type: 'support'
       });
       
-      showToast('Message sent! Opening chat...', 'success');
+      showToast('Message sent!', 'success');
       setSubject('');
       setMessage('');
       
@@ -128,7 +158,7 @@ export default function ContactSupportScreen({ navigation }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    if (isToday(date)) return 'Today';
+    if (isToday(date)) return format(date, 'HH:mm');
     if (isYesterday(date)) return 'Yesterday';
     return format(date, 'MMM d');
   };
@@ -142,68 +172,42 @@ export default function ContactSupportScreen({ navigation }) {
     }
   };
 
-  const renderConversation = ({ item }) => {
-    const statusColor = getStatusColor(item.status);
-    return (
-      <TouchableOpacity 
-        style={styles.conversationItem}
-        onPress={() => navigation.navigate('SupportChat', { conversation: item })}
-      >
-        <View style={styles.conversationIcon}>
-          <Ionicons name="chatbubble" size={18} color={TEAL} />
-        </View>
-        <View style={styles.conversationContent}>
-          <View style={styles.conversationHeader}>
-            <Text style={styles.conversationSubject} numberOfLines={1}>
-              {item.subject || 'Support Request'}
-            </Text>
-            <View style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}>
-              <Text style={[styles.statusText, { color: statusColor.text }]}>
-                {item.status || 'Open'}
-              </Text>
-            </View>
-          </View>
-          <Text style={styles.conversationPreview} numberOfLines={1}>
-            {item.last_message_preview || item.last_message || 'No messages yet'}
-          </Text>
-          <Text style={styles.conversationDate}>{formatDate(item.last_message_at)}</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={18} color="#9FB3C8" />
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#0A1626" />
+          <Ionicons name="chevron-back" size={24} color="#0A1626" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Contact Support</Text>
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Contact Options */}
+      <ScrollView 
+        contentContainerStyle={styles.content} 
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Contact Options - Email & Live Chat */}
         <View style={styles.optionsRow}>
+          {/* Email Card */}
           <TouchableOpacity style={styles.optionCard} onPress={handleEmailPress}>
             <View style={[styles.optionIcon, { backgroundColor: '#E8F5F3' }]}>
-              <Ionicons name="mail-outline" size={22} color={TEAL} />
+              <Ionicons name="mail-outline" size={24} color={TEAL} />
             </View>
             <Text style={styles.optionTitle}>Email</Text>
             <Text style={styles.optionValue}>support@rezvo.app</Text>
           </TouchableOpacity>
           
+          {/* Live Chat Card */}
           <TouchableOpacity style={styles.optionCard} onPress={handleLiveChatPress}>
-            <View style={[styles.optionIcon, { backgroundColor: liveChatStatus.is_online ? '#E8F5F3' : '#FEE2E2' }]}>
+            <View style={[styles.optionIcon, { backgroundColor: liveChatStatus.is_online ? '#D1FAE5' : '#FEE2E2' }]}>
               <Ionicons 
                 name="chatbubble-outline" 
-                size={22} 
-                color={liveChatStatus.is_online ? TEAL : '#EF4444'} 
+                size={24} 
+                color={liveChatStatus.is_online ? '#10B981' : '#EF4444'} 
               />
             </View>
-            <View style={styles.liveChatHeader}>
+            <View style={styles.liveChatTitleRow}>
               <Text style={styles.optionTitle}>Live Chat</Text>
               <Animated.View 
                 style={[
@@ -225,55 +229,61 @@ export default function ContactSupportScreen({ navigation }) {
         <View style={styles.responseCard}>
           <Ionicons name="time-outline" size={18} color={TEAL} />
           <Text style={styles.responseText}>
-            {liveChatStatus.is_online 
-              ? 'We\'re online! Get instant support.' 
-              : 'Average response time: '}
-            {!liveChatStatus.is_online && <Text style={styles.responseBold}>Under 24 hours</Text>}
+            Average response time: <Text style={styles.responseBold}>Under 24 hours</Text>
           </Text>
         </View>
 
         {/* Past Messages Section */}
-        <View style={styles.pastMessagesSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Past Messages</Text>
-            {conversations.length > 0 && (
+        {conversations.length > 0 && (
+          <View style={styles.pastMessagesSection}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>PAST MESSAGES</Text>
               <TouchableOpacity onPress={() => navigation.navigate('SupportChat')}>
-                <Text style={styles.viewAllLink}>View All</Text>
+                <Text style={styles.viewAllBtn}>View All</Text>
               </TouchableOpacity>
-            )}
-          </View>
-          
-          {loadingConversations ? (
-            <ActivityIndicator size="small" color={TEAL} style={{ marginTop: 16 }} />
-          ) : conversations.length === 0 ? (
-            <View style={styles.emptyMessages}>
-              <Ionicons name="chatbubbles-outline" size={32} color="#9FB3C8" />
-              <Text style={styles.emptyText}>No previous conversations</Text>
             </View>
-          ) : (
+            
             <View style={styles.conversationsList}>
-              {conversations.slice(0, 3).map((item) => (
-                <React.Fragment key={item.id}>
-                  {renderConversation({ item })}
-                </React.Fragment>
-              ))}
-              {conversations.length > 3 && (
-                <TouchableOpacity 
-                  style={styles.showMoreBtn}
-                  onPress={() => navigation.navigate('SupportChat')}
-                >
-                  <Text style={styles.showMoreText}>
-                    Show {conversations.length - 3} more conversations
-                  </Text>
-                  <Ionicons name="chevron-forward" size={16} color={TEAL} />
-                </TouchableOpacity>
-              )}
+              {conversations.slice(0, 3).map((conv, index) => {
+                const statusColor = getStatusColor(conv.status);
+                return (
+                  <TouchableOpacity 
+                    key={conv.id}
+                    style={[
+                      styles.conversationItem,
+                      index === conversations.slice(0, 3).length - 1 && { borderBottomWidth: 0 }
+                    ]}
+                    onPress={() => navigation.navigate('SupportChat', { conversation: conv })}
+                  >
+                    <View style={styles.convIcon}>
+                      <Ionicons name="chatbubble" size={16} color={TEAL} />
+                    </View>
+                    <View style={styles.convContent}>
+                      <View style={styles.convHeader}>
+                        <Text style={styles.convSubject} numberOfLines={1}>
+                          {conv.subject || 'Support Request'}
+                        </Text>
+                        <View style={[styles.statusPill, { backgroundColor: statusColor.bg }]}>
+                          <Text style={[styles.statusText, { color: statusColor.text }]}>
+                            {conv.status || 'Open'}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={styles.convPreview} numberOfLines={1}>
+                        {conv.last_message_preview || conv.last_message || 'No messages'}
+                      </Text>
+                      <Text style={styles.convDate}>{formatDate(conv.last_message_at)}</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
-        {/* New Message Form */}
-        <Text style={styles.sectionTitle}>Send a New Message</Text>
+        {/* Send Us a Message Form */}
+        <Text style={styles.sectionTitle}>SEND US A MESSAGE</Text>
         
         <View style={styles.formGroup}>
           <Text style={styles.label}>Subject</Text>
@@ -295,7 +305,7 @@ export default function ContactSupportScreen({ navigation }) {
             value={message}
             onChangeText={setMessage}
             multiline
-            numberOfLines={6}
+            numberOfLines={5}
             textAlignVertical="top"
           />
         </View>
@@ -310,14 +320,14 @@ export default function ContactSupportScreen({ navigation }) {
           ) : (
             <>
               <Text style={styles.submitBtnText}>Send Message</Text>
-              <Ionicons name="send" size={18} color="#FFFFFF" />
+              <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
             </>
           )}
         </TouchableOpacity>
 
         {/* Business Hours */}
+        <Text style={styles.sectionTitle}>BUSINESS HOURS</Text>
         <View style={styles.hoursCard}>
-          <Text style={styles.hoursTitle}>Business Hours</Text>
           <View style={styles.hoursRow}>
             <Text style={styles.hoursDay}>Monday - Friday</Text>
             <Text style={styles.hoursTime}>9:00 AM - 6:00 PM GMT</Text>
@@ -342,7 +352,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
@@ -354,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '600',
     color: '#0A1626',
   },
@@ -376,18 +386,18 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
   },
   optionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  liveChatHeader: {
+  liveChatTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -398,14 +408,14 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   optionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#0A1626',
-    marginBottom: 2,
   },
   optionValue: {
     fontSize: 12,
     color: '#627D98',
+    marginTop: 2,
   },
   responseCard: {
     flexDirection: 'row',
@@ -413,7 +423,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8F5F3',
     borderRadius: 10,
     padding: 12,
-    gap: 8,
+    gap: 10,
     marginBottom: 24,
   },
   responseText: {
@@ -428,35 +438,23 @@ const styles = StyleSheet.create({
   pastMessagesSection: {
     marginBottom: 24,
   },
-  sectionHeader: {
+  sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#0A1626',
-    textTransform: 'uppercase',
+    color: '#64748B',
     letterSpacing: 0.5,
-    marginBottom: 12,
+    marginBottom: 10,
   },
-  viewAllLink: {
+  viewAllBtn: {
     fontSize: 13,
     color: TEAL,
     fontWeight: '500',
-  },
-  emptyMessages: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
-    gap: 8,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#627D98',
   },
   conversationsList: {
     backgroundColor: '#FFFFFF',
@@ -470,7 +468,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
-  conversationIcon: {
+  convIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -479,23 +477,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  conversationContent: {
+  convContent: {
     flex: 1,
   },
-  conversationHeader: {
+  convHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 2,
+    marginBottom: 3,
   },
-  conversationSubject: {
+  convSubject: {
     fontSize: 14,
     fontWeight: '600',
     color: '#0A1626',
     flex: 1,
     marginRight: 8,
   },
-  statusBadge: {
+  statusPill: {
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
@@ -505,32 +503,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'capitalize',
   },
-  conversationPreview: {
+  convPreview: {
     fontSize: 13,
     color: '#627D98',
     marginBottom: 2,
   },
-  conversationDate: {
+  convDate: {
     fontSize: 11,
-    color: '#9FB3C8',
-  },
-  showMoreBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    gap: 4,
-  },
-  showMoreText: {
-    fontSize: 13,
-    color: TEAL,
-    fontWeight: '500',
+    color: '#94A3B8',
   },
   formGroup: {
     marginBottom: 16,
   },
   label: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '500',
     color: '#334E68',
     marginBottom: 6,
@@ -546,7 +532,7 @@ const styles = StyleSheet.create({
     color: '#0A1626',
   },
   textArea: {
-    height: 120,
+    height: 100,
     textAlignVertical: 'top',
   },
   submitBtn: {
@@ -556,7 +542,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
     marginBottom: 24,
   },
   submitBtnDisabled: {
@@ -564,7 +550,7 @@ const styles = StyleSheet.create({
   },
   submitBtnText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
   },
   hoursCard: {
@@ -572,23 +558,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
   },
-  hoursTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0A1626',
-    marginBottom: 12,
-  },
   hoursRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   hoursDay: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#627D98',
   },
   hoursTime: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '500',
     color: '#0A1626',
   },
