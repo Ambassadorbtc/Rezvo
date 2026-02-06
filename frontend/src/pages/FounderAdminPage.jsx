@@ -212,6 +212,57 @@ const FounderAdminPage = () => {
     }
   }, [activeTab]);
 
+  // Load live chat settings when on chat-settings tab
+  useEffect(() => {
+    if (activeTab === 'chat-settings') {
+      loadLiveChatSettings();
+    }
+  }, [activeTab]);
+
+  const loadLiveChatSettings = async () => {
+    try {
+      const res = await api.get('/admin/live-chat-settings');
+      setLiveChatSettings(res.data);
+    } catch (error) {
+      console.error('Error loading live chat settings:', error);
+    }
+  };
+
+  const toggleLiveChat = async () => {
+    try {
+      const res = await api.post('/admin/live-chat-toggle');
+      setLiveChatSettings(prev => ({ ...prev, is_online: res.data.is_online }));
+      toast.success(res.data.is_online ? 'Live chat is now ONLINE' : 'Live chat is now OFFLINE');
+    } catch (error) {
+      toast.error('Failed to toggle live chat');
+    }
+  };
+
+  const saveLiveChatSettings = async () => {
+    setSavingChatSettings(true);
+    try {
+      await api.patch('/admin/live-chat-settings', liveChatSettings);
+      toast.success('Live chat settings saved');
+    } catch (error) {
+      toast.error('Failed to save settings');
+    } finally {
+      setSavingChatSettings(false);
+    }
+  };
+
+  const updateWorkingHours = (day, field, value) => {
+    setLiveChatSettings(prev => ({
+      ...prev,
+      working_hours: {
+        ...prev.working_hours,
+        [day]: {
+          ...prev.working_hours[day],
+          [field]: value
+        }
+      }
+    }));
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
