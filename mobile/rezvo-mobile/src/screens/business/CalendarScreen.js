@@ -508,9 +508,9 @@ export default function CalendarScreen({ navigation }) {
                 )}
               </View>
             </ScrollView>
-            <View style={{ height: 100 }} />
           </ScrollView>
-        </>
+          <View style={{ height: 100 }} />
+        </ScrollView>
       )}
 
       {/* WEEK VIEW - Redesigned */}
