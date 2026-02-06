@@ -638,7 +638,8 @@ const CalendarPage = () => {
                           {format(day, 'd')}
                         </div>
                         <div className="space-y-1">
-                          {dayBookings.slice(0, 3).map((booking) => {
+                          {/* Show ALL bookings dynamically */}
+                          {dayBookings.map((booking) => {
                             const colors = getServiceColor(booking.service_id);
                             return (
                               <div 
@@ -651,9 +652,6 @@ const CalendarPage = () => {
                               </div>
                             );
                           })}
-                          {dayBookings.length > 3 && (
-                            <div className="text-[10px] text-teal-600 font-bold">+{dayBookings.length - 3} more</div>
-                          )}
                         </div>
                       </div>
                     );
