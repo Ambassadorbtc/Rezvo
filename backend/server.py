@@ -730,22 +730,56 @@ async def get_emergent_session(session_id: str):
 
 @api_router.post("/auth/google-signup")
 async def google_signup(data: GoogleSignupRequest):
-    """Handle Google OAuth signup"""
+    """Handle Google OAuth signup/login"""
     now = datetime.now(timezone.utc)
     
     # Use email from token or provided email
     email = data.email
     name = data.name or data.full_name or "User"
+    google_id = data.google_id  # Unique Google user identifier
     
     if not email:
         raise HTTPException(status_code=400, detail="Email is required")
     
-    # Check if user exists
+    # Check if user exists with this email
     existing = await db.users.find_one({"email": email})
     if existing:
-        # Login existing user
+        # User with this email exists - check auth method
+        existing_auth_method = existing.get("auth_method", "email")
+        
+        if existing_auth_method != "google":
+            # User signed up with email/password - don't allow Google login
+            raise HTTPException(
+                status_code=409, 
+                detail="An account with this email already exists. Please login with your email and password instead."
+            )
+        
+        # Existing Google user - verify Google ID if we have it stored
+        stored_google_id = existing.get("google_id")
+        if stored_google_id and google_id and stored_google_id != google_id:
+            # Different Google account trying to access this email - security issue
+            logger.warning(f"Google ID mismatch for email {email}. Stored: {stored_google_id}, Received: {google_id}")
+            raise HTTPException(
+                status_code=403, 
+                detail="This email is linked to a different Google account."
+            )
+        
+        # Update Google ID if not stored yet
+        if google_id and not stored_google_id:
+            await db.users.update_one(
+                {"id": existing["id"]},
+                {"$set": {"google_id": google_id, "updated_at": now.isoformat()}}
+            )
+        
+        # Login existing Google user
         token = create_token(existing["id"], existing["email"], existing["role"])
-        return {"token": token, "user_id": existing["id"], "business_id": existing.get("business_id")}
+        return {
+            "token": token, 
+            "user_id": existing["id"], 
+            "business_id": existing.get("business_id"),
+            "is_new_user": False,
+            "onboarding_completed": existing.get("onboarding_completed", False)
+        }
     
     # Create new user
     user_id = str(uuid.uuid4())
@@ -759,6 +793,7 @@ async def google_signup(data: GoogleSignupRequest):
         "phone": data.phone,
         "role": "owner",
         "auth_method": "google",
+        "google_id": google_id,  # Store Google's unique user ID
         "business_id": business_id,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
