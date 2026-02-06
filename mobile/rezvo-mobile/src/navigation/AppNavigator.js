@@ -16,6 +16,7 @@ import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import PasswordResetSuccessScreen from '../screens/PasswordResetSuccessScreen';
 import PhoneVerifyScreen from '../screens/PhoneVerifyScreen';
 import CompleteProfileScreen from '../screens/CompleteProfileScreen';
+import BusinessTypeScreen from '../screens/BusinessTypeScreen';
 
 // Client Screens
 import ClientHomeScreen from '../screens/client/HomeScreen';
@@ -123,6 +124,7 @@ function AuthStack() {
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="PhoneVerify" component={PhoneVerifyScreen} />
       <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
+      <Stack.Screen name="BusinessType" component={BusinessTypeScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
