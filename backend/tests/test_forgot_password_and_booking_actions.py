@@ -130,6 +130,7 @@ class TestGoogleAuthBlocking:
         """Test Google signup creates new user"""
         unique_email = f"test_google_{uuid.uuid4().hex[:8]}@example.com"
         response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "fake_google_token_for_testing",  # Required field
             "email": unique_email,
             "name": "Test Google User",
             "google_id": f"google_{uuid.uuid4().hex[:12]}"
@@ -144,6 +145,7 @@ class TestGoogleAuthBlocking:
         """Test Google signup is blocked for existing email/password user"""
         # testuser@example.com is an existing email/password user
         response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "fake_google_token_for_testing",  # Required field
             "email": "testuser@example.com",
             "name": "Test User",
             "google_id": "google_fake_id_12345"
@@ -157,6 +159,7 @@ class TestGoogleAuthBlocking:
     def test_google_signup_without_email(self):
         """Test Google signup without email returns 400"""
         response = requests.post(f"{BASE_URL}/api/auth/google-signup", json={
+            "google_token": "fake_google_token_for_testing",  # Required field
             "name": "Test User",
             "google_id": "google_fake_id"
         })
