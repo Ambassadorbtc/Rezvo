@@ -118,16 +118,19 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route path="/" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LandingPage />} />
       <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LoginPage />} />
-      <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupPage />} />
+      <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupAuthPage />} />
       
-      {/* New Auth Flow Routes */}
-      <Route path="/welcome" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <WelcomePage />} />
-      <Route path="/get-started" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <UserTypeSelectPage />} />
-      <Route path="/verify-phone" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <PhoneVerifyPage />} />
-      <Route path="/complete-profile" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <CompleteProfilePage />} />
-      <Route path="/onboarding-wizard" element={<ProtectedRoute><OnboardingWizardPage /></ProtectedRoute>} />
+      {/* New Signup Flow Routes (TailAdmin style) */}
+      <Route path="/signup/profile" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupProfilePage />} />
+      <Route path="/signup/verify-phone" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupPhoneVerifyPage />} />
+      <Route path="/signup/business-type" element={<ProtectedRoute><SignupBusinessTypePage /></ProtectedRoute>} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth-callback" element={<AuthCallbackPage />} />
+      
+      {/* Legacy routes - redirect to new flow */}
+      <Route path="/welcome" element={<Navigate to="/signup" replace />} />
+      <Route path="/get-started" element={<Navigate to="/signup" replace />} />
+      <Route path="/verify-phone" element={<Navigate to="/signup/verify-phone" replace />} />
       
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/b/:shortCode" element={<ShortLinkRedirect />} />
