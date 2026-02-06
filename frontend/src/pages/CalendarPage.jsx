@@ -379,36 +379,37 @@ const CalendarPage = () => {
 
         {/* Calendar Content */}
         {viewMode === 'day' && (
-          <div className="flex-1 overflow-hidden flex bg-white m-6 rounded-2xl border border-gray-100 shadow-lg">
-            {/* Scrollable container for time column and team columns */}
-            <div className="flex-1 flex overflow-y-auto">
-              {/* Time Column */}
-              <div className="w-20 border-r border-gray-100 flex-shrink-0 bg-gray-50/30">
-                <div className="h-16 border-b border-gray-100 sticky top-0 bg-gray-50/30 z-10" />
-                <div className="relative">
-                  {hours.map((hour) => (
-                    <div key={hour} className="h-[72px] border-b border-gray-50 flex items-start justify-end pr-4 pt-0">
-                      <span className="text-xs font-semibold text-gray-400 -mt-2 tracking-wide">
-                        {hour.toString().padStart(2, '0')}:00
-                      </span>
-                    </div>
-                  ))}
+          <div className="flex-1 flex flex-col overflow-hidden bg-white m-6 rounded-2xl border border-gray-100 shadow-lg">
+            {/* Fixed horizontal scroll container for both header and grid */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="flex">
+                {/* Time Column - Fixed */}
+                <div className="w-20 border-r border-gray-100 flex-shrink-0 bg-gray-50/30 sticky left-0 z-20">
+                  <div className="h-16 border-b border-gray-100 bg-gray-50/30" />
+                  <div className="relative">
+                    {hours.map((hour) => (
+                      <div key={hour} className="h-[72px] border-b border-gray-50 flex items-start justify-end pr-4 pt-0">
+                        <span className="text-xs font-semibold text-gray-400 -mt-2 tracking-wide">
+                          {hour.toString().padStart(2, '0')}:00
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Team Member Columns */}
-              <div className="flex-1 overflow-x-auto">
-                <div className="flex min-w-max">
-                  {displayMembers.map((member) => {
-                    const memberBookings = teamMembers.length > 0 ? getBookingsForMember(member.id) : bookings;
-                    
-                    return (
-                      <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
-                        {/* Member Header */}
-                        <div 
-                          className="h-16 border-b border-gray-100 flex items-center justify-center gap-3 px-4 sticky top-0 bg-white z-10"
-                          style={{ borderTopWidth: 4, borderTopColor: member.color }}
-                        >
+                {/* Team Member Columns - Scrollable horizontally */}
+                <div className="flex-1 overflow-x-auto">
+                  <div className="flex min-w-max">
+                    {displayMembers.map((member) => {
+                      const memberBookings = teamMembers.length > 0 ? getBookingsForMember(member.id) : bookings;
+                      
+                      return (
+                        <div key={member.id} className="flex-1 min-w-[200px] border-r border-gray-100 last:border-r-0">
+                          {/* Member Header */}
+                          <div 
+                            className="h-16 border-b border-gray-100 flex items-center justify-center gap-3 px-4 sticky top-0 bg-white z-10"
+                            style={{ borderTopWidth: 4, borderTopColor: member.color }}
+                          >
                         <div 
                           className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg"
                           style={{ backgroundColor: member.color }}
