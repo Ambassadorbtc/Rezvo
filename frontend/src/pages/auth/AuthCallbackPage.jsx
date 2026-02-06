@@ -1,41 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../lib/api';
+
+// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [status, setStatus] = useState('processing'); // 'processing' | 'success' | 'error'
   const [message, setMessage] = useState('Completing sign up...');
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevent double processing in StrictMode
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
+
     const handleCallback = async () => {
       try {
         // Parse the hash fragment for session_id from Emergent Auth
-        // URL format: /auth-callback#session_id=xxx or /auth-callback?session_id=xxx
+        // URL format: /auth-callback#session_id=xxx
         let sessionId = null;
-        let email = null;
-        let name = null;
         
         // Check hash first (Emergent Auth format)
         if (location.hash) {
           const hashParams = new URLSearchParams(location.hash.substring(1));
           sessionId = hashParams.get('session_id');
-          email = hashParams.get('email');
-          name = hashParams.get('name');
         }
         
         // Fallback to query params
         if (!sessionId) {
           const searchParams = new URLSearchParams(location.search);
           sessionId = searchParams.get('session_id') || searchParams.get('token');
-          email = searchParams.get('email');
-          name = searchParams.get('name');
         }
         
-        console.log('Auth callback - sessionId:', sessionId, 'email:', email);
+        console.log('Auth callback - sessionId:', sessionId);
         
         if (!sessionId) {
           throw new Error('No authentication token received');
@@ -43,20 +44,38 @@ const AuthCallbackPage = () => {
 
         setMessage('Fetching your profile...');
         
-        // Fetch user info from Emergent Auth using session_id
-        let userInfo = { email, name };
+        // Fetch user info from Emergent Auth using the correct endpoint
+        // GET https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data
+        // Header: X-Session-ID: <session_id>
+        let userInfo = { email: null, name: null, picture: null, session_token: null };
         try {
-          const authResponse = await fetch(`https://auth.emergentagent.com/api/session/${sessionId}`);
+          const authResponse = await fetch('https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data', {
+            method: 'GET',
+            headers: {
+              'X-Session-ID': sessionId
+            }
+          });
           if (authResponse.ok) {
             const authData = await authResponse.json();
+            console.log('Emergent Auth response:', authData);
             userInfo = {
-              email: authData.email || email,
-              name: authData.name || name,
-              picture: authData.picture
+              email: authData.email,
+              name: authData.name,
+              picture: authData.picture,
+              session_token: authData.session_token
             };
+          } else {
+            const errorText = await authResponse.text();
+            console.error('Emergent Auth error:', authResponse.status, errorText);
+            throw new Error('Failed to validate session with Emergent Auth');
           }
         } catch (e) {
-          console.log('Could not fetch session info, using provided data');
+          console.error('Failed to fetch session info:', e);
+          throw new Error('Could not verify your Google authentication. Please try again.');
+        }
+        
+        if (!userInfo.email) {
+          throw new Error('Could not retrieve email from Google authentication');
         }
 
         // Get stored profile data from signup flow
