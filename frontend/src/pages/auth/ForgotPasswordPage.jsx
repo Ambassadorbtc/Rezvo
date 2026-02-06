@@ -3,19 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Calendar, ArrowLeft, Phone, Loader2, Check, RefreshCw, Lock, Eye, EyeOff } from 'lucide-react';
+import { Calendar, ArrowLeft, Phone, Mail, Loader2, Check, RefreshCw, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../lib/api';
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState('phone'); // 'phone' | 'otp' | 'newPassword'
+  const [method, setMethod] = useState(null); // 'phone' | 'email'
+  const [step, setStep] = useState('choose'); // 'choose' | 'phone' | 'email' | 'otp' | 'emailCode' | 'newPassword'
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+44');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [verificationId, setVerificationId] = useState(null);
+  const [resetToken, setResetToken] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
