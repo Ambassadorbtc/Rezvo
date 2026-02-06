@@ -82,6 +82,7 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ Unread message badges
 - ✅ **Fixed Chat Alignment** (Feb 5) - Owner view: own messages RIGHT/TEAL, founder messages LEFT/BLUE
 - ✅ **Teal Status Dropdown** (Feb 5) - Unified teal background for status selector in both portals
+- ✅ **Live Chat Settings** (Feb 6) - Founder can toggle online/offline status and set working hours
 
 ### Admin/Founder Panel
 - ✅ User management dashboard
@@ -92,6 +93,14 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 - ✅ User avatars on messages
 - ✅ Reply to support conversations
 - ✅ **Teal Status Dropdown** (Feb 5) - Modern dropdown replacing conditional buttons
+- ✅ **Live Chat Settings Tab** (Feb 6) - Toggle online/offline, set working hours schedule
+
+### Mobile App Support Features
+- ✅ **Contact Support Screen** (Feb 6) - Email, Live Chat with online/offline indicator (flashing green/red)
+- ✅ **Past Messages Section** - Shows recent conversations with status badges
+- ✅ **Live Chat Status API** - Public endpoint for mobile to check online status
+- ✅ **Support Chat Screen** - Full conversation list with real-time polling
+- ✅ **Chat Message View** - Real-time messaging with closed ticket notice
 
 ### UI/UX Improvements
 - ✅ **Branded delete confirmation dialogs** (replacing native confirm())
