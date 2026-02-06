@@ -541,6 +541,399 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=user["created_at"]
     )
 
+# ==================== OTP AUTH ROUTES ====================
+
+import random
+import string
+
+def generate_otp_code():
+    """Generate a 6-digit OTP code"""
+    return ''.join(random.choices(string.digits, k=6))
+
+async def send_sms_via_sendly(phone: str, message: str) -> bool:
+    """Send SMS via Sendly API"""
+    try:
+        headers = {
+            'Authorization': f'Bearer {SENDLY_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+        payload = {
+            'to': phone,
+            'text': message,
+            'messageType': 'transactional'
+        }
+        response = http_requests.post(SENDLY_API_URL, json=payload, headers=headers)
+        logger.info(f"Sendly response: {response.status_code} - {response.text}")
+        return response.status_code == 200 or response.status_code == 201
+    except Exception as e:
+        logger.error(f"Sendly SMS error: {e}")
+        return False
+
+@api_router.post("/auth/send-otp")
+async def send_otp(data: SendOtpRequest):
+    """Send OTP to phone number for signup verification"""
+    phone = data.phone.strip()
+    
+    # Generate OTP and verification ID
+    otp_code = generate_otp_code()
+    verification_id = str(uuid.uuid4())
+    
+    # Store OTP in database with expiry
+    now = datetime.now(timezone.utc)
+    otp_doc = {
+        "verification_id": verification_id,
+        "phone": phone,
+        "code": otp_code,
+        "type": "signup",
+        "verified": False,
+        "created_at": now,
+        "expires_at": now + timedelta(minutes=10)
+    }
+    await db.otp_verifications.insert_one(otp_doc)
+    
+    # Send SMS
+    message = f"Your Rezvo verification code is: {otp_code}. This code expires in 10 minutes."
+    sms_sent = await send_sms_via_sendly(phone, message)
+    
+    if not sms_sent:
+        # For testing, log the code
+        logger.info(f"OTP for {phone}: {otp_code}")
+    
+    return {"verification_id": verification_id, "message": "OTP sent successfully"}
+
+@api_router.post("/auth/verify-otp")
+async def verify_otp(data: VerifyOtpRequest):
+    """Verify OTP code"""
+    now = datetime.now(timezone.utc)
+    
+    # Find the OTP record
+    otp_record = await db.otp_verifications.find_one({
+        "verification_id": data.verification_id,
+        "phone": data.phone,
+        "type": "signup",
+        "verified": False
+    })
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid verification request")
+    
+    # Check expiry
+    expires_at = otp_record.get("expires_at")
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+    if expires_at < now:
+        raise HTTPException(status_code=400, detail="OTP has expired")
+    
+    # Check code
+    if otp_record["code"] != data.code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    # Mark as verified
+    await db.otp_verifications.update_one(
+        {"verification_id": data.verification_id},
+        {"$set": {"verified": True, "verified_at": now}}
+    )
+    
+    return {"message": "Phone verified successfully", "verified": True}
+
+@api_router.post("/auth/register")
+async def register_with_otp(data: RegisterWithOtp):
+    """Register a new user after OTP verification"""
+    # Check if email already exists
+    existing = await db.users.find_one({"email": data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Verify phone was verified
+    otp_record = await db.otp_verifications.find_one({
+        "phone": data.phone,
+        "type": "signup",
+        "verified": True
+    })
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Phone number not verified")
+    
+    user_id = str(uuid.uuid4())
+    business_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    # Create user
+    user_doc = {
+        "id": user_id,
+        "email": data.email,
+        "password_hash": hash_password(data.password),
+        "full_name": data.full_name,
+        "phone": data.phone,
+        "role": "owner",
+        "auth_method": data.auth_method,
+        "business_id": business_id,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+        "onboarding_completed": False
+    }
+    await db.users.insert_one(user_doc)
+    
+    # Create business
+    business_doc = {
+        "id": business_id,
+        "owner_id": user_id,
+        "name": data.business_name,
+        "tagline": "",
+        "phone": data.phone,
+        "address": data.address,
+        "logo_url": None,
+        "instagram": None,
+        "availability": [
+            {"day": 1, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 2, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 3, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 4, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 5, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 6, "enabled": False, "slots": []},
+            {"day": 0, "enabled": False, "slots": []}
+        ],
+        "blocked_dates": [],
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.businesses.insert_one(business_doc)
+    
+    # Clean up OTP records
+    await db.otp_verifications.delete_many({"phone": data.phone, "type": "signup"})
+    
+    token = create_token(user_id, data.email, "owner")
+    return {"token": token, "user_id": user_id, "business_id": business_id}
+
+@api_router.post("/auth/google-signup")
+async def google_signup(data: GoogleSignupRequest):
+    """Handle Google OAuth signup"""
+    now = datetime.now(timezone.utc)
+    
+    # Use email from token or provided email
+    email = data.email
+    name = data.name or data.full_name or "User"
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Check if user exists
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        # Login existing user
+        token = create_token(existing["id"], existing["email"], existing["role"])
+        return {"token": token, "user_id": existing["id"], "business_id": existing.get("business_id")}
+    
+    # Create new user
+    user_id = str(uuid.uuid4())
+    business_id = str(uuid.uuid4())
+    
+    user_doc = {
+        "id": user_id,
+        "email": email,
+        "password_hash": hash_password(str(uuid.uuid4())),  # Random password for Google users
+        "full_name": name,
+        "phone": data.phone,
+        "role": "owner",
+        "auth_method": "google",
+        "business_id": business_id,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+        "onboarding_completed": False
+    }
+    await db.users.insert_one(user_doc)
+    
+    # Create business
+    business_name = data.business_name or f"{name}'s Business"
+    business_doc = {
+        "id": business_id,
+        "owner_id": user_id,
+        "name": business_name,
+        "tagline": "",
+        "phone": data.phone,
+        "address": data.address,
+        "logo_url": None,
+        "instagram": None,
+        "availability": [
+            {"day": 1, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 2, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 3, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 4, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 5, "enabled": True, "slots": [{"start": "09:00", "end": "17:00"}]},
+            {"day": 6, "enabled": False, "slots": []},
+            {"day": 0, "enabled": False, "slots": []}
+        ],
+        "blocked_dates": [],
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    await db.businesses.insert_one(business_doc)
+    
+    # Clean up OTP records if any
+    if data.phone:
+        await db.otp_verifications.delete_many({"phone": data.phone, "type": "signup"})
+    
+    token = create_token(user_id, email, "owner")
+    return {"token": token, "user_id": user_id, "business_id": business_id}
+
+# ==================== FORGOT PASSWORD OTP ROUTES ====================
+
+@api_router.post("/auth/forgot-password/send-otp")
+async def forgot_password_send_otp(data: ForgotPasswordOtpRequest):
+    """Send OTP for password reset"""
+    phone = data.phone.strip()
+    
+    # Check if user with this phone exists
+    user = await db.users.find_one({"phone": phone})
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with this phone number")
+    
+    # Generate OTP
+    otp_code = generate_otp_code()
+    verification_id = str(uuid.uuid4())
+    
+    now = datetime.now(timezone.utc)
+    otp_doc = {
+        "verification_id": verification_id,
+        "phone": phone,
+        "user_id": user["id"],
+        "code": otp_code,
+        "type": "password_reset",
+        "verified": False,
+        "created_at": now,
+        "expires_at": now + timedelta(minutes=10)
+    }
+    await db.otp_verifications.insert_one(otp_doc)
+    
+    # Send SMS
+    message = f"Your Rezvo password reset code is: {otp_code}. This code expires in 10 minutes."
+    sms_sent = await send_sms_via_sendly(phone, message)
+    
+    if not sms_sent:
+        logger.info(f"Password reset OTP for {phone}: {otp_code}")
+    
+    return {"verification_id": verification_id, "message": "OTP sent successfully"}
+
+@api_router.post("/auth/forgot-password/verify-otp")
+async def forgot_password_verify_otp(data: VerifyOtpRequest):
+    """Verify OTP for password reset"""
+    now = datetime.now(timezone.utc)
+    
+    otp_record = await db.otp_verifications.find_one({
+        "verification_id": data.verification_id,
+        "phone": data.phone,
+        "type": "password_reset",
+        "verified": False
+    })
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid verification request")
+    
+    expires_at = otp_record.get("expires_at")
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+    if expires_at < now:
+        raise HTTPException(status_code=400, detail="OTP has expired")
+    
+    if otp_record["code"] != data.code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    await db.otp_verifications.update_one(
+        {"verification_id": data.verification_id},
+        {"$set": {"verified": True, "verified_at": now}}
+    )
+    
+    return {"message": "Code verified successfully", "verified": True}
+
+@api_router.post("/auth/forgot-password/reset")
+async def reset_password_with_otp(data: ResetPasswordOtpRequest):
+    """Reset password after OTP verification"""
+    otp_record = await db.otp_verifications.find_one({
+        "verification_id": data.verification_id,
+        "phone": data.phone,
+        "type": "password_reset",
+        "verified": True
+    })
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid or unverified request")
+    
+    # Update user password
+    new_hash = hash_password(data.new_password)
+    result = await db.users.update_one(
+        {"phone": data.phone},
+        {"$set": {"password_hash": new_hash, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Clean up OTP records
+    await db.otp_verifications.delete_many({"phone": data.phone, "type": "password_reset"})
+    
+    return {"message": "Password reset successfully"}
+
+# ==================== ONBOARDING ROUTES ====================
+
+@api_router.post("/business/onboarding")
+async def save_onboarding_data(data: OnboardingData, current_user: dict = Depends(get_current_user)):
+    """Save onboarding wizard data"""
+    user = await db.users.find_one({"id": current_user["sub"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    business_id = user.get("business_id")
+    if not business_id:
+        raise HTTPException(status_code=400, detail="No business found")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Update business
+    update_data = {
+        "business_type": data.business_type,
+        "updated_at": now.isoformat()
+    }
+    if data.address:
+        update_data["address"] = data.address
+    if data.city:
+        update_data["city"] = data.city
+    if data.postcode:
+        update_data["postcode"] = data.postcode
+    
+    await db.businesses.update_one(
+        {"id": business_id},
+        {"$set": update_data}
+    )
+    
+    # Add team members
+    for member in data.team_members:
+        member_id = str(uuid.uuid4())
+        member_doc = {
+            "id": member_id,
+            "business_id": business_id,
+            "name": member.get("name", ""),
+            "role": member.get("role", "Staff"),
+            "email": None,
+            "phone": None,
+            "color": "#00BFA5",
+            "avatar_url": None,
+            "service_ids": [],
+            "working_hours": None,
+            "show_on_booking_page": True,
+            "active": True,
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat()
+        }
+        await db.team_members.insert_one(member_doc)
+    
+    # Mark onboarding as complete
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$set": {"onboarding_completed": True, "updated_at": now.isoformat()}}
+    )
+    
+    return {"message": "Onboarding completed successfully"}
+
 # ==================== BUSINESS ROUTES ====================
 
 @api_router.post("/business")
