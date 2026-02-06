@@ -108,7 +108,7 @@ const LandingPage = () => {
                   Log in
                 </Button>
               </Link>
-              <Link to="/welcome">
+              <Link to="/signup">
                 <Button className="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-6 py-2.5 font-semibold shadow-button hover:shadow-button-hover transition-all btn-press" data-testid="nav-signup-btn">
                   Get started
                 </Button>
