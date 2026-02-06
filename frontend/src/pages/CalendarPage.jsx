@@ -452,7 +452,7 @@ const CalendarPage = () => {
                           const colors = getServiceColor(booking.service_id);
                           const isDragging = draggedBooking?.id === booking.id;
                           const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
-                          const minHeight = Math.max(height, 45); // Minimum 45px for readability
+                          const minHeight = Math.max(height, 70); // Minimum 70px to show all text
                           
                           return (
                             <div
@@ -500,12 +500,10 @@ const CalendarPage = () => {
                                   {booking.client_name}
                                 </div>
                                 
-                                {/* Row 3: Service (only if space) */}
-                                {minHeight > 55 && (
-                                  <div className="text-[11px] text-gray-500 truncate mt-0.5">
-                                    {booking.service_name}
-                                  </div>
-                                )}
+                                {/* Row 3: Service - always show */}
+                                <div className="text-[11px] text-gray-500 truncate mt-0.5">
+                                  {booking.service_name}
+                                </div>
                               </div>
                               
                               {/* Drag handle */}
