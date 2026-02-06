@@ -234,6 +234,52 @@ export default function CalendarScreen({ navigation }) {
     }
   };
 
+  // ROBUST Move booking functions
+  const handleLongPressBooking = (booking) => {
+    setBookingToMove(booking);
+    setMoveMode(true);
+    showToast('Tap a time slot to move this booking');
+  };
+
+  const handleTimeSlotPress = (hour) => {
+    if (!moveMode || !bookingToMove) return;
+    
+    const newDateTime = new Date(selectedDate);
+    newDateTime.setHours(hour, 0, 0, 0);
+    setNewMoveTime(newDateTime);
+    setShowMoveConfirm(true);
+  };
+
+  const confirmMoveBooking = async () => {
+    if (!bookingToMove || !newMoveTime) return;
+    
+    setSaving(true);
+    try {
+      const response = await api.patch(`/bookings/${bookingToMove.id}`, {
+        datetime_iso: newMoveTime.toISOString(),
+        date: newMoveTime.toISOString().split('T')[0],
+        start_time: `${String(newMoveTime.getHours()).padStart(2, '0')}:00`
+      });
+      
+      if (response.data?.status === 'updated') {
+        showToast(`Booking moved to ${newMoveTime.getHours()}:00`);
+        fetchData();
+      }
+    } catch (error) {
+      showToast('Failed to move booking');
+    } finally {
+      setSaving(false);
+      cancelMoveMode();
+    }
+  };
+
+  const cancelMoveMode = () => {
+    setMoveMode(false);
+    setBookingToMove(null);
+    setShowMoveConfirm(false);
+    setNewMoveTime(null);
+  };
+
   const formatDateHeader = (date) => {
     const today = new Date();
     if (date.toDateString() === today.toDateString()) return 'Today';
