@@ -113,6 +113,13 @@ const getDefaultRoute = (user) => {
 function AppRoutes() {
   const { user } = useAuth();
   
+  // CRITICAL: Check URL fragment for session_id synchronously during render
+  // This prevents race conditions by processing new session_id FIRST before checking existing session
+  // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+  if (typeof window !== 'undefined' && window.location.hash?.includes('session_id=')) {
+    return <AuthCallbackPage />;
+  }
+  
   return (
     <Routes>
       {/* Public Routes */}
