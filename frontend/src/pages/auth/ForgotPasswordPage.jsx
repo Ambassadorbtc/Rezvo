@@ -266,9 +266,9 @@ const ForgotPasswordPage = () => {
       <div className="px-6">
         <div className="max-w-sm mx-auto">
           <div className="flex items-center gap-2">
-            <div className={`flex-1 h-1 rounded-full ${step !== 'phone' ? 'bg-teal-500' : 'bg-teal-500'}`} />
-            <div className={`flex-1 h-1 rounded-full ${step === 'otp' || step === 'newPassword' ? 'bg-teal-500' : 'bg-gray-200'}`} />
-            <div className={`flex-1 h-1 rounded-full ${step === 'newPassword' ? 'bg-teal-500' : 'bg-gray-200'}`} />
+            <div className={`flex-1 h-1 rounded-full ${getProgress() >= 1 ? 'bg-teal-500' : 'bg-gray-200'}`} />
+            <div className={`flex-1 h-1 rounded-full ${getProgress() >= 2 ? 'bg-teal-500' : 'bg-gray-200'}`} />
+            <div className={`flex-1 h-1 rounded-full ${getProgress() >= 3 ? 'bg-teal-500' : 'bg-gray-200'}`} />
           </div>
         </div>
       </div>
@@ -276,6 +276,93 @@ const ForgotPasswordPage = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <div className="w-full max-w-sm">
+          {step === 'choose' && (
+            <>
+              <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Lock className="w-8 h-8 text-amber-600" />
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 text-center">
+                Reset your password
+              </h1>
+              <p className="text-gray-500 mb-8 text-center">
+                Choose how you'd like to receive your reset code
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => { setMethod('email'); setStep('email'); }}
+                  className="w-full p-4 bg-white border-2 border-gray-100 rounded-2xl hover:border-teal-500 transition-colors flex items-center gap-4"
+                  data-testid="choose-email-btn"
+                >
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold text-gray-900">Email</p>
+                    <p className="text-sm text-gray-500">Get code via email</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => { setMethod('phone'); setStep('phone'); }}
+                  className="w-full p-4 bg-white border-2 border-gray-100 rounded-2xl hover:border-teal-500 transition-colors flex items-center gap-4"
+                  data-testid="choose-phone-btn"
+                >
+                  <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold text-gray-900">Phone (SMS)</p>
+                    <p className="text-sm text-gray-500">Get code via text message</p>
+                  </div>
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === 'email' && (
+            <>
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Mail className="w-8 h-8 text-blue-600" />
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 text-center">
+                Enter your email
+              </h1>
+              <p className="text-gray-500 mb-8 text-center">
+                We'll send a reset code to your email
+              </p>
+
+              <div className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-14 px-4 bg-white border-2 border-gray-100 rounded-xl text-lg focus:border-teal-500"
+                  data-testid="forgot-email-input"
+                />
+
+                <Button
+                  onClick={handleSendEmailCode}
+                  disabled={loading || !email.includes('@')}
+                  className="w-full h-14 bg-teal-500 hover:bg-teal-600 text-white text-lg font-semibold rounded-2xl shadow-lg shadow-teal-500/30"
+                  data-testid="forgot-send-email-btn"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Code'
+                  )}
+                </Button>
+              </div>
+            </>
+          )}
+
           {step === 'phone' && (
             <>
               <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
