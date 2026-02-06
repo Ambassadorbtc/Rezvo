@@ -520,7 +520,6 @@ const CalendarPage = () => {
               </div>
             </div>
           </div>
-          </div>
         )}
 
         {/* Week View */}
