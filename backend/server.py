@@ -785,6 +785,15 @@ async def create_booking(data: BookingCreate, current_user: dict = Depends(get_c
     booking_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc)
     
+    # Parse datetime_iso to extract date and time
+    booking_datetime = datetime.fromisoformat(data.datetime_iso.replace('Z', '+00:00'))
+    date_str = booking_datetime.strftime('%Y-%m-%d')
+    start_time_str = booking_datetime.strftime('%H:%M')
+    
+    # Calculate end time based on service duration
+    end_datetime = booking_datetime + timedelta(minutes=service.get("duration_min", 60))
+    end_time_str = end_datetime.strftime('%H:%M')
+    
     booking_doc = {
         "id": booking_id,
         "business_id": user["business_id"],
@@ -794,6 +803,9 @@ async def create_booking(data: BookingCreate, current_user: dict = Depends(get_c
         "client_email": data.client_email,
         "client_phone": data.client_phone,
         "datetime": data.datetime_iso,
+        "date": date_str,
+        "start_time": start_time_str,
+        "end_time": end_time_str,
         "duration_min": service["duration_min"],
         "price_pence": service["price_pence"],
         "deposit_required": service["deposit_required"],
