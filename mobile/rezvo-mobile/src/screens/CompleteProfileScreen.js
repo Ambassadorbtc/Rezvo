@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useGlobalToast } from '../context/ToastContext';
-import api from '../services/api';
+import api from '../lib/api';
 
 const TEAL = '#00BFA5';
 
