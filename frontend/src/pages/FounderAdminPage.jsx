@@ -463,18 +463,34 @@ const FounderAdminPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] flex">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}>
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100 flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00BFA5] to-[#00A896] flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-between gap-3 px-6 py-5 border-b border-gray-100 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00BFA5] to-[#00A896] flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-[#0A1626]">Rezvo Admin</h1>
+                <p className="text-xs text-gray-500">Founder Portal</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-[#0A1626]">Rezvo Admin</h1>
-              <p className="text-xs text-gray-500">Founder Portal</p>
-            </div>
+            <button 
+              onClick={() => setSidebarOpen(false)} 
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
           </div>
 
           {/* Navigation */}
@@ -482,7 +498,10 @@ const FounderAdminPage = () => {
             {navItems.map(item => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setSidebarOpen(false); // Close sidebar on mobile after selection
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   activeTab === item.id 
                     ? 'bg-[#00BFA5] text-white shadow-md shadow-[#00BFA5]/20' 
@@ -529,22 +548,22 @@ const FounderAdminPage = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen">
+      <main className="flex-1 min-h-screen w-full lg:w-auto">
         {/* Top Header */}
-        <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-4">
+        <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
                 <Menu className="w-5 h-5 text-gray-600" />
               </button>
-              <h2 className="text-xl font-bold text-[#0A1626] capitalize">{activeTab}</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-[#0A1626] capitalize truncate">{activeTab.replace('-', ' ')}</h2>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Button variant="outline" size="sm" onClick={loadData} className="border-gray-200 text-gray-600 rounded-lg">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
+                <RefreshCw className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
-              <Button variant="outline" size="sm" className="border-gray-200 text-gray-600 rounded-lg">
+              <Button variant="outline" size="sm" className="hidden sm:flex border-gray-200 text-gray-600 rounded-lg">
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
