@@ -39,6 +39,8 @@ const SignupAuthPage = () => {
     sessionStorage.setItem('signup_user_type', 'business');
     sessionStorage.setItem('auth_method', 'google');
     
+    // Redirect to Emergent Auth - after auth, it will redirect to /auth-callback
+    // Then /auth-callback will redirect to /signup/profile to fill business details
     const redirectUrl = window.location.origin + '/auth-callback';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
