@@ -120,6 +120,16 @@ function AppRoutes() {
       <Route path="/" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LandingPage />} />
       <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LoginPage />} />
       <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupPage />} />
+      
+      {/* New Auth Flow Routes */}
+      <Route path="/welcome" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <WelcomePage />} />
+      <Route path="/get-started" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <UserTypeSelectPage />} />
+      <Route path="/verify-phone" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <PhoneVerifyPage />} />
+      <Route path="/complete-profile" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <CompleteProfilePage />} />
+      <Route path="/onboarding-wizard" element={<ProtectedRoute><OnboardingWizardPage /></ProtectedRoute>} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/auth-callback" element={<AuthCallbackPage />} />
+      
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/b/:shortCode" element={<ShortLinkRedirect />} />
       <Route path="/mobile-preview" element={<MobilePreview />} />
