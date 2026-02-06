@@ -1,0 +1,125 @@
+{
+  "summary": "Iteration 20 - Tested all P1/P2 fixes: Calendar drag-drop with confirmation dialog, booking position calculation (hour 6 start), backend datetime sync, support chat Rezvo logo, and faster polling. All features working correctly.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "passed_tests": [
+    "Backend: PATCH /api/bookings/{id} - datetime_iso updates date, start_time, end_time correctly",
+    "Backend: Booking at 6AM stored with correct start_time=06:00",
+    "Backend: Booking at 9AM stored with correct start_time=09:00",
+    "Backend: Booking date change updates all datetime fields",
+    "Backend: Conversations endpoint responds < 2s (suitable for polling)",
+    "Backend: Messages endpoint responds < 2s (suitable for polling)",
+    "Frontend: Calendar page loads with hour 6 as first row",
+    "Frontend: Booking card displays at correct position (09:00 booking at 09:00 row)",
+    "Frontend: Drag-drop shows confirmation dialog with From/To times",
+    "Frontend: Confirm Move button updates booking and shows success toast",
+    "Frontend: Cancel button on move dialog cancels the operation",
+    "Frontend: Support chat shows Rezvo 'R' logo on admin messages",
+    "Frontend: User messages appear on right side (teal background)",
+    "Frontend: Admin messages appear on left side with 'R' avatar"
+  ],
+  
+  "failed_tests": [],
+  
+  "features_verified": {
+    "calendar_position_fix": {
+      "web": "Working - Calendar starts at hour 6, position calculated as (bookingHours - 6) * HOUR_HEIGHT",
+      "mobile": "Working - Same fix applied in CalendarScreen.js line 176",
+      "verification": "Booking at 09:00 displays at correct row (3rd row from top)"
+    },
+    "drag_drop_confirmation": {
+      "drag_start": "Working - Booking becomes draggable with visual feedback",
+      "drop_target": "Working - Time slots highlight on drag over",
+      "confirmation_dialog": "Working - Shows service name, client name, From/To times",
+      "confirm_move": "Working - Updates booking via PATCH /api/bookings/{id}",
+      "cancel_move": "Working - Cancels operation, shows 'Move cancelled' toast",
+      "success_toast": "Working - Shows 'Booking moved to X:XX AM/PM, Day Date'"
+    },
+    "backend_datetime_sync": {
+      "datetime_iso_update": "Working - Updates datetime field",
+      "date_sync": "Working - Recalculates date from new datetime",
+      "start_time_sync": "Working - Recalculates start_time from new datetime",
+      "end_time_sync": "Working - Recalculates end_time based on duration_min"
+    },
+    "support_chat_rezvo_logo": {
+      "admin_messages": "Working - Shows teal 'R' circle avatar on left side",
+      "user_messages": "Working - Shows on right side with teal background",
+      "conversation_list": "Working - Shows 'R' avatar for support tickets"
+    },
+    "support_chat_polling": {
+      "conversations_polling": "Working - 3 second interval (line 61)",
+      "messages_polling": "Working - 2 second interval (line 69)",
+      "response_time": "Working - Both endpoints respond < 2s"
+    },
+    "mobile_calendar_move": {
+      "long_press": "Implemented - handleLongPressBooking function",
+      "move_mode": "Implemented - Shows toast 'Tap a time slot to move'",
+      "confirmation_dialog": "Implemented - showMoveConfirm state",
+      "confirm_move": "Implemented - confirmMoveBooking function"
+    }
+  },
+  
+  "test_report_links": [
+    "/app/backend/tests/test_booking_dragdrop.py",
+    "/app/test_reports/pytest/pytest_results_iter20.xml"
+  ],
+  
+  "action_items": [],
+  
+  "critical_code_review_comments": [
+    "Calendar position calculation correctly uses (bookingHours - 6) * HOUR_HEIGHT for both web and mobile",
+    "Drag-drop uses pendingMove state to store move details before confirmation - prevents accidental data loss",
+    "Backend PATCH /api/bookings/{id} correctly recalculates date, start_time, end_time when datetime_iso changes",
+    "Support chat polling intervals are appropriate: 3s for conversations, 2s for messages",
+    "Rezvo logo implementation uses is_admin flag to determine message sender type"
+  ],
+  
+  "updated_files": [
+    "/app/backend/tests/test_booking_dragdrop.py"
+  ],
+  
+  "success_rate": {
+    "backend": "100% (6/6 tests passed)",
+    "frontend": "100% (all UI flows working)"
+  },
+  
+  "test_credentials": {
+    "business_owner": {
+      "email": "emailuser@test.com",
+      "password": "Test1234!"
+    },
+    "founder_admin": {
+      "email": "founder@rezvo.app",
+      "password": "Founder123!"
+    }
+  },
+  
+  "seed_data_creation": "Created test bookings for drag-drop testing, support ticket with admin reply for Rezvo logo verification",
+  
+  "retest_needed": false,
+  
+  "should_main_agent_self_test": false,
+  
+  "context_for_next_testing_agent": "All P1/P2 fixes verified: 1) Calendar booking position now calculates from hour 6 (first displayed hour). 2) Drag-drop shows confirmation dialog before moving - booking is NEVER lost during move. 3) Backend correctly syncs date/start_time/end_time when datetime_iso changes. 4) Support chat shows Rezvo 'R' logo on admin messages. 5) Chat polling is 2-3 seconds for near real-time feel. Mobile calendar has same fixes applied.",
+  
+  "screenshots_taken": [
+    ".screenshots/calendar_page_logged_in.png",
+    ".screenshots/calendar_with_booking.png",
+    ".screenshots/after_drag.png",
+    ".screenshots/move_confirmation_dialog.png",
+    ".screenshots/after_move_confirmed.png",
+    ".screenshots/support_page.png",
+    ".screenshots/support_ticket_submitted.png",
+    ".screenshots/support_with_admin_reply.png"
+  ]
+}
