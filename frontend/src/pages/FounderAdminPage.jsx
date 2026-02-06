@@ -651,12 +651,12 @@ const FounderAdminPage = () => {
               </div>
 
               {/* Charts Row */}
-              <div className="grid lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Activity Chart */}
                 <Card className="lg:col-span-2 bg-white rounded-2xl shadow-sm border-0">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-semibold text-[#0A1626]">Weekly Overview</CardTitle>
-                    <CardDescription>Bookings and user signups over the last 7 days</CardDescription>
+                  <CardHeader className="pb-4 px-4 sm:px-6">
+                    <CardTitle className="text-base sm:text-lg font-semibold text-[#0A1626]">Weekly Overview</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Bookings over the last 7 days</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <WeeklyChart data={analytics?.daily} />
