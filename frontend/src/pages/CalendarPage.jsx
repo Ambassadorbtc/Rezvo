@@ -824,6 +824,51 @@ const CalendarPage = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Move Confirmation Dialog - CRITICAL for preventing accidental moves */}
+        <Dialog open={showMoveConfirm} onOpenChange={(open) => !open && cancelMove()}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <GripVertical className="w-5 h-5 text-teal-500" />
+                Confirm Move
+              </DialogTitle>
+            </DialogHeader>
+            {pendingMove && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-xl">
+                  <p className="font-semibold text-gray-900 mb-2">{pendingMove.booking.service_name}</p>
+                  <p className="text-sm text-gray-600">{pendingMove.booking.client_name}</p>
+                  
+                  <div className="mt-4 flex items-center gap-2">
+                    <div className="flex-1 text-center p-2 bg-white rounded-lg border">
+                      <p className="text-xs text-gray-500">From</p>
+                      <p className="font-medium text-gray-700">{format(new Date(pendingMove.originalDateTime), 'h:mm a')}</p>
+                      <p className="text-xs text-gray-500">{format(new Date(pendingMove.originalDateTime), 'EEE, d MMM')}</p>
+                    </div>
+                    <div className="text-gray-400">→</div>
+                    <div className="flex-1 text-center p-2 bg-teal-50 rounded-lg border border-teal-200">
+                      <p className="text-xs text-teal-600">To</p>
+                      <p className="font-medium text-teal-700">{format(pendingMove.newDateTime, 'h:mm a')}</p>
+                      <p className="text-xs text-teal-600">{format(pendingMove.newDateTime, 'EEE, d MMM')}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={cancelMove} className="flex-1 rounded-xl">
+                    <X className="w-4 h-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button onClick={confirmMove} className="flex-1 rounded-xl bg-teal-500 hover:bg-teal-600">
+                    <Check className="w-4 h-4 mr-2" />
+                    Confirm Move
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
