@@ -70,6 +70,47 @@ const ForgotPasswordPage = () => {
     }
   };
 
+  const handleSendEmailCode = async () => {
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post('/auth/forgot-password', { email });
+      setStep('emailCode');
+      setResendTimer(60);
+      toast.success('Reset code sent to your email!');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to send reset code');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyEmailCode = async () => {
+    const code = otp.join('');
+    if (code.length !== 6) {
+      toast.error('Please enter the complete 6-digit code');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await api.post('/auth/verify-reset-code', { email, code });
+      setResetToken(response.data.reset_token);
+      toast.success('Code verified!');
+      setStep('newPassword');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Invalid verification code');
+      setOtp(['', '', '', '', '', '']);
+      otpInputRefs.current[0]?.focus();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
     
