@@ -114,10 +114,16 @@ export default function CompleteProfileScreen({ navigation, route }) {
         auth_method: 'email'
       });
 
-      showToast('Account created successfully!', 'success');
+      showToast('Account created! Now select your business type', 'success');
       
-      // Login with the returned token
-      await login(formData.email, formData.password, 'business');
+      // Store token temporarily and navigate to BusinessType screen
+      if (response.data?.token) {
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        await AsyncStorage.setItem('rezvo_token', response.data.token);
+      }
+      
+      // Navigate to Business Type selection
+      navigation.navigate('BusinessType');
       
     } catch (error) {
       showToast(error.response?.data?.detail || 'Failed to create account', 'error');
