@@ -206,9 +206,13 @@ const ForgotPasswordPage = () => {
     
     setLoading(true);
     try {
-      const fullNumber = `${countryCode}${phoneNumber}`;
-      const response = await api.post('/auth/forgot-password/send-otp', { phone: fullNumber });
-      setVerificationId(response.data.verification_id);
+      if (method === 'phone') {
+        const fullNumber = `${countryCode}${phoneNumber}`;
+        const response = await api.post('/auth/forgot-password/send-otp', { phone: fullNumber });
+        setVerificationId(response.data.verification_id);
+      } else {
+        await api.post('/auth/forgot-password', { email });
+      }
       setResendTimer(60);
       setOtp(['', '', '', '', '', '']);
       toast.success('New code sent!');
@@ -220,9 +224,19 @@ const ForgotPasswordPage = () => {
   };
 
   const getBackAction = () => {
+    if (step === 'phone' || step === 'email') return () => { setStep('choose'); setMethod(null); };
     if (step === 'otp') return () => setStep('phone');
-    if (step === 'newPassword') return () => setStep('otp');
+    if (step === 'emailCode') return () => setStep('email');
+    if (step === 'newPassword') return () => setStep(method === 'phone' ? 'otp' : 'emailCode');
     return undefined;
+  };
+
+  const getProgress = () => {
+    if (step === 'choose') return 0;
+    if (step === 'phone' || step === 'email') return 1;
+    if (step === 'otp' || step === 'emailCode') return 2;
+    if (step === 'newPassword') return 3;
+    return 0;
   };
 
   return (
