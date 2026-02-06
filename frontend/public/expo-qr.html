@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rezvo - Expo QR Code</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0A1626 0%, #1a2d42 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            padding: 20px;
         }
         .container {
-            text-align: center;
-            padding: 40px;
-            background: rgba(255,255,255,0.05);
+            background: white;
             border-radius: 24px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 40px;
+            text-align: center;
             max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
         }
         .logo {
             display: flex;
@@ -34,96 +33,77 @@
         .logo-icon {
             width: 48px;
             height: 48px;
-            background: #14b8a6;
+            background: #00BFA5;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             font-weight: bold;
             font-size: 24px;
         }
-        .logo-text { font-size: 28px; font-weight: 600; }
-        h1 { font-size: 20px; font-weight: 500; margin-bottom: 8px; color: #94a3b8; }
-        .qr-container {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin: 24px 0;
+        .logo-text { font-size: 28px; font-weight: 700; color: #0A1626; }
+        h1 { font-size: 20px; color: #0A1626; margin-bottom: 8px; }
+        p { color: #627D98; font-size: 14px; margin-bottom: 24px; }
+        #qrcode { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 16px; 
             display: inline-block;
-        }
-        #qrcode img { display: block; }
-        .url {
-            background: rgba(20, 184, 166, 0.2);
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            color: #5eead4;
-            word-break: break-all;
             margin-bottom: 24px;
         }
-        .instructions {
-            text-align: left;
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
+        #qrcode canvas { display: block; }
+        .expo-url {
+            background: #f0fdf9;
+            border: 2px solid #00BFA5;
             border-radius: 12px;
-            margin-top: 20px;
-        }
-        .instructions h3 { font-size: 14px; color: #14b8a6; margin-bottom: 12px; }
-        .instructions ol { padding-left: 20px; color: #94a3b8; font-size: 13px; line-height: 1.8; }
-        .badge {
-            display: inline-block;
-            background: #14b8a6;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 12px 16px;
+            font-family: monospace;
             font-size: 12px;
+            color: #0A1626;
+            word-break: break-all;
             margin-bottom: 16px;
         }
+        .instructions {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+        }
+        .instructions h3 { font-size: 14px; color: #0A1626; margin-bottom: 12px; }
+        .instructions ol { padding-left: 20px; color: #627D98; font-size: 13px; }
+        .instructions li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">
             <div class="logo-icon">R</div>
-            <span class="logo-text">rezvo</span>
+            <span class="logo-text">Rezvo</span>
         </div>
-        <span class="badge">Development Build</span>
-        <h1>Scan to open in Expo Go</h1>
-        <div class="qr-container">
-            <div id="qrcode"></div>
-        </div>
-        <div class="url" id="expo-url"></div>
+        <h1>Scan to Open in Expo Go</h1>
+        <p>Use your phone's camera or Expo Go app to scan</p>
+        <div id="qrcode"></div>
+        <div class="expo-url" id="expoUrl">Loading...</div>
         <div class="instructions">
-            <h3>How to connect:</h3>
+            <h3>📱 How to connect:</h3>
             <ol>
-                <li>Install <strong>Expo Go</strong> from App Store or Play Store</li>
-                <li>Open Expo Go on your device</li>
-                <li>Scan the QR code above</li>
-                <li>The app will load on your device</li>
-            </ol>
-        </div>
-        <div class="instructions" style="margin-top: 16px; background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(20, 184, 166, 0.3);">
-            <h3 style="color: #14b8a6;">To send a support message:</h3>
-            <ol>
-                <li>Login with: <strong>testuser@example.com / password123</strong></li>
-                <li>Go to <strong>Settings</strong> tab (gear icon)</li>
-                <li>Scroll down and tap <strong>"Contact Support"</strong></li>
-                <li>Create a new ticket with subject and message</li>
+                <li>Download <strong>Expo Go</strong> from App Store or Play Store</li>
+                <li>Open Expo Go and tap <strong>"Scan QR Code"</strong></li>
+                <li>Point your camera at the QR code above</li>
             </ol>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-        const expoUrl = 'exp://ql4irje-anonymous-8081.exp.direct';
-        document.getElementById('expo-url').textContent = expoUrl;
-        new QRCode(document.getElementById('qrcode'), {
-            text: expoUrl,
+        const expoUrl = 'exp://x-pynq4-anonymous-8081.exp.direct';
+        document.getElementById('expoUrl').textContent = expoUrl;
+        QRCode.toCanvas(document.createElement('canvas'), expoUrl, { 
             width: 200,
-            height: 200,
-            colorDark: '#0f172a',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
+            margin: 0,
+            color: { dark: '#0A1626', light: '#ffffff' }
+        }, function(error, canvas) {
+            if (error) console.error(error);
+            document.getElementById('qrcode').appendChild(canvas);
         });
     </script>
 </body>
