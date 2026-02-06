@@ -34,6 +34,8 @@ import SignupPhoneVerifyPage from "./pages/auth/SignupPhoneVerifyPage";
 import SignupBusinessTypePage from "./pages/auth/SignupBusinessTypePage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+import CancelBookingPage from "./pages/booking/CancelBookingPage";
+import RescheduleBookingPage from "./pages/booking/RescheduleBookingPage";
 
 import "./App.css";
 
