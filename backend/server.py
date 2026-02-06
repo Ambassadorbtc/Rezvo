@@ -709,6 +709,24 @@ async def register_with_otp(data: RegisterWithOtp):
     token = create_token(user_id, data.email, "owner")
     return {"token": token, "user_id": user_id, "business_id": business_id}
 
+@api_router.get("/auth/emergent-session/{session_id}")
+async def get_emergent_session(session_id: str):
+    """Proxy endpoint to fetch user data from Emergent Auth (avoids CORS issues)"""
+    try:
+        response = http_requests.get(
+            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+            headers={"X-Session-ID": session_id},
+            timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Emergent Auth error: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=response.status_code, detail="Failed to verify session")
+    except http_requests.RequestException as e:
+        logger.error(f"Failed to reach Emergent Auth: {str(e)}")
+        raise HTTPException(status_code=500, detail="Authentication service unavailable")
+
 @api_router.post("/auth/google-signup")
 async def google_signup(data: GoogleSignupRequest):
     """Handle Google OAuth signup"""
