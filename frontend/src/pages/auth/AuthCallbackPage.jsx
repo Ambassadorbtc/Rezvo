@@ -83,8 +83,10 @@ const AuthCallbackPage = () => {
           auth_method: 'google'
         });
 
-        // Store JWT token
-        localStorage.setItem('token', response.data.token);
+        // Store JWT token - MUST use 'rezvo_token' key to match AuthContext
+        localStorage.setItem('rezvo_token', response.data.token);
+        // Also clear any cached user data so AuthContext fetches fresh
+        localStorage.removeItem('rezvo_user');
         
         // Clear signup session data
         sessionStorage.removeItem('auth_method');
