@@ -27,6 +27,15 @@ import TeamPage from "./pages/TeamPage";
 import SupportPage from "./pages/SupportPage";
 import CookieConsent from "./components/CookieConsent";
 
+// New Auth Flow Pages
+import WelcomePage from "./pages/auth/WelcomePage";
+import UserTypeSelectPage from "./pages/auth/UserTypeSelectPage";
+import PhoneVerifyPage from "./pages/auth/PhoneVerifyPage";
+import CompleteProfilePage from "./pages/auth/CompleteProfilePage";
+import OnboardingWizardPage from "./pages/auth/OnboardingWizardPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+
 import "./App.css";
 
 // Protected Route wrapper for business owners
