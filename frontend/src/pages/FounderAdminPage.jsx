@@ -1518,6 +1518,197 @@ const FounderAdminPage = () => {
               </Card>
             </div>
           )}
+
+          {/* Platform Settings Tab */}
+          {activeTab === 'platform' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+              {/* Branding Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5" />
+                    Company Branding
+                  </CardTitle>
+                  <CardDescription>
+                    Customize the platform's appearance and branding
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Company Name</label>
+                      <Input
+                        value={platformSettings.company_name}
+                        onChange={(e) => setPlatformSettings(prev => ({ ...prev, company_name: e.target.value }))}
+                        placeholder="Rezvo"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Primary Color</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={platformSettings.primary_color}
+                          onChange={(e) => setPlatformSettings(prev => ({ ...prev, primary_color: e.target.value }))}
+                          className="w-12 h-10 rounded cursor-pointer"
+                        />
+                        <Input
+                          value={platformSettings.primary_color}
+                          onChange={(e) => setPlatformSettings(prev => ({ ...prev, primary_color: e.target.value }))}
+                          placeholder="#00BFA5"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Company Logo URL</label>
+                    <Input
+                      value={platformSettings.company_logo}
+                      onChange={(e) => setPlatformSettings(prev => ({ ...prev, company_logo: e.target.value }))}
+                      placeholder="https://example.com/logo.png"
+                    />
+                    {platformSettings.company_logo && (
+                      <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+                        <img 
+                          src={platformSettings.company_logo} 
+                          alt="Logo preview" 
+                          className="h-12 object-contain"
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* General Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="w-5 h-5" />
+                    General Settings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Support Email</label>
+                      <Input
+                        value={platformSettings.support_email}
+                        onChange={(e) => setPlatformSettings(prev => ({ ...prev, support_email: e.target.value }))}
+                        placeholder="support@rezvo.app"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Default Currency</label>
+                      <select
+                        value={platformSettings.default_currency}
+                        onChange={(e) => setPlatformSettings(prev => ({ ...prev, default_currency: e.target.value }))}
+                        className="w-full px-3 py-2 border rounded-lg"
+                      >
+                        <option value="GBP">GBP (£)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Default Timezone</label>
+                    <select
+                      value={platformSettings.timezone}
+                      onChange={(e) => setPlatformSettings(prev => ({ ...prev, timezone: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      <option value="Europe/London">Europe/London (GMT)</option>
+                      <option value="America/New_York">America/New_York (EST)</option>
+                      <option value="America/Los_Angeles">America/Los_Angeles (PST)</option>
+                      <option value="Europe/Paris">Europe/Paris (CET)</option>
+                      <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                    </select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Team Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Admin Team
+                  </CardTitle>
+                  <CardDescription>
+                    Manage platform administrators and their roles
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {/* Current admin */}
+                    <div className="flex items-center justify-between p-3 bg-teal-50 rounded-lg border border-teal-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold">
+                          {user?.email?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium">{user?.email}</p>
+                          <p className="text-sm text-teal-600">Super Admin (You)</p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 bg-teal-500 text-white text-xs rounded-full">Owner</span>
+                    </div>
+                    
+                    {/* Add admin button */}
+                    <Button variant="outline" className="w-full">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Administrator
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Danger Zone */}
+              <Card className="border-red-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-600">
+                    <AlertTriangle className="w-5 h-5" />
+                    Danger Zone
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+                    <div>
+                      <p className="font-medium text-red-600">Reset Platform Data</p>
+                      <p className="text-sm text-gray-500">Clear all test data and reset to defaults</p>
+                    </div>
+                    <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50">
+                      Reset
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+                    <div>
+                      <p className="font-medium text-red-600">Export All Data</p>
+                      <p className="text-sm text-gray-500">Download a complete backup of all platform data</p>
+                    </div>
+                    <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Save Button */}
+              <Button 
+                onClick={() => toast.success('Platform settings saved')}
+                className="w-full bg-teal-500 hover:bg-teal-600"
+                disabled={savingPlatformSettings}
+              >
+                {savingPlatformSettings ? 'Saving...' : 'Save All Settings'}
+              </Button>
+            </div>
+          )}
         </div>
       </main>
 
