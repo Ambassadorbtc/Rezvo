@@ -624,8 +624,8 @@ const SupportPage = () => {
                         return (
                           <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} group`}>
                             {!isOwn && (
-                              <div className="w-7 h-7 bg-[#3B82F6] rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1">
-                                <User className="w-3.5 h-3.5 text-white" />
+                              <div className="w-7 h-7 bg-teal-500 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 shadow-sm">
+                                <span className="text-white font-bold text-xs">R</span>
                               </div>
                             )}
                             
