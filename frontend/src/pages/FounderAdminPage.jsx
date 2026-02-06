@@ -182,6 +182,15 @@ const FounderAdminPage = () => {
     }
   });
   const [savingChatSettings, setSavingChatSettings] = useState(false);
+  const [platformSettings, setPlatformSettings] = useState({
+    company_name: 'Rezvo',
+    company_logo: '',
+    primary_color: '#00BFA5',
+    support_email: 'support@rezvo.app',
+    default_currency: 'GBP',
+    timezone: 'Europe/London',
+  });
+  const [savingPlatformSettings, setSavingPlatformSettings] = useState(false);
   const itemsPerPage = 10;
 
   // Scroll to bottom when messages change
