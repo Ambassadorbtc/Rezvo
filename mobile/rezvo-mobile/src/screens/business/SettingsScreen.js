@@ -375,6 +375,34 @@ export default function SettingsScreen({ navigation }) {
             </View>
             <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('ShareLink')}
+          >
+            <View style={styles.menuIcon}>
+              <Ionicons name="qr-code-outline" size={20} color={TEAL} />
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Share Booking Link</Text>
+              <Text style={styles.menuSubtext}>QR code & share options</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('Products')}
+          >
+            <View style={styles.menuIcon}>
+              <Ionicons name="cube-outline" size={20} color={TEAL} />
+            </View>
+            <View style={styles.menuContent}>
+              <Text style={styles.menuText}>Products</Text>
+              <Text style={styles.menuSubtext}>Sell products to customers</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#C1C7CD" />
+          </TouchableOpacity>
         </View>
 
         {/* Notifications */}
