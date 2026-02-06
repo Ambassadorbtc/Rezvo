@@ -86,7 +86,8 @@ const CalendarPage = () => {
     const date = new Date(booking.datetime);
     const bookingHours = date.getHours();
     const minutes = date.getMinutes();
-    const top = (bookingHours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
+    // Calculate from hour 6 (first hour displayed) - CRITICAL FIX
+    const top = (bookingHours - 6) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
     const height = (booking.duration_min / 60) * HOUR_HEIGHT;
     return { top, height: Math.max(height, 48) };
   };
