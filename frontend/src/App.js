@@ -27,12 +27,11 @@ import TeamPage from "./pages/TeamPage";
 import SupportPage from "./pages/SupportPage";
 import CookieConsent from "./components/CookieConsent";
 
-// New Auth Flow Pages
-import WelcomePage from "./pages/auth/WelcomePage";
-import UserTypeSelectPage from "./pages/auth/UserTypeSelectPage";
-import PhoneVerifyPage from "./pages/auth/PhoneVerifyPage";
-import CompleteProfilePage from "./pages/auth/CompleteProfilePage";
-import OnboardingWizardPage from "./pages/auth/OnboardingWizardPage";
+// New Auth Flow Pages (TailAdmin style)
+import SignupAuthPage from "./pages/auth/SignupAuthPage";
+import SignupProfilePage from "./pages/auth/SignupProfilePage";
+import SignupPhoneVerifyPage from "./pages/auth/SignupPhoneVerifyPage";
+import SignupBusinessTypePage from "./pages/auth/SignupBusinessTypePage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 
