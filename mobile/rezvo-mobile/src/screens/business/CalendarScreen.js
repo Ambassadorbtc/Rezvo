@@ -42,6 +42,12 @@ export default function CalendarScreen({ navigation }) {
   const [toastMessage, setToastMessage] = useState('');
   const scrollViewRef = useRef(null);
   
+  // Move booking state - ROBUST implementation
+  const [moveMode, setMoveMode] = useState(false);
+  const [bookingToMove, setBookingToMove] = useState(null);
+  const [showMoveConfirm, setShowMoveConfirm] = useState(false);
+  const [newMoveTime, setNewMoveTime] = useState(null);
+  
   // Form state
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
