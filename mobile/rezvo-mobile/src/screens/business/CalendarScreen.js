@@ -887,6 +887,7 @@ const styles = StyleSheet.create({
   selectedDayNumberText: { color: '#FFF' },
   todayNumberText: { color: TEAL },
   dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: TEAL, marginTop: 4 },
+  teamHeaderCell: { height: 70, alignItems: 'center', justifyContent: 'center', paddingVertical: 8, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   teamHeader: { paddingHorizontal: 16, paddingBottom: 8, flexDirection: 'row' },
   teamColumn: { alignItems: 'center', paddingVertical: 8 },
   memberAvatar: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginBottom: 4, overflow: 'hidden' },
