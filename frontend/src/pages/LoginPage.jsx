@@ -231,7 +231,7 @@ const LoginPage = () => {
                 <p className="text-navy-500 text-sm">
                   Don't have an account?{' '}
                   <Link 
-                    to="/signup" 
+                    to="/welcome" 
                     className="text-teal-600 hover:text-teal-700 font-semibold"
                     data-testid="signup-link"
                   >
