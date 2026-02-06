@@ -433,7 +433,7 @@ export default function SettingsScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => navigation.navigate('SupportChat')}
+            onPress={() => navigation.navigate('ContactSupport')}
           >
             <View style={styles.menuIcon}>
               <Ionicons name="chatbubble-outline" size={20} color={TEAL} />
