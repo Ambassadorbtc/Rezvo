@@ -332,6 +332,7 @@ class RegisterWithOtp(BaseModel):
 
 class GoogleSignupRequest(BaseModel):
     google_token: str
+    google_id: Optional[str] = None  # Google's unique user ID (sub)
     email: Optional[str] = None
     name: Optional[str] = None
     full_name: Optional[str] = None
