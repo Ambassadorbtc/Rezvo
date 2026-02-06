@@ -99,18 +99,19 @@ const AuthCallbackPage = () => {
         // If profile was filled, go to phone verify, otherwise go to profile
         const hasProfile = profile.fullName && profile.businessName;
         
+        // Use window.location for hard redirect to avoid auth context race conditions
         setTimeout(() => {
           if (hasProfile) {
             // Profile filled, go to phone verification
-            navigate('/signup/verify-phone');
+            window.location.href = '/signup/verify-phone';
           } else {
-            // Need to fill profile first
+            // Need to fill profile first - store Google user info
             sessionStorage.setItem('auth_method', 'google');
             sessionStorage.setItem('google_user_email', userInfo.email);
             sessionStorage.setItem('google_user_name', userInfo.name || '');
-            navigate('/signup/profile');
+            window.location.href = '/signup/profile';
           }
-        }, 1000);
+        }, 1500);
 
       } catch (error) {
         console.error('Auth callback error:', error);
