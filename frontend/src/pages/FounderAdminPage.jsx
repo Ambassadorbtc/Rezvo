@@ -420,6 +420,7 @@ const FounderAdminPage = () => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'inbox', label: 'Support Inbox', icon: Mail },
     { id: 'chat-settings', label: 'Live Chat Settings', icon: Settings },
+    { id: 'platform', label: 'Platform Settings', icon: Shield },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'businesses', label: 'Businesses', icon: Building2 },
     { id: 'bookings', label: 'Bookings', icon: Calendar },
