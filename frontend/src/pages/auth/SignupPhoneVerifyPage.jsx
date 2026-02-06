@@ -168,7 +168,9 @@ const SignupPhoneVerifyPage = () => {
         auth_method: 'email'
       });
       
-      localStorage.setItem('token', response.data.token);
+      // MUST use 'rezvo_token' key to match AuthContext
+      localStorage.setItem('rezvo_token', response.data.token);
+      localStorage.removeItem('rezvo_user'); // Clear cached user
     }
     
     // Clear session data

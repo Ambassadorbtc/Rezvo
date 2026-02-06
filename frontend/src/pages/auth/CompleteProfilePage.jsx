@@ -89,8 +89,9 @@ const CompleteProfilePage = () => {
         auth_method: 'email'
       });
 
-      // Store token and navigate to onboarding
-      localStorage.setItem('token', response.data.token);
+      // Store token and navigate to onboarding - MUST use 'rezvo_token' key
+      localStorage.setItem('rezvo_token', response.data.token);
+      localStorage.removeItem('rezvo_user'); // Clear cached user
       sessionStorage.setItem('new_signup', 'true');
       
       // Clear signup session data
