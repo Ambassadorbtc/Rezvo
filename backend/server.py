@@ -551,10 +551,9 @@ async def get_business_stats(current_user: dict = Depends(get_current_user)):
     # Pending bookings
     pending_bookings = [b for b in all_bookings if b.get("status") == "pending"]
     
-    # This month's revenue (completed bookings)
-    this_month = today.replace(day=1)
-    month_bookings = [b for b in all_bookings if b.get("status") == "completed" and b.get("datetime", "") >= this_month.isoformat()]
-    revenue = sum(b.get("price_pence", 0) for b in month_bookings)
+    # Revenue from confirmed/completed bookings (same as web dashboard)
+    completed_bookings = [b for b in all_bookings if b.get("status") in ["confirmed", "completed"]]
+    revenue = sum(b.get("price_pence", 0) for b in completed_bookings)
     
     # Total customers (unique emails)
     unique_customers = len(set(b.get("client_email") for b in all_bookings if b.get("client_email")))
@@ -564,7 +563,8 @@ async def get_business_stats(current_user: dict = Depends(get_current_user)):
         "pending_count": len(pending_bookings),
         "revenue_pence": revenue,
         "total_bookings": len(all_bookings),
-        "total_customers": unique_customers
+        "total_customers": unique_customers,
+        "completed_bookings": len(completed_bookings)
     }
 
 @api_router.patch("/business")
