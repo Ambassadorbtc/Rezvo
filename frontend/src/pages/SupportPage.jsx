@@ -633,7 +633,7 @@ const SupportPage = () => {
                               <div className={`rounded-2xl px-3 py-2 ${
                                 isOwn
                                   ? 'bg-teal-500 text-white'
-                                  : 'bg-[#3B82F6] text-white'
+                                  : 'bg-gradient-to-r from-teal-600 to-teal-500 text-white'
                               }`}>
                                 {isEditing ? (
                                   <div className="space-y-2">
