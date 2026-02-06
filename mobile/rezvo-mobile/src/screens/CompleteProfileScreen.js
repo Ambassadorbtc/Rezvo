@@ -52,7 +52,7 @@ export default function CompleteProfileScreen({ navigation, route }) {
     try {
       // Store form data for after Google auth callback
       // In a real app, you'd use deep linking to handle the callback
-      const webAuthUrl = 'https://bizbook-27.preview.emergentagent.com/auth-callback';
+      const webAuthUrl = 'https://rez-services.preview.emergentagent.com/auth-callback';
       const googleAuthUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(webAuthUrl)}`;
       
       // Open Google auth in browser

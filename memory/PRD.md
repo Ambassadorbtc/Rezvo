@@ -104,7 +104,7 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 - **Business Owner:** testuser@example.com / password123
 
 ## Key URLs
-- Web App: https://bizbook-27.preview.emergentagent.com
-- Welcome Page: https://bizbook-27.preview.emergentagent.com/welcome
-- Expo QR: https://bizbook-27.preview.emergentagent.com/expo-qr.html
-- API Base: https://bizbook-27.preview.emergentagent.com/api
+- Web App: https://rez-services.preview.emergentagent.com
+- Welcome Page: https://rez-services.preview.emergentagent.com/welcome
+- Expo QR: https://rez-services.preview.emergentagent.com/expo-qr.html
+- API Base: https://rez-services.preview.emergentagent.com/api

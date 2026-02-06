@@ -1,203 +1,192 @@
 <analysis>**original_problem_statement:**
-The user wants to build a booking application MVP, , for UK micro-businesses. The core of the application is a web-first responsive platform and a native mobile app for both clients and businesses. The design should be super modern.
+The user wants to build a booking application MVP, , for UK micro-businesses. The core of the application is a web-first responsive platform and a native mobile app for both clients and businesses.
 
 **PRODUCT REQUIREMENTS:**
 - **Core Feature:** Businesses can generate a shareable link for customers to book services.
 - **Platforms:** A web application (React) and a native mobile app (React Native/Expo).
-- **Design:** A light theme with teal accents and modern fonts.
+- **Design:** A light theme with teal and blue accents.
 - **Key Features Requested:**
-    - JWT-based user authentication.
-    - A Founder admin panel for user/business management.
+    - User authentication with separate portals for Business Owners and a super-admin Founder.
     - A brandable, customer-facing public booking page.
     - A Products feature for businesses to sell items.
-    - A fully functional support messaging system with premium features (status management, history, file attachments, emoji).
-    - Functional notification center on web and mobile, tied to email alerts.
-    - Branded, custom notifications to replace all native OS/browser alerts.
-- **User's latest requests:**
-    1.  **Support Chat:** Add ticket history (open, resolved, closed), status management (re-open), and the ability for users to create new tickets from the web portal.
-    2.  **Mobile Calendar:** Fix appointment card styling (text position, add professional's name/icon) and implement dynamic drag-and-drop between days.
-    3.  **Mobile Notifications:** Replace all default  notifications with a custom, branded system.
-    4.  **Notification Bell:** Make the notification bell on both web and mobile functional, showing updates for bookings and support messages, and trigger email alerts for customers on key events.
-    5.  **Booking Page:** Refine the booking modal to be more premium, as per the provided image.
-    6.  **Complete All Other Requests:** Systematically work through the backlog of features and fixes.
+    - A fully functional two-way support messaging system.
+    - A functional notification center and business settings management.
+- **User's latest requests from this session:**
+    1.  Make all web portals fully mobile responsive.
+    2.  Implement a new, multi-step user signup flow using SMS OTP verification via .
+    3.  The new flow must support both Google Auth and email/password signup.
+    4.  The signup page should use a TailAdmin style with alternating images of local businesses.
+    5.  Implement a Forgot Password process.
+    6.  Fix a Token error when using Google authentication.
+    7.  Ensure the Expo mobile app is stable and prepared for the next session.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend, React frontend, and a React Native/Expo mobile app. The agent has just completed a large batch of work addressing user feedback. This includes a redesigned, more premium public booking page and modal, an enhanced support page with status filtering and a new issue form, and a new Products page on the web app. The Founder Admin Panel has also been fixed to correctly display and interact with support messages. On the mobile side, the agent resolved critical dependency issues, set up a context for a new global toast notification system, and added the UI for a (currently non-functional) notification bell.
+A full-stack application with a FastAPI backend, React frontend, and a React Native/Expo mobile app. This session focused on two major user requests:
+1.  **Mobile Responsiveness Overhaul:** The agent successfully refactored the main web application pages (, , , etc.) using Tailwind CSS to ensure they are fully responsive across mobile, tablet, and desktop devices. This work was verified with multiple screenshots.
+2.  **New Authentication Flow:** A complex, multi-step signup flow with SMS OTP verification was built from the ground up. This involved integrating , creating new backend endpoints for sending and verifying OTPs, and building a series of new UI pages for both web and mobile. The user changed the flow's logic mid-development, which the agent adapted to. Key bugs related to OTP verification (a backend datetime mismatch) and Google Auth (incorrect token handling) were identified and fixed.
 
 **Last working item**:
--   **Last item agent was working:** The agent was about to begin fixing the UI and functionality of the mobile calendar. The user reported that appointment cards have misaligned text and are missing the professional's details, and that drag-and-drop between days is not working. The agent had just viewed the relevant file, , to start implementing these fixes.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent to test the mobile app, specifically focusing on the calendar's UI (card styling, text position) and drag-and-drop functionality.
+-   **Last item agent was working:** Preparing for the fork. The user's final instruction was to ensure the environment, especially the Expo mobile server, is ready for the next session. The last active development task was fixing the Google Auth flow, where the application was failing to handle the  returned from the Emergent Auth provider.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y (for the Google Auth fix)
+-   **Which testing method agent to use?** Frontend testing agent. The test should simulate a user signing up with Google. The agent should log in, click the Google Auth button on the  page, complete the Google login, and verify that it correctly redirects to the  page to gather more details, without any token errors.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0):** The mobile calendar card styling is incorrect; text is not positioned neatly, and the professional's name/icon is missing.
--   **Issue 2 (P0):** Mobile calendar appointments are not draggable between days.
--   **Issue 3 (P0):** Default native notifications () are still present across the mobile app (~40 instances).
--   **Issue 4 (P0):** The notification bell on both the mobile and web dashboards is not functional. It does not fetch or display notifications.
--   **Issue 5 (P1):** The logic for sending email notifications tied to in-app alerts has not been implemented.
--   **Issue 6 (P1):** File attachment functionality in the support chat has not been implemented.
--   **Issue 7 (P2):** Settings sync between mobile and web is incomplete.
--   **Issue 8 (P2):** The client-facing mobile app screens (booking, search) are not fully connected to backend APIs.
--   **Issue 9 (P2):** The global search feature relies on a disabled babel plugin, which constitutes technical debt.
+-   **Issue 1 (P0): Mobile app (Expo) server fails to start automatically.** This is the highest priority issue from the *previous* handoff and was **not addressed**. The user is still manually asking the agent to restart Expo, which is a critical recurring blocker.
+-   **Issue 2 (P0): Google Auth flow requires user verification.** The agent fixed a bug in  to correctly parse the  from the URL hash. The user needs to test the end-to-end Google signup flow to confirm the Token error is resolved.
+-   **Issue 3 (P1): Unified Live Chat is not syncing in real-time.** This is a core feature that remains broken from the previous session. Messages sent from mobile do not appear on the web and vice-versa.
+-   **Issue 4 (P1): Mobile Calendar UI is misaligned.** The team member avatars at the top of the day view do not scroll in sync with the calendar grid below. This is a long-standing UI bug pending user verification from the previous session.
+-   **Issue 5 (P2): New bookings are not appearing on the web calendar.** An unresolved issue from the previous session.
+-   **Issue 6 (P2): The web signup page style might not match user expectations.** The user requested a TailAdmin style with alternative images of local businesses. The agent implemented a page with a side image, but this needs explicit user approval to ensure it matches their vision.
 
 **Issues Detail:**
--   **Issue 1:** Mobile calendar card styling is incorrect
-    -   **Attempted fixes:** None. The agent was just about to start.
+-   **Issue 1: Mobile app (Expo) server fails to start**
+    -   **Attempted fixes:** None in this session. The agent continued to manually restart the server.
     -   **Next debug checklist:**
-        1.  Modify the rendering logic for booking items in .
-        2.  Ensure the booking data includes the team member's details (name, avatar).
-        3.  Update the component's styles to correctly position text and include the professional's avatar and name.
-    -   **Why fix this issue and what will be achieved with the fix?** To meet the user's explicit UI/UX requirements for a premium feel on the mobile app.
+        1.  Create a new supervisor configuration file: .
+        2.  Edit the file to add the Expo service: , , , , .
+        3.  Run No config updates to processes and  to apply the new configuration.
+        4.  Verify status with mobile: ERROR (no such process).
+    -   **Why fix this issue and what will be achieved with the fix?** This is the user's biggest frustration and a major waste of time. A permanent fix will ensure a stable and predictable development environment.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
--   **Issue 2:** Mobile calendar appointments are not draggable
-    -   **Attempted fixes:** None for mobile.
+    -   **Should Test frontend/backend/both after fix?** Environment check.
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: Google Auth flow token error**
+    -   **Attempted fixes:** The agent modified  to correctly parse the  from the URL hash () instead of from the query string.
     -   **Next debug checklist:**
-        1.  Integrate a drag-and-drop library (e.g., ) into .
-        2.  Implement  handlers that call the  endpoint with the new date.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a core usability feature requested by the user.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Both
--   **Issue 3:** Default native notifications still exist on mobile
-    -   **Attempted fixes:** A  was created, but the ~40 instances of  have not been replaced.
-    -   **Next debug checklist:**
-        1.  Globally search for  in the  directory.
-        2.  Systematically replace each instance with the  hook from the .
-    -   **Why fix this issue and what will be achieved with the fix?** To provide a consistent and professional branded user experience, as requested.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
--   **Issue 4:** Notification bell is not functional
-    -   **Attempted fixes:** The UI for the bell icon was added to web and mobile dashboards. A placeholder  was created. Backend logic is missing.
-    -   **Next debug checklist:**
-        1.  Create backend endpoints (, ) and a  collection in MongoDB.
-        2.  Trigger notification creation in the backend for key events (e.g., new booking, new support message).
-        3.  Connect the frontend screens to fetch and display notifications and update the unread count badge.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a key feature for user engagement and keeping users informed of important activity.
-    -   **Status:** IN PROGRESS
+        1.  Navigate to the  page.
+        2.  Click the Sign up with Google button.
+        3.  After successful Google authentication, verify the app redirects to the  page.
+        4.  Check the browser's developer console on the callback page for any errors.
+    -   **Why fix this issue and what will be achieved with the fix?** Enables a key signup method requested by the user.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   **Task 1:** Implement a branded notification system for mobile (P0)
-    -   **Where to resume:** Replace all  calls throughout the mobile app with the custom  hook.
-    -   **What will be achieved with this?** A unified, professional notification experience on mobile, removing all native OS dialogs.
+-   **Task 1: Complete the Forgot Password Flow (P2)**
+    -   **Where to resume:** The UI page () and a backend endpoint to *verify* a reset code exist. The next step is to create a backend endpoint that accepts an email, generates a reset code/token, and sends it to the user (currently no email service is integrated). Then, connect the frontend to call these endpoints.
+    -   **What will be achieved with this?** A standard and essential user account management feature.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile)
+    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on something:** Requires an email integration like Resend to be implemented first.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks (P1):**
-    - **Functional Notification Center:** Implement the backend logic for creating, fetching, and reading notifications to make the notification bell functional.
-    - **Google Calendar Sync:** Implement the two-way sync logic.
-    - **Automated Booking Reminders (Email):** Implement the  job to send email reminders via Resend.
-    - **Push Notifications (Mobile):** Integrate with Expo's push notification service.
-- **Future Tasks (P2):**
-    - **Stripe Subscription**
-    - **Staff Separate Logins**
-    - **Customer Reviews & Ratings**
-    - **Multi-location Support**
+- **Upcoming Tasks:**
+    - (P1) Implement new signup flow on Mobile: The agent created new screens, but the user has not confirmed they are working or visible. This needs verification and potential debugging.
+    - (P2) Add Rezvo Logo to Chat Profile Icons.
+    - (P2) Integrate  for transactional emails (required for Forgot Password and future tasks).
+    - (P2) Summary Email on Conversation Close.
+- **Future Tasks:**
+    - (P2) Dojo Payment Integration.
+    - (P2) Mobile Calendar Drag-and-Drop functionality.
+    - (P2) Google Calendar Sync.
 
 **Completed work in this session**
--   **Premium Web UI/UX Overhaul:**
-    -   Redesigned the Public Booking Page () with a compact layout and a premium, multi-step booking modal.
-    -   Redesigned the Support Page () with status filters (All, Open, Resolved, Closed) and a form to create new tickets.
-    -   Added a Products page () to the web app with full CRUD functionality and added it to the main navigation.
--   **Backend & Bug Fixes:**
-    -   Enhanced the support system backend with endpoints to update ticket status and edit/delete messages ().
-    -   Fixed the Founder Admin Panel () to correctly fetch and display support conversations and messages.
-    -   Replaced a native  dialog on the web  with a custom .
--   **Mobile Environment Stabilized:**
-    -   Resolved multiple Expo/Metro dependency conflicts to get the mobile development server running reliably.
-    -   Set up the foundation for a global mobile notification system ().
+- **Web App Mobile Responsiveness:**
+    - Refactored , ,  to be fully responsive.
+- **New Web Authentication Flow:**
+    - Integrated  for SMS OTP and added  to .
+    - Created a full multi-page signup flow on web (, , , ).
+    - Added backend endpoints in  (, ).
+    - Fixed a critical backend bug in OTP logic causing a  due to mismatched datetime objects.
+    - Updated all CTAs on  to point to the new  flow.
+- **New Mobile Authentication Screens:**
+    - Created  and  for the mobile app.
+    - Updated  to include the new screens.
+- **Bug Fixes:**
+    - Resolved the Google Auth Token error by correctly handling the  from the URL hash in .
 
 **Earlier issues found/mentioned but not fixed**
--   The root cause of the conflict between  and complex JSX components was not resolved. The plugin remains disabled in .
+-   The root cause of the conflict with  remains unresolved.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Mobile app crashes on login.
--   **Recurrence count:** 3
--   **Status:** RESOLVED. The mobile environment appears stable for now after several dependency fixes, but it remains a high-risk area.
+-   **Issue recurrence in previous fork:** Mobile app environment instability (Expo server not running).
+-   **Recurrence count:** High (user had to ask for manual restarts multiple times).
+-   **Status:** NOT STARTED. The permanent fix was not implemented.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Backend:** FastAPI, Pydantic, JWT, MongoDB
--   **Frontend (Web):** React, React Router, Tailwind CSS, Shadcn/UI, Axios
--   **Frontend (Mobile):** React Native, Expo (SDK 54), React Navigation
--   **State Management:** Heavy use of React Hooks (, ) for managing complex UI state.
+-   **Backend:** FastAPI, Pydantic, MongoDB
+-   **Frontend (Web):** React, React Router, Tailwind CSS for responsiveness
+-   **Frontend (Mobile):** React Native, Expo
+-   **New Integration:**  for SMS OTP verification.
+-   **Authentication:** Multi-step signup flow combining Google OAuth (via Emergent Auth) and phone verification.
 
 **key DB schema**
--   **support_tickets:** Updated to include  (e.g., 'open', 'closed'), , and more detailed timestamps.
+-   **otp_verifications:** A new collection was implicitly created by the backend to store temporary OTP codes, phone numbers, and expiration times.
 
 **All files of reference**
--   **/app/mobile/rezvo-mobile/src/screens/business/CalendarScreen.js**: Target for the next set of critical UI and functionality fixes.
--   **All files containing  in **: These need to be refactored to use the new .
--   **/app/frontend/src/components/AppLayout.jsx**: Contains the UI for the web notification bell that needs to be made functional.
--   **/app/mobile/rezvo-mobile/src/screens/business/DashboardScreen.js**: Contains the UI for the mobile notification bell.
--   **/app/backend/server.py**: Will need new endpoints to support the notification center.
+-   **/etc/supervisor/conf.d/mobile.conf**: **NEEDS CREATION** to automate Expo server startup.
+-   **/app/frontend/src/pages/auth/AuthCallbackPage.jsx**: Contains the fix for the Google Auth issue, needs verification.
+-   **/app/backend/server.py**: Contains the new OTP endpoints and the datetime bug fix.
+-   **/app/frontend/src/pages/auth/**: This new directory contains the entire modern web signup flow.
+-   **/app/mobile/rezvo-mobile/src/screens/PhoneVerifyScreen.js**: The new mobile OTP screen.
 
 **Areas that need refactoring**:
--    is a large monolith and should be broken into modular FastAPI routers.
--   The mobile app's native  calls must be systematically removed.
+-   **Auth Page Cleanup:** The agent created an initial set of auth pages (, , etc.) before the user changed the flow. These files and their corresponding routes in  are now obsolete and should be deleted to prevent code rot.
+-   **Monolithic :** Remains a large file that could be broken down into routers and models.
 
 **Critical Info for New Agent**
--   **User Priorities are Clear:** The user has provided a numbered list of tasks. Address them in this order: 1. Chat System, 2. Mobile Calendar, 3. Mobile Notifications, 4. Notification Bell, 5. Booking Page Polish.
--   **Mobile First:** The highest priority items are on the mobile app (Calendar, Notifications). This should be the immediate focus.
--   **Fragile Mobile Environment:** The mobile app's dependencies have caused significant delays. Be extra cautious when modifying  or installing new libraries in the  directory. Test thoroughly after any change.
--   **Notifications are a Key Theme:** A significant portion of the user's latest request revolves around building a comprehensive notification system (in-app bell, branded popups, emails). This will require coordinated work on the backend, web frontend, and mobile app.
+-   **Priority #1 is Environment Stability:** You MUST automate the Expo server startup. The user has repeatedly expressed frustration with this. Follow the steps in Issues Detail to create a supervisor config file. This is your first task.
+-   **Priority #2 is Verifying the New Signup Flow:** The last session was a flurry of development on a new auth system. You must verify the end-to-end flow for both Google and email signup on both web and mobile, ensuring the fixes for the OTP and Google Auth bugs are working correctly.
+-   **Clean up Unused Auth Files:** Before adding new code, identify and delete the first set of now-obsolete signup pages created by the previous agent to keep the project clean.
+-   **Address Recurring Core Bugs:** Do not let the core feature bugs (chat sync, calendar issues) linger. After stabilizing the environment and verifying the auth flow, prioritize fixing these.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_13.json
--   /app/memory/PRD.md (updated)
+-   /app/memory/PRD.md (updated with new auth flow summary)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **(LATEST) User:** Provided a detailed list of remaining issues and new requests, including fixes for chat, mobile calendar, notifications, and the booking page popup, along with a reference image. **(IN PROGRESS)**
-9.  **User:** Requested the web URL for the mobile preview page. **(RESOLVED)**
-8.  **User:** Pointed out that a comprehensive list of all application URLs was not provided, referencing a previous, more detailed format. **(RESOLVED)**
-7.  **User:** Provided a list of new requests and bug fixes (this was a precursor to the latest, more detailed list). **(IN PROGRESS)**
-6.  **User:** Asked for the updated URLs again. **(RESOLVED)**
-5.  **User:** Confirmed the previous agent did not provide all URLs. **(RESOLVED)**
-4.  **User:** Received an initial set of URLs. **(RESOLVED)**
-3.  **User:** Asked the agent to provide all application URLs and finish outstanding tasks. **(IN PROGRESS)**
-2.  **User:** Approved the agent's initial plan to fix regressions. **(DONE)**
-1.  **Agent:** Sent the initial plan to the user for approval. **(DONE)**
+-   10. (LATEST) Requests a clean fork with Expo running and all URLs provided. (Status: **PENDING**)
+-   9. Reports a Token error after using Google Auth. (Status: Fix implemented, **USER VERIFICATION PENDING**)
+-   8. Changes the entire logic of the signup flow. (Status: Completed)
+-   7. Points out issues with the mobile profile page (missing Google Auth, address fields). (Status: Completed)
+-   6. Reports that OTP verification is failing. (Status: Completed, backend bug fixed)
+-   5. Reports that CTAs on the landing page lead to the old login page. (Status: Completed)
+-   4. Reports that Expo is not working. (Status: Completed, agent manually restarted)
+-   3. Requests SMS OTP integration with Sendly and provides a detailed signup flow. (Status: Completed)
+-   2. Adds the requirement for a Forgot Password process. (Status: In Progress)
+-   1. Requests that all web portals be made mobile responsive. (Status: Completed)
 
 **Project Health Check:**
 -   **Broken:**
-    -   **Mobile Calendar:** The UI is not styled correctly, and drag-and-drop is non-functional.
-    -   **Notification System:** The notification bell is UI-only. The backend logic to create, fetch, and display notifications is missing.
+    -   The Expo server's startup process is manual and unreliable.
+    -   The real-time chat synchronization across platforms is non-functional.
+    -   The mobile calendar day-view UI is misaligned.
 -   **Mocked:**
-    -   File attachments in support chat.
-    -   Push notifications and email alerts triggered by in-app events.
+    -   Dojo Payment Integration.
+    -   Google Calendar Sync.
+    -   Email relay for chat/notifications.
 -   **Technical Debt:**
-    -   The monolithic  file.
-    -   The disabled  in the web frontend.
-    -   Approximately 40 instances of native  calls remain in the mobile codebase.
+    -   Monolithic  file.
+    -   Manual Expo server startup process.
+    -   Obsolete and unused signup pages and routes in the frontend codebase.
 
 **3rd Party Integrations**
--   **Resend.com:** For emails (backend implemented).
 -   **React Native / Expo:** Core mobile framework.
 -   **Shadcn/UI:** Component library for the web frontend.
--   **google-auth-oauthlib:** Installed for future Google Calendar integration.
--   **:** Installed for web support chat.
+-   **Sendly.live:** (New) Used for sending SMS OTP messages. Key is in .
+-   **Emergent-managed Google Auth:** For Google sign-in.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, the agent ran the testing agent which reported minor issues that were subsequently fixed.
--   **Test files created:** None.
--   **Known regressions:** The mobile calendar UI and drag-and-drop functionality are broken/incomplete, which was part of the user's latest feedback.
+-   **Testing agent used after significant changes:** NO
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** None
+-   **Known regressions:** Chat sync and mobile calendar alignment are persistent, unfixed issues.
 
 **Credentials to test flow:**
--   **Email:** 
--   **Password:** 
+-   **Founder/Admin:**  / 
+-   **Business Owner:**  / 
 
 **What agent forgot to execute**
--   The agent did not fully complete the request to remove all native alerts from the mobile app.
--   The agent created UI for features like file attachments and a notification bell but did not implement the corresponding backend functionality.
--   The agent did not implement the requested logic for tying in-app notifications to email alerts.</analysis>
+-   The agent **completely failed** to implement a permanent solution for the Expo server's automatic startup, which was the #1 recurring issue and source of user frustration from the previous fork.
+-   The agent did not remove the obsolete auth pages after the user requested a change in the signup flow, leaving dead code in the project.
+-   The Forgot Password flow was only partially built (UI only), without the necessary backend logic to send a reset code.</analysis>
