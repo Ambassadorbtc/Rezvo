@@ -150,7 +150,7 @@ const FounderAdminPage = () => {
   const { user, logout } = useAuth();
   const messagesEndRef = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Default closed on mobile
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
   const [analytics, setAnalytics] = useState(null);
