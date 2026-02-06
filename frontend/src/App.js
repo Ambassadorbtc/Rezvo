@@ -128,8 +128,8 @@ function AppRoutes() {
       <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupAuthPage />} />
       
       {/* New Signup Flow Routes (TailAdmin style) */}
-      <Route path="/signup/profile" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupProfilePage />} />
-      <Route path="/signup/verify-phone" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupPhoneVerifyPage />} />
+      <Route path="/signup/profile" element={<SignupProfilePage />} />
+      <Route path="/signup/verify-phone" element={<SignupPhoneVerifyPage />} />
       <Route path="/signup/business-type" element={<ProtectedRoute><SignupBusinessTypePage /></ProtectedRoute>} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth-callback" element={<AuthCallbackPage />} />
