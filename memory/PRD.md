@@ -32,6 +32,12 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 
 ## What's Been Implemented
 
+### Feb 6, 2026 - Session 2 (Current)
+- ✅ **FIXED: Google Auth flow** - Updated AuthCallbackPage.jsx to use correct Emergent Auth endpoint (`https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data` with X-Session-ID header)
+- ✅ **FIXED: Expo Auto-Start** - Added supervisor config `/etc/supervisor/conf.d/mobile.conf` for automatic Expo server management
+- ✅ **FIXED: Session ID race condition** - Added synchronous hash detection in App.js routes for session_id
+- ✅ **FIXED: StrictMode double-processing** - Added useRef flag in AuthCallbackPage.jsx
+
 ### Feb 6, 2026 - SMS OTP Authentication
 - ✅ Complete signup flow with SMS OTP verification via Sendly.live
   - Welcome page, User type selection, Phone verification
@@ -60,30 +66,28 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 - ✅ Mobile app (Expo) - basic functionality
 
 ## New Auth Flow Routes
-- `/welcome` - Welcome page
-- `/get-started` - User type selection
-- `/verify-phone` - SMS OTP verification
-- `/complete-profile` - Profile details + auth method
-- `/onboarding-wizard` - Business setup wizard
+- `/signup` - Main signup page (TailAdmin style with business images)
+- `/signup/profile` - Profile completion page
+- `/signup/verify-phone` - SMS OTP verification
+- `/signup/business-type` - Business type selection
 - `/forgot-password` - Password reset via SMS OTP
 - `/auth-callback` - Google OAuth callback
 
 ## Prioritized Backlog
 
-### P0 - Critical
-- [ ] Expo server auto-start (supervisor config)
-- [ ] Unified live chat sync (web ↔ mobile)
-- [ ] Mobile calendar alignment fix
+### P0 - Critical (RESOLVED)
+- [x] Google Auth "Token error" - FIXED
+- [x] Expo server auto-start - FIXED (supervisor config added)
 
 ### P1 - Important  
-- [ ] New bookings not appearing on web calendar
-- [ ] Web chat occasional page refresh requirement
-- [ ] Test full signup flow end-to-end
+- [ ] Unified live chat sync verification (web ↔ mobile) - Both use same polling, needs user testing
+- [ ] Mobile calendar alignment fix - UI was already corrected, needs user verification
+- [ ] New bookings not appearing on web calendar - Needs testing
 
 ### P2 - Nice to Have
 - [ ] Founder Platform Settings backend implementation
 - [ ] Add Rezvo logo to chat avatars
-- [ ] Email relay for support messages
+- [ ] Email relay for support messages (requires Resend integration)
 - [ ] Summary email on conversation close
 - [ ] Customer signup flow
 
@@ -94,10 +98,10 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 - [ ] Full settings parity web/mobile
 
 ## 3rd Party Integrations
-- **Sendly.live** - SMS OTP (API Key configured)
+- **Sendly.live** - SMS OTP (API Key configured in backend/.env)
 - **Emergent Auth** - Google OAuth
 - **MongoDB** - Database
-- **Expo** - Mobile app framework
+- **Expo** - Mobile app framework (now auto-managed by supervisor)
 
 ## Test Credentials
 - **Founder:** founder@rezvo.app / Founder123!
@@ -105,6 +109,15 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 
 ## Key URLs
 - Web App: https://rez-services.preview.emergentagent.com
-- Welcome Page: https://rez-services.preview.emergentagent.com/welcome
-- Expo QR: https://rez-services.preview.emergentagent.com/expo-qr.html
+- Signup Page: https://rez-services.preview.emergentagent.com/signup
+- Login Page: https://rez-services.preview.emergentagent.com/login
+- Expo QR: https://x-pynq4-anonymous-8081.exp.direct
 - API Base: https://rez-services.preview.emergentagent.com/api
+
+## Key Files Modified This Session
+- `/app/frontend/src/pages/auth/AuthCallbackPage.jsx` - Fixed Google Auth endpoint
+- `/app/frontend/src/App.js` - Added synchronous session_id hash detection
+- `/etc/supervisor/conf.d/mobile.conf` - NEW: Expo auto-start config
+
+## Testing Reports
+- `/app/test_reports/iteration_18.json` - All tests passing (Google Auth, login flows, dashboard, support)
