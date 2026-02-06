@@ -42,7 +42,7 @@ const BUSINESS_TYPES = [
 ];
 
 export default function BusinessTypeScreen({ navigation }) {
-  const { refreshUser } = useAuth();
+  const { checkAuth } = useAuth();
   const { showToast } = useGlobalToast();
   const [loading, setLoading] = useState(false);
   const [selectedType, setSelectedType] = useState('');
@@ -70,26 +70,20 @@ export default function BusinessTypeScreen({ navigation }) {
 
       showToast('Welcome to Rezvo!', 'success');
       
-      // Refresh user to update state
-      if (refreshUser) {
-        await refreshUser();
-      }
+      // Refresh auth to load user data and navigate to dashboard
+      await checkAuth();
       
     } catch (error) {
       showToast('Failed to save settings', 'error');
       // Still try to proceed
-      if (refreshUser) {
-        await refreshUser();
-      }
+      await checkAuth();
     } finally {
       setLoading(false);
     }
   };
 
   const handleSkip = async () => {
-    if (refreshUser) {
-      await refreshUser();
-    }
+    await checkAuth();
   };
 
   return (
