@@ -619,10 +619,14 @@ async def verify_otp(data: VerifyOtpRequest):
     
     # Check expiry
     expires_at = otp_record.get("expires_at")
-    if isinstance(expires_at, str):
-        expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
-    if expires_at < now:
-        raise HTTPException(status_code=400, detail="OTP has expired")
+    if expires_at:
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+        elif expires_at.tzinfo is None:
+            # Make naive datetime timezone-aware (assume UTC)
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < now:
+            raise HTTPException(status_code=400, detail="OTP has expired")
     
     # Check code
     if otp_record["code"] != data.code:
