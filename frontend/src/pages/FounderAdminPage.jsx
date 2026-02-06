@@ -168,6 +168,20 @@ const FounderAdminPage = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [supportFilter, setSupportFilter] = useState('all');
   const [supportSearch, setSupportSearch] = useState('');
+  const [liveChatSettings, setLiveChatSettings] = useState({
+    is_online: false,
+    auto_hours_enabled: true,
+    working_hours: {
+      monday: { start: '09:00', end: '18:00', enabled: true },
+      tuesday: { start: '09:00', end: '18:00', enabled: true },
+      wednesday: { start: '09:00', end: '18:00', enabled: true },
+      thursday: { start: '09:00', end: '18:00', enabled: true },
+      friday: { start: '09:00', end: '18:00', enabled: true },
+      saturday: { start: '09:00', end: '18:00', enabled: false },
+      sunday: { start: '09:00', end: '18:00', enabled: false },
+    }
+  });
+  const [savingChatSettings, setSavingChatSettings] = useState(false);
   const itemsPerPage = 10;
 
   // Scroll to bottom when messages change
