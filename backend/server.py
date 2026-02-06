@@ -1979,8 +1979,16 @@ async def send_email_async(to: str, subject: str, html: str):
         return None
 
 def get_booking_confirmation_html(booking: dict, business_name: str) -> str:
-    """Generate booking confirmation email HTML"""
+    """Generate booking confirmation email HTML with action links"""
     booking_date = datetime.fromisoformat(booking["datetime"].replace('Z', '+00:00'))
+    booking_id = booking.get("id", "")
+    cancel_token = booking.get("cancel_token", booking_id)  # Use cancel_token if available
+    base_url = os.environ.get("FRONTEND_URL", "https://rezvo.app")
+    
+    # Action URLs
+    cancel_url = f"{base_url}/booking/cancel/{cancel_token}"
+    reschedule_url = f"{base_url}/booking/reschedule/{cancel_token}"
+    
     return f"""
     <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FDFBF7; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
@@ -2014,14 +2022,33 @@ def get_booking_confirmation_html(booking: dict, business_name: str) -> str:
                     <td style="padding: 12px 0; text-align: right; font-size: 20px; font-weight: 700; color: #00BFA5;">£{booking["price_pence"]/100:.2f}</td>
                 </tr>
             </table>
+            
+            <!-- Action Buttons -->
+            <div style="margin-top: 24px; text-align: center;">
+                <p style="color: #627D98; font-size: 14px; margin-bottom: 16px;">Need to make changes?</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 6px; width: 50%;">
+                            <a href="{reschedule_url}" style="display: block; background: #F0FDFA; color: #00BFA5; padding: 14px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                📅 Reschedule
+                            </a>
+                        </td>
+                        <td style="padding: 6px; width: 50%;">
+                            <a href="{cancel_url}" style="display: block; background: #FEF2F2; color: #EF4444; padding: 14px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                ✕ Cancel Booking
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         
-        <p style="text-align: center; color: #627D98; font-size: 14px; margin-top: 30px;">
-            Need to make changes? Contact {business_name} directly.
+        <p style="text-align: center; color: #9FB3C8; font-size: 12px; margin-top: 30px;">
+            This is an automated message from Rezvo. Please do not reply to this email.
         </p>
         
-        <p style="text-align: center; color: #9FB3C8; font-size: 12px; margin-top: 20px;">
-            Powered by Rezvo.app
+        <p style="text-align: center; color: #9FB3C8; font-size: 12px; margin-top: 10px;">
+            Powered by <a href="https://rezvo.app" style="color: #00BFA5; text-decoration: none;">Rezvo.app</a>
         </p>
     </div>
     """
