@@ -52,7 +52,7 @@ export default function WelcomeScreen({ navigation }) {
             {/* CTA Buttons */}
             <TouchableOpacity
               style={styles.primaryBtn}
-              onPress={() => navigation.navigate('Signup')}
+              onPress={() => navigation.navigate('PhoneVerify')}
               activeOpacity={0.9}
             >
               <Text style={styles.primaryBtnText}>Get Started</Text>
@@ -88,7 +88,7 @@ export default function WelcomeScreen({ navigation }) {
               
               <TouchableOpacity 
                 style={styles.quickAction}
-                onPress={() => navigation.navigate('Signup')}
+                onPress={() => navigation.navigate('PhoneVerify')}
                 activeOpacity={0.9}
               >
                 <Ionicons name="briefcase-outline" size={18} color={TEAL} />
