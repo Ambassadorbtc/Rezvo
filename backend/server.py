@@ -1456,6 +1456,7 @@ async def create_public_booking(data: BookingCreate):
         raise HTTPException(status_code=404, detail="Service not found")
     
     booking_id = str(uuid.uuid4())
+    cancel_token = str(uuid.uuid4())  # Unique token for cancel/reschedule links
     now = datetime.now(timezone.utc)
     
     # Parse datetime_iso to extract date and time
@@ -1469,6 +1470,7 @@ async def create_public_booking(data: BookingCreate):
     
     booking_doc = {
         "id": booking_id,
+        "cancel_token": cancel_token,
         "business_id": service["business_id"],
         "service_id": data.service_id,
         "service_name": service["name"],
