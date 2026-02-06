@@ -912,6 +912,75 @@ export default function CalendarScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* Move Confirmation Modal - CRITICAL for preventing accidental moves */}
+      <Modal
+        visible={showMoveConfirm}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={cancelMoveMode}
+      >
+        <Pressable style={styles.modalOverlay} onPress={cancelMoveMode}>
+          <View style={styles.moveConfirmModal}>
+            <View style={styles.moveConfirmHeader}>
+              <Ionicons name="swap-horizontal" size={24} color={TEAL} />
+              <Text style={styles.moveConfirmTitle}>Confirm Move</Text>
+            </View>
+            
+            {bookingToMove && newMoveTime && (
+              <>
+                <View style={styles.moveConfirmContent}>
+                  <Text style={styles.moveConfirmService}>{bookingToMove.service_name}</Text>
+                  <Text style={styles.moveConfirmClient}>{bookingToMove.client_name}</Text>
+                  
+                  <View style={styles.moveTimeRow}>
+                    <View style={styles.moveTimeBox}>
+                      <Text style={styles.moveTimeLabel}>From</Text>
+                      <Text style={styles.moveTimeValue}>{formatBookingTime(bookingToMove.datetime)}</Text>
+                    </View>
+                    <Ionicons name="arrow-forward" size={20} color="#9FB3C8" />
+                    <View style={[styles.moveTimeBox, styles.moveTimeBoxNew]}>
+                      <Text style={[styles.moveTimeLabel, { color: TEAL }]}>To</Text>
+                      <Text style={[styles.moveTimeValue, { color: TEAL }]}>{newMoveTime.getHours()}:00</Text>
+                    </View>
+                  </View>
+                </View>
+                
+                <View style={styles.moveConfirmButtons}>
+                  <TouchableOpacity style={styles.moveCancelBtn} onPress={cancelMoveMode}>
+                    <Ionicons name="close" size={18} color="#627D98" />
+                    <Text style={styles.moveCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.moveConfirmBtn, saving && { opacity: 0.6 }]}
+                    onPress={confirmMoveBooking}
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <ActivityIndicator color="#FFFFFF" size="small" />
+                    ) : (
+                      <>
+                        <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+                        <Text style={styles.moveConfirmText}>Confirm</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Move Mode Indicator */}
+      {moveMode && (
+        <View style={styles.moveModeBar}>
+          <Text style={styles.moveModeText}>Tap a time slot to move booking</Text>
+          <TouchableOpacity onPress={cancelMoveMode}>
+            <Text style={styles.moveModeCancelText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
