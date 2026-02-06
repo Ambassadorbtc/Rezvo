@@ -166,7 +166,8 @@ export default function CalendarScreen({ navigation }) {
 
   const getBookingPosition = (booking) => {
     const { hours, minutes } = parseTime(booking.datetime);
-    const top = (hours - 8) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
+    // Calculate from hour 6 (first hour displayed) - CRITICAL FIX
+    const top = (hours - 6) * HOUR_HEIGHT + (minutes / 60) * HOUR_HEIGHT;
     const height = (booking.duration_min / 60) * HOUR_HEIGHT;
     return { top, height: Math.max(height, 30) };
   };
