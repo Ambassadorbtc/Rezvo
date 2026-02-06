@@ -178,12 +178,19 @@ const ForgotPasswordPage = () => {
 
     setLoading(true);
     try {
-      const fullNumber = `${countryCode}${phoneNumber}`;
-      await api.post('/auth/forgot-password/reset', { 
-        phone: fullNumber, 
-        verification_id: verificationId,
-        new_password: passwords.password
-      });
+      if (method === 'phone') {
+        const fullNumber = `${countryCode}${phoneNumber}`;
+        await api.post('/auth/forgot-password/reset', { 
+          phone: fullNumber, 
+          verification_id: verificationId,
+          new_password: passwords.password
+        });
+      } else {
+        await api.post('/auth/reset-password', { 
+          token: resetToken,
+          new_password: passwords.password
+        });
+      }
       
       toast.success('Password reset successfully!');
       navigate('/login');
