@@ -1,64 +1,109 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../../lib/api';
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [status, setStatus] = useState('processing'); // 'processing' | 'success' | 'error'
   const [message, setMessage] = useState('Completing sign up...');
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get token from URL params (Emergent Auth returns it as 'token')
-        const token = searchParams.get('token');
-        const email = searchParams.get('email');
-        const name = searchParams.get('name');
+        // Parse the hash fragment for session_id from Emergent Auth
+        // URL format: /auth-callback#session_id=xxx or /auth-callback?session_id=xxx
+        let sessionId = null;
+        let email = null;
+        let name = null;
         
-        if (!token) {
+        // Check hash first (Emergent Auth format)
+        if (location.hash) {
+          const hashParams = new URLSearchParams(location.hash.substring(1));
+          sessionId = hashParams.get('session_id');
+          email = hashParams.get('email');
+          name = hashParams.get('name');
+        }
+        
+        // Fallback to query params
+        if (!sessionId) {
+          const searchParams = new URLSearchParams(location.search);
+          sessionId = searchParams.get('session_id') || searchParams.get('token');
+          email = searchParams.get('email');
+          name = searchParams.get('name');
+        }
+        
+        console.log('Auth callback - sessionId:', sessionId, 'email:', email);
+        
+        if (!sessionId) {
           throw new Error('No authentication token received');
         }
 
-        // Get stored form data
-        const formDataStr = sessionStorage.getItem('signup_form_data');
-        const phone = sessionStorage.getItem('signup_phone');
-        const formData = formDataStr ? JSON.parse(formDataStr) : {};
+        setMessage('Fetching your profile...');
+        
+        // Fetch user info from Emergent Auth using session_id
+        let userInfo = { email, name };
+        try {
+          const authResponse = await fetch(`https://auth.emergentagent.com/api/session/${sessionId}`);
+          if (authResponse.ok) {
+            const authData = await authResponse.json();
+            userInfo = {
+              email: authData.email || email,
+              name: authData.name || name,
+              picture: authData.picture
+            };
+          }
+        } catch (e) {
+          console.log('Could not fetch session info, using provided data');
+        }
+
+        // Get stored profile data from signup flow
+        const profileStr = sessionStorage.getItem('signup_profile');
+        const profile = profileStr ? JSON.parse(profileStr) : {};
 
         setMessage('Creating your account...');
 
         // Register/login with Google auth
         const response = await api.post('/auth/google-signup', {
-          google_token: token,
-          email: email,
-          name: name || formData.fullName,
-          full_name: formData.fullName || name,
-          business_name: formData.businessName,
-          address: formData.address,
-          phone: phone,
+          google_token: sessionId,
+          email: userInfo.email,
+          name: userInfo.name || profile.fullName,
+          full_name: profile.fullName || userInfo.name,
+          business_name: profile.businessName,
+          address: profile.address ? `${profile.address}, ${profile.postcode || ''}` : null,
+          phone: sessionStorage.getItem('signup_phone'),
           auth_method: 'google'
         });
 
         // Store JWT token
         localStorage.setItem('token', response.data.token);
-        sessionStorage.setItem('new_signup', 'true');
         
         // Clear signup session data
-        sessionStorage.removeItem('phone_verified');
-        sessionStorage.removeItem('signup_phone');
+        sessionStorage.removeItem('auth_method');
         sessionStorage.removeItem('signup_user_type');
-        sessionStorage.removeItem('signup_form_data');
+        sessionStorage.removeItem('signup_profile');
 
         setStatus('success');
         setMessage('Account created successfully!');
         
         toast.success('Welcome to Rezvo!');
         
-        // Navigate to onboarding wizard
+        // If profile was filled, go to phone verify, otherwise go to profile
+        const hasProfile = profile.fullName && profile.businessName;
+        
         setTimeout(() => {
-          navigate('/onboarding-wizard');
+          if (hasProfile) {
+            // Profile filled, go to phone verification
+            navigate('/signup/verify-phone');
+          } else {
+            // Need to fill profile first
+            sessionStorage.setItem('auth_method', 'google');
+            sessionStorage.setItem('google_user_email', userInfo.email);
+            sessionStorage.setItem('google_user_name', userInfo.name || '');
+            navigate('/signup/profile');
+          }
         }, 1000);
 
       } catch (error) {
@@ -69,13 +114,13 @@ const AuthCallbackPage = () => {
         toast.error('Failed to complete signup');
         
         setTimeout(() => {
-          navigate('/complete-profile');
+          navigate('/signup');
         }, 2000);
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate]);
+  }, [location, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-teal-50 flex flex-col items-center justify-center px-6">
@@ -105,7 +150,7 @@ const AuthCallbackPage = () => {
               <CheckCircle className="w-8 h-8 text-emerald-600" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">{message}</h2>
-            <p className="text-gray-500">Redirecting you to complete setup...</p>
+            <p className="text-gray-500">Redirecting you to continue...</p>
           </>
         )}
 
