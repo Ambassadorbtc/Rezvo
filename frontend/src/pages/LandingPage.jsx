@@ -153,7 +153,7 @@ const LandingPage = () => {
                 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                  <Link to="/welcome">
+                  <Link to="/signup">
                     <Button size="lg" className="bg-teal-500 hover:bg-teal-400 text-white rounded-full px-8 py-6 text-lg font-semibold shadow-button hover:shadow-button-hover transition-all btn-press" data-testid="hero-cta-btn">
                       Start free trial
                       <ArrowRight className="ml-2 w-5 h-5" />
