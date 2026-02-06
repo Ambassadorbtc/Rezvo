@@ -509,8 +509,11 @@ export default function CalendarScreen({ navigation }) {
                     {hours.map((hour) => (
                       <Pressable 
                         key={hour} 
-                        style={styles.hourLine}
-                        onPress={() => handleTimeSlotPress(hour)}
+                        style={[
+                          styles.hourLine,
+                          moveMode && { backgroundColor: 'rgba(0, 191, 165, 0.1)' }
+                        ]}
+                        onPress={() => moveMode ? handleTimeSlotPress(hour) : null}
                       />
                     ))}
                     
@@ -518,14 +521,18 @@ export default function CalendarScreen({ navigation }) {
                       const { top, height } = getBookingPosition(booking);
                       const color = getServiceColor(booking.service_id);
                       const teamMember = teamMembers.find(m => m.id === booking.team_member_id);
+                      const isBeingMoved = bookingToMove?.id === booking.id;
                       return (
                         <TouchableOpacity
                           key={booking.id}
                           style={[
                             styles.bookingBlock,
-                            { top, height, backgroundColor: color + '15' }
+                            { top, height, backgroundColor: color + '15' },
+                            isBeingMoved && { opacity: 0.5, borderWidth: 2, borderColor: TEAL, borderStyle: 'dashed' }
                           ]}
-                          onPress={() => setShowBookingDetail(booking)}
+                          onPress={() => moveMode ? cancelMoveMode() : setShowBookingDetail(booking)}
+                          onLongPress={() => handleLongPressBooking(booking)}
+                          delayLongPress={500}
                         >
                           {/* Colored top bar */}
                           <View style={[styles.bookingTopBar, { backgroundColor: color }]} />
