@@ -1387,19 +1387,39 @@ async def get_booking(booking_id: str, current_user: dict = Depends(get_current_
 
 @api_router.patch("/bookings/{booking_id}")
 async def update_booking(booking_id: str, data: BookingUpdate, current_user: dict = Depends(get_current_user)):
+    """Update booking - CRITICAL: Ensures date, start_time, end_time stay in sync"""
     user = await db.users.find_one({"id": current_user["sub"]})
     if not user or not user.get("business_id"):
         raise HTTPException(status_code=404, detail="Business not found")
     
+    # Get current booking first
+    booking = await db.bookings.find_one({"id": booking_id, "business_id": user["business_id"]})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
+    
+    # CRITICAL: When datetime changes, recalculate date, start_time, and end_time
     if "datetime_iso" in update_data:
+        new_datetime = datetime.fromisoformat(update_data["datetime_iso"].replace('Z', '+00:00'))
+        duration_min = booking.get("duration_min", 60)
+        end_datetime = new_datetime + timedelta(minutes=duration_min)
+        
         update_data["datetime"] = update_data.pop("datetime_iso")
+        update_data["date"] = new_datetime.strftime('%Y-%m-%d')
+        update_data["start_time"] = new_datetime.strftime('%H:%M')
+        update_data["end_time"] = end_datetime.strftime('%H:%M')
+    
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    await db.bookings.update_one(
+    result = await db.bookings.update_one(
         {"id": booking_id, "business_id": user["business_id"]},
         {"$set": update_data}
     )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="No changes made")
+    
     return {"status": "updated"}
 
 @api_router.post("/bookings/{booking_id}/cancel")
