@@ -13,22 +13,22 @@ A booking application MVP for UK micro-businesses, providing a web-first respons
 ## Application URLs
 | Page | URL |
 |------|-----|
-| Landing Page | https://timeslot-pro-3.preview.emergentagent.com |
-| Login | https://timeslot-pro-3.preview.emergentagent.com/login |
-| Dashboard | https://timeslot-pro-3.preview.emergentagent.com/dashboard |
-| Calendar | https://timeslot-pro-3.preview.emergentagent.com/calendar |
-| Team | https://timeslot-pro-3.preview.emergentagent.com/team |
-| Services | https://timeslot-pro-3.preview.emergentagent.com/services |
-| Products | https://timeslot-pro-3.preview.emergentagent.com/products |
-| Bookings | https://timeslot-pro-3.preview.emergentagent.com/bookings |
-| Settings | https://timeslot-pro-3.preview.emergentagent.com/settings |
-| Analytics | https://timeslot-pro-3.preview.emergentagent.com/analytics |
-| Support | https://timeslot-pro-3.preview.emergentagent.com/support |
-| Founder Admin | https://timeslot-pro-3.preview.emergentagent.com/admin |
-| Booking Page Settings | https://timeslot-pro-3.preview.emergentagent.com/booking-page |
-| Public Booking | https://timeslot-pro-3.preview.emergentagent.com/book/{businessId} |
-| Expo QR Code | https://timeslot-pro-3.preview.emergentagent.com/expo-qr.html |
-| Expo Web Preview | https://timeslot-pro-3.preview.emergentagent.com/expo/ |
+| Landing Page | https://bizbook-27.preview.emergentagent.com |
+| Login | https://bizbook-27.preview.emergentagent.com/login |
+| Dashboard | https://bizbook-27.preview.emergentagent.com/dashboard |
+| Calendar | https://bizbook-27.preview.emergentagent.com/calendar |
+| Team | https://bizbook-27.preview.emergentagent.com/team |
+| Services | https://bizbook-27.preview.emergentagent.com/services |
+| Products | https://bizbook-27.preview.emergentagent.com/products |
+| Bookings | https://bizbook-27.preview.emergentagent.com/bookings |
+| Settings | https://bizbook-27.preview.emergentagent.com/settings |
+| Analytics | https://bizbook-27.preview.emergentagent.com/analytics |
+| Support | https://bizbook-27.preview.emergentagent.com/support |
+| Founder Admin | https://bizbook-27.preview.emergentagent.com/admin |
+| Booking Page Settings | https://bizbook-27.preview.emergentagent.com/booking-page |
+| Public Booking | https://bizbook-27.preview.emergentagent.com/book/{businessId} |
+| Expo QR Code | https://bizbook-27.preview.emergentagent.com/expo-qr.html |
+| Expo Web Preview | https://bizbook-27.preview.emergentagent.com/expo/ |
 
 ### Test Credentials
 - **Business Owner:** testuser@example.com / password123
