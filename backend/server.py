@@ -4551,6 +4551,102 @@ from urllib.parse import urljoin, urlparse
 import httpx as httpx_client
 
 @app.post("/api/tools/fetch-url")
+
+@app.post("/api/tools/convert-file")
+async def tools_convert_file(file: UploadFile = File(...), format: str = Form("auto")):
+    """Convert uploaded file (DOCX, PDF, RTF) to Markdown"""
+    import io
+    content = await file.read()
+    filename = file.filename or ""
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else format
+
+    try:
+        if ext in ("docx", "doc"):
+            import mammoth
+            result = mammoth.convert_to_markdown(io.BytesIO(content))
+            return {"markdown": result.value, "messages": [m.message for m in result.messages], "filename": filename}
+
+        elif ext == "pdf":
+            from pdfminer.high_level import extract_text
+            text = extract_text(io.BytesIO(content))
+            # Basic markdown formatting
+            lines = text.split("\n")
+            md_lines = []
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    md_lines.append("")
+                elif len(stripped) < 60 and stripped == stripped.upper() and len(stripped) > 3:
+                    md_lines.append(f"## {stripped.title()}")
+                else:
+                    md_lines.append(stripped)
+            markdown = "\n".join(md_lines)
+            markdown = "\n".join(l for i, l in enumerate(markdown.split("\n")) if i == 0 or l.strip() or markdown.split("\n")[i-1].strip())
+            return {"markdown": markdown.strip(), "messages": [], "filename": filename}
+
+        elif ext == "rtf":
+            # Simple RTF stripping
+            text = content.decode("utf-8", errors="ignore")
+            import re
+            text = re.sub(r'\\[a-z]+\d*\s?', '', text)
+            text = re.sub(r'[{}]', '', text)
+            text = re.sub(r'\r\n', '\n', text)
+            text = text.strip()
+            return {"markdown": text, "messages": ["Basic RTF conversion — complex formatting may be lost"], "filename": filename}
+
+        else:
+            # Plain text fallback
+            text = content.decode("utf-8", errors="ignore")
+            return {"markdown": text.strip(), "messages": [], "filename": filename}
+
+    except Exception as e:
+        raise HTTPException(400, f"Conversion failed: {str(e)}")
+
+@app.post("/api/tools/convert-url")
+async def tools_convert_url(request: Request):
+    """Convert a webpage URL to Markdown"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        from bs4 import BeautifulSoup
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            soup = BeautifulSoup(resp.text, "lxml")
+            # Remove scripts, styles, nav, footer
+            for tag in soup.find_all(["script", "style", "nav", "footer", "header", "aside"]):
+                tag.decompose()
+            # Try to get main content
+            main = soup.find("main") or soup.find("article") or soup.find(class_=["content", "post", "article", "main"]) or soup.body
+            if not main:
+                main = soup
+            html = str(main)
+            # Convert HTML to markdown
+            md = html
+            md = __import__('re').sub(r'<h1[^>]*>(.*?)</h1>', r'# \1\n\n', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<h2[^>]*>(.*?)</h2>', r'## \1\n\n', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<h3[^>]*>(.*?)</h3>', r'### \1\n\n', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<strong[^>]*>(.*?)</strong>', r'**\1**', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<b[^>]*>(.*?)</b>', r'**\1**', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<em[^>]*>(.*?)</em>', r'*\1*', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<a[^>]*href="([^"]*)"[^>]*>(.*?)</a>', r'[\2](\1)', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?\s*>', r'![\2](\1)', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<li[^>]*>(.*?)</li>', r'- \1\n', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<br\s*/?>', '\n', md)
+            md = __import__('re').sub(r'<p[^>]*>(.*?)</p>', r'\1\n\n', md, flags=__import__('re').DOTALL)
+            md = __import__('re').sub(r'<[^>]+>', '', md)
+            md = __import__('re').sub(r'&amp;', '&', md)
+            md = __import__('re').sub(r'&lt;', '<', md)
+            md = __import__('re').sub(r'&gt;', '>', md)
+            md = __import__('re').sub(r'\n{3,}', '\n\n', md)
+            title = soup.title.string.strip() if soup.title and soup.title.string else ""
+            return {"markdown": md.strip(), "title": title, "url": str(resp.url)}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
 async def tools_fetch_url(request: Request):
     """Fetch a URL and return its HTML content for client-side parsing"""
     data = await request.json()
