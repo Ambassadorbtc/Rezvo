@@ -144,28 +144,28 @@ function AppRoutes() {
   // This prevents race conditions by processing new session_id FIRST before checking existing session
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
   if (typeof window !== 'undefined' && window.location.hash?.includes('session_id=')) {
-    return <AuthCallbackPage />;
+    return <NewAuthCallbackPage />;
   }
   
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Public Routes - Using New Design */}
       <Route path="/" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LandingPage />} />
-      <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LoginPage />} />
-      <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupAuthPage />} />
-      <Route path="/signup-new" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <NewSignupPage />} />
+      <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <NewLoginPage />} />
+      <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <NewSignupPage />} />
       
-      {/* New Signup Flow Routes (TailAdmin style) */}
-      <Route path="/signup/profile" element={<SignupProfilePage />} />
-      <Route path="/signup/verify-phone" element={<SignupPhoneVerifyPage />} />
-      <Route path="/signup/business-type" element={<ProtectedRoute><SignupBusinessTypePage /></ProtectedRoute>} />
+      {/* Legacy signup routes - redirect to new signup */}
+      <Route path="/signup/profile" element={<Navigate to="/signup" replace />} />
+      <Route path="/signup/verify-phone" element={<Navigate to="/signup" replace />} />
+      <Route path="/signup/business-type" element={<Navigate to="/signup?step=5" replace />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/auth-callback" element={<AuthCallbackPage />} />
+      <Route path="/auth-callback" element={<NewAuthCallbackPage />} />
       
       {/* Legacy routes - redirect to new flow */}
       <Route path="/welcome" element={<Navigate to="/signup" replace />} />
       <Route path="/get-started" element={<Navigate to="/signup" replace />} />
-      <Route path="/verify-phone" element={<Navigate to="/signup/verify-phone" replace />} />
+      <Route path="/verify-phone" element={<Navigate to="/signup" replace />} />
+      <Route path="/signup-new" element={<Navigate to="/signup" replace />} />
       
       <Route path="/book/:businessId" element={<PublicBookingPage />} />
       <Route path="/free-book/:slug" element={<FreeBookingPage />} />
