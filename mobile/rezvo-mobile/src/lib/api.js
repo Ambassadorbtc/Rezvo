@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Production URL - same as web app
-const API_URL = 'https://easysched-3.preview.emergentagent.com/api';
+const API_URL = 'https://rezvo-scheduler.preview.emergentagent.com/api';
 
 const api = axios.create({
   baseURL: API_URL,

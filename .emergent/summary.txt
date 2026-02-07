@@ -11,138 +11,157 @@ The user wants to build a booking application MVP, , for UK micro-businesses. Th
     - A two-way support messaging system.
     - A functional notification center and business settings management.
 - **User's latest requests from this session:**
-    1.  Fix the Google authentication flow, which currently logs new users into existing accounts.
-    2.  Implement a no-reply email system with action links for notifications (booking confirmations, etc.).
-    3.  Complete the Forgot Password process.
-    4.  Create a comprehensive single-page  with screenshots of every single page and user flow from the web app, admin portal, and mobile app.
+    1.  Fix the Google authentication flow. (Completed)
+    2.  Implement a no-reply email system with action links. (Completed)
+    3.  Complete the Forgot Password process. (Completed)
+    4.  Create a comprehensive  page. (Completed, pending final user verification)
+    5.  Ensure feature parity between web and mobile apps, specifically adding the missing onboarding flow to mobile. (Completed, but resulted in a new bug)
+    6.  Fix calendar drag-and-drop instability. (Completed)
+    7.  Fix all P1/P2 issues, including chat sync, calendar bugs, and UI polish. (Completed)
+    8.  Fix mobile login failure after the latest changes. (NEW, HIGHEST PRIORITY)
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a FastAPI backend, React frontend, and an Expo mobile app. The environment has been stabilized with the mobile app server now managed by Supervisor for auto-restarts. An integration with  for sending transactional emails has been configured.
+A full-stack application with a FastAPI backend, React frontend, and an Expo mobile app. The agent has completed a significant number of features and bug fixes in this session, including a major overhaul of the  page, fixing the critical Google Auth bug, completing the forgot password flow, implementing email action links, and addressing a list of P1/P2 issues (calendar stability, chat sync, UI polish).
 
-The main development focus in this session was a user-requested side project: creating a  page to display screenshots of the entire application. This involved numerous attempts to capture all pages, with the user repeatedly pointing out omissions. Concurrently, the agent attempted to fix a critical Google Authentication bug where new signups were incorrectly logged into pre-existing user accounts. A fix was attempted by correcting inconsistent  key usage, but the user reported the issue persists.
+Most recently, to ensure web/mobile feature parity, the agent added the missing multi-step  to the mobile app. However, after these changes, the user reported being unable to log in to the mobile app via Expo Go, providing a screenshot that shows a Network response not OK error.
 
 **Last working item**:
--   **Last item agent was working:** The agent was working on the side project of creating a comprehensive  page. The user identified that key pages and flows were still missing (e.g., the full share link flow, business type selection page, mobile signup screens). The agent was in the middle of a systematic effort to create a new test account and walk through every single application flow to capture all missing screenshots.
--   **Status:** IN PROGRESS
+-   **Last item agent was working:** Debugging a mobile app login failure. The user provided a screenshot indicating a network error when trying to log in via the Expo Go app. The agent's last action was to restart the Expo server, incorrectly assuming the issue was a changed tunnel URL rather than an API-level problem.
+-   **Status:** BLOCKED
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Manual verification. The agent must visually inspect the final  file to ensure all captured screenshots are present, correctly labeled, and organized as requested.
--   **User Testing Done:** N
+-   **Which testing method agent to use?** Manual testing by attempting to log in through the Expo Go app after investigating the root cause.
+-   **User Testing Done:** Y (User confirmed login is failing)
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0):** Google Auth logs new users into existing accounts.
--   **Issue 2 (P1):** The  side project is incomplete and requires a full, systematic capture of all pages.
--   **Issue 3 (P1):** Unified Live Chat is not syncing in real-time (unverified in this session).
--   **Issue 4 (P2):** Mobile Calendar UI is misaligned (unverified in this session).
--   **Issue 5 (P2):** New bookings do not appear on the web calendar (unverified in this session).
+-   **Issue 1 (P0):** Mobile app login is broken.
+-   **Issue 2 (P1):** The newly added mobile  requires testing.
+-   **Issue 3 (P2):**  is pending final user verification.
 
 **Issues Detail:**
--   **Issue 1: Google Auth logs new users into existing accounts.**
-    -   **Attempted fixes:** The agent identified that new tokens were being saved to  with the key  instead of the correct . A fix was applied to , , and . However, the user confirmed the bug still exists, indicating the fix was incomplete or there is another underlying issue, like a race condition or improper clearing of old user data.
+-   **Issue 1: Mobile app login is broken.**
+    -   **Attempted fixes:** The agent restarted the Expo server, which did not solve the problem.
     -   **Next debug checklist:**
-        1.  Verify the  key fix was applied correctly in all relevant files using .
-        2.  Add logging in  to trace which token and user data are being loaded on app start.
-        3.  In , log the token *before and after* it's set to confirm the operation.
-        4.  Implement a forced page reload (e.g., ) after a successful Google signup to ensure the  and all components re-initialize with the new user's token.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical authentication bug that breaks the Google signup flow, a core feature of the application.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend testing agent. The test must simulate a brand-new user signing up with Google and verify that they are logged into their own newly created account, not an existing one.
-    -   **Blocked on other issue:** Blocked by the  side project as per user's directive.
+        1.  Acknowledge the user's screenshot shows a **Network response not OK** error. This indicates a problem with the API call from the mobile app, not an invalid Expo tunnel URL.
+        2.  Examine the mobile app logs () for errors during the login attempt.
+        3.  Inspect the backend logs () for any corresponding errors when the  endpoint is hit by the mobile app.
+        4.  Review the login logic in  and the associated auth context to trace how the API call is constructed and handled.
+        5.  Verify the API endpoint is responding correctly using .
+    -   **Why fix this issue and what will be achieved with the fix?** This is a **critical blocker**. The user cannot test any mobile functionality, including the recently added features, until login is fixed.
+    -   **Status:** BLOCKED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both (manual test on mobile, curl for backend).
+    -   **Blocked on other issue:** None. This is the primary blocker.
 
--   **Issue 2: The  side project is incomplete.**
-    -   **Attempted fixes:** The agent made multiple passes at capturing screenshots but repeatedly missed pages, leading to several corrections from the user. The process has been inefficient and incomplete.
+-   **Issue 2: The newly added mobile  requires testing.**
+    -   **Attempted fixes:** None.
     -   **Next debug checklist:**
-        1.  Create a new test account from scratch.
-        2.  Systematically navigate through every user flow: Public pages, Email Signup, Google Signup, Onboarding, all Business Portal pages, all Founder Admin pages, and the entire public booking flow.
-        3.  Capture every screen on the mobile app via the Expo web preview.
-        4.  Save all screenshots with clear, sequential names into the  directory.
-        5.  Rebuild  from scratch to include all newly captured images, organized into logical sections.
-    -   **Why fix this issue and what will be achieved with the fix?** It is a direct and high-priority request from the user. Completing it will allow development to resume on the core application features.
-    -   **Status:** IN PROGRESS
+        1.  Once Issue 1 is resolved, perform a complete signup and onboarding flow on the mobile app.
+        2.  Verify that after Business Type selection, the user is correctly navigated to the new .
+        3.  Test each step of the wizard (Location, Team) and ensure it correctly saves the data and navigates to the dashboard upon completion.
+    -   **Why fix this issue and what will be achieved with the fix?** To confirm that the mobile app has reached full feature parity with the web onboarding flow.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend (Mobile).
+    -   **Blocked on other issue:** Issue 1: Mobile app login is broken.
+
+-   **Issue 3:  is pending final user verification.**
+    -   **Attempted fixes:** The agent has comprehensively updated the showcase page with the full booking flow and the new mobile onboarding screens.
+    -   **Next debug checklist:** Ask the user to review the final  page and confirm if it meets all their requirements.
+    -   **Why fix this issue and what will be achieved with the fix?** To formally close out a major user-requested task.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** N/A. Manual verification of the final HTML page is required.
-    -   **Blocked on other issue:** none.
+    -   **Should Test frontend/backend/both after fix?** N/A
+    -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Complete the Forgot Password Flow (P2)**
-    -   **Where to resume:** The Resend email integration is complete. The next step is to implement the backend logic to generate and email a password reset link, and build the corresponding frontend page for the user to enter their new password.
-    -   **What will be achieved with this?** An essential account recovery feature.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on something:** None.
+None.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks:**
-    - (P1) Implement the No-Reply + Action Links email system for booking confirmations and reminders.
-    - (P1) Fix real-time chat synchronization between web and mobile.
-    - (P1) Fix new bookings not appearing on the web calendar.
-    - (P2) Fix mobile Calendar UI misalignment.
-    - (P2) Add Rezvo Logo to Chat Profile Icons.
-- **Future Tasks:**
-    - (P2) Dojo Payment Integration.
-    - (P2) Mobile Calendar Drag-and-Drop functionality.
-    - (P2) Google Calendar Sync.
+-   **Upcoming Tasks:**
+    -   (P3) Google Calendar Sync: The full backend and frontend infrastructure is complete. The feature is blocked pending user-provided Google Cloud OAuth credentials (, ).
+-   **Future Tasks:**
+    -   (P2) Dojo Payment Integration.
 
 **Completed work in this session**
--   **Environment Stability:**
-    -   Automated the Expo mobile server startup by creating and configuring .
--   **Email Integration:**
-    -   Successfully integrated the  API for transactional emails and configured it with the user's API key and sender email ().
--   **Google Auth Debugging:**
-    -   Added a backend proxy endpoint () to mitigate CORS issues.
-    -   Identified and attempted to fix a critical bug related to inconsistent  token keys.
--   **Side Project:**
-    -   Created an  page for a stable QR code link.
-    -   Spent significant time capturing over 70 screenshots for the  page, which is still in progress.
+-   **Showcase Completion:** Fully captured and integrated the 8-step public booking flow into . Added mockups for missing mobile screens.
+-   **Google Auth Bug Fix:** Reworked the Google signup/login backend logic to correctly handle new users, existing email/password users, and returning Google users by adding a  to the user model.
+-   **Mobile Feature Parity:**
+    -   Created  and  for the mobile app.
+    -   Created and integrated the missing  into the mobile signup flow.
+-   **Forgot Password Flow:** Enhanced the existing flow by adding an email-based password reset option to the frontend.
+-   **Email Action Links:** Implemented a no-reply email system for booking confirmations with Cancel and Reschedule links, including backend endpoints and frontend pages.
+-   **Calendar Stability (Web & Mobile):**
+    -   Made web calendar drag-and-drop more robust with a confirmation dialog and snap-to-grid logic.
+    -   Fixed a UI misalignment bug in both web and mobile calendars.
+    -   Implemented a safer long-press to move functionality for the mobile calendar.
+-   **Chat & UI Polish:**
+    -   Improved real-time chat sync by making polling less disruptive.
+    -   Added the Rezvo logo to admin/support chat profile icons for better branding.
+
+**Earlier issues found/mentioned but not fixed**
+None.
+
+**Known issue recurrence from previous fork**
+-   ** incompleteness:** This was a recurring issue that has been extensively addressed in this session. It is now pending final user verification.
+-   **Google Auth bug:** This critical bug was fixed in this session.
+-   **Expo server  error:** This system-level issue from the previous fork did not recur; the Expo server ran successfully in this session until the latest code changes.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Authentication:** Debugging a complex Google Auth flow involving , React Context, and backend proxies to handle CORS and token management.
--   **Email:** Integration of the  API for transactional emails within a FastAPI backend.
--   **DevOps:** Configuration of  to ensure a service (Expo server) is always running.
--   **Frontend Automation:** Use of Playwright via Python scripts to automate browser actions for capturing application screenshots.
+-   **Authentication Flow:** Differentiating login/signup flows for users with different auth methods (email/password vs. Google OAuth) by storing and verifying a unique .
+-   **Robust UI Interactions:** Implementing confirmation dialogs and server-side validation for critical actions like drag-and-drop booking updates to prevent data loss.
+-   **Mobile Gesture Handling:** Using  for long-press gestures to initiate actions (e.g., moving a booking) as a safer alternative to direct dragging on mobile.
+-   **Feature Parity Auditing:** Systematically comparing file structures and navigation graphs between web and mobile to identify and implement missing features.
+
+**key DB schema**
+-   **users:** added 
+-   **bookings:** added , 
+
+**changes in tech stack**
+-   : Added for mobile QR code generation.
+-   : Added for mobile drag-and-drop functionality.
+-   , , : Dependencies added for Google Calendar integration.
 
 **All files of reference**
--   **/app/frontend/public/showcase.html**: The file for the user's side project, currently in progress.
--   **/app/frontend/src/pages/auth/AuthCallbackPage.jsx**: Contains the attempted fix for the Google Auth bug. It needs further review.
--   **/app/frontend/src/context/AuthContext.js**: Defines the correct  key () that should be used across the app.
--   **/app/backend/server.py**: Contains the new proxy endpoint for Emergent Auth.
--   **/etc/supervisor/conf.d/mobile.conf**: The new configuration file that ensures the Expo server auto-starts.
+-   **/app/mobile/rezvo-mobile/src/screens/LoginScreen.js**: Potential source of the current P0 login bug.
+-   **/app/backend/server.py**: Contains all API logic, including the recently modified Google Auth, booking, and calendar endpoints.
+-   **/app/frontend/src/pages/CalendarPage.jsx**: Contains the robust web drag-and-drop implementation.
+-   **/app/mobile/rezvo-mobile/src/screens/business/CalendarScreen.js**: Contains the new long-press-to-move implementation.
+-   **/app/mobile/rezvo-mobile/src/screens/OnboardingWizardScreen.js**: The newly created mobile screen that needs testing.
+-   **/app/frontend/public/showcase.html**: The showcase page pending user verification.
 
 **Critical Info for New Agent**
--   The user is currently focused on the ** side project**. You must complete this task first. The user is very detail-oriented and expects **every single page, modal, and state** to be captured. Adopt a highly systematic approach: create a new test user and walk through every possible flow on web and mobile, capturing screenshots at each step.
--   After the showcase is complete, the **#1 priority is the critical Google Auth bug**. A new Google signup must not log the user into a pre-existing account. The previous fix was insufficient. Your investigation should focus on race conditions, ensuring old user data is completely cleared from the client, and forcing a hard reload after signup to reset the application state.
--   The user has approved **Option B for emails (No-Reply + Action Links)**. This is the next major development task to begin after the showcase and Google Auth bug are resolved.
+-   **TOP PRIORITY (P0):** The user cannot log in to the mobile app. The error is **Network response not OK**, which points to an API failure, NOT an Expo tunnel issue. Your first action must be to investigate the mobile app's API call during login and the corresponding backend logs. Do not assume it's an environment problem.
+-   After fixing the mobile login, you must test the newly added mobile **Onboarding Wizard** to ensure the signup flow is complete and correct.
+-   A large number of features were completed and tested by the previous agent. Refer to the Completed work section. The user has a high standard for quality, especially regarding calendar stability.
+-   The Google Calendar Sync feature is fully implemented but requires the user to provide OAuth credentials. Do not attempt to use it until the user provides the keys.
 
 **documents and test reports created in this job**
--   /app/memory/PRD.md
--   /app/test_reports/iteration_18.json
--   /app/frontend/public/showcase.html
--   /app/frontend/public/expo-qr.html
+-   /app/test_reports/iteration_19.json
+-   /app/test_reports/iteration_20.json
+-   /app/test_reports/iteration_21.json
+-   /app/capture_booking_flow.py
+-   /app/frontend/public/mobile-business-type-mockup.html
 
 **Last 10 User Messages and any pending HUMAN messages**
--   10. (LATEST) Click on a share link and walk the flow and take screen shots. You are missing the what type business are they page from the sign up... I see there are some other missing sign up pages for mobile as well. What else are you missing we need every single page and action. Create a new test account to walk theough (Status: **IN PROGRESS**)
--   9. Still missing page - I see youve missed some from Onboarding Wizard. What else are you misssing" (Status: **IN PROGRESS**)
--   8. "I still cant see the wen sign up pages or the share links page. I want everything single page. Why are you missing them. (Status: **IN PROGRESS**)
--   7. Also you didnt add the sign up and login screen for the Rezvo App Showcase. Remember we need ALL PAGES." (Status: **IN PROGRESS**)
--   6. "Ok, Ive gone through the full sign up process used a different email address. james111trader@gmail.com. However, it didnt create a new account it logged me into the testuser@example.com account." (Status: **BUG REPORTED, FIX FAILED**)
--   5. "Lets carry on with the build" (Status: User wants to continue development after initial showcase was presented).
--   4. "Ok these are great." (Initial positive feedback on the showcase before noticing missing pages).
--   3. "Correct." (User confirming the requirements for the showcase page).
--   2. "Ok, I have a small side project for you..." (User initiating the showcase page task).
--   1. "Ok, lets do option B. Do that after you fix the login issues still not fixed (User approves email strategy and reports the Google Auth bug is still present).
+-   10. (LATEST) User provides a screenshot showing a Network response not OK error when trying to log in to the mobile app. (Status: **ACTION REQUIRED, P0 BUG**)
+-   9. RESTART EXPO. I tried to logged via QR and it didnt work" (Status: **ACTION REQUIRED**)
+-   8. User asks to add the missing "Onboarding Wizard" to the mobile app. (Status: **ADDRESSED**, but may have caused bug)
+-   7. "Whats left?" (Status: **ADDRESSED**)
+-   6. Agent provides a final summary of completed P1/P2/P3 tasks. (Status: **PENDING USER REVIEW**)
+-   5. User asks to complete all P1, P2, and P3 tasks, emphasizing the critical importance of calendar drag-and-drop stability. (Status: **ADDRESSED**)
+-   4. "Ok do next" - Approving work on Forgot Password flow. (Status: **ADDRESSED**)
+-   3. "Ok whats next - Asking for the next task after Google Auth fix. (Status: **ADDRESSED**)
+-   2. Ok go. Make sure all pages in the web have the same page in the mobile app. - Approving work on Google Auth fix and feature parity audit. (Status: **ADDRESSED**)
+-   1. I want the type of business in the mobile screenshots. Make it happen. (Status: **ADDRESSED**)
 
 **Project Health Check:**
 -   **Broken:**
-    -   Google Auth signup flow is critically broken, logging new users into wrong accounts.
-    -   Real-time chat synchronization across platforms (status unverified).
--   **Technical Debt:**
-    -   Monolithic  file.
-    -   Obsolete and unused auth pages in the frontend codebase.
+    -   Mobile app login is non-functional.
 
 **3rd Party Integrations**
 -   React Native / Expo
@@ -150,12 +169,19 @@ The main development focus in this session was a user-requested side project: cr
 -   Sendly.live (SMS OTP)
 -   Emergent-managed Google Auth
 -   Resend (Transactional Email)
+-   Playwright
+-   **Google Calendar API** (Implemented, pending user credentials)
+-   
+-   
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, but the test passed before the user discovered the critical cross-account login bug, indicating the test case was insufficient.
+-   **Testing agent used after significant changes:** YES (multiple times)
+-   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** The Google Auth signup flow is broken.
+-   **Known regressions:** Mobile login broke after adding the .
+
+**Credentials to test flow:**
+Standard test credentials used in previous agent test runs should work for the web app. Mobile login is currently broken.
 
 **What agent forgot to execute**
--   The agent has repeatedly failed to be comprehensive in its execution of the  side project, requiring numerous cycles of user feedback to identify and capture missing pages.
--   The agent's fix for the Google Auth bug was not thoroughly tested, as a simple test of creating a second user would have revealed that the fix was ineffective.</analysis>
+The agent failed to correctly diagnose the user's mobile login issue. Instead of investigating the Network response not OK error as an API problem, the agent assumed it was an Expo tunnel issue and simply restarted the server, which did not fix the root cause.</analysis>
