@@ -12,9 +12,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--c);color:var(--
 .d{font-family:'Space Grotesk',sans-serif}
 
 /* Layout: full viewport split */
-.page{min-height:100vh;display:flex;opacity:0;transform:translateX(40px);position:absolute;inset:0;transition:all .5s cubic-bezier(.4,0,.2,1)}
-.page.on{opacity:1;transform:translateX(0);position:relative}
-.page.off{opacity:0;transform:translateX(-40px);position:absolute}
+.page{min-height:100vh;display:flex;opacity:0;transform:translateX(40px);position:absolute;inset:0;transition:all .5s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0}
+.page.on{opacity:1;transform:translateX(0);position:relative;pointer-events:auto;z-index:1}
+.page.off{opacity:0;transform:translateX(-40px);position:absolute;pointer-events:none;z-index:0}
 
 /* Left panel — illustration/brand side */
 .left{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;position:relative;overflow:hidden;background:linear-gradient(135deg,#E8F5F3 0%,#D1FAE5 50%,#C6F7E9 100%)}
