@@ -4,6 +4,7 @@ import {
   MessageSquare, Star, Lightbulb, Map, FileCode, CheckSquare, AlertTriangle,
   Bot, Zap, Type, Database, Code, FileDown
 } from 'lucide-react';
+import SEOHead from '../../components/SEOHead';
 
 const TOOLS = [
   { slug: 'qr-code-generator', name: 'QR Code Generator', desc: 'Generate QR codes for any booking link or URL instantly.', icon: QrCode, color: '#00BFA5', bg: '#E8F5F3', ready: true },
