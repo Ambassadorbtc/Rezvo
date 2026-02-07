@@ -16,7 +16,7 @@ export default function BookingLinkTool() {
     if (!name.trim() || !service.trim()) return;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
     const params = new URLSearchParams({ s: service, d: date, t: time }).toString();
-    const url = `${window.location.origin}/book/${slug}?${params}`;
+    const url = `${window.location.origin}/free-book/${slug}?${params}`;
     setLink(url);
   };
 
