@@ -8,7 +8,6 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DashboardPage from "./pages/DashboardPage";
-import DashboardPageTest from "./pages/DashboardPageTest";
 import CalendarPage from "./pages/CalendarPage";
 import BookingsPage from "./pages/BookingsPage";
 import ServicesPage from "./pages/ServicesPage";
