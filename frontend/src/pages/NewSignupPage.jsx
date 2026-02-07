@@ -129,39 +129,28 @@ export default function NewSignupPage() {
     }
   };
 
-  // Google Sign In
+  // Google Sign In via Emergent Auth
   const handleGoogleSignIn = () => {
-    // Load Google Identity Services
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-        callback: handleGoogleCallback,
-      });
-      window.google.accounts.id.prompt();
-    } else {
-      setError('Google Sign-In is not available');
-    }
-  };
-
-  const handleGoogleCallback = async (response) => {
     setLoading(true);
-    setShowOverlay(true);
-    setOverlayMessage('Connecting Google...');
-    try {
-      const result = await api.post('/auth/google-signup', {
-        google_token: response.credential,
-      });
-      setGoogleData(result.data);
-      setTimeout(() => {
-        setShowOverlay(false);
-        setStep(5);
-      }, 1500);
-    } catch (err) {
-      setShowOverlay(false);
-      setError(err.response?.data?.detail || 'Google sign-in failed');
-    } finally {
-      setLoading(false);
-    }
+    // Store signup state
+    sessionStorage.setItem('signup_user_type', 'business');
+    sessionStorage.setItem('auth_method', 'google');
+    sessionStorage.setItem('signup_phone', fullPhone);
+    sessionStorage.setItem('signup_verification_id', verificationId);
+    sessionStorage.setItem('signup_profile', JSON.stringify({
+      businessType,
+      firstName,
+      lastName,
+      businessName,
+      address,
+      city,
+      postcode,
+      themeColor,
+    }));
+    
+    // Redirect to Emergent Auth
+    const redirectUrl = window.location.origin + '/auth-callback';
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   // Complete Registration
