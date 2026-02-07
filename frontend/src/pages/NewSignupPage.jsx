@@ -196,6 +196,10 @@ export default function NewSignupPage() {
         setError('Password must be at least 8 characters');
         return;
       }
+      if (!verificationId) {
+        setError('Please verify your phone number first');
+        return;
+      }
     }
     
     if (!businessName) {
