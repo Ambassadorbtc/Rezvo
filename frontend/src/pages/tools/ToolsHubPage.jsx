@@ -63,7 +63,7 @@ export default function ToolsHubPage() {
       <section className="py-20 px-6 text-center anim-fade-up">
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-teal-500/10 text-teal-600 px-5 py-2 rounded-full text-sm font-semibold mb-8">
-            <Zap className="w-4 h-4" /> 21 Free Tools — No Login Required
+            <Zap className="w-4 h-4" /> 30+ Free Tools — No Login Required
           </div>
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-navy-900 leading-[1.05] tracking-tight mb-6">
             Free Business Suite
