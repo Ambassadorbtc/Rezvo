@@ -158,6 +158,14 @@ function AppRoutes() {
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/cookies" element={<CookiesPage />} />
+
+      {/* Free Tools Suite */}
+      <Route path="/tools" element={<ToolsHubPage />} />
+      <Route path="/tools/qr-code-generator" element={<QRCodeTool />} />
+      <Route path="/tools/service-menu-generator" element={<ServiceMenuTool />} />
+      <Route path="/tools/no-show-reminder" element={<NoShowReminderTool />} />
+      <Route path="/tools/pricing-calculator" element={<PricingCalculatorTool />} />
+      <Route path="/tools/keyword-density" element={<KeywordDensityTool />} />
       
       {/* Protected Routes - Business Owners Only */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
