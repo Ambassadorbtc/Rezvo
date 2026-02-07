@@ -213,7 +213,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#ddd;display:flex;ali
 <!-- S5 GOOGLE -->
 <div class="s" id="s5">
   <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
-  <img src="/showcase/rezi-thumbsup.png" class="fox" data-bounce alt="Rezi">
+  <img src="/showcase/rezi-thumbsup.png" class="fox" data-bounce alt="Rezi" style="width:160px;height:160px">
   <h2 class="d" data-d="2">One more thing</h2>
   <p class="sub" data-d="3">Connect Google for a seamless experience</p>
   <button class="g-btn" data-d="4" onclick="showOv()">
@@ -221,27 +221,43 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#ddd;display:flex;ali
     Continue with Google
   </button>
   <div class="divider" data-d="5">or</div>
-  <button class="btn btn-o" data-d="6" onclick="go(6)">Skip for now</button>
+  <button class="btn btn-o" data-d="6" onclick="go(6)">Continue with email</button>
+  <button style="background:none;border:none;color:var(--t);font-size:13px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit" data-d="7" onclick="go(6)">Skip for now →</button>
   <div class="ov" id="ov"><div class="ov-bg"></div><div class="sp" style="left:10%;top:20%"></div><div class="sp" style="left:30%;top:10%;animation-delay:.3s"></div><div class="sp" style="left:50%;top:30%;animation-delay:.1s"></div><div class="sp" style="left:70%;top:15%;animation-delay:.5s"></div><div class="sp" style="left:85%;top:25%;animation-delay:.2s"></div><div class="ring"></div><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Connected!</h3><p>Google account linked</p></div>
 </div>
 
-<!-- S6 TYPE -->
+<!-- S6 TYPE — full business list from web -->
 <div class="s top" id="s6">
-  <img src="/showcase/rezi-thumbsup.png" class="fox" data-peek-r alt="Rezi">
-  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
-  <h2 class="d" data-d="2">What's your vibe?</h2>
-  <p class="sub" data-d="3">Pick your business type so I can set things up perfectly</p>
-  <div class="tg">
-    <div class="tc se" data-pop="1" onclick="st(this)"><span class="em">✂️</span><span class="nm">Barber</span></div>
-    <div class="tc" data-pop="2" onclick="st(this)"><span class="em">💇‍♀️</span><span class="nm">Hair Salon</span></div>
-    <div class="tc" data-pop="3" onclick="st(this)"><span class="em">💅</span><span class="nm">Nails & Beauty</span></div>
-    <div class="tc" data-pop="4" onclick="st(this)"><span class="em">💪</span><span class="nm">Personal Trainer</span></div>
-    <div class="tc" data-pop="5" onclick="st(this)"><span class="em">🦷</span><span class="nm">Dentist</span></div>
-    <div class="tc" data-pop="6" onclick="st(this)"><span class="em">🐾</span><span class="nm">Pet Grooming</span></div>
-    <div class="tc" data-pop="7" onclick="st(this)"><span class="em">💆</span><span class="nm">Spa & Massage</span></div>
-    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🎯</span><span class="nm">Other</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:4px">
+    <div></div>
+    <button style="background:none;border:none;color:#9FB3C8;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit" data-d="1" onclick="go(7)">Skip for now</button>
   </div>
-  <button class="btn btn-p" data-d="7" onclick="go(7)">That's me! →</button>
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
+  <h2 class="d" data-d="2" style="align-self:flex-start;font-size:22px">What type of business do you run?</h2>
+  <p data-d="2" style="color:#627D98;font-size:13px;margin-bottom:14px;align-self:flex-start">This helps us personalize your booking page</p>
+  <div class="tg" style="grid-template-columns:1fr 1fr 1fr;gap:8px">
+    <div class="tc" data-pop="1" onclick="st(this)"><span class="em">✂️</span><span class="nm" style="font-size:10px">Hairdresser</span></div>
+    <div class="tc se" data-pop="1" onclick="st(this)"><span class="em">💈</span><span class="nm" style="font-size:10px">Barber Shop</span></div>
+    <div class="tc" data-pop="2" onclick="st(this)"><span class="em">💅</span><span class="nm" style="font-size:10px">Beauty Salon</span></div>
+    <div class="tc" data-pop="2" onclick="st(this)"><span class="em">💄</span><span class="nm" style="font-size:10px">Nail Tech</span></div>
+    <div class="tc" data-pop="3" onclick="st(this)"><span class="em">👁️</span><span class="nm" style="font-size:10px">Lash & Brow</span></div>
+    <div class="tc" data-pop="3" onclick="st(this)"><span class="em">💆</span><span class="nm" style="font-size:10px">Massage</span></div>
+    <div class="tc" data-pop="4" onclick="st(this)"><span class="em">💪</span><span class="nm" style="font-size:10px">Personal Trainer</span></div>
+    <div class="tc" data-pop="4" onclick="st(this)"><span class="em">🧘</span><span class="nm" style="font-size:10px">Yoga</span></div>
+    <div class="tc" data-pop="5" onclick="st(this)"><span class="em">🦷</span><span class="nm" style="font-size:10px">Dentist</span></div>
+    <div class="tc" data-pop="5" onclick="st(this)"><span class="em">🏥</span><span class="nm" style="font-size:10px">Physio</span></div>
+    <div class="tc" data-pop="6" onclick="st(this)"><span class="em">🚗</span><span class="nm" style="font-size:10px">Driving</span></div>
+    <div class="tc" data-pop="6" onclick="st(this)"><span class="em">🐾</span><span class="nm" style="font-size:10px">Pet Services</span></div>
+    <div class="tc" data-pop="7" onclick="st(this)"><span class="em">📸</span><span class="nm" style="font-size:10px">Photographer</span></div>
+    <div class="tc" data-pop="7" onclick="st(this)"><span class="em">🎵</span><span class="nm" style="font-size:10px">Music Teacher</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">📚</span><span class="nm" style="font-size:10px">Tutor/Coach</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🎨</span><span class="nm" style="font-size:10px">Tattoo Artist</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">☕</span><span class="nm" style="font-size:10px">Cafe</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🍽️</span><span class="nm" style="font-size:10px">Restaurant</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🧹</span><span class="nm" style="font-size:10px">Cleaning</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🎯</span><span class="nm" style="font-size:10px">Other</span></div>
+  </div>
+  <button class="btn btn-p" data-d="7" onclick="go(7)" style="margin-bottom:20px">That's me! →</button>
 </div>
 
 <!-- S7 PROFILE -->
