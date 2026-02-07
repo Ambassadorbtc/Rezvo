@@ -19,10 +19,13 @@ import {
   HelpCircle,
   MessageSquare,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Link2,
+  Check,
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const SettingsPage = () => {
   const { user, logout } = useAuth();
@@ -30,6 +33,11 @@ const SettingsPage = () => {
   const [saving, setSaving] = useState(false);
   const [business, setBusiness] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [searchParams] = useSearchParams();
+  
+  // Google Calendar state
+  const [googleCalendarStatus, setGoogleCalendarStatus] = useState({ connected: false, configured: false });
+  const [connectingGoogle, setConnectingGoogle] = useState(false);
 
   const [businessName, setBusinessName] = useState('');
   const [tagline, setTagline] = useState('');
