@@ -253,16 +253,17 @@ export default function NewSignupPage() {
 
         const response = await api.post('/auth/register-with-otp', registrationData);
       
-      // Save auth token
-      localStorage.setItem('rezvo_token', response.data.token);
-      localStorage.setItem('rezvo_user', JSON.stringify(response.data.user));
-      updateUser(response.data.user);
+        // Save auth token
+        localStorage.setItem('rezvo_token', response.data.token);
+        localStorage.setItem('rezvo_user', JSON.stringify(response.data.user));
+        updateUser(response.data.user);
       
-      setOverlayMessage('Account created!');
-      setTimeout(() => {
-        setShowOverlay(false);
-        goToStep(8);
-      }, 1500);
+        setOverlayMessage('Account created!');
+        setTimeout(() => {
+          setShowOverlay(false);
+          goToStep(8);
+        }, 1500);
+      }
     } catch (err) {
       setShowOverlay(false);
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
