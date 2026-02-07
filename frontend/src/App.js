@@ -155,6 +155,7 @@ function AppRoutes() {
       {/* Protected Routes - Business Owners Only */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
       <Route path="/dashboard" element={<BusinessRoute><DashboardPage /></BusinessRoute>} />
+      <Route path="/dashboard-test" element={<BusinessRoute><DashboardPageTest /></BusinessRoute>} />
       <Route path="/calendar" element={<BusinessRoute><CalendarPage /></BusinessRoute>} />
       <Route path="/bookings" element={<BusinessRoute><BookingsPage /></BusinessRoute>} />
       <Route path="/team" element={<BusinessRoute><TeamPage /></BusinessRoute>} />
