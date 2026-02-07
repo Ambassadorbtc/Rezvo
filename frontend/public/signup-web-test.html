@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rezvo — Sign Up (Web Test)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7;--g:#E8F5F3}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--c);color:var(--n);min-height:100vh;overflow-x:hidden}
+.d{font-family:'Space Grotesk',sans-serif}
+
+/* Layout: full viewport split */
+.page{min-height:100vh;display:flex;opacity:0;transform:translateX(40px);position:absolute;inset:0;transition:all .5s cubic-bezier(.4,0,.2,1)}
+.page.on{opacity:1;transform:translateX(0);position:relative}
+.page.off{opacity:0;transform:translateX(-40px);position:absolute}
+
+/* Left panel — illustration/brand side */
+.left{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;position:relative;overflow:hidden;background:linear-gradient(135deg,#E8F5F3 0%,#D1FAE5 50%,#C6F7E9 100%)}
+.left .orb{position:absolute;border-radius:50%;opacity:.12;animation:morph 14s ease-in-out infinite;pointer-events:none}
+.left .o1{width:400px;height:400px;background:var(--t);top:-100px;right:-100px}
+.left .o2{width:300px;height:300px;background:#8B5CF6;bottom:-80px;left:-60px;animation-delay:5s}
+.left .fox{position:relative;z-index:1}
+.left h2{font-size:clamp(32px,4vw,48px);font-weight:800;text-align:center;line-height:1.1;margin-top:24px;position:relative;z-index:1}
+.left h2 .tl{color:var(--t)}
+.left p{color:#627D98;font-size:clamp(14px,1.5vw,18px);text-align:center;margin-top:12px;max-width:400px;line-height:1.6;position:relative;z-index:1}
+.left .testimonial{background:#fff;border-radius:20px;padding:20px 24px;margin-top:32px;max-width:400px;box-shadow:0 8px 30px rgba(0,0,0,.06);position:relative;z-index:1}
+.left .testimonial .stars{color:#FCD34D;font-size:14px;margin-bottom:8px}
+.left .testimonial q{font-size:14px;color:#486581;font-style:italic;line-height:1.5;display:block;margin-bottom:10px}
+.left .testimonial .who{font-size:12px;font-weight:600;color:var(--n)}
+.left .testimonial .role{font-size:11px;color:#9FB3C8}
+
+/* Right panel — form side */
+.right{width:520px;min-width:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 56px;background:#fff;position:relative}
+.right .back{position:absolute;top:24px;left:24px;width:40px;height:40px;border-radius:12px;border:2px solid #E2E8F0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:18px;color:#627D98}
+.right .back:hover{border-color:var(--t);color:var(--t)}
+.right .back:active{transform:scale(.92)}
+.right .skip{position:absolute;top:30px;right:32px;color:#9FB3C8;font-size:13px;font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;transition:color .2s}
+.right .skip:hover{color:var(--t)}
+.right .logo{display:flex;align-items:center;gap:8px;margin-bottom:32px}
+.right .logo-box{width:36px;height:36px;background:var(--t);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.right .logo-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+.right .prog{display:flex;gap:6px;width:100%;max-width:320px;height:4px;margin-bottom:28px}
+.right .prog .b{flex:1;height:4px;border-radius:2px;background:#E2E8F0;transition:all .5s}.right .prog .b.a{background:var(--t);flex:1.5}
+
+/* Animated children */
+[data-d]{opacity:0;transform:translateY(20px)}
+.on [data-d]{opacity:1;transform:translateY(0);transition:opacity .5s,transform .5s cubic-bezier(.4,0,.2,1)}
+.on [data-d="1"]{transition-delay:.1s}.on [data-d="2"]{transition-delay:.2s}.on [data-d="3"]{transition-delay:.3s}
+.on [data-d="4"]{transition-delay:.4s}.on [data-d="5"]{transition-delay:.5s}.on [data-d="6"]{transition-delay:.6s}
+.on [data-d="7"]{transition-delay:.7s}
+
+@keyframes morph{0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}}
+@keyframes bounceIn{0%{transform:scale(0) rotate(-8deg);opacity:0}50%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes glow{0%,100%{box-shadow:0 4px 16px rgba(0,191,165,.25)}50%{box-shadow:0 6px 32px rgba(0,191,165,.55)}}
+@keyframes shim{0%{left:-100%}100%{left:100%}}
+@keyframes peekR{0%{transform:translateX(80px);opacity:0}60%{transform:translateX(-6px);opacity:1}100%{transform:translateX(0)}}
+@keyframes checkDraw{0%{stroke-dashoffset:30}100%{stroke-dashoffset:0}}
+@keyframes ringP{0%{transform:scale(0);opacity:0}50%{opacity:.5}100%{transform:scale(2.5);opacity:0}}
+@keyframes popIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes cardPop{0%{transform:scale(1)}30%{transform:scale(.92) rotate(-1deg)}60%{transform:scale(1.04) rotate(.5deg)}100%{transform:scale(1)}}
+@keyframes confDrop{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(600px) rotate(720deg);opacity:0}}
+@keyframes inputFocus{0%{box-shadow:0 0 0 0 rgba(0,191,165,0)}50%{box-shadow:0 0 0 8px rgba(0,191,165,.12)}100%{box-shadow:0 0 0 4px rgba(0,191,165,.08)}}
+
+.on .fox-bounce{animation:bounceIn .8s cubic-bezier(.68,-.55,.27,1.55) both,breathe 3s ease-in-out infinite 1s}
+.on .fox-peek{animation:peekR .8s cubic-bezier(.68,-.55,.27,1.55) both .3s}
+
+/* Form elements */
+.form-title{font-size:28px;font-weight:800;margin-bottom:6px;text-align:center;width:100%}
+.form-sub{color:#627D98;font-size:14px;text-align:center;margin-bottom:28px;width:100%}
+.field{width:100%;max-width:380px;margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;margin-bottom:5px}
+.field input{width:100%;padding:13px 16px;border-radius:14px;border:2px solid #E2E8F0;font-size:15px;font-family:inherit;background:var(--c);outline:none;transition:all .3s}
+.field input:focus{border-color:var(--t);animation:inputFocus .6s both}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:380px}
+.btn{width:100%;max-width:380px;padding:16px;border-radius:16px;border:none;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;position:relative;overflow:hidden;transition:transform .12s}
+.btn:active{transform:scale(.94)}
+.btn-p{background:var(--t);color:#fff;animation:glow 2.5s ease-in-out infinite}
+.btn-p::after{content:'';position:absolute;top:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shim 2s infinite}
+.btn-o{background:#fff;color:var(--n);border:2px solid #E2E8F0}.btn-o:active{border-color:var(--t);background:var(--g)}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:380px;padding:16px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s}
+.g-btn:active{transform:scale(.94);border-color:var(--t);background:var(--g)}
+.g-btn svg{width:22px;height:22px}
+.divider{display:flex;align-items:center;gap:12px;width:100%;max-width:380px;margin:16px 0;color:#9FB3C8;font-size:12px;font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
+.mt{margin-top:10px}
+.trust{color:#9FB3C8;font-size:10px;font-weight:600;margin-top:16px;letter-spacing:.5px;text-align:center}
+
+/* OTP */
+.otp-r{display:flex;gap:12px;margin-bottom:20px}
+.otp-b{width:54px;height:64px;border-radius:14px;border:2px solid #E2E8F0;background:var(--c);font-size:24px;font-weight:700;text-align:center;font-family:'Space Grotesk',sans-serif;outline:none;transition:all .3s;color:var(--n)}
+.otp-b.f{border-color:var(--t);background:#F0FDF9}
+
+/* Type grid */
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:420px;margin-bottom:20px}
+.tc{padding:12px 6px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;text-align:center;cursor:pointer;transition:all .2s}
+.tc:active{animation:cardPop .35s}
+.tc.se{border-color:var(--t);background:var(--g)}
+.tc .em{font-size:24px;display:block;margin-bottom:3px}.tc .nm{font-weight:700;font-size:10px}
+
+/* Perm cards */
+.pc{background:var(--c);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;width:100%;max-width:380px}
+.pc .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pc .inf{flex:1}.pc .inf h4{font-size:14px;font-weight:700}.pc .inf p{font-size:11px;color:#627D98;margin-top:1px}
+.tgl{width:44px;height:24px;border-radius:12px;background:#E2E8F0;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0}
+.tgl.on{background:var(--t)}.tgl::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.1)}.tgl.on::after{transform:translateX(20px)}
+
+/* Success overlay */
+.ov{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;background:var(--t)}
+.ov.show{opacity:1;pointer-events:auto}
+.ov .ring{position:absolute;width:160px;height:160px;border:3px solid rgba(255,255,255,.3);border-radius:50%;animation:ringP 1.5s infinite}
+.ov .circ{width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;z-index:1;animation:popIn .5s both .2s;backdrop-filter:blur(10px)}
+.ov .circ svg{width:60px;height:60px;color:#fff;stroke-dasharray:30;stroke-dashoffset:30;animation:checkDraw .6s both .4s}
+.ov h3{color:#fff;font-size:28px;font-weight:800;margin-top:24px;z-index:1;font-family:'Space Grotesk',sans-serif}
+.ov p{color:rgba(255,255,255,.8);z-index:1;font-size:16px;margin-top:8px}
+
+/* Success page */
+.success-left{background:linear-gradient(135deg,#C6F7E9 0%,#D1FAE5 50%,#E8F5F3 100%);position:relative;overflow:hidden}
+.success-left .cf{position:absolute;border-radius:2px;animation:confDrop 3s ease-out infinite}
+.stat-row{display:flex;gap:14px;width:100%;max-width:380px;margin-bottom:24px}
+.stat-card{background:var(--c);border-radius:16px;padding:16px;text-align:center;flex:1;border:1px solid #E2E8F0}
+.stat-card .v{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--t)}
+.stat-card .l{font-size:10px;color:#627D98;margin-top:2px}
+
+/* Colors */
+.colors{display:flex;gap:10px;margin:10px 0 20px;width:100%;max-width:380px}
+.cd{width:38px;height:38px;border-radius:50%;cursor:pointer;transition:all .2s;border:3px solid transparent}
+.cd.se{border-color:var(--n);transform:scale(1.15)}.cd:active{transform:scale(.85)}
+
+/* Mobile */
+@media(max-width:900px){
+  .page{flex-direction:column}
+  .left{min-height:40vh;padding:40px 24px}
+  .left .fox{width:150px!important;height:150px!important}
+  .right{width:100%;min-width:auto;padding:32px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PAGE 1: WELCOME ═══ -->
+<div class="page on" id="p1">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-wave.png" class="fox fox-bounce" style="width:320px;height:320px" data-d="1" alt="Rezi">
+    <h2 class="d" data-d="2">Local bookings,<br><span class="tl">faff-free.</span></h2>
+    <p data-d="3">The smart reservation platform that helps you discover, book, and enjoy the best local spots.</p>
+    <div class="testimonial" data-d="4">
+      <div class="stars">★★★★★</div>
+      <q>Setting up was actually fun. I didn't think that was possible for business software.</q>
+      <div class="who">Mike T. <span class="role">from The Daily Grind</span></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="logo" data-d="1"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <img src="/showcase/rezi-wave.png" style="width:140px;height:140px" class="fox fox-bounce" data-d="2" alt="Rezi">
+    <h1 class="d form-title" data-d="3">Hey there! <span style="color:var(--t)">I'm Rezi.</span></h1>
+    <p class="form-sub" data-d="3">I'll help you set up your booking page in under a minute. No faff, I promise.</p>
+    <button class="btn btn-p" data-d="4" onclick="go(2)">Let's go! →</button>
+    <button class="btn btn-o mt" data-d="5" onclick="go(2)">I already have an account</button>
+    <div class="trust" data-d="6">🛡 SECURE · NO SPAM · FREE FOREVER</div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 2: PHONE ═══ -->
+<div class="page" id="p2">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-peek.png" class="fox fox-peek" style="width:350px;height:350px" alt="Rezi">
+    <h2 class="d" data-d="2">Quick verification,<br><span class="tl">then we're in.</span></h2>
+    <p data-d="3">We just need to verify your number. Takes 10 seconds.</p>
+  </div>
+  <div class="right">
+    <div class="back" onclick="go(1)">←</div>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b"></div><div class="b"></div><div class="b"></div></div>
+    <h1 class="d form-title" data-d="2">What's your number?</h1>
+    <p class="form-sub" data-d="2">We'll send you a quick code to verify</p>
+    <div class="field-row" data-d="3">
+      <div class="field" style="max-width:90px"><label>Country</label><input value="+44" readonly style="text-align:center"></div>
+      <div class="field"><label>Phone number</label><input type="tel" placeholder="7700 900 000"></div>
+    </div>
+    <button class="btn btn-p" data-d="4" onclick="go(3)">Send code →</button>
+    <p style="color:#9FB3C8;font-size:11px;margin-top:10px;text-align:center" data-d="5">We'll text you a 6-digit code. Standard rates may apply.</p>
+  </div>
+</div>
+
+<!-- ═══ PAGE 3: OTP ═══ -->
+<div class="page" id="p3">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-thumbsup.png" class="fox fox-bounce" style="width:320px;height:320px" alt="Rezi">
+    <h2 class="d" data-d="2">Check your<br><span class="tl">messages! 📱</span></h2>
+    <p data-d="3">We've sent a 6-digit code to your phone. Enter it to continue.</p>
+  </div>
+  <div class="right">
+    <div class="back" onclick="go(2)">←</div>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b"></div><div class="b"></div></div>
+    <h1 class="d form-title" data-d="2">Enter the code</h1>
+    <p class="form-sub" data-d="2">Sent to +44 7700 ••• •••</p>
+    <div class="otp-r" data-d="3"><input class="otp-b f" value="4" readonly><input class="otp-b f" value="2" readonly><input class="otp-b f" value="8" readonly><input class="otp-b f" value="9" readonly><input class="otp-b" placeholder="·"><input class="otp-b" placeholder="·"></div>
+    <button style="background:none;border:none;color:var(--t);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;font-family:inherit" data-d="4">Resend code</button>
+    <button class="btn btn-p" data-d="5" onclick="go(4)">Verify →</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE 4: GOOGLE AUTH ═══ -->
+<div class="page" id="p4">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-thumbsup.png" class="fox fox-bounce" style="width:350px;height:350px" alt="Rezi">
+    <h2 class="d" data-d="2">Almost there!<br><span class="tl">One more step.</span></h2>
+    <p data-d="3">Connect your Google account for a seamless sign-in experience.</p>
+  </div>
+  <div class="right">
+    <div class="back" onclick="go(3)">←</div>
+    <button class="skip" onclick="go(5)">Skip for now</button>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
+    <h1 class="d form-title" data-d="2">One more thing</h1>
+    <p class="form-sub" data-d="2">Connect Google for a seamless experience</p>
+    <button class="g-btn" data-d="3" onclick="showOv()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <div class="divider" data-d="4">or</div>
+    <button class="btn btn-o" data-d="5" onclick="go(5)">Continue with email</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE 5: BUSINESS TYPE ═══ -->
+<div class="page" id="p5">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-thumbsup.png" class="fox fox-bounce" style="width:320px;height:320px" alt="Rezi">
+    <h2 class="d" data-d="2">What's your<br><span class="tl">vibe?</span></h2>
+    <p data-d="3">Tell us about your business so we can set things up perfectly for you.</p>
+  </div>
+  <div class="right">
+    <div class="back" onclick="go(4)">←</div>
+    <button class="skip" onclick="go(6)">Skip for now</button>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
+    <h1 class="d form-title" data-d="2" style="font-size:24px">What type of business do you run?</h1>
+    <p class="form-sub" data-d="2">This helps us personalize your booking page</p>
+    <div class="tg" data-d="3">
+      <div class="tc" onclick="st(this)"><span class="em">✂️</span><span class="nm">Hairdresser</span></div>
+      <div class="tc se" onclick="st(this)"><span class="em">💈</span><span class="nm">Barber</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">💅</span><span class="nm">Beauty</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">💄</span><span class="nm">Nail Tech</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">👁️</span><span class="nm">Lash & Brow</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">💆</span><span class="nm">Massage</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">💪</span><span class="nm">Trainer</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🧘</span><span class="nm">Yoga</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🦷</span><span class="nm">Dentist</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🏥</span><span class="nm">Physio</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🐾</span><span class="nm">Pet Services</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">📸</span><span class="nm">Photographer</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🎵</span><span class="nm">Music</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">📚</span><span class="nm">Tutor</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">☕</span><span class="nm">Cafe</span></div>
+      <div class="tc" onclick="st(this)"><span class="em">🎯</span><span class="nm">Other</span></div>
+    </div>
+    <button class="btn btn-p" data-d="4" onclick="go(6)">That's me! →</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE 6: PROFILE ═══ -->
+<div class="page" id="p6">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-peek.png" class="fox fox-peek" style="width:340px;height:340px" alt="Rezi">
+    <h2 class="d" data-d="2">Make it<br><span class="tl">yours.</span></h2>
+    <p data-d="3">Your booking page should look like you. Pick a theme, set your details.</p>
+    <div class="testimonial" data-d="4">
+      <div class="stars">★★★★★</div>
+      <q>Businesses with customized profiles get <strong>40% more bookings</strong> in their first week.</q>
+      <div class="who">Pro Tip</div>
+    </div>
+  </div>
+  <div class="right" style="overflow-y:auto">
+    <div class="back" onclick="go(5)">←</div>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
+    <h1 class="d form-title" data-d="2" style="font-size:24px">Build your profile</h1>
+    <p class="form-sub" data-d="2">How do you want to appear to customers?</p>
+    <div class="field-row" data-d="3"><div class="field"><label>First name</label><input value="Jake"></div><div class="field"><label>Last name</label><input value="Williams"></div></div>
+    <div class="field" data-d="4"><label>Business name</label><input value="Jake's Barbers"></div>
+    <div class="field" data-d="4"><label>Business address</label><input placeholder="123 High Street"></div>
+    <div class="field-row" data-d="5"><div class="field"><label>City</label><input value="London"></div><div class="field"><label>Postcode</label><input value="E1 6AN"></div></div>
+    <label data-d="6" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;width:100%;max-width:380px;text-align:left">Theme accent</label>
+    <div class="colors" data-d="6"><div class="cd se" style="background:var(--t)" onclick="sc(this)"></div><div class="cd" style="background:#3B82F6" onclick="sc(this)"></div><div class="cd" style="background:#8B5CF6" onclick="sc(this)"></div><div class="cd" style="background:#EC4899" onclick="sc(this)"></div><div class="cd" style="background:#F59E0B" onclick="sc(this)"></div><div class="cd" style="background:var(--n)" onclick="sc(this)"></div></div>
+    <button class="btn btn-p" data-d="7" onclick="go(7)">Looks great! →</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE 7: PERMISSIONS ═══ -->
+<div class="page" id="p7">
+  <div class="left">
+    <div class="orb o1"></div><div class="orb o2"></div>
+    <img src="/showcase/rezi-thumbsup.png" class="fox fox-bounce" style="width:320px;height:320px" alt="Rezi">
+    <h2 class="d" data-d="2">Final<br><span class="tl">touches!</span></h2>
+    <p data-d="3">Just a couple of optional settings to tailor your experience.</p>
+  </div>
+  <div class="right">
+    <div class="back" onclick="go(6)">←</div>
+    <div class="logo"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
+    <h1 class="d form-title" data-d="2">Final touches</h1>
+    <p class="form-sub" data-d="2">Help us tailor your experience.</p>
+    <div style="width:100%;max-width:380px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--n);margin-bottom:10px;display:flex;justify-content:space-between" data-d="3">PERMISSIONS <span style="font-weight:500;font-size:9px;color:#9FB3C8;text-transform:none;letter-spacing:0">Optional</span></div>
+    <div class="pc" data-d="4"><div class="ic" style="background:#DBEAFE">🔔</div><div class="inf"><h4>Notifications</h4><p>Instant updates on bookings & reminders</p></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="pc" data-d="5"><div class="ic" style="background:#EDE9FE">📍</div><div class="inf"><h4>Location Services</h4><p>Show your business to nearby customers</p></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+    <div style="flex:1;min-height:40px"></div>
+    <button class="btn btn-p" data-d="6" onclick="go(8)">Finish Setup ✓</button>
+  </div>
+</div>
+
+<!-- ═══ PAGE 8: SUCCESS ═══ -->
+<div class="page" id="p8">
+  <div class="left success-left">
+    <div class="cf" style="left:10%;width:8px;height:8px;background:var(--t)"></div>
+    <div class="cf" style="left:25%;width:6px;height:12px;background:#8B5CF6;animation-delay:.2s"></div>
+    <div class="cf" style="left:45%;width:10px;height:6px;background:#F59E0B;animation-delay:.5s"></div>
+    <div class="cf" style="left:65%;width:8px;height:8px;background:#3B82F6;animation-delay:.3s"></div>
+    <div class="cf" style="left:80%;width:6px;height:10px;background:#EF4444;animation-delay:.7s"></div>
+    <img src="/showcase/rezi-celebrate.png" class="fox fox-bounce" style="width:350px;height:350px" alt="Rezi">
+    <h2 class="d" data-d="2">You're all set,<br><span class="tl">Jake! 🎉</span></h2>
+    <p data-d="3">Your booking page is live. Share it with the world and watch your calendar fill up.</p>
+  </div>
+  <div class="right">
+    <div class="logo" data-d="1"><div class="logo-box">R</div><span class="logo-text">Rezvo</span></div>
+    <h1 class="d form-title" data-d="2">Welcome home!</h1>
+    <p class="form-sub" data-d="2">Your booking page is live and ready for customers.</p>
+    <div class="stat-row" data-d="3">
+      <div class="stat-card"><div class="v">0:28</div><div class="l">Setup time</div></div>
+      <div class="stat-card"><div class="v">Live</div><div class="l">Booking page</div></div>
+      <div class="stat-card"><div class="v">∞</div><div class="l">Potential</div></div>
+    </div>
+    <button class="btn btn-p" data-d="4">Go to Dashboard →</button>
+    <button class="btn btn-o mt" data-d="5" style="border-color:var(--t);color:var(--t)">📤 Share my booking link</button>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="ov" id="ov"><div class="ring"></div><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Connected!</h3><p>Google account linked</p></div>
+
+<script>
+let cur=1;
+function go(n){
+  const p=document.getElementById('p'+cur);
+  const nx=document.getElementById('p'+n);
+  if(!p||!nx)return;
+  p.classList.remove('on');p.classList.add('off');
+  nx.classList.remove('off');nx.classList.add('on');
+  cur=n;
+  window.scrollTo(0,0);
+}
+function showOv(){document.getElementById('ov').classList.add('show');setTimeout(()=>{document.getElementById('ov').classList.remove('show');go(5)},2000)}
+function st(el){document.querySelectorAll('.tc').forEach(c=>c.classList.remove('se'));el.classList.add('se');el.style.animation='cardPop .35s';setTimeout(()=>el.style.animation='',350)}
+function sc(el){document.querySelectorAll('.cd').forEach(c=>c.classList.remove('se'));el.classList.add('se')}
+</script>
+</body>
+</html>
