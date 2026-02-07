@@ -178,6 +178,22 @@ function AppRoutes() {
       <Route path="/tools/no-show-reminder" element={<NoShowReminderTool />} />
       <Route path="/tools/pricing-calculator" element={<PricingCalculatorTool />} />
       <Route path="/tools/keyword-density" element={<KeywordDensityTool />} />
+      <Route path="/tools/client-intake" element={<ClientIntakeTool />} />
+      <Route path="/tools/review-reply" element={<ReviewReplyTool />} />
+      <Route path="/tools/social-post-ideas" element={<SocialPostTool />} />
+      <Route path="/tools/opening-hours-gap" element={<OpeningHoursTool />} />
+      <Route path="/tools/booking-link-maker" element={<BookingLinkTool />} />
+      <Route path="/tools/meta-tag-checker" element={<MetaTagTool />} />
+      <Route path="/tools/robots-txt-checker" element={<RobotsTxtTool />} />
+      <Route path="/tools/url-extractor" element={<UrlExtractorTool />} />
+      <Route path="/tools/xml-sitemap-generator" element={<SitemapTool mode="generate" />} />
+      <Route path="/tools/sitemap-extractor" element={<SitemapTool mode="extract" />} />
+      <Route path="/tools/sitemap-validator" element={<SitemapTool mode="validate" />} />
+      <Route path="/tools/sitemap-finder" element={<SitemapTool mode="find" />} />
+      <Route path="/tools/broken-link-checker" element={<BrokenLinkTool />} />
+      <Route path="/tools/domain-seo-checker" element={<DomainSeoTool />} />
+      <Route path="/tools/page-speed" element={<MetaTagTool />} />
+      <Route path="/tools/markdown-converter" element={<MarkdownTool />} />
       
       {/* Protected Routes - Business Owners Only */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
