@@ -186,14 +186,18 @@ export default function NewSignupPage() {
 
   // Complete Registration
   const handleComplete = async () => {
-    if (!email || !password) {
-      setError('Please enter email and password');
-      return;
+    // For Google auth, we don't need password
+    if (!isGoogleAuth) {
+      if (!email || !password) {
+        setError('Please enter email and password');
+        return;
+      }
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters');
+        return;
+      }
     }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
+    
     if (!businessName) {
       setError('Please enter your business name');
       return;
@@ -205,17 +209,49 @@ export default function NewSignupPage() {
     setOverlayMessage('Creating your account...');
     
     try {
-      const registrationData = {
-        email: email,
-        password: password,
-        full_name: `${firstName} ${lastName}`.trim() || email.split('@')[0],
-        business_name: businessName,
-        address: address ? `${address}, ${city} ${postcode}`.trim() : null,
-        phone: fullPhone,
-        auth_method: 'email'
-      };
+      // For Google auth users, they're already logged in, just need to update profile
+      if (isGoogleAuth) {
+        // Update user profile
+        await api.put('/users/me', {
+          full_name: `${firstName} ${lastName}`.trim(),
+          business_name: businessName,
+          address: address ? `${address}, ${city} ${postcode}`.trim() : null,
+          business_type: businessType,
+        });
+        
+        // Create/update business
+        try {
+          await api.post('/businesses', {
+            name: businessName,
+            type: businessType,
+            address: address,
+            city: city,
+            postcode: postcode,
+            theme_color: themeColor,
+          });
+        } catch (e) {
+          // Business might already exist, try update
+          console.log('Business creation note:', e);
+        }
+        
+        setOverlayMessage('All set!');
+        setTimeout(() => {
+          setShowOverlay(false);
+          goToStep(8);
+        }, 1500);
+      } else {
+        // Email registration
+        const registrationData = {
+          email: email,
+          password: password,
+          full_name: `${firstName} ${lastName}`.trim() || email.split('@')[0],
+          business_name: businessName,
+          address: address ? `${address}, ${city} ${postcode}`.trim() : null,
+          phone: fullPhone,
+          auth_method: 'email'
+        };
 
-      const response = await api.post('/auth/register-with-otp', registrationData);
+        const response = await api.post('/auth/register-with-otp', registrationData);
       
       // Save auth token
       localStorage.setItem('rezvo_token', response.data.token);
