@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import './NewSignupPage.css';
@@ -37,10 +37,33 @@ const THEME_COLORS = [
 
 export default function NewSignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { updateUser } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isGoogleAuth, setIsGoogleAuth] = useState(false);
+  
+  // Check for step parameter from Google auth callback
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const stepParam = params.get('step');
+    if (stepParam) {
+      setStep(parseInt(stepParam, 10));
+      // Check if coming from Google auth
+      if (sessionStorage.getItem('auth_method') === 'google') {
+        setIsGoogleAuth(true);
+        const googleEmail = sessionStorage.getItem('google_user_email');
+        const googleName = sessionStorage.getItem('google_user_name');
+        if (googleEmail) setEmail(googleEmail);
+        if (googleName) {
+          const names = googleName.split(' ');
+          setFirstName(names[0] || '');
+          setLastName(names.slice(1).join(' ') || '');
+        }
+      }
+    }
+  }, [location]);
   
   // Form data
   const [email, setEmail] = useState('');
