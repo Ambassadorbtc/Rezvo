@@ -57,6 +57,7 @@ import BrokenLinkTool from "./pages/tools/BrokenLinkTool";
 import DomainSeoTool from "./pages/tools/DomainSeoTool";
 import MarkdownTool from "./pages/tools/MarkdownTool";
 import MarkdownConverterPage from "./pages/tools/MarkdownConverterPage";
+import FreeBookingPage from "./pages/tools/FreeBookingPage";
 
 import "./App.css";
 
