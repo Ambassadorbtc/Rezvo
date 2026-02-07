@@ -501,14 +501,24 @@ export default function NewSignupPage() {
             <div className="field"><label>First name</label><input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Jake" /></div>
             <div className="field"><label>Last name</label><input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Williams" /></div>
           </div>
-          <div className="field" data-d="3">
-            <label>Email address</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jake@example.com" />
-          </div>
-          <div className="field" data-d="3">
-            <label>Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" />
-          </div>
+          {!isGoogleAuth && (
+            <>
+              <div className="field" data-d="3">
+                <label>Email address</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jake@example.com" />
+              </div>
+              <div className="field" data-d="3">
+                <label>Password</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" />
+              </div>
+            </>
+          )}
+          {isGoogleAuth && email && (
+            <div className="field" data-d="3">
+              <label>Email (from Google)</label>
+              <input type="email" value={email} disabled style={{opacity: 0.7, cursor: 'not-allowed'}} />
+            </div>
+          )}
           <div className="field" data-d="4"><label>Business name</label><input value={businessName} onChange={e => setBusinessName(e.target.value)} placeholder="Jake's Barbers" /></div>
           <div className="field" data-d="4"><label>Business address</label><input value={address} onChange={e => setAddress(e.target.value)} placeholder="123 High Street" /></div>
           <div className="field-row" data-d="5">
