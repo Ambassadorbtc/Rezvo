@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390, height=844, initial-scale=1.0">
+    <title>Mobile Onboarding - Mockup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #FDFBF7;
+            width: 390px;
+            height: 844px;
+            overflow: hidden;
+        }
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+        }
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #0A1626;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: #00BFA5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .logo-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0A1626;
+        }
+        .skip-text {
+            font-size: 14px;
+            color: #627D98;
+            font-weight: 500;
+        }
+        .progress-container {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 2px;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 66%;
+            background: #00BFA5;
+            border-radius: 2px;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #9FB3C8;
+        }
+        .title-container {
+            padding: 0 20px;
+            margin-bottom: 16px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0A1626;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #627D98;
+        }
+        .content {
+            flex: 1;
+            padding: 0 20px;
+            overflow-y: auto;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        .input {
+            width: 100%;
+            background: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            padding: 14px 16px;
+            font-size: 16px;
+            color: #0A1626;
+        }
+        .input::placeholder {
+            color: #9FB3C8;
+        }
+        .input-row {
+            display: flex;
+            gap: 16px;
+        }
+        .input-row .input-group {
+            flex: 1;
+        }
+        .tip-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #F0FDFA;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 16px;
+        }
+        .tip-icon {
+            color: #00BFA5;
+            font-size: 20px;
+        }
+        .tip-text {
+            flex: 1;
+            font-size: 13px;
+            color: #0D9488;
+            line-height: 18px;
+        }
+        .footer {
+            padding: 20px;
+            padding-bottom: 30px;
+        }
+        .continue-btn {
+            width: 100%;
+            background: #00BFA5;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 191, 165, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-btn">‹</div>
+            <div class="logo-container">
+                <div class="logo">R</div>
+                <span class="logo-name">rezvo</span>
+            </div>
+            <span class="skip-text">Skip</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Step 2 of 3</div>
+        </div>
+        
+        <div class="title-container">
+            <h1 class="title">Location</h1>
+            <p class="subtitle">Where is your business located?</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-group">
+                <div class="input-label">Business Address</div>
+                <input type="text" class="input" placeholder="123 High Street" value="45 Oxford Street">
+            </div>
+            
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-label">City</div>
+                    <input type="text" class="input" placeholder="London" value="London">
+                </div>
+                <div class="input-group">
+                    <div class="input-label">Postcode</div>
+                    <input type="text" class="input" placeholder="SW1A 1AA" value="W1D 1BS">
+                </div>
+            </div>
+            
+            <div class="tip-box">
+                <span class="tip-icon">ℹ️</span>
+                <span class="tip-text">This address will be shown on your booking page</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="continue-btn">
+                Continue →
+            </div>
+        </div>
+    </div>
+</body>
+</html>
