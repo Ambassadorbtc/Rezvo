@@ -156,35 +156,31 @@ export default function NewSignupPage() {
 
   // Complete Registration
   const handleComplete = async () => {
+    if (!email || !password) {
+      setError('Please complete all required fields');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
       const registrationData = {
-        phone: fullPhone,
-        verification_id: verificationId,
-        first_name: firstName,
-        last_name: lastName,
+        email: email,
+        password: password,
+        full_name: `${firstName} ${lastName}`.trim(),
         business_name: businessName,
-        business_type: businessType,
-        address: address,
-        city: city,
-        postcode: postcode,
-        theme_color: themeColor,
-        notifications_enabled: notifications,
-        location_enabled: location,
+        address: address ? `${address}, ${city} ${postcode}`.trim() : null,
+        phone: fullPhone,
+        auth_method: 'email'
       };
-
-      if (googleData) {
-        registrationData.google_token = googleData.token;
-        registrationData.google_id = googleData.google_id;
-        registrationData.email = googleData.email;
-        registrationData.auth_method = 'google';
-      }
 
       const response = await api.post('/auth/register-with-otp', registrationData);
       
       // Save auth token
-      localStorage.setItem('rezvo_token', response.data.access_token);
+      localStorage.setItem('rezvo_token', response.data.token);
       localStorage.setItem('rezvo_user', JSON.stringify(response.data.user));
       updateUser(response.data.user);
       
