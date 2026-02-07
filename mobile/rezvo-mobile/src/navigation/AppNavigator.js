@@ -17,6 +17,7 @@ import PasswordResetSuccessScreen from '../screens/PasswordResetSuccessScreen';
 import PhoneVerifyScreen from '../screens/PhoneVerifyScreen';
 import CompleteProfileScreen from '../screens/CompleteProfileScreen';
 import BusinessTypeScreen from '../screens/BusinessTypeScreen';
+import OnboardingWizardScreen from '../screens/OnboardingWizardScreen';
 
 // Client Screens
 import ClientHomeScreen from '../screens/client/HomeScreen';
