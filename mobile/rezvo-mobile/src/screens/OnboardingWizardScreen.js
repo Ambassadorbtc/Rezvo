@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import api from '../../lib/api';
+import api from '../lib/api';
 import { useGlobalToast } from '../../context/ToastContext';
 
 const { width } = Dimensions.get('window');
