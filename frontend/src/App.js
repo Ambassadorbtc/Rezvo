@@ -28,13 +28,15 @@ import TeamPage from "./pages/TeamPage";
 import SupportPage from "./pages/SupportPage";
 import CookieConsent from "./components/CookieConsent";
 
-// New Auth Flow Pages (TailAdmin style)
+// New Auth Flow Pages
 import SignupAuthPage from "./pages/auth/SignupAuthPage";
 import SignupProfilePage from "./pages/auth/SignupProfilePage";
 import SignupPhoneVerifyPage from "./pages/auth/SignupPhoneVerifyPage";
 import SignupBusinessTypePage from "./pages/auth/SignupBusinessTypePage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+import NewAuthCallbackPage from "./pages/auth/NewAuthCallbackPage";
+import NewLoginPage from "./pages/auth/NewLoginPage";
 import CancelBookingPage from "./pages/booking/CancelBookingPage";
 import RescheduleBookingPage from "./pages/booking/RescheduleBookingPage";
 
