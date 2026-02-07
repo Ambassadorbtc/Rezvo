@@ -4560,7 +4560,7 @@ async def tools_fetch_url(request: Request):
     if not url.startswith("http"):
         url = "https://" + url
     try:
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
             resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             return {"status": resp.status_code, "html": resp.text[:500000], "url": str(resp.url), "headers": dict(resp.headers)}
     except Exception as e:
@@ -4577,7 +4577,7 @@ async def tools_extract_links(request: Request):
         url = "https://" + url
     try:
         from bs4 import BeautifulSoup
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
             resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             soup = BeautifulSoup(resp.text, "lxml")
             links = []
@@ -4602,7 +4602,7 @@ async def tools_meta_tags(request: Request):
         url = "https://" + url
     try:
         from bs4 import BeautifulSoup
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
             resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             soup = BeautifulSoup(resp.text, "lxml")
             title = soup.title.string.strip() if soup.title and soup.title.string else ""
@@ -4641,7 +4641,7 @@ async def tools_robots_txt(request: Request):
     parsed = urlparse(domain)
     robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
     try:
-        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=10, follow_redirects=True) as client_http:
             resp = await client_http.get(robots_url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             if resp.status_code != 200:
                 return {"found": False, "url": robots_url, "status": resp.status_code}
@@ -4662,7 +4662,7 @@ async def tools_sitemap_parse(request: Request):
     if not url.startswith("http"):
         url = "https://" + url
     try:
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
             resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             content = resp.text
             urls = []
@@ -4700,7 +4700,7 @@ async def tools_sitemap_find(request: Request):
     candidates = [f"{base}/sitemap.xml", f"{base}/sitemap_index.xml", f"{base}/sitemap/sitemap.xml", f"{base}/wp-sitemap.xml"]
     results = []
     try:
-        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=10, follow_redirects=True) as client_http:
             # Check robots.txt first
             try:
                 rresp = await client_http.get(f"{base}/robots.txt", headers={"User-Agent": "Rezvo-Tools/1.0"})
@@ -4738,7 +4738,7 @@ async def tools_check_links(request: Request):
         url = "https://" + url
     try:
         from bs4 import BeautifulSoup
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        async with httpx_client.AsyncClient(timeout=15, follow_redirects=True) as client_http:
             resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
             soup = BeautifulSoup(resp.text, "lxml")
             links = set()
