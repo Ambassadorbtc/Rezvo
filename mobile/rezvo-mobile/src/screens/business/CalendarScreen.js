@@ -248,14 +248,6 @@ export default function CalendarScreen({ navigation }) {
     showToast('Tap a time slot to move this booking');
   };
 
-  const handleTimeSlotPress = (hour) => {
-    if (!moveMode || !bookingToMove) return;
-    
-    const newDateTime = new Date(selectedDate);
-    newDateTime.setHours(hour, 0, 0, 0);
-    setNewMoveTime(newDateTime);
-    setShowMoveConfirm(true);
-  };
 
   const confirmMoveBooking = async () => {
     if (!bookingToMove || !newMoveTime) return;
