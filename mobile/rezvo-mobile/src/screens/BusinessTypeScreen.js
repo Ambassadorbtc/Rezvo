@@ -68,22 +68,23 @@ export default function BusinessTypeScreen({ navigation }) {
         team_members: []
       });
 
-      showToast('Welcome to Rezvo!', 'success');
+      showToast('Business type saved!', 'success');
       
-      // Refresh auth to load user data and navigate to dashboard
-      await checkAuth();
+      // Navigate to onboarding wizard for location and team setup
+      navigation.navigate('OnboardingWizard');
       
     } catch (error) {
       showToast('Failed to save settings', 'error');
-      // Still try to proceed
-      await checkAuth();
+      // Still try to proceed to onboarding
+      navigation.navigate('OnboardingWizard');
     } finally {
       setLoading(false);
     }
   };
 
   const handleSkip = async () => {
-    await checkAuth();
+    // Skip to onboarding wizard
+    navigation.navigate('OnboardingWizard');
   };
 
   return (
