@@ -252,11 +252,11 @@ const SettingsPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 lg:p-8 space-y-6" data-testid="settings-page">
+      <div className="p-5 md:p-8 max-w-6xl mx-auto space-y-6" data-testid="settings-page">
         {/* Header */}
-        <div>
+        <div className="anim-fade-up">
           <h1 className="font-display text-2xl md:text-3xl font-bold text-navy-900">Settings</h1>
-          <p className="text-navy-500 mt-1">Manage your account and preferences</p>
+          <p className="text-navy-400 mt-1">Manage your account and preferences</p>
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
