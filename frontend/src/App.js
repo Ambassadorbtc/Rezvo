@@ -44,6 +44,18 @@ import ServiceMenuTool from "./pages/tools/ServiceMenuTool";
 import NoShowReminderTool from "./pages/tools/NoShowReminderTool";
 import PricingCalculatorTool from "./pages/tools/PricingCalculatorTool";
 import KeywordDensityTool from "./pages/tools/KeywordDensityTool";
+import ClientIntakeTool from "./pages/tools/ClientIntakeTool";
+import ReviewReplyTool from "./pages/tools/ReviewReplyTool";
+import SocialPostTool from "./pages/tools/SocialPostTool";
+import OpeningHoursTool from "./pages/tools/OpeningHoursTool";
+import BookingLinkTool from "./pages/tools/BookingLinkTool";
+import MetaTagTool from "./pages/tools/MetaTagTool";
+import RobotsTxtTool from "./pages/tools/RobotsTxtTool";
+import UrlExtractorTool from "./pages/tools/UrlExtractorTool";
+import SitemapTool from "./pages/tools/SitemapTool";
+import BrokenLinkTool from "./pages/tools/BrokenLinkTool";
+import DomainSeoTool from "./pages/tools/DomainSeoTool";
+import MarkdownTool from "./pages/tools/MarkdownTool";
 
 import "./App.css";
 
