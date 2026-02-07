@@ -132,12 +132,12 @@ const ServicesPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-4 md:p-6 lg:p-8 space-y-6" data-testid="services-page">
+      <div className="p-5 md:p-8 max-w-6xl mx-auto space-y-6" data-testid="services-page">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 anim-fade-up">
           <div>
             <h1 className="font-display text-2xl md:text-3xl font-bold text-navy-900">Services</h1>
-            <p className="text-navy-500 mt-1">{services.length} services</p>
+            <p className="text-navy-400 mt-1">{services.length} services</p>
           </div>
           <Button
             onClick={() => openDialog()}
@@ -151,45 +151,33 @@ const ServicesPage = () => {
 
         {/* Services Grid */}
         {services.length === 0 ? (
-          <Card className="bg-white rounded-2xl shadow-card border-0">
-            <CardContent className="py-12 text-center">
-              <Scissors className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-navy-500 mb-4">No services yet</p>
-              <Button onClick={() => openDialog()} className="bg-teal-500 hover:bg-teal-600 text-white rounded-full" data-testid="empty-add-service-btn">
-                Add Your First Service
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center anim-fade-up anim-d1">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <Scissors className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-navy-500 mb-4">No services yet</p>
+            <Button onClick={() => openDialog()} className="bg-teal-500 hover:bg-teal-600 text-white rounded-full" data-testid="empty-add-service-btn">
+              Add Your First Service
+            </Button>
+          </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {services.map((service) => (
-              <Card
+            {services.map((service, i) => (
+              <div
                 key={service.id}
-                className="bg-white rounded-2xl shadow-card border-0 hover-lift group"
+                className={`bg-white rounded-2xl border border-gray-100 group hover:shadow-lg transition-all hover:scale-[1.01] anim-fade-up anim-d${Math.min(i + 1, 8)}`}
                 data-testid={`service-card-${service.id}`}
               >
-                <CardContent className="p-6">
+                <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-coral-50 flex items-center justify-center">
-                      <Scissors className="w-6 h-6 text-coral-500" />
+                    <div className="w-12 h-12 rounded-2xl bg-[#EDE9FE] flex items-center justify-center">
+                      <Scissors className="w-6 h-6 text-purple-600" />
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openDialog(service)}
-                        className="h-8 w-8 text-navy-400 hover:text-navy-700 hover:bg-gray-100"
-                        data-testid={`edit-service-${service.id}`}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => openDialog(service)} className="h-8 w-8 text-navy-400 hover:text-navy-700 hover:bg-gray-100" data-testid={`edit-service-${service.id}`}>
                         <Pencil className="w-4 h-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(service.id)}
-                        className="h-8 w-8 text-navy-400 hover:text-red-600 hover:bg-red-50"
-                        data-testid={`delete-service-${service.id}`}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(service.id)} className="h-8 w-8 text-navy-400 hover:text-red-600 hover:bg-red-50" data-testid={`delete-service-${service.id}`}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -202,8 +190,10 @@ const ServicesPage = () => {
                   )}
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-1 text-navy-500">
-                      <Clock className="w-4 h-4" />
+                    <div className="flex items-center gap-1.5 text-navy-500">
+                      <div className="w-7 h-7 rounded-lg bg-[#DBEAFE] flex items-center justify-center">
+                        <Clock className="w-3.5 h-3.5 text-blue-600" />
+                      </div>
                       <span className="text-sm">{service.duration_min} min</span>
                     </div>
                     <div className="text-xl font-bold text-teal-600 tabular-nums">
@@ -212,12 +202,12 @@ const ServicesPage = () => {
                   </div>
 
                   {service.deposit_required && (
-                    <div className="mt-3 px-3 py-2 rounded-lg bg-amber-50 text-amber-700 text-sm">
+                    <div className="mt-3 px-3 py-2 rounded-xl bg-amber-50 text-amber-700 text-sm">
                       Deposit: {formatPrice(service.deposit_amount_pence)}
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}
