@@ -171,8 +171,8 @@ const ProductsPage = () => {
           </Card>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
-              <Card key={product.id} className="bg-white rounded-2xl border-0 shadow-sm overflow-hidden group hover:shadow-lg transition-shadow">
+            {filteredProducts.map((product, i) => (
+              <Card key={product.id} className={`bg-white rounded-2xl border border-gray-100 overflow-hidden group hover:shadow-lg transition-all hover:scale-[1.01] anim-fade-up anim-d${Math.min(i + 1, 8)}`}>
                 {/* Product Image */}
                 <div className="aspect-square bg-gray-100 relative">
                   {product.image_url ? (
