@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { 
   QrCode, FileText, Bell, Calculator, Search, Link2, Globe, Clock, 
   MessageSquare, Star, Lightbulb, Map, FileCode, CheckSquare, AlertTriangle,
-  Bot, Zap, Type, Database, Code, FileDown
+  Bot, Zap, Type, Database, Code, FileDown, Table
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
