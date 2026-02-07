@@ -484,6 +484,72 @@ const SettingsPage = () => {
               </CardContent>
             </Card>
 
+            {/* Google Calendar Integration */}
+            <Card className="bg-white rounded-2xl shadow-card border-0 mt-6">
+              <CardHeader>
+                <CardTitle className="font-heading text-lg text-navy-900 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                  Google Calendar
+                </CardTitle>
+                <CardDescription className="text-navy-500">
+                  Sync your bookings with Google Calendar for seamless scheduling
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {googleCalendarStatus.connected ? (
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                          <Check className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-emerald-800">Connected</p>
+                          <p className="text-sm text-emerald-600">Your Google Calendar is synced</p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={disconnectGoogleCalendar}
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Disconnect
+                      </Button>
+                    </div>
+                  </div>
+                ) : googleCalendarStatus.configured ? (
+                  <div className="p-4 rounded-xl bg-cream">
+                    <p className="text-navy-600 mb-3">
+                      Connect your Google Calendar to automatically sync new bookings.
+                    </p>
+                    <Button 
+                      onClick={connectGoogleCalendar}
+                      disabled={connectingGoogle}
+                      className="bg-white border-2 border-navy-200 text-navy-700 hover:bg-navy-50 rounded-full"
+                    >
+                      {connectingGoogle ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Link2 className="w-4 h-4 mr-2" />
+                      )}
+                      Connect Google Calendar
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                    <p className="text-amber-800 text-sm">
+                      <strong>Coming Soon:</strong> Google Calendar integration requires additional setup. 
+                      Contact support for early access.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Billing Card */}
             <Card className="bg-white rounded-2xl shadow-card border-2 border-teal-200 mt-6">
               <CardContent className="p-6">
