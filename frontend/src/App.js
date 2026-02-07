@@ -195,6 +195,17 @@ function AppRoutes() {
       <Route path="/tools/domain-seo-checker" element={<DomainSeoTool />} />
       <Route path="/tools/page-speed" element={<MetaTagTool />} />
       <Route path="/tools/markdown-converter" element={<MarkdownTool />} />
+      <Route path="/tools/convert-csv-to-markdown" element={<MarkdownConverterPage type="csv" />} />
+      <Route path="/tools/convert-html-to-markdown" element={<MarkdownConverterPage type="html" />} />
+      <Route path="/tools/convert-json-to-markdown" element={<MarkdownConverterPage type="json" />} />
+      <Route path="/tools/convert-xml-to-markdown" element={<MarkdownConverterPage type="xml" />} />
+      <Route path="/tools/convert-paste-to-markdown" element={<MarkdownConverterPage type="text" />} />
+      <Route path="/tools/convert-docx-to-markdown" element={<MarkdownConverterPage type="docx" />} />
+      <Route path="/tools/convert-pdf-to-markdown" element={<MarkdownConverterPage type="pdf" />} />
+      <Route path="/tools/convert-rtf-to-markdown" element={<MarkdownConverterPage type="rtf" />} />
+      <Route path="/tools/convert-webpage-to-markdown" element={<MarkdownConverterPage type="webpage" />} />
+      <Route path="/tools/convert-notion-to-markdown" element={<MarkdownConverterPage type="notion" />} />
+      <Route path="/tools/convert-google-docs-to-markdown" element={<MarkdownConverterPage type="gdocs" />} />
       
       {/* Protected Routes - Business Owners Only */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
