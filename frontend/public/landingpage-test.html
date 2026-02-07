@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rezvo — The booking system built for UK micro-businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--teal:#00BFA5;--navy:#0A1626;--cream:#FDFBF7;--coral:#FF6B6B;--purple:#8B5CF6;--amber:#F59E0B;--blue:#3B82F6}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--navy);background:var(--cream);overflow-x:hidden}
+.display{font-family:'Space Grotesk',sans-serif}
+
+/* Scroll Animations */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(253,251,247,0.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.06)}
+nav .inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--navy)}
+nav .logo-icon{width:36px;height:36px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+nav .logo-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px}
+nav .nav-links{display:flex;align-items:center;gap:32px}
+nav .nav-links a{text-decoration:none;color:#627D98;font-size:14px;font-weight:500;transition:color 0.2s}
+nav .nav-links a:hover{color:var(--navy)}
+nav .cta-btn{background:var(--teal);color:#fff;padding:10px 24px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s;border:none;cursor:pointer}
+nav .cta-btn:hover{background:#00A896;box-shadow:0 4px 12px rgba(0,191,165,0.3)}
+
+/* HERO */
+.hero{padding:140px 24px 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,191,165,0.08) 0%,transparent 70%);z-index:0}
+.hero::after{content:'';position:absolute;bottom:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.06) 0%,transparent 70%);z-index:0}
+.hero .inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,191,165,0.1);color:var(--teal);padding:8px 20px;border-radius:100px;font-size:13px;font-weight:600;margin-bottom:28px}
+.hero .badge i{font-size:10px}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5.5vw,64px);font-weight:700;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--teal),#00897B);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:clamp(16px,2vw,20px);color:#627D98;max-width:600px;margin:0 auto 36px;line-height:1.6}
+.hero .hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hero .btn-primary{background:var(--teal);color:#fff;padding:16px 36px;border-radius:100px;font-size:16px;font-weight:600;text-decoration:none;transition:all 0.25s;box-shadow:0 4px 16px rgba(0,191,165,0.3)}
+.hero .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,191,165,0.4)}
+.hero .btn-outline{background:transparent;color:var(--navy);padding:16px 36px;border-radius:100px;font-size:16px;font-weight:600;text-decoration:none;border:2px solid #E2E8F0;transition:all 0.25s}
+.hero .btn-outline:hover{border-color:var(--teal);color:var(--teal)}
+.hero .hero-image{margin-top:60px;position:relative}
+.hero .hero-image img{width:100%;max-width:1000px;border-radius:16px;box-shadow:0 40px 80px -20px rgba(0,0,0,0.15)}
+.hero .phone-mockup{position:absolute;right:-20px;bottom:-20px;width:200px;border-radius:24px;box-shadow:0 20px 60px -10px rgba(0,0,0,0.2);border:4px solid #fff}
+
+/* STATS BAR */
+.stats-bar{background:#fff;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;padding:40px 24px}
+.stats-bar .inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.stats-bar .stat-num{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:var(--teal)}
+.stats-bar .stat-label{font-size:14px;color:#627D98;margin-top:4px}
+
+/* PROBLEM SECTION */
+.problem{padding:100px 24px;background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.problem::before{content:'';position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle,rgba(0,191,165,0.15) 0%,transparent 70%)}
+.problem .inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.problem .text h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px}
+.problem .text h2 .accent{color:var(--teal)}
+.problem .text p{color:#9FB3C8;font-size:16px;line-height:1.7;margin-bottom:20px}
+.problem .pain-points{list-style:none;display:flex;flex-direction:column;gap:16px}
+.problem .pain-points li{display:flex;align-items:flex-start;gap:14px;color:#BCCCDC;font-size:15px;line-height:1.5}
+.problem .pain-points li i{color:var(--coral);margin-top:3px;font-size:14px}
+.problem .image-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.problem .image-grid img{width:100%;border-radius:16px;object-fit:cover;height:200px}
+
+/* FEATURES */
+.features{padding:100px 24px}
+.features .inner{max-width:1100px;margin:0 auto}
+.features .section-label{text-align:center;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:12px}
+.features .section-title{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:60px;line-height:1.2}
+.feature-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:80px}
+.feature-row.reverse{direction:rtl}
+.feature-row.reverse>*{direction:ltr}
+.feature-row .text .tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:16px}
+.feature-row .text h3{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.3}
+.feature-row .text p{color:#627D98;font-size:15px;line-height:1.7;margin-bottom:20px}
+.feature-row .text ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.feature-row .text ul li{display:flex;align-items:center;gap:10px;font-size:14px;color:#486581}
+.feature-row .text ul li i{color:var(--teal);font-size:14px}
+.feature-row .visual{position:relative}
+.feature-row .visual img{width:100%;border-radius:16px;box-shadow:0 20px 50px -15px rgba(0,0,0,0.12)}
+
+/* PRICING */
+.pricing{padding:100px 24px;background:#fff}
+.pricing .inner{max-width:1100px;margin:0 auto}
+.pricing .section-label{text-align:center;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--teal);margin-bottom:12px}
+.pricing .section-title{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:16px}
+.pricing .section-sub{text-align:center;color:#627D98;font-size:16px;margin-bottom:48px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:24px;align-items:start}
+.price-card{background:var(--cream);border-radius:24px;padding:36px;border:2px solid transparent;transition:all 0.3s}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px -15px rgba(0,0,0,0.1)}
+.price-card.featured{border-color:var(--teal);background:#fff;position:relative;box-shadow:0 20px 50px -15px rgba(0,191,165,0.15)}
+.price-card.featured .popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;padding:6px 20px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap}
+.price-card .plan-name{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;margin-bottom:8px}
+.price-card .plan-price{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;margin-bottom:4px}
+.price-card .plan-price span{font-size:16px;font-weight:500;color:#627D98}
+.price-card .plan-desc{font-size:14px;color:#627D98;margin-bottom:24px}
+.price-card .plan-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.price-card .plan-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#334E68}
+.price-card .plan-features li i.fa-check{color:var(--teal);font-size:13px}
+.price-card .plan-features li i.fa-xmark{color:#D1D5DB;font-size:13px}
+.price-card .plan-features li.disabled{color:#9CA3AF}
+.price-card .plan-btn{display:block;width:100%;text-align:center;padding:14px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s}
+.price-card .plan-btn.primary{background:var(--teal);color:#fff}
+.price-card .plan-btn.primary:hover{background:#00A896;box-shadow:0 4px 16px rgba(0,191,165,0.3)}
+.price-card .plan-btn.outline{border:2px solid #E2E8F0;color:var(--navy);background:transparent}
+.price-card .plan-btn.outline:hover{border-color:var(--teal);color:var(--teal)}
+.price-card .plan-btn.disabled{background:#E2E8F0;color:#9CA3AF;pointer-events:none}
+.price-card.coming-soon{opacity:0.85}
+
+/* WHO'S IT FOR */
+.audience{padding:100px 24px;overflow:hidden}
+.audience .inner{max-width:1100px;margin:0 auto}
+.audience .section-label{text-align:center;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--purple);margin-bottom:12px}
+.audience .section-title{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:48px}
+.audience-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.audience-card{border-radius:20px;overflow:hidden;position:relative;height:320px;transition:transform 0.3s}
+.audience-card:hover{transform:translateY(-4px)}
+.audience-card img{width:100%;height:100%;object-fit:cover}
+.audience-card .overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,0.8))}
+.audience-card .overlay h4{color:#fff;font-size:16px;font-weight:700}
+.audience-card .overlay p{color:rgba(255,255,255,0.7);font-size:13px;margin-top:4px}
+
+/* CTA */
+.final-cta{padding:100px 24px;text-align:center;background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(0,191,165,0.2) 0%,transparent 60%)}
+.final-cta .inner{max-width:700px;margin:0 auto;position:relative;z-index:1}
+.final-cta h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:16px;line-height:1.2}
+.final-cta p{color:#9FB3C8;font-size:18px;margin-bottom:36px}
+.final-cta .btn-primary{display:inline-block;background:var(--teal);color:#fff;padding:18px 48px;border-radius:100px;font-size:18px;font-weight:600;text-decoration:none;transition:all 0.25s;box-shadow:0 4px 20px rgba(0,191,165,0.4)}
+.final-cta .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,191,165,0.5)}
+
+/* FOOTER */
+footer{padding:60px 24px 30px;background:var(--navy);color:#627D98;border-top:1px solid rgba(255,255,255,0.05)}
+footer .inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+footer .logo{display:flex;align-items:center;gap:8px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+footer .logo-icon{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+footer .links{display:flex;gap:24px}
+footer .links a{color:#627D98;text-decoration:none;font-size:13px;transition:color 0.2s}
+footer .links a:hover{color:var(--teal)}
+footer .copy{width:100%;text-align:center;font-size:12px;margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05)}
+
+/* MOBILE */
+@media(max-width:768px){
+  nav .nav-links a:not(.cta-btn){display:none}
+  .hero h1{font-size:32px}
+  .hero .phone-mockup{width:120px;right:-10px;bottom:-10px}
+  .stats-bar .inner{grid-template-columns:repeat(2,1fr)}
+  .problem .inner{grid-template-columns:1fr;gap:40px}
+  .feature-row{grid-template-columns:1fr}
+  .feature-row.reverse{direction:ltr}
+  .pricing-grid{grid-template-columns:1fr}
+  .audience-grid{grid-template-columns:repeat(2,1fr)}
+  .audience-card{height:220px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="inner">
+    <a href="/" class="logo">
+      <div class="logo-icon">R</div>
+      <span class="logo-text">Rezvo</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#audience">Who it's for</a>
+      <a href="/login" class="cta-btn">Get started free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="inner">
+    <div class="badge"><i class="fas fa-circle"></i> Built for UK micro-businesses</div>
+    <h1 class="display">Stop losing bookings.<br><span class="gradient">Start growing your business.</span></h1>
+    <p>The all-in-one booking platform that helps barbers, salons, and service businesses fill their calendar, reduce no-shows, and get paid — without the faff.</p>
+    <div class="hero-buttons">
+      <a href="/signup" class="btn-primary">Start free today</a>
+      <a href="#features" class="btn-outline"><i class="fas fa-play" style="margin-right:8px;font-size:12px"></i> See how it works</a>
+    </div>
+    <div class="hero-image reveal">
+      <img src="/showcase/app-dashboard.jpg" alt="Rezvo Dashboard" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section class="stats-bar">
+  <div class="inner">
+    <div class="reveal">
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Businesses onboarded</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">12,000+</div>
+      <div class="stat-label">Bookings managed</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">89%</div>
+      <div class="stat-label">Fewer no-shows</div>
+    </div>
+    <div class="reveal">
+      <div class="stat-num">4.9<span style="font-size:18px;color:#F59E0B"> <i class="fas fa-star"></i></span></div>
+      <div class="stat-label">Average rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM SECTION -->
+<section class="problem">
+  <div class="inner">
+    <div class="text reveal-left">
+      <h2>Running a small business is hard enough.<br><span class="accent">Booking shouldn't be.</span></h2>
+      <p>You got into this to do what you love — cutting hair, treating clients, building something real. Not wrestling with spreadsheets, chasing late cancellations, or losing customers to missed calls.</p>
+      <ul class="pain-points">
+        <li><i class="fas fa-times-circle"></i> Clients call when you're busy and never call back</li>
+        <li><i class="fas fa-times-circle"></i> No-shows cost you hundreds every month</li>
+        <li><i class="fas fa-times-circle"></i> Pen-and-paper scheduling leads to double bookings</li>
+        <li><i class="fas fa-times-circle"></i> You're paying for software built for big chains, not you</li>
+      </ul>
+    </div>
+    <div class="image-grid reveal-right">
+      <img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=500&h=400&fit=crop" alt="Barber cutting hair" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=500&h=400&fit=crop" alt="Barber shop" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=500&h=400&fit=crop" alt="Business owner" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1761931403663-050fbd8fb4c8?w=500&h=400&fit=crop" alt="Barber with client" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="inner">
+    <div class="section-label">Everything you need</div>
+    <div class="section-title display">One platform. Zero headaches.</div>
+
+    <!-- Feature 1 -->
+    <div class="feature-row">
+      <div class="text reveal-left">
+        <div class="tag" style="background:#E8F5F3;color:#00897B"><i class="fas fa-link"></i> Shareable links</div>
+        <h3>Your booking page, your brand</h3>
+        <p>Generate a beautiful, branded booking page in seconds. Share it on Instagram, WhatsApp, or print it as a QR code. Customers book 24/7 — even when you're closed.</p>
+        <ul>
+          <li><i class="fas fa-check"></i> Custom branding with your logo and colours</li>
+          <li><i class="fas fa-check"></i> QR code for shop window display</li>
+          <li><i class="fas fa-check"></i> Instant booking confirmations via SMS & email</li>
+        </ul>
+      </div>
+      <div class="visual reveal-right">
+        <img src="/showcase/app-dashboard.jpg" alt="Rezvo booking page" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="feature-row reverse">
+      <div class="text reveal-right">
+        <div class="tag" style="background:#EDE9FE;color:#7C3AED"><i class="fas fa-chart-line"></i> Smart analytics</div>
+        <h3>Know exactly how your business is doing</h3>
+        <p>Track revenue, popular services, and no-show rates at a glance. Make data-driven decisions to grow — not guesses.</p>
+        <ul>
+          <li><i class="fas fa-check"></i> Revenue tracking & trends</li>
+          <li><i class="fas fa-check"></i> Service popularity breakdown</li>
+          <li><i class="fas fa-check"></i> Client retention insights</li>
+        </ul>
+      </div>
+      <div class="visual reveal-left">
+        <img src="/showcase/app-analytics.jpg" alt="Rezvo analytics" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="feature-row">
+      <div class="text reveal-left">
+        <div class="tag" style="background:#FEF3E2;color:#D97706"><i class="fas fa-calendar-check"></i> Smart calendar</div>
+        <h3>A calendar that works as hard as you</h3>
+        <p>Drag-and-drop on desktop, long-press on mobile. Manage your team's schedule, handle walk-ins, and never double-book again.</p>
+        <ul>
+          <li><i class="fas fa-check"></i> Multi-team member support</li>
+          <li><i class="fas fa-check"></i> Drag-and-drop rescheduling</li>
+          <li><i class="fas fa-check"></i> Automatic reminders to reduce no-shows</li>
+        </ul>
+      </div>
+      <div class="visual reveal-right">
+        <img src="/showcase/app-dashboard.jpg" alt="Rezvo calendar" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="audience" id="audience">
+  <div class="inner">
+    <div class="section-label">Who it's for</div>
+    <div class="section-title display">Built for people who build with their hands</div>
+    <div class="audience-grid">
+      <div class="audience-card reveal">
+        <img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=400&h=500&fit=crop" alt="Barbers" loading="lazy">
+        <div class="overlay"><h4>Barbers</h4><p>Fill your chair. Reduce no-shows.</p></div>
+      </div>
+      <div class="audience-card reveal">
+        <img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=400&h=500&fit=crop" alt="Hair Salons" loading="lazy">
+        <div class="overlay"><h4>Hair Salons</h4><p>Manage your whole team from one dashboard.</p></div>
+      </div>
+      <div class="audience-card reveal">
+        <img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=400&h=500&fit=crop" alt="Beauty & Wellness" loading="lazy">
+        <div class="overlay"><h4>Beauty & Wellness</h4><p>Facials, nails, lashes — all in one place.</p></div>
+      </div>
+      <div class="audience-card reveal">
+        <img src="https://images.unsplash.com/photo-1632647896118-f13930710cad?w=400&h=500&fit=crop" alt="Any Service Business" loading="lazy">
+        <div class="overlay"><h4>Any Service Business</h4><p>Personal trainers, tutors, consultants.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="inner">
+    <div class="section-label">Simple pricing</div>
+    <div class="section-title display">Pick the plan that fits your hustle</div>
+    <div class="section-sub">Start free. Upgrade when you're ready. No contracts, ever.</div>
+
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="price-card reveal">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">Free</div>
+        <div class="plan-desc">Everything you need to get started</div>
+        <ul class="plan-features">
+          <li><i class="fas fa-check"></i> Up to 50 bookings/month</li>
+          <li><i class="fas fa-check"></i> 50 shareable links</li>
+          <li><i class="fas fa-check"></i> 400 reminders/month</li>
+          <li><i class="fas fa-check"></i> Basic analytics</li>
+          <li><i class="fas fa-check"></i> 1 team member</li>
+          <li class="disabled"><i class="fas fa-xmark"></i> Deposit collection</li>
+          <li class="disabled"><i class="fas fa-xmark"></i> AI-powered suggestions</li>
+          <li class="disabled"><i class="fas fa-xmark"></i> Priority support</li>
+        </ul>
+        <a href="/signup" class="plan-btn outline">Get started free</a>
+      </div>
+
+      <!-- PRO (FEATURED) -->
+      <div class="price-card featured reveal">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">Professional</div>
+        <div class="plan-price">&pound;8.99<span>/month</span></div>
+        <div class="plan-desc">For serious businesses ready to grow</div>
+        <ul class="plan-features">
+          <li><i class="fas fa-check"></i> <strong>Unlimited</strong> bookings</li>
+          <li><i class="fas fa-check"></i> <strong>Unlimited</strong> shareable links</li>
+          <li><i class="fas fa-check"></i> <strong>Unlimited</strong> reminders</li>
+          <li><i class="fas fa-check"></i> Advanced analytics & reports</li>
+          <li><i class="fas fa-check"></i> Up to 10 team members</li>
+          <li><i class="fas fa-check"></i> Deposit collection</li>
+          <li><i class="fas fa-check"></i> AI-powered slot suggestions</li>
+          <li><i class="fas fa-check"></i> Priority support</li>
+        </ul>
+        <a href="/signup" class="plan-btn primary">Start 14-day free trial</a>
+      </div>
+
+      <!-- BUSINESS (COMING SOON) -->
+      <div class="price-card coming-soon reveal">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">&pound;25<span>/month</span></div>
+        <div class="plan-desc">For multi-location businesses</div>
+        <ul class="plan-features">
+          <li><i class="fas fa-check"></i> Everything in Professional</li>
+          <li><i class="fas fa-check"></i> Unlimited team members</li>
+          <li><i class="fas fa-check"></i> Multi-location support</li>
+          <li><i class="fas fa-check"></i> Google Calendar sync</li>
+          <li><i class="fas fa-check"></i> Payment processing (Dojo)</li>
+          <li><i class="fas fa-check"></i> Custom domain</li>
+          <li><i class="fas fa-check"></i> White-label booking page</li>
+          <li><i class="fas fa-check"></i> Dedicated account manager</li>
+        </ul>
+        <span class="plan-btn disabled">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="inner">
+    <h2 class="display">Ready to fill your calendar?</h2>
+    <p>Join hundreds of UK businesses already using Rezvo to book smarter, earn more, and stress less.</p>
+    <a href="/signup" class="btn-primary">Start free today <i class="fas fa-arrow-right" style="margin-left:8px"></i></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="inner">
+    <div class="logo">
+      <div class="logo-icon">R</div>
+      Rezvo
+    </div>
+    <div class="links">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/cookies">Cookies</a>
+      <a href="mailto:support@rezvo.app">Contact</a>
+    </div>
+    <div class="copy">&copy; 2026 Rezvo. All rights reserved. Made in the UK.</div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
