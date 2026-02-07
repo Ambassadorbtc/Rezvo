@@ -37,6 +37,14 @@ import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import CancelBookingPage from "./pages/booking/CancelBookingPage";
 import RescheduleBookingPage from "./pages/booking/RescheduleBookingPage";
 
+// Free Tools
+import ToolsHubPage from "./pages/tools/ToolsHubPage";
+import QRCodeTool from "./pages/tools/QRCodeTool";
+import ServiceMenuTool from "./pages/tools/ServiceMenuTool";
+import NoShowReminderTool from "./pages/tools/NoShowReminderTool";
+import PricingCalculatorTool from "./pages/tools/PricingCalculatorTool";
+import KeywordDensityTool from "./pages/tools/KeywordDensityTool";
+
 import "./App.css";
 
 // Protected Route wrapper for business owners
