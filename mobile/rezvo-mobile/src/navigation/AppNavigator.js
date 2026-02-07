@@ -128,6 +128,7 @@ function AuthStack() {
       <Stack.Screen name="PhoneVerify" component={PhoneVerifyScreen} />
       <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
       <Stack.Screen name="BusinessType" component={BusinessTypeScreen} />
+      <Stack.Screen name="OnboardingWizard" component={OnboardingWizardScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="VerifyCode" component={VerifyCodeScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
