@@ -46,11 +46,12 @@ export default function NewSignupPage() {
   const [error, setError] = useState('');
   
   // Form data
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+44');
   const [verificationId, setVerificationId] = useState('');
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
-  const [googleData, setGoogleData] = useState(null);
   const [businessType, setBusinessType] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
