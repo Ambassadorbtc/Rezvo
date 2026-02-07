@@ -44,6 +44,7 @@ const TOOLS = [
 export default function ToolsHubPage() {
   return (
     <div className="min-h-screen bg-cream" data-testid="tools-hub-page">
+      <SEOHead title="Free Tools for Small Businesses — Rezvo" description="Free instant tools for hairdressers, dentists, salons, trainers & tiny restaurants. No sign-up. Generate booking links, sitemaps, menus & more." path="/tools" />
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-cream/95 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
