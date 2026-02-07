@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Rezvo — Signup Flow Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7;--g:#E8F5F3}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#e8e8e8;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.d{font-family:'Space Grotesk',sans-serif}
+
+/* Phone */
+.phone{width:390px;height:844px;background:#fff;border-radius:44px;box-shadow:0 40px 100px rgba(0,0,0,.2);border:6px solid #1a1a1a;position:relative;overflow:hidden}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:126px;height:32px;background:#1a1a1a;border-radius:0 0 18px 18px;z-index:100}
+.screen-container{height:100%;overflow:hidden;position:relative}
+
+/* Screens */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .5s;will-change:transform,opacity}
+.screen.active{transform:translateX(0);opacity:1}
+.screen.left{transform:translateX(-100%);opacity:0}
+.screen.right{transform:translateX(100%);opacity:0}
+
+/* Animations */
+@keyframes bounce-in{0%{transform:scale(0) translateY(40px);opacity:0}60%{transform:scale(1.1) translateY(-10px);opacity:1}100%{transform:scale(1) translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes peek-in{0%{transform:translateX(80px);opacity:0}100%{transform:translateX(0);opacity:1}}
+@keyframes slide-up{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(700px) rotate(720deg);opacity:0}}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes morph{0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}}
+@keyframes success-ring{0%{transform:scale(0);opacity:0}50%{transform:scale(1.3);opacity:.5}100%{transform:scale(1);opacity:1}}
+@keyframes wiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes count-up{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.bounce-in{animation:bounce-in .7s cubic-bezier(.68,-.55,.27,1.55) both}
+.float{animation:float 3s ease-in-out infinite}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}.delay-4{animation-delay:.4s}.delay-5{animation-delay:.5s}
+
+/* Shared */
+.progress{display:flex;gap:6px;padding:0 28px;margin-top:50px;margin-bottom:24px}
+.progress .bar{height:4px;border-radius:2px;flex:1;background:#E2E8F0;transition:all .4s}
+.progress .bar.done{background:var(--t);flex:1.5}
+.btn{width:calc(100% - 56px);margin:0 28px;padding:16px;border-radius:16px;border:none;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .3s;position:relative;overflow:hidden}
+.btn-primary{background:var(--t);color:#fff;box-shadow:0 6px 20px rgba(0,191,165,.3)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 2.5s infinite}
+.btn-outline{background:#fff;color:var(--n);border:2px solid #E2E8F0}
+.btn-outline:active{transform:scale(.97);border-color:var(--t)}
+.orb{position:absolute;border-radius:50%;opacity:.12;animation:morph 10s ease-in-out infinite;pointer-events:none}
+.fox{pointer-events:none}
+
+/* ═══ SCREEN 1: WELCOME SPLASH ═══ */
+.s1{background:var(--c);align-items:center;justify-content:center;text-align:center;padding:40px 28px}
+.s1 .orb-1{width:200px;height:200px;background:var(--t);top:-60px;right:-40px}
+.s1 .orb-2{width:160px;height:160px;background:#8B5CF6;bottom:80px;left:-40px}
+.s1 .fox-wave{width:150px;height:150px;object-fit:contain}
+.s1 h1{font-size:28px;font-weight:800;margin-top:16px;margin-bottom:8px}
+.s1 h1 .teal{color:var(--t)}
+.s1 p{color:#627D98;font-size:15px;line-height:1.5;margin-bottom:32px;padding:0 10px}
+.s1 .trust{display:flex;align-items:center;justify-content:center;gap:6px;color:#9FB3C8;font-size:11px;margin-top:16px}
+.s1 .trust .dot{width:4px;height:4px;background:#D1D5DB;border-radius:50%}
+.s1 .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,191,165,.08);color:var(--t);padding:8px 16px;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:24px}
+.s1 .badge .live{width:6px;height:6px;background:var(--t);border-radius:50%;box-shadow:0 0 0 3px rgba(0,191,165,.2)}
+
+/* ═══ SCREEN 2: REZI INTRO ═══ */
+.s2{background:linear-gradient(180deg,#E8F5F3,var(--c));align-items:center;justify-content:center;text-align:center;padding:40px 28px}
+.s2 .fox-big{width:200px;height:200px;object-fit:contain}
+.s2 .speech{background:#fff;padding:14px 20px;border-radius:20px 20px 20px 4px;box-shadow:0 4px 16px rgba(0,0,0,.06);margin-top:20px;margin-bottom:8px;font-size:15px;color:var(--n);font-weight:600;max-width:260px;animation:slide-up .5s both;animation-delay:.3s}
+.s2 .sub{color:#627D98;font-size:13px;margin-top:6px;animation:slide-up .5s both;animation-delay:.5s}
+
+/* ═══ SCREEN 3: PHONE NUMBER ═══ */
+.s3{background:var(--c);padding:0 28px}
+.s3 .fox-peek{position:absolute;right:-10px;top:160px;width:110px;height:110px;object-fit:contain;animation:peek-in .6s both;animation-delay:.3s;z-index:5}
+.s3 h2{font-size:24px;font-weight:800;margin-bottom:6px}
+.s3 .sub{color:#627D98;font-size:14px;margin-bottom:28px}
+.s3 .phone-input{display:flex;gap:10px;margin-bottom:20px}
+.s3 .country{width:72px;padding:14px 10px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;text-align:center;font-family:inherit;color:var(--n)}
+.s3 .number{flex:1;padding:14px 16px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:16px;font-family:inherit;outline:none;transition:border .3s}
+.s3 .number:focus{border-color:var(--t);box-shadow:0 0 0 4px rgba(0,191,165,.1)}
+.s3 .note{color:#9FB3C8;font-size:12px;text-align:center;margin-top:12px}
+
+/* ═══ SCREEN 4: OTP ═══ */
+.s4{background:var(--c);padding:0 28px;align-items:center}
+.s4 .fox-happy{width:100px;height:100px;object-fit:contain;margin-top:8px;animation:wiggle 2s ease-in-out infinite}
+.s4 .speech-sm{background:var(--g);padding:8px 14px;border-radius:14px;font-size:12px;color:var(--t);font-weight:600;margin-bottom:16px;animation:pop .4s both;animation-delay:.3s}
+.s4 h2{font-size:24px;font-weight:800;margin-bottom:6px}
+.s4 .sub{color:#627D98;font-size:14px;margin-bottom:28px}
+.otp-row{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.otp-box{width:52px;height:60px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:24px;font-weight:700;text-align:center;font-family:'Space Grotesk',sans-serif;outline:none;transition:all .3s;color:var(--n)}
+.otp-box:focus{border-color:var(--t);box-shadow:0 0 0 4px rgba(0,191,165,.1);transform:scale(1.05)}
+.otp-box.filled{border-color:var(--t);background:#F0FDF9}
+.s4 .resend{color:var(--t);font-size:13px;font-weight:600;background:none;border:none;cursor:pointer;margin-bottom:20px}
+.s4 .timer{color:#9FB3C8;font-size:13px;margin-top:4px}
+
+/* ═══ SCREEN 5: GOOGLE AUTH ═══ */
+.s5{background:var(--c);padding:0 28px;align-items:center}
+.s5 .fox-wait{width:110px;height:110px;object-fit:contain;animation:float 2.5s ease-in-out infinite;margin-top:10px}
+.s5 h2{font-size:24px;font-weight:800;margin-bottom:6px}
+.s5 .sub{color:#627D98;font-size:14px;margin-bottom:28px}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:calc(100% - 56px);margin:0 28px;padding:16px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s}
+.google-btn:hover{border-color:#D1D5DB;background:#FAFAFA}
+.google-btn:active{transform:scale(.97)}
+.google-btn svg{width:22px;height:22px}
+.divider{display:flex;align-items:center;gap:12px;width:calc(100% - 56px);margin:20px 28px;color:#9FB3C8;font-size:12px;font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
+/* Success overlay */
+.success-overlay{position:absolute;inset:0;background:rgba(0,191,165,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .4s}
+.success-overlay.show{opacity:1;pointer-events:auto}
+.success-overlay .check-circle{width:100px;height:100px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;animation:success-ring .6s both}
+.success-overlay .check-circle svg{width:50px;height:50px;color:var(--t)}
+.success-overlay h3{color:#fff;font-size:24px;font-weight:800;margin-top:20px;font-family:'Space Grotesk',sans-serif}
+.success-overlay p{color:rgba(255,255,255,.8);font-size:14px;margin-top:6px}
+
+/* ═══ SCREEN 6: BUSINESS TYPE ═══ */
+.s6{background:var(--c);padding:0 28px;overflow-y:auto}
+.s6 .fox-corner{position:absolute;bottom:60px;left:10px;width:80px;height:80px;object-fit:contain;animation:wiggle 3s ease-in-out infinite;z-index:5}
+.s6 h2{font-size:24px;font-weight:800;margin-bottom:4px}
+.s6 .sub{color:#627D98;font-size:14px;margin-bottom:20px}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.type-card{padding:18px 12px;border-radius:18px;border:2px solid #E2E8F0;background:#fff;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+.type-card:active{transform:scale(.95)}
+.type-card.sel{border-color:var(--t);background:var(--g)}
+.type-card.sel::after{content:'';position:absolute;top:8px;right:8px;width:18px;height:18px;background:var(--t);border-radius:50%}
+.type-card .emoji{font-size:28px;display:block;margin-bottom:6px;transition:transform .3s}
+.type-card:active .emoji{transform:scale(1.2) rotate(-10deg)}
+.type-card .name{font-weight:700;font-size:13px}
+
+/* ═══ SCREEN 7: PROFILE ═══ */
+.s7{background:var(--c);padding:0 28px;overflow-y:auto}
+.s7 .preview-card{background:var(--t);border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;overflow:hidden}
+.s7 .preview-card .av{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;border:2px solid rgba(255,255,255,.4)}
+.s7 .preview-card .info{color:#fff}
+.s7 .preview-card .info .nm{font-weight:700;font-size:16px}
+.s7 .preview-card .info .loc{font-size:12px;opacity:.8}
+.s7 .preview-card .fox-mini{position:absolute;right:10px;top:-5px;width:60px;height:60px;object-fit:contain}
+.s7 h2{font-size:24px;font-weight:800;margin-bottom:4px}
+.s7 .sub{color:#627D98;font-size:14px;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;margin-bottom:6px}
+.field input{width:100%;padding:13px 16px;border-radius:14px;border:2px solid #E2E8F0;font-size:15px;font-family:inherit;background:#fff;outline:none;transition:all .3s}
+.field input:focus{border-color:var(--t);box-shadow:0 0 0 4px rgba(0,191,165,.1)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.colors{display:flex;gap:10px;margin:16px 0}
+.color-dot{width:38px;height:38px;border-radius:50%;cursor:pointer;transition:all .3s;border:3px solid transparent}
+.color-dot.sel{border-color:var(--n);transform:scale(1.15)}
+.color-dot:active{transform:scale(.9)}
+
+/* ═══ SCREEN 8: PREFERENCES ═══ */
+.s8{background:var(--c);padding:0 28px;overflow-y:auto}
+.s8 .fox-top{width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 8px;animation:float 3s ease-in-out infinite}
+.s8 .speech-bubble{background:var(--g);padding:8px 14px;border-radius:14px;font-size:12px;color:var(--t);font-weight:600;text-align:center;margin-bottom:12px;animation:pop .4s both;animation-delay:.2s}
+.s8 h2{font-size:22px;font-weight:800;margin-bottom:4px;text-align:center}
+.s8 .sub{color:#627D98;font-size:13px;margin-bottom:20px;text-align:center}
+.perm-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;border:1px solid #E2E8F0}
+.perm-card .icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.perm-card .info{flex:1}
+.perm-card .info h4{font-size:14px;font-weight:700}
+.perm-card .info p{font-size:11px;color:#627D98;margin-top:2px;line-height:1.4}
+.toggle{width:46px;height:26px;border-radius:13px;background:#E2E8F0;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0}
+.toggle.on{background:var(--t)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.toggle.on::after{transform:translateX(20px)}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--n);margin:20px 0 10px}
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:8px 16px;border-radius:100px;border:2px solid #E2E8F0;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;background:#fff;display:flex;align-items:center;gap:6px}
+.chip:active{transform:scale(.95)}
+.chip.sel{border-color:var(--t);background:var(--g);color:var(--t)}
+
+/* ═══ SCREEN 9: SUCCESS ═══ */
+.s9{background:linear-gradient(180deg,#D1FAE5,#E8F5F3,var(--c));align-items:center;justify-content:center;text-align:center;padding:40px 28px;position:relative;overflow:hidden}
+.s9 .confetti{position:absolute;inset:0;pointer-events:none}
+.s9 .conf{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall 3s ease-out infinite}
+.s9 .fox-cel{width:160px;height:160px;object-fit:contain;position:relative;z-index:1}
+.s9 h2{font-size:26px;font-weight:800;margin-top:16px;position:relative;z-index:1}
+.s9 .sub{color:#627D98;font-size:14px;margin-top:6px;margin-bottom:24px;position:relative;z-index:1;line-height:1.5;padding:0 10px}
+.stat-row{display:flex;gap:12px;margin-bottom:28px;position:relative;z-index:1}
+.stat-card{background:#fff;border-radius:16px;padding:14px 18px;text-align:center;flex:1;box-shadow:0 4px 12px rgba(0,0,0,.04)}
+.stat-card .val{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--t)}
+.stat-card .lbl{font-size:10px;color:#627D98;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+<div class="screen-container">
+
+<!-- S1: WELCOME SPLASH -->
+<div class="screen active" id="s1">
+  <div class="s1">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="badge"><span class="live"></span> Rezi is live in your city!</div>
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/11744fb49349994d659bfa6745f90b3f902007a6ce154b46a1e971ca6943b065.png" class="fox fox-wave float" alt="Rezi">
+    <h1 class="d">Hey there! <span class="teal">I'm Rezi.</span></h1>
+    <p>I'll help you set up your booking page in under a minute. No faff, I promise.</p>
+    <button class="btn btn-primary" onclick="go(2)">Let's go! →</button>
+    <button class="btn btn-outline" style="margin-top:10px" onclick="go(2)">I already have an account</button>
+    <div class="trust"><span>🛡 SECURE</span><span class="dot"></span><span>NO SPAM</span><span class="dot"></span><span>FREE FOREVER</span></div>
+  </div>
+</div>
+
+<!-- S2: REZI INTRO (auto-advances) -->
+<div class="screen right" id="s2">
+  <div class="s2">
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/11744fb49349994d659bfa6745f90b3f902007a6ce154b46a1e971ca6943b065.png" class="fox fox-big bounce-in" alt="Rezi">
+    <div class="speech">Let's get your bookings sorted! 📅</div>
+    <p class="sub">Setting up takes less than 60 seconds...</p>
+  </div>
+</div>
+
+<!-- S3: PHONE NUMBER -->
+<div class="screen right" id="s3">
+  <div class="s3">
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/8719e2ed2812f1a2245bbd00c9a2a90a36949c6b446261f3c0c67066123d6a2b.png" class="fox fox-peek" alt="Rezi peek">
+    <div class="progress"><div class="bar done"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    <h2 class="d">What's your number?</h2>
+    <p class="sub">We'll send you a quick code to verify</p>
+    <div class="phone-input">
+      <input class="country" value="+44" readonly>
+      <input class="number" type="tel" placeholder="7700 900 000" id="phoneInput">
+    </div>
+    <button class="btn btn-primary" onclick="go(4)">Send code →</button>
+    <p class="note">We'll text you a 6-digit code. Standard rates apply.</p>
+  </div>
+</div>
+
+<!-- S4: OTP CODE -->
+<div class="screen right" id="s4">
+  <div class="s4">
+    <div class="progress"><div class="bar done"></div><div class="bar done"></div><div class="bar"></div><div class="bar"></div></div>
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/80493aef81fc603ca82bd27541ed1cd74e5a5789501d0de84feff5ec9c2afc6b.png" class="fox fox-happy" alt="Rezi happy">
+    <div class="speech-sm">Check your messages! 📱</div>
+    <h2 class="d">Enter the code</h2>
+    <p class="sub">Sent to +44 7700 ••• •••</p>
+    <div class="otp-row">
+      <input class="otp-box" maxlength="1" value="4" readonly>
+      <input class="otp-box" maxlength="1" value="2" readonly>
+      <input class="otp-box filled" maxlength="1" value="8" readonly>
+      <input class="otp-box filled" maxlength="1" value="9" readonly>
+      <input class="otp-box" maxlength="1" placeholder="·">
+      <input class="otp-box" maxlength="1" placeholder="·">
+    </div>
+    <button class="resend">Resend code</button>
+    <p class="timer">Expires in 4:32</p>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="go(5)">Verify →</button>
+  </div>
+</div>
+
+<!-- S5: GOOGLE AUTH -->
+<div class="screen right" id="s5">
+  <div class="s5">
+    <div class="progress"><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div><div class="bar"></div></div>
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/80493aef81fc603ca82bd27541ed1cd74e5a5789501d0de84feff5ec9c2afc6b.png" class="fox fox-wait" alt="Rezi waiting">
+    <h2 class="d">One more thing</h2>
+    <p class="sub">Connect your account for a seamless experience</p>
+    <button class="google-btn" onclick="showSuccess()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <div class="divider">or</div>
+    <button class="btn btn-outline" onclick="go(6)" style="margin-bottom:12px">Skip for now</button>
+  </div>
+  <!-- Success overlay -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h3>Connected!</h3>
+    <p>Google account linked successfully</p>
+  </div>
+</div>
+
+<!-- S6: BUSINESS TYPE -->
+<div class="screen right" id="s6">
+  <div class="s6">
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/80493aef81fc603ca82bd27541ed1cd74e5a5789501d0de84feff5ec9c2afc6b.png" class="fox fox-corner" alt="Rezi">
+    <div class="progress"><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div><div class="bar"></div></div>
+    <h2 class="d">What's your vibe?</h2>
+    <p class="sub">Pick your business type so I can set things up perfectly</p>
+    <div class="type-grid">
+      <div class="type-card sel" onclick="selectType(this)"><span class="emoji">✂️</span><span class="name">Barber</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">💇‍♀️</span><span class="name">Hair Salon</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">💅</span><span class="name">Nails & Beauty</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">💪</span><span class="name">Personal Trainer</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">🦷</span><span class="name">Dentist</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">🐾</span><span class="name">Pet Grooming</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">💆</span><span class="name">Spa & Massage</span></div>
+      <div class="type-card" onclick="selectType(this)"><span class="emoji">🎯</span><span class="name">Other</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="go(7)">That's me! →</button>
+  </div>
+</div>
+
+<!-- S7: PROFILE -->
+<div class="screen right" id="s7">
+  <div class="s7">
+    <div class="progress"><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div></div>
+    <h2 class="d" style="margin-top:4px">Build your profile</h2>
+    <p class="sub">How do you want to appear to customers?</p>
+    <div class="preview-card">
+      <div class="av">J</div>
+      <div class="info"><div class="nm">Jake's Barbers</div><div class="loc">📍 London, UK</div></div>
+      <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/80493aef81fc603ca82bd27541ed1cd74e5a5789501d0de84feff5ec9c2afc6b.png" class="fox-mini" alt="Rezi">
+    </div>
+    <div class="field-row"><div class="field"><label>First name</label><input value="Jake" placeholder="First name"></div><div class="field"><label>Last name</label><input value="Williams" placeholder="Last name"></div></div>
+    <div class="field"><label>Business name</label><input value="Jake's Barbers" placeholder="Your business name"></div>
+    <div class="field"><label>Business address</label><input placeholder="123 High Street"></div>
+    <div class="field-row"><div class="field"><label>City</label><input value="London" placeholder="City"></div><div class="field"><label>Postcode</label><input value="E1 6AN" placeholder="Postcode"></div></div>
+    <div style="margin-bottom:8px"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98">Theme accent</label></div>
+    <div class="colors">
+      <div class="color-dot sel" style="background:var(--t)" onclick="selColor(this)"></div>
+      <div class="color-dot" style="background:#3B82F6" onclick="selColor(this)"></div>
+      <div class="color-dot" style="background:#8B5CF6" onclick="selColor(this)"></div>
+      <div class="color-dot" style="background:#EC4899" onclick="selColor(this)"></div>
+      <div class="color-dot" style="background:#F59E0B" onclick="selColor(this)"></div>
+      <div class="color-dot" style="background:var(--n)" onclick="selColor(this)"></div>
+    </div>
+    <button class="btn btn-primary" onclick="go(8)" style="margin-bottom:20px">Looks great! →</button>
+  </div>
+</div>
+
+<!-- S8: PREFERENCES -->
+<div class="screen right" id="s8">
+  <div class="s8">
+    <div class="progress"><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div><div class="bar done"></div></div>
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/80493aef81fc603ca82bd27541ed1cd74e5a5789501d0de84feff5ec9c2afc6b.png" class="fox fox-top" alt="Rezi">
+    <div class="speech-bubble">Just a few clicks!</div>
+    <h2 class="d">Final touches</h2>
+    <p class="sub">Help us tailor your experience.</p>
+    <div class="section-label">PERMISSIONS <span style="float:right;font-weight:500;font-size:10px;color:#9FB3C8;text-transform:none;letter-spacing:0">Optional</span></div>
+    <div class="perm-card">
+      <div class="icon" style="background:#DBEAFE">🔔</div>
+      <div class="info"><h4>Notifications</h4><p>Get instant updates on bookings and reminders so you never miss a beat.</p></div>
+      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="perm-card">
+      <div class="icon" style="background:#EDE9FE">📍</div>
+      <div class="info"><h4>Location Services</h4><p>Show your business to nearby customers searching for your services.</p></div>
+      <div class="toggle" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <div class="section-label">FAVOURITE CATEGORIES</div>
+    <div class="chip-grid">
+      <div class="chip sel" onclick="this.classList.toggle('sel')">✂️ Barber</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">💆 Spa & Beauty</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">💪 Fitness</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">🦷 Dentist</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">🐾 Pet Care</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">🍽 Restaurants</div>
+    </div>
+    <button class="btn btn-primary" onclick="go(9)" style="margin-bottom:20px">Finish Setup ✓</button>
+  </div>
+</div>
+
+<!-- S9: SUCCESS -->
+<div class="screen right" id="s9">
+  <div class="s9">
+    <div class="confetti">
+      <div class="conf" style="left:8%;background:var(--t);animation-delay:0s"></div>
+      <div class="conf" style="left:18%;background:#8B5CF6;animation-delay:.2s;width:6px;height:12px"></div>
+      <div class="conf" style="left:32%;background:#F59E0B;animation-delay:.5s"></div>
+      <div class="conf" style="left:48%;background:#3B82F6;animation-delay:.1s;width:10px;height:6px"></div>
+      <div class="conf" style="left:62%;background:#EF4444;animation-delay:.7s"></div>
+      <div class="conf" style="left:78%;background:var(--t);animation-delay:.3s;width:6px;height:10px"></div>
+      <div class="conf" style="left:90%;background:#8B5CF6;animation-delay:.6s"></div>
+      <div class="conf" style="left:15%;background:#F59E0B;animation-delay:.9s;width:10px;height:6px"></div>
+      <div class="conf" style="left:55%;background:#3B82F6;animation-delay:.4s"></div>
+      <div class="conf" style="left:85%;background:#EF4444;animation-delay:.8s;width:6px;height:10px"></div>
+    </div>
+    <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/211614a386e75591a6c1ddec94ea80365733fe9083b69171318f410ffd37f86a.png" class="fox fox-cel bounce-in" alt="Rezi celebrating">
+    <h2 class="d">You're all set, Jake! 🎉</h2>
+    <p class="sub">Your booking page is live. Share it with the world and watch your calendar fill up.</p>
+    <div class="stat-row">
+      <div class="stat-card"><div class="val">0:28</div><div class="lbl">Setup time</div></div>
+      <div class="stat-card"><div class="val">Live</div><div class="lbl">Booking page</div></div>
+      <div class="stat-card"><div class="val">∞</div><div class="lbl">Potential</div></div>
+    </div>
+    <button class="btn btn-primary">Go to Dashboard →</button>
+    <button class="btn btn-outline" style="margin-top:10px;border-color:var(--t);color:var(--t)">📤 Share my booking link</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+let current = 1;
+function go(n) {
+  const prev = document.getElementById('s' + current);
+  const next = document.getElementById('s' + n);
+  if (!prev || !next) return;
+  prev.classList.remove('active');
+  prev.classList.add('left');
+  next.classList.remove('right');
+  next.classList.add('active');
+  current = n;
+  // Auto-advance from s2 after 2.5s
+  if (n === 2) setTimeout(() => go(3), 2500);
+}
+
+function showSuccess() {
+  document.getElementById('successOverlay').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('successOverlay').classList.remove('show');
+    go(6);
+  }, 1800);
+}
+
+function selectType(el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  el.style.animation = 'pop .3s';
+  setTimeout(() => el.style.animation = '', 300);
+}
+
+function selColor(el) {
+  document.querySelectorAll('.color-dot').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+</script>
+</body>
+</html>
