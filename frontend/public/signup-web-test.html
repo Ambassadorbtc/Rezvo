@@ -41,10 +41,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--c);color:var(--
 
 /* Right panel — form side */
 .right{width:520px;min-width:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 56px;background:#fff;position:relative;overflow:visible}
-/* Fox positioned at top-right corner of white panel */
-.right .fox-corner{position:absolute;top:-30px;right:-80px;z-index:30}
-/* Fox at bottom center of white panel */
-.right .fox-bottom{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:30}
+/* Fox positioned on the BORDER between panels - peeking from the left edge */
+.right .fox-border-peek{position:absolute;top:50px;left:-90px;z-index:30}
+/* Fox centered at bottom of white panel */
+.right .fox-bottom{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:30}
 .right .back{position:absolute;top:24px;left:24px;width:40px;height:40px;border-radius:12px;border:2px solid #E2E8F0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:18px;color:#627D98}
 .right .back:hover{border-color:var(--t);color:var(--t)}
 .right .back:active{transform:scale(.92)}
