@@ -183,8 +183,15 @@ export default function CalendarScreen({ navigation }) {
     return new Date(dateStr).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Double tap handler for adding booking
+  // Handle time slot press - either move booking or add new
   const handleTimeSlotPress = (hour, memberId = null) => {
+    if (moveMode && bookingToMove) {
+      const newDateTime = new Date(selectedDate);
+      newDateTime.setHours(hour, 0, 0, 0);
+      setNewMoveTime(newDateTime);
+      setShowMoveConfirm(true);
+      return;
+    }
     const time = `${hour.toString().padStart(2, '0')}:00`;
     setSelectedTime(time);
     setSelectedMember(memberId ? teamMembers.find(m => m.id === memberId) : null);
