@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rezvo — The #1 booking system for UK micro-businesses</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--n);overflow-x:hidden}
+.d{font-family:'Space Grotesk',sans-serif}
+.mx{max-width:1200px;margin:0 auto;padding:0 24px}
+[data-r]{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+[data-r].on{opacity:1;transform:none}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:99;background:rgba(253,251,247,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.04);padding:14px 0}
+.topnav .mx{display:flex;align-items:center;justify-content:space-between}
+.topnav .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--n)}
+.topnav .logo b{width:36px;height:36px;background:var(--t);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.topnav .logo span{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px}
+.topnav .nr{display:flex;align-items:center;gap:24px}
+.topnav .nr a{text-decoration:none;color:#627D98;font-size:14px;font-weight:500;transition:color .2s}
+.topnav .nr a:hover{color:var(--n)}
+.topnav .nb{background:var(--n);color:#fff;padding:11px 28px;border-radius:100px;font-weight:600;font-size:14px;transition:all .2s}
+.topnav .nb:hover{background:#162D4A;box-shadow:0 4px 16px rgba(10,22,38,.2)}
+
+/* ═══════════ HERO — FULL BLEED ═══════════ */
+.hero{padding:140px 0 0;background:linear-gradient(180deg,var(--c) 0%,#E8F5F3 100%);position:relative;overflow:hidden;text-align:center}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(transparent,#fff)}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;background:var(--n);color:#fff;padding:10px 24px;border-radius:100px;font-size:13px;font-weight:600;margin-bottom:32px}
+.hero .badge .dot{width:8px;height:8px;background:var(--t);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(42px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-3px;margin-bottom:24px}
+.hero h1 .teal{color:var(--t)}
+.hero .sub{font-size:clamp(16px,2vw,21px);color:#627D98;max-width:620px;margin:0 auto 44px;line-height:1.6}
+.hero .hbtns{display:flex;gap:16px;justify-content:center;margin-bottom:64px}
+.hb1{background:var(--t);color:#fff;padding:18px 44px;border-radius:100px;font-size:17px;font-weight:700;text-decoration:none;transition:all .25s;box-shadow:0 6px 30px rgba(0,191,165,.35)}
+.hb1:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,191,165,.45)}
+.hb2{background:#fff;color:var(--n);padding:18px 44px;border-radius:100px;font-size:17px;font-weight:700;text-decoration:none;border:2px solid #E2E8F0;transition:all .25s}
+.hb2:hover{border-color:var(--n)}
+.hero-screens{position:relative;max-width:1100px;margin:0 auto;padding:0 24px}
+.hero-screens .desktop{width:100%;border-radius:16px 16px 0 0;box-shadow:0 -20px 60px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.06);border-bottom:0}
+.hero-screens .phone{position:absolute;right:40px;bottom:0;width:220px;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.15);border:3px solid #fff;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ═══════════ NUMBERS BAR ═══════════ */
+.nums{background:#fff;padding:48px 0;border-bottom:1px solid #f0f0f0}
+.nums .mx{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.nums .n{font-family:'Space Grotesk',sans-serif;font-size:42px;font-weight:800;color:var(--n)}
+.nums .n .accent{color:var(--t)}
+.nums .l{font-size:13px;color:#9FB3C8;margin-top:4px;font-weight:500}
+
+/* ═══════════ WHO'S IT FOR — HORIZONTAL SCROLL ═══════════ */
+.who{padding:80px 0;background:#fff;overflow:hidden}
+.who .mx{margin-bottom:40px}
+.who h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;text-align:center;margin-bottom:8px}
+.who p{text-align:center;color:#627D98;font-size:16px}
+.who-track{display:flex;gap:20px;padding:0 24px;animation:drift 25s linear infinite;width:max-content}
+@keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.who-card{width:280px;height:360px;border-radius:24px;position:relative;overflow:hidden;flex-shrink:0;cursor:pointer;transition:transform .3s}
+.who-card:hover{transform:scale(1.03)}
+.who-card img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.who-card:hover img{transform:scale(1.08)}
+.who-card .ov{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.who-card .ov h4{color:#fff;font-size:18px;font-weight:700}
+.who-card .ov p{color:rgba(255,255,255,.7);font-size:13px;margin-top:4px;text-align:left}
+
+/* ═══════════ PROBLEM / SOLUTION SPLIT ═══════════ */
+.split{padding:100px 0;background:var(--n);color:#fff}
+.split .mx{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.split h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px}
+.split h2 .teal{color:var(--t)}
+.split .story{color:#9FB3C8;font-size:16px;line-height:1.7;margin-bottom:28px}
+.before-after{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ba-card{border-radius:16px;padding:20px;font-size:14px;line-height:1.6}
+.ba-card.before{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)}
+.ba-card.before h4{color:#FCA5A5;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ba-card.before li{color:#FCA5A5;list-style:none;padding:4px 0;display:flex;align-items:flex-start;gap:8px}
+.ba-card.after{background:rgba(0,191,165,.1);border:1px solid rgba(0,191,165,.2)}
+.ba-card.after h4{color:var(--t);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ba-card.after li{color:#6EE7B7;list-style:none;padding:4px 0;display:flex;align-items:flex-start;gap:8px}
+.split .vis{position:relative}
+.split .vis img{width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.split .phone-float{position:absolute;bottom:-20px;right:-20px;width:180px;border-radius:20px;box-shadow:0 16px 40px rgba(0,0,0,.5);border:3px solid rgba(255,255,255,.1);animation:bob 4s ease-in-out infinite}
+
+/* ═══════════ FEATURES SHOWCASE ═══════════ */
+.showcase{padding:100px 0;background:var(--c)}
+.showcase .label{text-align:center;color:var(--t);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.showcase h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:60px}
+.feat-alt{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:80px}
+.feat-alt.flip{direction:rtl}
+.feat-alt.flip>*{direction:ltr}
+.feat-alt .ftxt .icon-badge{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.feat-alt .ftxt h3{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:12px}
+.feat-alt .ftxt p{color:#627D98;font-size:15px;line-height:1.7;margin-bottom:20px}
+.feat-alt .ftxt .checks{list-style:none;display:flex;flex-direction:column;gap:10px}
+.feat-alt .ftxt .checks li{display:flex;align-items:center;gap:10px;font-size:14px;color:#486581}
+.feat-alt .ftxt .checks li i{color:var(--t)}
+.feat-alt .fimg{position:relative}
+.feat-alt .fimg img{width:100%;border-radius:16px;box-shadow:0 16px 50px -10px rgba(0,0,0,.12)}
+.feat-alt .fimg .mini{position:absolute;bottom:-16px;right:-16px;width:160px;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.15);border:3px solid #fff}
+
+/* ═══════════ PRICING ═══════════ */
+.pricing{padding:100px 0;background:#fff}
+.pricing .label{text-align:center;color:var(--t);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.pricing h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:8px}
+.pricing .psub{text-align:center;color:#627D98;font-size:16px;margin-bottom:52px}
+.pgrid{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:20px;align-items:start}
+.pcard{border-radius:24px;padding:36px;border:2px solid #E2E8F0;transition:all .3s;background:#fff}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 20px 50px -10px rgba(0,0,0,.08)}
+.pcard.hot{border-color:var(--t);box-shadow:0 20px 60px -15px rgba(0,191,165,.2);position:relative}
+.pcard.hot .ribbon{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--t),#00897B);color:#fff;padding:8px 28px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(0,191,165,.3)}
+.pcard.dim{opacity:.7}
+.pcard .tn{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9FB3C8;margin-bottom:8px}
+.pcard .pr{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:800;line-height:1;margin-bottom:4px}
+.pcard .pr small{font-size:16px;font-weight:500;color:#9FB3C8}
+.pcard .pd{color:#627D98;font-size:14px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #E2E8F0}
+.pcard ul{list-style:none;margin-bottom:28px}
+.pcard li{font-size:14px;color:#334E68;padding:8px 0;display:flex;align-items:center;gap:10px}
+.pcard li i.fa-check{color:var(--t)}
+.pcard li i.fa-xmark{color:#D1D5DB}
+.pcard li.x{color:#B0B8C4}
+.pb{display:block;text-align:center;padding:16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s}
+.pb-f{background:var(--t);color:#fff}.pb-f:hover{background:#00A896;box-shadow:0 6px 20px rgba(0,191,165,.3)}
+.pb-o{border:2px solid #E2E8F0;color:var(--n)}.pb-o:hover{border-color:var(--t);color:var(--t)}
+.pb-d{background:#F1F5F9;color:#9FB3C8;pointer-events:none}
+
+/* ═══════════ FINAL CTA ═══════════ */
+.fcta{padding:120px 0;text-align:center;background:linear-gradient(180deg,#fff 0%,#E8F5F3 100%);position:relative}
+.fcta h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5vw,60px);font-weight:800;letter-spacing:-2px;margin-bottom:20px;line-height:1.1}
+.fcta h2 .teal{color:var(--t)}
+.fcta p{color:#627D98;font-size:18px;max-width:500px;margin:0 auto 44px;line-height:1.6}
+.fcta .hb1{font-size:18px;padding:20px 56px}
+.fcta .trust-row{display:flex;justify-content:center;gap:32px;margin-top:40px;color:#9FB3C8;font-size:13px}
+.fcta .trust-row i{color:var(--t);margin-right:6px}
+
+/* FOOTER */
+.foot{padding:40px 0;background:var(--n);text-align:center;color:rgba(255,255,255,.3);font-size:12px}
+.foot a{color:rgba(255,255,255,.4);text-decoration:none;margin:0 10px}
+
+@media(max-width:900px){
+  .hero h1{letter-spacing:-1.5px}
+  .hero-screens .phone{width:140px;right:10px}
+  .nums .mx{grid-template-columns:repeat(2,1fr)}
+  .split .mx,.feat-alt{grid-template-columns:1fr}
+  .feat-alt.flip{direction:ltr}
+  .pgrid{grid-template-columns:1fr}
+  .who-card{width:240px;height:300px}
+  .before-after{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+<div class="mx">
+  <a href="/" class="logo"><b>R</b><span>Rezvo</span></a>
+  <div class="nr">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="/login">Log in</a>
+    <a href="/signup" class="nb">Get started free</a>
+  </div>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge"><span class="dot"></span> The #1 booking system for UK small businesses</div>
+  <h1 class="d" data-r>Bookings that<br><span class="teal">just work.</span></h1>
+  <p class="sub" data-r>Share a link. Customers book. You earn. No monthly contracts, no per-booking fees, no faff. Just a beautiful booking system that fits in your pocket.</p>
+  <div class="hbtns" data-r>
+    <a href="/signup" class="hb1">Start free today <i class="fas fa-arrow-right" style="margin-left:8px"></i></a>
+    <a href="#features" class="hb2"><i class="fas fa-play" style="margin-right:8px;font-size:12px"></i> See it in action</a>
+  </div>
+  <div class="hero-screens" data-r>
+    <img src="/showcase/lp-dashboard.jpg" class="desktop" alt="Dashboard">
+    <img src="/showcase/mobile_03_dashboard.png" class="phone" alt="Mobile">
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<section class="nums">
+<div class="mx">
+  <div data-r><div class="n d"><span class="accent">500</span>+</div><div class="l">Partner businesses</div></div>
+  <div data-r><div class="n d"><span class="accent">12K</span>+</div><div class="l">Bookings managed</div></div>
+  <div data-r><div class="n d"><span class="accent">89</span>%</div><div class="l">Fewer no-shows</div></div>
+  <div data-r><div class="n d"><span class="accent">4.9</span> <i class="fas fa-star" style="color:#FCD34D;font-size:20px"></i></div><div class="l">Average rating</div></div>
+</div>
+</section>
+
+<!-- WHO'S IT FOR -->
+<section class="who">
+<div class="mx">
+  <h2 class="d" data-r>Built for people who work with their hands</h2>
+  <p data-r>Barbers. Stylists. Beauticians. Trainers. Anyone who books clients.</p>
+</div>
+<div class="who-track">
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=400&h=500&fit=crop" alt="Barber"><div class="ov"><h4>Barbers</h4><p>Fill every chair, every day</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=400&h=500&fit=crop" alt="Salon"><div class="ov"><h4>Hair Salons</h4><p>Team scheduling made easy</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=400&h=500&fit=crop" alt="Beauty"><div class="ov"><h4>Beauty & Nails</h4><p>Online bookings 24/7</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1632647896118-f13930710cad?w=400&h=500&fit=crop" alt="Trainer"><div class="ov"><h4>Personal Trainers</h4><p>Sessions booked while you train</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759142016096-a9d1a5ebcc09?w=400&h=500&fit=crop" alt="Team"><div class="ov"><h4>Any Service</h4><p>If you book clients, this is for you</p></div></div>
+  <!-- Dupe for loop -->
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=400&h=500&fit=crop" alt="Barber"><div class="ov"><h4>Barbers</h4><p>Fill every chair, every day</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=400&h=500&fit=crop" alt="Salon"><div class="ov"><h4>Hair Salons</h4><p>Team scheduling made easy</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=400&h=500&fit=crop" alt="Beauty"><div class="ov"><h4>Beauty & Nails</h4><p>Online bookings 24/7</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1632647896118-f13930710cad?w=400&h=500&fit=crop" alt="Trainer"><div class="ov"><h4>Personal Trainers</h4><p>Sessions booked while you train</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759142016096-a9d1a5ebcc09?w=400&h=500&fit=crop" alt="Team"><div class="ov"><h4>Any Service</h4><p>If you book clients, this is for you</p></div></div>
+</div>
+</section>
+
+<!-- PROBLEM/SOLUTION -->
+<section class="split">
+<div class="mx">
+  <div data-r>
+    <h2 class="d">The old way is costing you <span class="teal">real money.</span></h2>
+    <p class="story">Every missed call is a lost booking. Every no-show is money down the drain. Every scribbled notebook entry is a double-booking waiting to happen. You need a system — but not one built for massive chains with massive budgets.</p>
+    <div class="before-after">
+      <div class="ba-card before">
+        <h4><i class="fas fa-times-circle"></i> Without Rezvo</h4>
+        <ul>
+          <li><i class="fas fa-xmark"></i> Missed calls = lost clients</li>
+          <li><i class="fas fa-xmark"></i> 15% no-show rate</li>
+          <li><i class="fas fa-xmark"></i> Double bookings</li>
+          <li><i class="fas fa-xmark"></i> No idea which service earns most</li>
+        </ul>
+      </div>
+      <div class="ba-card after">
+        <h4><i class="fas fa-check-circle"></i> With Rezvo</h4>
+        <ul>
+          <li><i class="fas fa-check"></i> 24/7 online booking</li>
+          <li><i class="fas fa-check"></i> 89% fewer no-shows</li>
+          <li><i class="fas fa-check"></i> Zero double bookings</li>
+          <li><i class="fas fa-check"></i> Real-time revenue analytics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="vis" data-r>
+    <img src="/showcase/lp-dashboard.jpg" alt="Dashboard">
+    <img src="/showcase/mobile_05_bookings.png" class="phone-float" alt="Mobile bookings">
+  </div>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section class="showcase" id="features">
+<div class="mx">
+  <div class="label">Core features</div>
+  <h2 class="d" data-r>Everything you need. Nothing you don't.</h2>
+
+  <div class="feat-alt" data-r>
+    <div class="ftxt">
+      <div class="icon-badge" style="background:#E8F5F3"><i class="fas fa-link" style="color:var(--t)"></i></div>
+      <h3>One link. Infinite bookings.</h3>
+      <p>Generate a beautiful branded booking page. Share it everywhere — Instagram bio, WhatsApp, printed QR on your shop window. Customers book themselves 24/7.</p>
+      <ul class="checks">
+        <li><i class="fas fa-check"></i> Custom branding & logo</li>
+        <li><i class="fas fa-check"></i> QR code for print</li>
+        <li><i class="fas fa-check"></i> SMS + email confirmations</li>
+      </ul>
+    </div>
+    <div class="fimg">
+      <img src="/showcase/web_17_share_link.png" alt="Share">
+      <img src="/showcase/mobile_03_dashboard.png" class="mini" alt="Mobile">
+    </div>
+  </div>
+
+  <div class="feat-alt flip" data-r>
+    <div class="ftxt">
+      <div class="icon-badge" style="background:#EDE9FE"><i class="fas fa-chart-line" style="color:#8B5CF6"></i></div>
+      <h3>Analytics that actually help.</h3>
+      <p>See your revenue, popular services, and show rates at a glance. Know your busiest day. Know your best service. Make decisions with data, not guesses.</p>
+      <ul class="checks">
+        <li><i class="fas fa-check"></i> Revenue trends</li>
+        <li><i class="fas fa-check"></i> Service breakdown</li>
+        <li><i class="fas fa-check"></i> Export to CSV</li>
+      </ul>
+    </div>
+    <div class="fimg">
+      <img src="/showcase/web_18_analytics.png" alt="Analytics">
+    </div>
+  </div>
+
+  <div class="feat-alt" data-r>
+    <div class="ftxt">
+      <div class="icon-badge" style="background:#DBEAFE"><i class="fas fa-mobile-screen" style="color:#3B82F6"></i></div>
+      <h3>Web + mobile. Always in sync.</h3>
+      <p>Full dashboard on desktop. Native app on your phone. Manage bookings, check your calendar, and message clients from anywhere. Everything syncs in real-time.</p>
+      <ul class="checks">
+        <li><i class="fas fa-check"></i> iOS + Android app</li>
+        <li><i class="fas fa-check"></i> Drag-and-drop calendar</li>
+        <li><i class="fas fa-check"></i> Team management</li>
+      </ul>
+    </div>
+    <div class="fimg">
+      <img src="/showcase/web_11_dashboard.png" alt="Web dashboard" style="border-radius:12px;box-shadow:0 16px 50px rgba(0,0,0,.1)">
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+<div class="mx">
+  <div class="label">Simple pricing</div>
+  <h2 class="d" data-r>Pick your plan. Start today.</h2>
+  <p class="psub" data-r>No contracts. No per-booking fees. Cancel anytime.</p>
+  <div class="pgrid">
+    <div class="pcard" data-r>
+      <div class="tn">Starter</div>
+      <div class="pr d">Free</div>
+      <div class="pd">Everything to get started</div>
+      <ul>
+        <li><i class="fas fa-check"></i> 50 bookings/month</li>
+        <li><i class="fas fa-check"></i> 50 shareable links</li>
+        <li><i class="fas fa-check"></i> 400 reminders/month</li>
+        <li><i class="fas fa-check"></i> Basic analytics</li>
+        <li><i class="fas fa-check"></i> 1 team member</li>
+        <li class="x"><i class="fas fa-xmark"></i> Deposit collection</li>
+        <li class="x"><i class="fas fa-xmark"></i> AI suggestions</li>
+        <li class="x"><i class="fas fa-xmark"></i> Priority support</li>
+      </ul>
+      <a href="/signup" class="pb pb-o">Start free</a>
+    </div>
+    <div class="pcard hot" data-r>
+      <div class="ribbon">Most Popular</div>
+      <div class="tn">Professional</div>
+      <div class="pr d">&pound;8.99<small>/mo</small></div>
+      <div class="pd">For businesses ready to grow</div>
+      <ul>
+        <li><i class="fas fa-check"></i> <strong>Unlimited</strong> bookings</li>
+        <li><i class="fas fa-check"></i> <strong>Unlimited</strong> links</li>
+        <li><i class="fas fa-check"></i> <strong>Unlimited</strong> reminders</li>
+        <li><i class="fas fa-check"></i> Advanced analytics</li>
+        <li><i class="fas fa-check"></i> 10 team members</li>
+        <li><i class="fas fa-check"></i> Deposit collection</li>
+        <li><i class="fas fa-check"></i> AI slot suggestions</li>
+        <li><i class="fas fa-check"></i> Priority support</li>
+      </ul>
+      <a href="/signup" class="pb pb-f">Start 14-day free trial</a>
+    </div>
+    <div class="pcard dim" data-r>
+      <div class="tn">Business</div>
+      <div class="pr d">&pound;25<small>/mo</small></div>
+      <div class="pd">Multi-location powerhouse</div>
+      <ul>
+        <li><i class="fas fa-check"></i> Everything in Pro</li>
+        <li><i class="fas fa-check"></i> Unlimited team</li>
+        <li><i class="fas fa-check"></i> Multi-location</li>
+        <li><i class="fas fa-check"></i> Google Calendar sync</li>
+        <li><i class="fas fa-check"></i> Dojo payments</li>
+        <li><i class="fas fa-check"></i> Custom domain</li>
+        <li><i class="fas fa-check"></i> White-label</li>
+        <li><i class="fas fa-check"></i> Account manager</li>
+      </ul>
+      <span class="pb pb-d">Coming Soon</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="fcta">
+<div class="mx" data-r>
+  <h2 class="d">Ready to ditch<br>the <span class="teal">paper diary?</span></h2>
+  <p>Join hundreds of UK businesses who switched to Rezvo and never looked back.</p>
+  <a href="/signup" class="hb1">Get started — it's free <i class="fas fa-arrow-right" style="margin-left:8px"></i></a>
+  <div class="trust-row">
+    <span><i class="fas fa-check-circle"></i> No credit card required</span>
+    <span><i class="fas fa-check-circle"></i> Free forever plan</span>
+    <span><i class="fas fa-check-circle"></i> Setup in 30 seconds</span>
+  </div>
+</div>
+</section>
+
+<footer class="foot"><div class="mx">&copy; 2026 Rezvo. Made with grit in the UK. <a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+
+<script>
+const o=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('on')})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('[data-r]').forEach(e=>o.observe(e));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>
