@@ -151,6 +151,7 @@ function AppRoutes() {
       <Route path="/" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LandingPage />} />
       <Route path="/login" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <LoginPage />} />
       <Route path="/signup" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <SignupAuthPage />} />
+      <Route path="/signup-new" element={user ? <Navigate to={getDefaultRoute(user)} replace /> : <NewSignupPage />} />
       
       {/* New Signup Flow Routes (TailAdmin style) */}
       <Route path="/signup/profile" element={<SignupProfilePage />} />
