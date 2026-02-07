@@ -251,7 +251,7 @@ export default function NewSignupPage() {
           auth_method: 'email'
         };
 
-        const response = await api.post('/auth/register-with-otp', registrationData);
+        const response = await api.post('/auth/register', registrationData);
       
         // Save auth token
         localStorage.setItem('rezvo_token', response.data.token);
