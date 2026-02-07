@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rezvo — Bookings that just work</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--n);overflow-x:hidden}
+.d{font-family:'Space Grotesk',sans-serif}
+.mx{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ── GLOBAL ANIMATIONS ── */
+[data-r]{opacity:0;transform:translateY(50px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+[data-r="l"]{transform:translateX(-60px)}
+[data-r="r"]{transform:translateX(60px)}
+[data-r="s"]{transform:scale(.92)}
+[data-r="d"]{transform:translateY(30px)}
+[data-r].on{opacity:1;transform:none}
+.d1{transition-delay:.1s!important}.d2{transition-delay:.2s!important}.d3{transition-delay:.3s!important}.d4{transition-delay:.4s!important}.d5{transition-delay:.5s!important}.d6{transition-delay:.6s!important}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+@keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.5);opacity:0}}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin-slow{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes counter-pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+/* ── NAV ── */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:99;padding:14px 0;transition:all .4s}
+.topnav.scrolled{background:rgba(253,251,247,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.04);box-shadow:0 4px 20px rgba(0,0,0,.03)}
+.topnav .mx{display:flex;align-items:center;justify-content:space-between}
+.topnav .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--n)}
+.topnav .logo b{width:36px;height:36px;background:var(--t);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;font-style:normal;transition:transform .3s}
+.topnav .logo:hover b{transform:rotate(-8deg) scale(1.05)}
+.topnav .logo span{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px}
+.topnav .nr{display:flex;align-items:center;gap:24px}
+.topnav .nr a{text-decoration:none;color:#627D98;font-size:14px;font-weight:500;transition:color .2s}
+.topnav .nr a:hover{color:var(--n)}
+.topnav .nb{background:var(--n);color:#fff!important;padding:11px 28px;border-radius:100px;font-weight:600;font-size:14px;transition:all .3s}
+.topnav .nb:hover{background:var(--t);box-shadow:0 4px 20px rgba(0,191,165,.3);transform:translateY(-1px)}
+
+/* ════════ HERO ════════ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 60px;background:linear-gradient(180deg,var(--c) 0%,#E8F5F3 60%,#D1FAE5 100%);position:relative;overflow:hidden}
+.hero .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:float 8s ease-in-out infinite}
+.hero .orb1{width:500px;height:500px;background:var(--t);top:-150px;right:-100px;animation-delay:0s}
+.hero .orb2{width:400px;height:400px;background:#8B5CF6;bottom:-100px;left:-100px;animation-delay:2s}
+.hero .orb3{width:300px;height:300px;background:#3B82F6;top:30%;left:60%;animation-delay:4s}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;background:var(--n);color:#fff;padding:10px 24px;border-radius:100px;font-size:13px;font-weight:600;margin-bottom:32px;position:relative;z-index:1}
+.hero .badge .dot{width:8px;height:8px;background:var(--t);border-radius:50%;position:relative}
+.hero .badge .dot::after{content:'';position:absolute;inset:-4px;border:2px solid var(--t);border-radius:50%;animation:pulse-ring 2s infinite}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(44px,7vw,88px);font-weight:800;line-height:.95;letter-spacing:-4px;margin-bottom:28px;position:relative;z-index:1}
+.hero h1 .teal{color:var(--t);display:inline-block;animation:float 3s ease-in-out infinite}
+.hero .sub{font-size:clamp(16px,2vw,21px);color:#627D98;max-width:580px;margin:0 auto 44px;line-height:1.65;position:relative;z-index:1}
+.hero .hbtns{display:flex;gap:16px;justify-content:center;margin-bottom:72px;position:relative;z-index:1}
+.hb1{background:var(--t);color:#fff;padding:18px 44px;border-radius:100px;font-size:17px;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 6px 30px rgba(0,191,165,.35);position:relative;overflow:hidden}
+.hb1::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+.hb1:hover::after{left:100%}
+.hb1:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,191,165,.45)}
+.hb2{background:#fff;color:var(--n);padding:18px 44px;border-radius:100px;font-size:17px;font-weight:700;text-decoration:none;border:2px solid #E2E8F0;transition:all .3s}
+.hb2:hover{border-color:var(--n);transform:translateY(-2px)}
+
+/* Hero screens */
+.hero-screens{position:relative;max-width:1100px;width:100%;z-index:1}
+.hero-screens .desktop{width:100%;border-radius:16px 16px 0 0;box-shadow:0 -20px 80px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.06);border-bottom:0;transition:transform .5s}
+.hero-screens:hover .desktop{transform:translateY(-4px)}
+.hero-screens .phone{position:absolute;right:40px;bottom:0;width:220px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.18);border:4px solid #fff;animation:bob 4s ease-in-out infinite}
+.hero-screens .phone-left{position:absolute;left:30px;bottom:20px;width:180px;border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.15);border:3px solid #fff;animation:bob 5s ease-in-out infinite;animation-delay:1s}
+
+/* ════════ NUMBERS ════════ */
+.nums{background:#fff;padding:56px 0;border-bottom:1px solid #f0f0f0}
+.nums .mx{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.nums .n{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:800}
+.nums .n .accent{color:var(--t)}
+.nums .l{font-size:13px;color:#9FB3C8;margin-top:6px;font-weight:500}
+.counter-animated{animation:counter-pop .6s ease-out both}
+
+/* ════════ HOW IT WORKS ════════ */
+.how{padding:100px 0;background:var(--c)}
+.how .label{text-align:center;color:var(--t);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.how h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:64px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+.steps::before{content:'';position:absolute;top:48px;left:16.6%;right:16.6%;height:3px;background:linear-gradient(90deg,var(--t),#8B5CF6,#3B82F6);border-radius:2px}
+.step{text-align:center;position:relative;padding:0 24px}
+.step .num{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:800;color:#fff;position:relative;z-index:1;transition:transform .3s}
+.step:hover .num{transform:scale(1.1) rotate(-5deg)}
+.step:nth-child(1) .num{background:linear-gradient(135deg,var(--t),#00897B)}
+.step:nth-child(2) .num{background:linear-gradient(135deg,#8B5CF6,#6D28D9)}
+.step:nth-child(3) .num{background:linear-gradient(135deg,#3B82F6,#2563EB)}
+.step h3{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.step p{color:#627D98;font-size:14px;line-height:1.6}
+
+/* ════════ WHO / SCROLL ════════ */
+.who{padding:80px 0;background:#fff;overflow:hidden}
+.who h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:8px}
+.who .sub{text-align:center;color:#627D98;font-size:16px;margin-bottom:48px}
+.who-track{display:flex;gap:20px;padding:0 24px;animation:drift 28s linear infinite;width:max-content}
+.who-card{width:280px;height:360px;border-radius:24px;position:relative;overflow:hidden;flex-shrink:0;transition:transform .4s}
+.who-card:hover{transform:scale(1.04) translateY(-4px)}
+.who-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.who-card:hover img{transform:scale(1.1)}
+.who-card .ov{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(transparent,rgba(0,0,0,.85));transform:translateY(8px);transition:transform .4s}
+.who-card:hover .ov{transform:translateY(0)}
+.who-card .ov h4{color:#fff;font-size:18px;font-weight:700}
+.who-card .ov p{color:rgba(255,255,255,.7);font-size:13px;margin-top:4px}
+
+/* ════════ PROBLEM/SOLUTION ════════ */
+.split{padding:100px 0;background:var(--n);color:#fff;position:relative;overflow:hidden}
+.split::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,191,165,.1) 0%,transparent 60%);animation:spin-slow 30s linear infinite}
+.split .mx{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.split h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.2;margin-bottom:24px}
+.split h2 .teal{color:var(--t)}
+.split .story{color:#9FB3C8;font-size:16px;line-height:1.7;margin-bottom:28px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ba-c{border-radius:20px;padding:24px;transition:transform .3s}
+.ba-c:hover{transform:translateY(-4px)}
+.ba-c.before{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15)}
+.ba-c.before h4{color:#FCA5A5;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ba-c.before li{color:#FCA5A5;list-style:none;padding:6px 0;display:flex;align-items:center;gap:8px;font-size:14px}
+.ba-c.after{background:rgba(0,191,165,.08);border:1px solid rgba(0,191,165,.15)}
+.ba-c.after h4{color:var(--t);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ba-c.after li{color:#6EE7B7;list-style:none;padding:6px 0;display:flex;align-items:center;gap:8px;font-size:14px}
+.split .vis{position:relative}
+.split .vis .main-img{width:100%;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.4);transition:transform .5s}
+.split .vis:hover .main-img{transform:scale(1.02)}
+.split .vis .phone-fl{position:absolute;bottom:-24px;right:-24px;width:190px;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.5);border:3px solid rgba(255,255,255,.1);animation:bob 4.5s ease-in-out infinite}
+
+/* ════════ FEATURES ════════ */
+.feats{padding:100px 0;background:var(--c)}
+.feats .label{text-align:center;color:var(--t);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.feats h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:64px}
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:100px}
+.feat-row.flip{direction:rtl}.feat-row.flip>*{direction:ltr}
+.feat-row .ft .icon-b{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;transition:transform .3s}
+.feat-row .ft .icon-b:hover{transform:rotate(-8deg) scale(1.1)}
+.feat-row .ft h3{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;margin-bottom:14px;line-height:1.2}
+.feat-row .ft p{color:#627D98;font-size:16px;line-height:1.7;margin-bottom:24px}
+.feat-row .ft .checks{list-style:none;display:flex;flex-direction:column;gap:12px}
+.feat-row .ft .checks li{display:flex;align-items:center;gap:10px;font-size:15px;color:#486581;transition:transform .2s}
+.feat-row .ft .checks li:hover{transform:translateX(4px)}
+.feat-row .ft .checks li i{color:var(--t);font-size:14px}
+.feat-row .fi{position:relative}
+.feat-row .fi img{width:100%;border-radius:16px;box-shadow:0 20px 60px -12px rgba(0,0,0,.12);transition:transform .4s}
+.feat-row .fi:hover img{transform:translateY(-6px)}
+.feat-row .fi .mini{position:absolute;bottom:-20px;right:-20px;width:170px;border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.15);border:3px solid #fff;animation:float 5s ease-in-out infinite}
+
+/* ════════ PRICING ════════ */
+.pricing{padding:100px 0;background:#fff}
+.pricing .label{text-align:center;color:var(--t);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.pricing h2{text-align:center;font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;margin-bottom:8px}
+.pricing .psub{text-align:center;color:#627D98;font-size:16px;margin-bottom:56px}
+.pgrid{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:20px;align-items:start}
+.pc{border-radius:24px;padding:36px;border:2px solid #E2E8F0;transition:all .4s;background:#fff}
+.pc:hover{transform:translateY(-6px);box-shadow:0 24px 60px -15px rgba(0,0,0,.1)}
+.pc.hot{border-color:var(--t);box-shadow:0 24px 60px -15px rgba(0,191,165,.2);position:relative}
+.pc.hot:hover{box-shadow:0 30px 70px -10px rgba(0,191,165,.25)}
+.pc.hot .ribbon{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--t),#00897B);color:#fff;padding:8px 28px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(0,191,165,.3)}
+.pc.dim{opacity:.7}
+.pc .tn{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9FB3C8;margin-bottom:8px}
+.pc .pr{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:800;line-height:1;margin-bottom:4px}
+.pc .pr small{font-size:16px;font-weight:500;color:#9FB3C8}
+.pc .pd{color:#627D98;font-size:14px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #E2E8F0}
+.pc ul{list-style:none;margin-bottom:28px}
+.pc li{font-size:14px;color:#334E68;padding:8px 0;display:flex;align-items:center;gap:10px;transition:transform .2s}
+.pc li:hover{transform:translateX(4px)}
+.pc li i.fa-check{color:var(--t)}.pc li i.fa-xmark{color:#D1D5DB}
+.pc li.x{color:#B0B8C4}
+.pb{display:block;text-align:center;padding:16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:all .3s;position:relative;overflow:hidden}
+.pb-f{background:var(--t);color:#fff}.pb-f:hover{box-shadow:0 6px 24px rgba(0,191,165,.4);transform:translateY(-2px)}
+.pb-f::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+.pb-f:hover::after{left:100%}
+.pb-o{border:2px solid #E2E8F0;color:var(--n)}.pb-o:hover{border-color:var(--t);color:var(--t)}
+.pb-d{background:#F1F5F9;color:#9FB3C8;pointer-events:none}
+
+/* ════════ FINAL CTA ════════ */
+.fcta{padding:120px 0;text-align:center;background:linear-gradient(180deg,#fff 0%,#E8F5F3 50%,#D1FAE5 100%);position:relative;overflow:hidden}
+.fcta .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.2}
+.fcta .orb1{width:400px;height:400px;background:var(--t);top:-100px;right:-50px;animation:float 7s ease-in-out infinite}
+.fcta .orb2{width:300px;height:300px;background:#8B5CF6;bottom:-80px;left:-50px;animation:float 9s ease-in-out infinite;animation-delay:2s}
+.fcta h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5.5vw,64px);font-weight:800;letter-spacing:-2px;margin-bottom:20px;line-height:1.05;position:relative;z-index:1}
+.fcta h2 .teal{color:var(--t)}
+.fcta p{color:#627D98;font-size:18px;max-width:500px;margin:0 auto 44px;line-height:1.6;position:relative;z-index:1}
+.fcta .hb1{font-size:18px;padding:20px 56px;position:relative;z-index:1}
+.trust-row{display:flex;justify-content:center;gap:32px;margin-top:44px;color:#627D98;font-size:13px;position:relative;z-index:1;flex-wrap:wrap}
+.trust-row span{display:flex;align-items:center;gap:6px}
+.trust-row i{color:var(--t)}
+
+/* FOOTER */
+.foot{padding:40px 0;background:var(--n);text-align:center;color:rgba(255,255,255,.3);font-size:12px}
+.foot a{color:rgba(255,255,255,.4);text-decoration:none;margin:0 10px;transition:color .2s}
+.foot a:hover{color:var(--t)}
+
+@media(max-width:900px){
+  .hero h1{letter-spacing:-2px}
+  .hero-screens .phone{width:150px;right:10px}
+  .hero-screens .phone-left{display:none}
+  .nums .mx{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr;gap:40px}
+  .steps::before{display:none}
+  .split .mx,.feat-row{grid-template-columns:1fr}
+  .feat-row.flip{direction:ltr}
+  .pgrid{grid-template-columns:1fr}
+  .who-card{width:240px;height:300px}
+  .ba{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav" id="nav">
+<div class="mx">
+  <a href="/" class="logo"><b>R</b><span>Rezvo</span></a>
+  <div class="nr"><a href="#how">How it works</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="/login">Log in</a><a href="/signup" class="nb">Get started free</a></div>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="badge" data-r="d"><span class="dot"></span> The #1 booking system for UK small businesses</div>
+  <h1 class="d" data-r="d" style="transition-delay:.1s">Bookings that<br><span class="teal">just work.</span></h1>
+  <p class="sub" data-r="d" style="transition-delay:.2s">Share a link. Customers book. You earn. No contracts, no per-booking fees, no faff. Just a beautiful booking system that fits in your pocket.</p>
+  <div class="hbtns" data-r="d" style="transition-delay:.3s">
+    <a href="/signup" class="hb1">Start free today <i class="fas fa-arrow-right" style="margin-left:8px"></i></a>
+    <a href="#how" class="hb2"><i class="fas fa-play" style="margin-right:8px;font-size:12px"></i> See how it works</a>
+  </div>
+  <div class="hero-screens" data-r="d" style="transition-delay:.5s">
+    <img src="/showcase/lp-dashboard.jpg" class="desktop" alt="Dashboard">
+    <img src="/showcase/mobile_03_dashboard.png" class="phone" alt="Mobile dashboard">
+    <img src="/showcase/mobile_05_bookings.png" class="phone-left" alt="Mobile bookings">
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<section class="nums">
+<div class="mx">
+  <div data-r="d" class="d1"><div class="n d counter-animated"><span class="accent" data-count="500">0</span>+</div><div class="l">Partner businesses</div></div>
+  <div data-r="d" class="d2"><div class="n d counter-animated"><span class="accent" data-count="12000">0</span>+</div><div class="l">Bookings managed</div></div>
+  <div data-r="d" class="d3"><div class="n d counter-animated"><span class="accent" data-count="89">0</span>%</div><div class="l">Fewer no-shows</div></div>
+  <div data-r="d" class="d4"><div class="n d counter-animated"><span class="accent">4.9</span> <i class="fas fa-star" style="color:#FCD34D;font-size:20px"></i></div><div class="l">Average rating</div></div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+<div class="mx">
+  <div class="label" data-r="d">How it works</div>
+  <h2 class="d" data-r="d">Up and running in 30 seconds</h2>
+  <div class="steps">
+    <div class="step" data-r="d" style="transition-delay:.1s">
+      <div class="num">1</div>
+      <h3>Sign up free</h3>
+      <p>Create your account in seconds. No credit card. No commitment. Just your email and you're in.</p>
+    </div>
+    <div class="step" data-r="d" style="transition-delay:.25s">
+      <div class="num">2</div>
+      <h3>Add your services</h3>
+      <p>List what you offer, set your prices and availability. Your booking page goes live instantly.</p>
+    </div>
+    <div class="step" data-r="d" style="transition-delay:.4s">
+      <div class="num">3</div>
+      <h3>Share your link</h3>
+      <p>Drop it in your Instagram bio, WhatsApp, or print a QR code. Customers book 24/7.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- WHO -->
+<section class="who">
+<div class="mx">
+  <h2 class="d" data-r="d">Built for people who work with their hands</h2>
+  <p class="sub" data-r="d">Barbers. Stylists. Beauticians. Trainers. Anyone who books clients.</p>
+</div>
+<div class="who-track">
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=400&h=500&fit=crop" alt="Barber"><div class="ov"><h4>Barbers</h4><p>Fill every chair, every day</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=400&h=500&fit=crop" alt="Salon"><div class="ov"><h4>Hair Salons</h4><p>Team scheduling made easy</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=400&h=500&fit=crop" alt="Beauty"><div class="ov"><h4>Beauty & Nails</h4><p>Online bookings 24/7</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1632647896118-f13930710cad?w=400&h=500&fit=crop" alt="PT"><div class="ov"><h4>Personal Trainers</h4><p>Sessions booked while you train</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759142016096-a9d1a5ebcc09?w=400&h=500&fit=crop" alt="Team"><div class="ov"><h4>Any Service</h4><p>If you book clients, this is for you</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1761931403671-d020a14928d9?w=400&h=500&fit=crop" alt="Barber"><div class="ov"><h4>Barbers</h4><p>Fill every chair, every day</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?w=400&h=500&fit=crop" alt="Salon"><div class="ov"><h4>Hair Salons</h4><p>Team scheduling made easy</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1638514351607-585e69bbbb7e?w=400&h=500&fit=crop" alt="Beauty"><div class="ov"><h4>Beauty & Nails</h4><p>Online bookings 24/7</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1632647896118-f13930710cad?w=400&h=500&fit=crop" alt="PT"><div class="ov"><h4>Personal Trainers</h4><p>Sessions booked while you train</p></div></div>
+  <div class="who-card"><img src="https://images.unsplash.com/photo-1759142016096-a9d1a5ebcc09?w=400&h=500&fit=crop" alt="Team"><div class="ov"><h4>Any Service</h4><p>If you book clients, this is for you</p></div></div>
+</div>
+</section>
+
+<!-- SPLIT -->
+<section class="split">
+<div class="mx">
+  <div data-r="l">
+    <h2 class="d">The old way is costing you <span class="teal">real money.</span></h2>
+    <p class="story">Every missed call is a lost booking. Every no-show is money down the drain. You need a system — but not one built for massive chains with massive budgets.</p>
+    <div class="ba">
+      <div class="ba-c before" data-r="d" style="transition-delay:.1s"><h4><i class="fas fa-times-circle"></i> Without Rezvo</h4><ul><li><i class="fas fa-xmark"></i> Missed calls = lost clients</li><li><i class="fas fa-xmark"></i> 15% no-show rate</li><li><i class="fas fa-xmark"></i> Double bookings</li><li><i class="fas fa-xmark"></i> No revenue visibility</li></ul></div>
+      <div class="ba-c after" data-r="d" style="transition-delay:.2s"><h4><i class="fas fa-check-circle"></i> With Rezvo</h4><ul><li><i class="fas fa-check"></i> 24/7 online booking</li><li><i class="fas fa-check"></i> 89% fewer no-shows</li><li><i class="fas fa-check"></i> Zero double bookings</li><li><i class="fas fa-check"></i> Real-time analytics</li></ul></div>
+    </div>
+  </div>
+  <div class="vis" data-r="r">
+    <img src="/showcase/lp-dashboard.jpg" class="main-img" alt="Dashboard">
+    <img src="/showcase/mobile_05_bookings.png" class="phone-fl" alt="Mobile">
+  </div>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section class="feats" id="features">
+<div class="mx">
+  <div class="label" data-r="d">Core features</div>
+  <h2 class="d" data-r="d">Everything you need. Nothing you don't.</h2>
+
+  <div class="feat-row" data-r="l">
+    <div class="ft">
+      <div class="icon-b" style="background:#E8F5F3"><i class="fas fa-link" style="color:var(--t)"></i></div>
+      <h3>One link. Infinite bookings.</h3>
+      <p>Generate a branded booking page in seconds. Share everywhere. Customers book 24/7 — even while you sleep.</p>
+      <ul class="checks"><li><i class="fas fa-check"></i> Custom branding & logo</li><li><i class="fas fa-check"></i> QR code for your shop window</li><li><i class="fas fa-check"></i> SMS + email confirmations</li></ul>
+    </div>
+    <div class="fi" data-r="r">
+      <img src="/showcase/web_17_share_link.png" alt="Share"><img src="/showcase/mobile_03_dashboard.png" class="mini" alt="Mobile">
+    </div>
+  </div>
+
+  <div class="feat-row flip" data-r="r">
+    <div class="ft">
+      <div class="icon-b" style="background:#EDE9FE"><i class="fas fa-chart-line" style="color:#8B5CF6"></i></div>
+      <h3>Analytics that actually help.</h3>
+      <p>Revenue trends, popular services, show rates. Real data to grow your business — not guesses.</p>
+      <ul class="checks"><li><i class="fas fa-check"></i> Revenue tracking & trends</li><li><i class="fas fa-check"></i> Service popularity breakdown</li><li><i class="fas fa-check"></i> Export to CSV</li></ul>
+    </div>
+    <div class="fi" data-r="l"><img src="/showcase/web_18_analytics.png" alt="Analytics"></div>
+  </div>
+
+  <div class="feat-row" data-r="l">
+    <div class="ft">
+      <div class="icon-b" style="background:#DBEAFE"><i class="fas fa-mobile-screen" style="color:#3B82F6"></i></div>
+      <h3>Web + mobile. Always in sync.</h3>
+      <p>Full dashboard on desktop. Native app on your phone. Everything syncs in real-time.</p>
+      <ul class="checks"><li><i class="fas fa-check"></i> iOS + Android app</li><li><i class="fas fa-check"></i> Drag-and-drop calendar</li><li><i class="fas fa-check"></i> Multi-team management</li></ul>
+    </div>
+    <div class="fi" data-r="r"><img src="/showcase/web_11_dashboard.png" alt="Web"></div>
+  </div>
+</div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+<div class="mx">
+  <div class="label" data-r="d">Simple pricing</div>
+  <h2 class="d" data-r="d">Pick your plan. Start today.</h2>
+  <p class="psub" data-r="d">No contracts. No per-booking fees. Cancel anytime.</p>
+  <div class="pgrid">
+    <div class="pc" data-r="d" style="transition-delay:.1s"><div class="tn">Starter</div><div class="pr d">Free</div><div class="pd">Everything to get started</div><ul><li><i class="fas fa-check"></i> 50 bookings/month</li><li><i class="fas fa-check"></i> 50 shareable links</li><li><i class="fas fa-check"></i> 400 reminders/month</li><li><i class="fas fa-check"></i> Basic analytics</li><li><i class="fas fa-check"></i> 1 team member</li><li class="x"><i class="fas fa-xmark"></i> Deposit collection</li><li class="x"><i class="fas fa-xmark"></i> AI suggestions</li><li class="x"><i class="fas fa-xmark"></i> Priority support</li></ul><a href="/signup" class="pb pb-o">Start free</a></div>
+    <div class="pc hot" data-r="d" style="transition-delay:.2s"><div class="ribbon">Most Popular</div><div class="tn">Professional</div><div class="pr d">&pound;8.99<small>/mo</small></div><div class="pd">For businesses ready to grow</div><ul><li><i class="fas fa-check"></i> <strong>Unlimited</strong> bookings</li><li><i class="fas fa-check"></i> <strong>Unlimited</strong> links</li><li><i class="fas fa-check"></i> <strong>Unlimited</strong> reminders</li><li><i class="fas fa-check"></i> Advanced analytics</li><li><i class="fas fa-check"></i> 10 team members</li><li><i class="fas fa-check"></i> Deposit collection</li><li><i class="fas fa-check"></i> AI slot suggestions</li><li><i class="fas fa-check"></i> Priority support</li></ul><a href="/signup" class="pb pb-f">Start 14-day free trial</a></div>
+    <div class="pc dim" data-r="d" style="transition-delay:.3s"><div class="tn">Business</div><div class="pr d">&pound;25<small>/mo</small></div><div class="pd">Multi-location powerhouse</div><ul><li><i class="fas fa-check"></i> Everything in Pro</li><li><i class="fas fa-check"></i> Unlimited team</li><li><i class="fas fa-check"></i> Multi-location</li><li><i class="fas fa-check"></i> Google Calendar sync</li><li><i class="fas fa-check"></i> Dojo payments</li><li><i class="fas fa-check"></i> Custom domain</li><li><i class="fas fa-check"></i> White-label</li><li><i class="fas fa-check"></i> Account manager</li></ul><span class="pb pb-d">Coming Soon</span></div>
+  </div>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="fcta">
+  <div class="orb orb1"></div><div class="orb orb2"></div>
+  <div class="mx" data-r="d">
+    <h2 class="d">Ready to ditch the<br><span class="teal">paper diary?</span></h2>
+    <p>Join hundreds of UK businesses who switched to Rezvo and never looked back.</p>
+    <a href="/signup" class="hb1">Get started — it's free <i class="fas fa-arrow-right" style="margin-left:8px"></i></a>
+    <div class="trust-row">
+      <span><i class="fas fa-check-circle"></i> No credit card required</span>
+      <span><i class="fas fa-check-circle"></i> Free forever plan</span>
+      <span><i class="fas fa-check-circle"></i> Setup in 30 seconds</span>
+    </div>
+  </div>
+</section>
+
+<footer class="foot"><div class="mx">&copy; 2026 Rezvo. Made with grit in the UK.<a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+
+<script>
+// Scroll reveal
+const o=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting){i.target.classList.add('on')}})},{threshold:.08,rootMargin:'0px 0px -20px 0px'});
+document.querySelectorAll('[data-r]').forEach(e=>o.observe(e));
+
+// Nav scroll
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50)});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})})});
+
+// Animated counters
+const countObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){const el=entry.target;const target=parseInt(el.dataset.count);if(!target)return;let current=0;const step=Math.ceil(target/40);const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer)}el.textContent=current>=1000?(current/1000).toFixed(current>=10000?0:1)+'K':current},30);countObserver.unobserve(el)}})},{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>countObserver.observe(el));
+</script>
+</body>
+</html>
