@@ -56,6 +56,7 @@ import SitemapTool from "./pages/tools/SitemapTool";
 import BrokenLinkTool from "./pages/tools/BrokenLinkTool";
 import DomainSeoTool from "./pages/tools/DomainSeoTool";
 import MarkdownTool from "./pages/tools/MarkdownTool";
+import MarkdownConverterPage from "./pages/tools/MarkdownConverterPage";
 
 import "./App.css";
 
