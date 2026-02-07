@@ -6,7 +6,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rezvo-scheduler.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://booking-upgrade-9.preview.emergentagent.com')
 
 class TestBookingDragDrop:
     """Test booking update for drag-drop functionality"""

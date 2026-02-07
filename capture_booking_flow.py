@@ -3,7 +3,7 @@
 import asyncio
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://rezvo-scheduler.preview.emergentagent.com"
+BASE_URL = "https://booking-upgrade-9.preview.emergentagent.com"
 OUTPUT_DIR = "/app/frontend/public/showcase"
 BUSINESS_ID = "showcase-test-business"
 

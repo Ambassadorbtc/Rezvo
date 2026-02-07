@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 class QuickSlotAPITester:
-    def __init__(self, base_url: str = "https://rezvo-scheduler.preview.emergentagent.com/api"):
+    def __init__(self, base_url: str = "https://booking-upgrade-9.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
