@@ -259,8 +259,11 @@ export default function NewSignupPage() {
       
         // Save auth token
         localStorage.setItem('rezvo_token', response.data.token);
-        localStorage.setItem('rezvo_user', JSON.stringify(response.data.user));
-        updateUser(response.data.user);
+        
+        // Fetch user data after registration
+        const userResponse = await api.get('/users/me');
+        localStorage.setItem('rezvo_user', JSON.stringify(userResponse.data));
+        updateUser(userResponse.data);
       
         setOverlayMessage('Account created!');
         setTimeout(() => {
