@@ -1,0 +1,102 @@
+/* New Auth Callback - Teal Splash Screen */
+.auth-callback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #00BFA5;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.auth-callback-overlay .ring {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: ringPulse 1.5s infinite;
+}
+
+.auth-callback-overlay .circ {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  animation: popIn 0.5s both 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.auth-callback-overlay .circ svg {
+  width: 60px;
+  height: 60px;
+  color: #fff;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: checkDraw 0.6s both 0.4s;
+}
+
+.auth-callback-overlay .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.auth-callback-overlay h3 {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 24px;
+  z-index: 1;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.auth-callback-overlay p {
+  color: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.auth-callback-overlay .callback-rezi {
+  position: absolute;
+  bottom: -200px;
+  width: 200px;
+  height: 200px;
+  transition: bottom 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  z-index: 2;
+}
+
+.auth-callback-overlay .callback-rezi.show {
+  bottom: 40px;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(0); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes checkDraw {
+  0% { stroke-dashoffset: 30; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
