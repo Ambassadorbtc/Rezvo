@@ -1,7 +1,34 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ArrowLeft, Zap } from 'lucide-react';
 
 export default function ToolLayout({ title, subtitle, children }) {
+  const location = useLocation();
+
+  // Auto SEO for every tool page
+  useEffect(() => {
+    const seoTitle = `${title} — Free Online Tool | Rezvo`;
+    const seoDesc = subtitle || `Free ${title} tool. No sign-up required. Instant results for small businesses.`;
+    document.title = seoTitle;
+    const setMeta = (name, content, attr = 'name') => {
+      let el = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!el) { el = document.createElement('meta'); el.setAttribute(attr, name); document.head.appendChild(el); }
+      el.setAttribute('content', content);
+    };
+    setMeta('description', seoDesc);
+    setMeta('og:title', seoTitle, 'property');
+    setMeta('og:description', seoDesc, 'property');
+    setMeta('og:type', 'website', 'property');
+    setMeta('og:url', `https://rezvo.app${location.pathname}`, 'property');
+    setMeta('og:site_name', 'Rezvo', 'property');
+    setMeta('twitter:card', 'summary_large_image', 'name');
+    setMeta('twitter:title', seoTitle, 'name');
+    setMeta('twitter:description', seoDesc, 'name');
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement('link'); canonical.setAttribute('rel', 'canonical'); document.head.appendChild(canonical); }
+    canonical.setAttribute('href', `https://rezvo.app${location.pathname}`);
+  }, [title, subtitle, location.pathname]);
+
   return (
     <div className="min-h-screen bg-cream" data-testid={`tool-page-${title?.toLowerCase().replace(/\s+/g, '-')}`}>
       {/* Nav */}
