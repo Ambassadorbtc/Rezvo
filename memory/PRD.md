@@ -26,27 +26,41 @@ Rezvo is a booking application for UK micro-businesses. Web-first responsive pla
 - **Primary:** Teal `#00BFA5`
 - **Stat card palettes:** `#E8F5F3` (teal), `#FEF3E2` (amber), `#EDE9FE` (purple), `#DBEAFE` (blue), `#D1FAE5` (emerald), `#FEE2E2` (red)
 - **Corners:** `rounded-2xl` throughout
-- **Animations:** `anim-fade-up`, `anim-scale-in`, `anim-slide-right` with stagger delays `anim-d1` through `anim-d8`
-- **Hover:** Scale + shadow transitions on cards
+- **Animations:** `anim-fade-up`, `anim-scale-in`, `anim-slide-right` with stagger delays
 
 ## What's Been Implemented
 - Full auth flow (signup, login, Google OAuth, forgot password)
-- Dashboard, Calendar, Bookings, Services, Products, Team, Analytics, Settings, Support pages
+- All dashboard pages redesigned with mobile-inspired colorful style
 - Public booking page with QR code sharing
-- Mobile app with feature parity (onboarding wizard, calendar, products, share link)
+- Mobile app with feature parity
 - Email action links (cancel/reschedule bookings)
-- Showcase page (`/showcase.html`)
-- **UI Redesign (Feb 7 2026):** All web pages updated to match mobile's colorful, rounded design with entrance animations
+- 5 Landing page test versions (`landingpage-test-{1-5}.html`)
+- **Free Business Suite** (`/tools`) with 5 working tools:
+  - QR Code Generator
+  - Service Menu Generator
+  - No-Show Reminder Templates
+  - Pricing Calculator
+  - Keyword Density Analyzer
+- 3 pricing plans defined (Free, £8.99 Pro, £25 Business Coming Soon)
+
+## Pricing Plans
+- **Starter (Free):** 50 bookings/mo, 50 links, 400 reminders, 1 team member, basic analytics
+- **Professional (£8.99/mo):** Unlimited bookings/links/reminders, 10 team, deposits, AI suggestions, priority support
+- **Business (£25/mo - Coming Soon):** Multi-location, Google Calendar sync, Dojo payments, custom domain, white-label
+
+## Free Tools Suite (Marketing Channel)
+21 planned tools, 5 live. Hub at `/tools`. Each tool has:
+- Upsell banner (top + mid-page + footer)
+- SEO-optimized title/description
+- No login required
 
 ## Pending / Backlog
-- **P3:** Google Calendar Sync (implemented, needs user OAuth credentials)
+- **P1:** Remaining 16 free tools (Phases 2-4)
+- **P2:** Replace current landing page with chosen test version
+- **P2:** Plans management in admin panel
+- **P3:** Google Calendar Sync (needs user OAuth credentials)
 - **P3:** Dojo Payment Integration
-- **P2:** Mobile OnboardingWizard testing
-- **P2:** Showcase page user verification
+- **P3:** Mobile OnboardingWizard testing
 
 ## Test Accounts
 - `demo@rezvo.com` / `demo123`
-
-## Expo Mobile
-- Tunnel URL changes on each pod restart
-- QR page at `/expo-qr.html`
