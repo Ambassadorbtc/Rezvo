@@ -28,6 +28,17 @@ const TOOLS = [
   { slug: 'meta-tag-checker', name: 'Meta Tag Checker', desc: 'Check title, description, OG tags and canonical URLs.', icon: FileCode, color: '#3B82F6', bg: '#DBEAFE', ready: true },
   { slug: 'broken-link-checker', name: 'Broken Link Checker', desc: 'Find 404 errors and broken links on any page.', icon: AlertTriangle, color: '#EF4444', bg: '#FEE2E2', ready: true },
   { slug: 'markdown-converter', name: 'Anything to Markdown', desc: 'Convert PDF, Word, HTML, JSON and more to Markdown.', icon: FileDown, color: '#00BFA5', bg: '#E8F5F3', ready: true },
+  { slug: 'convert-csv-to-markdown', name: 'CSV to Markdown', desc: 'Convert CSV spreadsheets to formatted Markdown tables.', icon: Table, color: '#8B5CF6', bg: '#EDE9FE', ready: true },
+  { slug: 'convert-docx-to-markdown', name: 'Word to Markdown', desc: 'Upload .docx files and convert to clean Markdown.', icon: FileText, color: '#3B82F6', bg: '#DBEAFE', ready: true },
+  { slug: 'convert-pdf-to-markdown', name: 'PDF to Markdown', desc: 'Extract text from PDFs and convert to Markdown.', icon: FileDown, color: '#EF4444', bg: '#FEE2E2', ready: true },
+  { slug: 'convert-html-to-markdown', name: 'HTML to Markdown', desc: 'Convert HTML pages to clean Markdown format.', icon: Code, color: '#00BFA5', bg: '#E8F5F3', ready: true },
+  { slug: 'convert-webpage-to-markdown', name: 'Webpage to Markdown', desc: 'Enter any URL to convert its content to Markdown.', icon: Globe, color: '#F59E0B', bg: '#FEF3E2', ready: true },
+  { slug: 'convert-json-to-markdown', name: 'JSON to Markdown', desc: 'Convert JSON data into readable Markdown tables.', icon: FileCode, color: '#8B5CF6', bg: '#EDE9FE', ready: true },
+  { slug: 'convert-xml-to-markdown', name: 'XML to Markdown', desc: 'Convert XML documents to structured Markdown.', icon: Code, color: '#3B82F6', bg: '#DBEAFE', ready: true },
+  { slug: 'convert-notion-to-markdown', name: 'Notion to Markdown', desc: 'Convert public Notion pages to Markdown.', icon: FileText, color: '#EF4444', bg: '#FEE2E2', ready: true },
+  { slug: 'convert-google-docs-to-markdown', name: 'Google Docs to MD', desc: 'Convert published Google Docs to Markdown.', icon: FileText, color: '#00BFA5', bg: '#E8F5F3', ready: true },
+  { slug: 'convert-rtf-to-markdown', name: 'RTF to Markdown', desc: 'Convert Rich Text Format files to Markdown.', icon: FileText, color: '#F59E0B', bg: '#FEF3E2', ready: true },
+  { slug: 'convert-paste-to-markdown', name: 'Text to Markdown', desc: 'Paste any text to clean it into proper Markdown.', icon: Type, color: '#8B5CF6', bg: '#EDE9FE', ready: true },
 ];
 
 export default function ToolsHubPage() {
