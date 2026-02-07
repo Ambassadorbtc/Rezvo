@@ -4548,6 +4548,7 @@ app.add_middleware(
 # ═══════════ FREE TOOLS API ENDPOINTS ═══════════
 import xml.etree.ElementTree as ET
 from urllib.parse import urljoin, urlparse
+import httpx as httpx_client
 
 @app.post("/api/tools/fetch-url")
 async def tools_fetch_url(request: Request):
