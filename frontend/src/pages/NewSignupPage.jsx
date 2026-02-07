@@ -440,12 +440,20 @@ export default function NewSignupPage() {
               <div style={styles.fieldRow}>
                 <div style={styles.field}>
                   <label style={styles.label}>First name</label>
-                  <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} style={styles.input} />
+                  <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} style={styles.input} placeholder="Jake" />
                 </div>
                 <div style={styles.field}>
                   <label style={styles.label}>Last name</label>
-                  <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} style={styles.input} />
+                  <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} style={styles.input} placeholder="Williams" />
                 </div>
+              </div>
+              <div style={styles.field}>
+                <label style={styles.label}>Email address</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={styles.input} placeholder="jake@example.com" />
+              </div>
+              <div style={styles.field}>
+                <label style={styles.label}>Password</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} style={styles.input} placeholder="At least 8 characters" />
               </div>
               <div style={styles.field}>
                 <label style={styles.label}>Business name</label>
@@ -458,11 +466,11 @@ export default function NewSignupPage() {
               <div style={styles.fieldRow}>
                 <div style={styles.field}>
                   <label style={styles.label}>City</label>
-                  <input type="text" value={city} onChange={e => setCity(e.target.value)} style={styles.input} />
+                  <input type="text" value={city} onChange={e => setCity(e.target.value)} style={styles.input} placeholder="London" />
                 </div>
                 <div style={styles.field}>
                   <label style={styles.label}>Postcode</label>
-                  <input type="text" value={postcode} onChange={e => setPostcode(e.target.value)} style={styles.input} />
+                  <input type="text" value={postcode} onChange={e => setPostcode(e.target.value)} style={styles.input} placeholder="E1 6AN" />
                 </div>
               </div>
               <label style={styles.label}>Theme accent</label>
