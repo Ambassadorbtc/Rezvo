@@ -190,11 +190,11 @@ function TeamPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+      <div className="p-5 md:p-8 max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8 anim-fade-up">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-navy-900">Team Members</h1>
-            <p className="text-navy-500 mt-1">Manage your team and their booking permissions</p>
+            <h1 className="text-2xl lg:text-3xl font-bold font-display text-navy-900">Team Members</h1>
+            <p className="text-navy-400 mt-1">Manage your team and their booking permissions</p>
           </div>
           <Button onClick={handleAddNew} className="bg-teal-500 hover:bg-teal-600 shadow-lg shadow-teal-500/25" data-testid="add-team-member-btn">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"></path></svg>
