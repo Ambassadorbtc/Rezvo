@@ -306,6 +306,30 @@ export default function NewSignupPage() {
     }
   }, [otpCode, step]);
 
+  // Validate Step 6 before proceeding
+  const handleStep6Next = () => {
+    setError('');
+    if (!isGoogleAuth) {
+      if (!email) {
+        setError('Please enter your email address');
+        return;
+      }
+      if (!password) {
+        setError('Please enter a password');
+        return;
+      }
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters');
+        return;
+      }
+    }
+    if (!businessName) {
+      setError('Please enter your business name');
+      return;
+    }
+    goToStep(7);
+  };
+
   // Select business type
   const selectType = (id) => {
     setBusinessType(id);
