@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rezvo — Sign Up Design Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--c);color:var(--n);overflow-x:hidden}
+.d{font-family:'Space Grotesk',sans-serif}
+
+/* ── SHOWCASE GRID ── */
+.showcase-header{text-align:center;padding:60px 24px 40px}
+.showcase-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;margin-bottom:12px;letter-spacing:-1.5px}
+.showcase-header p{color:#627D98;font-size:18px;max-width:600px;margin:0 auto}
+.showcase-grid{max-width:1400px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:40px}
+
+/* ── PHONE FRAME ── */
+.phone-frame{width:380px;height:780px;margin:0 auto;background:#fff;border-radius:40px;box-shadow:0 40px 100px -20px rgba(0,0,0,.12);border:8px solid #1a1a1a;position:relative;overflow:hidden}
+.phone-frame::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#1a1a1a;border-radius:0 0 16px 16px;z-index:10}
+.phone-inner{height:100%;overflow-y:auto;position:relative}
+.phone-inner::-webkit-scrollbar{display:none}
+
+/* ── STEP 1: WELCOME ── */
+.step-welcome{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;background:linear-gradient(180deg,#E8F5F3 0%,var(--c) 100%);position:relative;overflow:hidden}
+.step-welcome .orbs{position:absolute;inset:0;pointer-events:none}
+.step-welcome .orb{position:absolute;border-radius:50%;opacity:.15;animation:morph 10s ease-in-out infinite}
+.orb-1{width:200px;height:200px;background:var(--t);top:-40px;right:-40px}
+.orb-2{width:160px;height:160px;background:#8B5CF6;bottom:60px;left:-30px;animation-delay:3s}
+.orb-3{width:120px;height:120px;background:#3B82F6;top:40%;left:60%;animation-delay:6s}
+@keyframes morph{0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}}
+.fox-welcome{width:140px;height:140px;object-fit:contain;animation:bounce 3s ease-in-out infinite;margin-bottom:20px;position:relative;z-index:1}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.step-welcome h2{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:8px;position:relative;z-index:1}
+.step-welcome h2 .teal{color:var(--t)}
+.step-welcome p{color:#627D98;font-size:15px;margin-bottom:32px;position:relative;z-index:1;line-height:1.5}
+.welcome-btn{background:var(--t);color:#fff;border:none;padding:16px 48px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;position:relative;z-index:1;box-shadow:0 8px 30px rgba(0,191,165,.35);transition:all .3s;font-family:inherit}
+.welcome-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 40px rgba(0,191,165,.45)}
+.welcome-btn::after{content:'';position:absolute;inset:0;border-radius:100px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.trust-line{display:flex;align-items:center;gap:6px;color:#9FB3C8;font-size:12px;margin-top:20px;position:relative;z-index:1}
+.trust-line i{color:var(--t);font-size:10px}
+
+/* ── STEP 2: EMAIL ── */
+.step-email{min-height:100%;padding:60px 28px 40px;background:var(--c)}
+.fox-peek{position:absolute;top:32px;right:20px;width:70px;height:70px;object-fit:contain;animation:peek 4s ease-in-out infinite;z-index:5}
+@keyframes peek{0%,100%{transform:translateX(10px) rotate(-3deg)}50%{transform:translateX(0) rotate(3deg)}}
+.step-email .progress{display:flex;gap:6px;margin-bottom:32px}
+.step-email .progress .dot{height:4px;border-radius:2px;transition:all .4s}
+.step-email .progress .dot.active{background:var(--t);flex:2}
+.step-email .progress .dot.inactive{background:#E2E8F0;flex:1}
+.step-email h2{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
+.step-email .sub{color:#627D98;font-size:14px;margin-bottom:28px}
+.form-group{margin-bottom:20px;position:relative}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#334E68;margin-bottom:6px}
+.form-input{width:100%;padding:14px 16px 14px 44px;border:2px solid #E2E8F0;border-radius:16px;font-size:15px;background:#fff;transition:all .3s;font-family:inherit;outline:none}
+.form-input:focus{border-color:var(--t);box-shadow:0 0 0 4px rgba(0,191,165,.1)}
+.form-input.success{border-color:#10B981;background:#F0FDF9}
+.form-icon{position:absolute;left:14px;bottom:14px;color:#9FB3C8;font-size:16px;transition:color .3s}
+.form-input:focus+.form-icon,.form-input.success+.form-icon{color:var(--t)}
+.check-anim{position:absolute;right:14px;bottom:12px;width:24px;height:24px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pop .4s cubic-bezier(.68,-.55,.27,1.55);color:#fff;font-size:12px}
+@keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.or-divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:#9FB3C8;font-size:12px;font-weight:600}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
+.social-btn{width:100%;padding:14px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;font-family:inherit;margin-bottom:10px}
+.social-btn:hover{border-color:#D1D5DB;background:#FAFAFA;transform:translateY(-1px)}
+.social-btn img{width:20px;height:20px}
+.next-btn{width:100%;padding:16px;border-radius:16px;border:none;background:var(--t);color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .3s;font-family:inherit;position:relative;overflow:hidden}
+.next-btn:hover{background:#00A896;transform:translateY(-1px)}
+.next-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── STEP 3: BUSINESS TYPE ── */
+.step-type{min-height:100%;padding:60px 28px 40px;background:var(--c)}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.type-card{padding:20px 16px;border-radius:20px;border:2px solid #E2E8F0;background:#fff;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.type-card:hover{border-color:#B3F5EC;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.type-card.selected{border-color:var(--t);background:#E8F5F3}
+.type-card.selected::after{content:'';position:absolute;top:8px;right:8px;width:22px;height:22px;background:var(--t);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.type-card .emoji{font-size:32px;margin-bottom:8px;display:block;transition:transform .3s}
+.type-card:hover .emoji{transform:scale(1.15) rotate(-5deg)}
+.type-card .name{font-weight:700;font-size:14px;color:var(--n)}
+.fox-thumbs{width:80px;height:80px;object-fit:contain;position:absolute;bottom:80px;left:20px;animation:thumbsWiggle 3s ease-in-out infinite;z-index:5}
+@keyframes thumbsWiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+/* ── STEP 4: SUCCESS ── */
+.step-success{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;background:linear-gradient(180deg,#D1FAE5 0%,#E8F5F3 50%,var(--c) 100%);position:relative;overflow:hidden}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall 3s ease-out infinite}
+@keyframes confetti-fall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(800px) rotate(720deg);opacity:0}}
+.fox-celebrate{width:160px;height:160px;object-fit:contain;animation:celebrate 2s ease-in-out infinite;position:relative;z-index:1;margin-bottom:24px}
+@keyframes celebrate{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(1.05) rotate(-3deg)}75%{transform:scale(1.05) rotate(3deg)}}
+.step-success h2{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:8px;position:relative;z-index:1}
+.step-success p{color:#627D98;font-size:15px;margin-bottom:32px;position:relative;z-index:1;line-height:1.5}
+.success-stats{display:flex;gap:16px;margin-bottom:32px;position:relative;z-index:1}
+.success-stat{background:#fff;border-radius:16px;padding:16px 20px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.04);animation:stat-pop .5s cubic-bezier(.68,-.55,.27,1.55) both}
+.success-stat:nth-child(2){animation-delay:.1s}
+.success-stat:nth-child(3){animation-delay:.2s}
+@keyframes stat-pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.success-stat .num{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--t)}
+.success-stat .lbl{font-size:11px;color:#627D98;margin-top:2px}
+
+/* ── LABEL ── */
+.screen-label{text-align:center;margin-bottom:16px;font-size:13px;font-weight:700;color:#9FB3C8;text-transform:uppercase;letter-spacing:1.5px}
+</style>
+</head>
+<body>
+
+<div class="showcase-header">
+  <h1 class="d">Sign-Up Design Showcase</h1>
+  <p>Emotionally engaging onboarding inspired by Phantom, Revolut & Duolingo — with Rezi the Fox mascot</p>
+</div>
+
+<div class="showcase-grid">
+
+<!-- ═══ SCREEN 1: WELCOME ═══ -->
+<div>
+  <div class="screen-label">Step 1 — Welcome</div>
+  <div class="phone-frame">
+    <div class="phone-inner">
+      <div class="step-welcome">
+        <div class="orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+        <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/f244b4cf329b9869ae40e0314973a7c5428275efca6752d5c2c43eadb15c7f47.png" class="fox-welcome" alt="Rezi the Fox">
+        <h2 class="d">Hey there! <span class="teal">I'm Rezi.</span></h2>
+        <p>I'll help you set up your booking page in under a minute. No faff, I promise.</p>
+        <button class="welcome-btn">Let's go! <i class="fas fa-arrow-right" style="margin-left:8px"></i></button>
+        <div class="trust-line"><i class="fas fa-shield-halved"></i> Free forever · No credit card · 30-second setup</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 2: EMAIL / SIGNUP ═══ -->
+<div>
+  <div class="screen-label">Step 2 — Create Account</div>
+  <div class="phone-frame">
+    <div class="phone-inner">
+      <div class="step-email" style="position:relative">
+        <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/8a62183f2a19d43536ccece123a312e6754a6b7dc6d89b4e152c1fd5fd518fe4.png" class="fox-peek" alt="Rezi peeking">
+        <div class="progress">
+          <div class="dot active"></div>
+          <div class="dot inactive"></div>
+          <div class="dot inactive"></div>
+          <div class="dot inactive"></div>
+        </div>
+        <h2 class="d">Create your account</h2>
+        <p class="sub">Quick and painless — Rezi's got your back</p>
+        
+        <div class="form-group">
+          <label>Business name</label>
+          <input type="text" class="form-input success" value="Jake's Barbers" style="padding-left:44px">
+          <i class="fas fa-store form-icon" style="color:var(--t)"></i>
+          <div class="check-anim"><i class="fas fa-check"></i></div>
+        </div>
+
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" class="form-input" value="jake@email.com" style="padding-left:44px;border-color:var(--t);box-shadow:0 0 0 4px rgba(0,191,165,.1)">
+          <i class="fas fa-envelope form-icon" style="color:var(--t)"></i>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" placeholder="Create a password" style="padding-left:44px">
+          <i class="fas fa-lock form-icon"></i>
+        </div>
+
+        <button class="next-btn">Continue <i class="fas fa-arrow-right" style="margin-left:6px"></i></button>
+
+        <div class="or-divider">or sign up with</div>
+        
+        <button class="social-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 3: BUSINESS TYPE ═══ -->
+<div>
+  <div class="screen-label">Step 3 — Business Type</div>
+  <div class="phone-frame">
+    <div class="phone-inner">
+      <div class="step-type" style="position:relative">
+        <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/202c0c0ba4fad0b6263187dc4e1007068e35057c860c563852a7e8c3c24394b5.png" class="fox-thumbs" alt="Rezi thumbs up">
+        <div class="progress" style="display:flex;gap:6px;margin-bottom:32px">
+          <div class="dot" style="height:4px;border-radius:2px;background:var(--t);flex:2"></div>
+          <div class="dot" style="height:4px;border-radius:2px;background:var(--t);flex:2"></div>
+          <div class="dot" style="height:4px;border-radius:2px;background:#E2E8F0;flex:1"></div>
+          <div class="dot" style="height:4px;border-radius:2px;background:#E2E8F0;flex:1"></div>
+        </div>
+        <h2 class="d" style="font-size:24px;font-weight:800;margin-bottom:6px">What's your vibe?</h2>
+        <p style="color:#627D98;font-size:14px">Pick your business type so I can set things up perfectly</p>
+        
+        <div class="type-grid">
+          <div class="type-card selected">
+            <span class="emoji">✂️</span>
+            <span class="name">Barber</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">💇‍♀️</span>
+            <span class="name">Hair Salon</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">💅</span>
+            <span class="name">Nails & Beauty</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">💪</span>
+            <span class="name">Personal Trainer</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">🦷</span>
+            <span class="name">Dentist</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">🐾</span>
+            <span class="name">Pet Grooming</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">💆</span>
+            <span class="name">Spa & Massage</span>
+          </div>
+          <div class="type-card">
+            <span class="emoji">🎯</span>
+            <span class="name">Other</span>
+          </div>
+        </div>
+
+        <button class="next-btn" style="margin-top:24px">That's me! <i class="fas fa-arrow-right" style="margin-left:6px"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 4: SUCCESS ═══ -->
+<div>
+  <div class="screen-label">Step 4 — Welcome Home!</div>
+  <div class="phone-frame">
+    <div class="phone-inner">
+      <div class="step-success">
+        <div class="confetti">
+          <div class="confetti-piece" style="left:10%;background:#00BFA5;animation-delay:0s;animation-duration:2.5s"></div>
+          <div class="confetti-piece" style="left:20%;background:#8B5CF6;animation-delay:.3s;animation-duration:3s;width:6px;height:12px"></div>
+          <div class="confetti-piece" style="left:35%;background:#F59E0B;animation-delay:.6s;animation-duration:2.8s"></div>
+          <div class="confetti-piece" style="left:50%;background:#3B82F6;animation-delay:.2s;animation-duration:3.2s;width:10px;height:6px"></div>
+          <div class="confetti-piece" style="left:65%;background:#EF4444;animation-delay:.8s;animation-duration:2.6s"></div>
+          <div class="confetti-piece" style="left:75%;background:#00BFA5;animation-delay:.4s;animation-duration:3s;width:6px;height:10px"></div>
+          <div class="confetti-piece" style="left:88%;background:#8B5CF6;animation-delay:.1s;animation-duration:2.7s"></div>
+          <div class="confetti-piece" style="left:5%;background:#F59E0B;animation-delay:1s;animation-duration:3.1s"></div>
+          <div class="confetti-piece" style="left:42%;background:#3B82F6;animation-delay:.7s;animation-duration:2.9s;width:12px;height:6px"></div>
+          <div class="confetti-piece" style="left:92%;background:#EF4444;animation-delay:.5s;animation-duration:2.4s"></div>
+        </div>
+        <img src="https://static.prod-images.emergentagent.com/jobs/a11b0bb2-615a-4e6d-bcb4-3b2177a3e701/images/6b4d6511abb3ff73ca48c291b0136cbd00d76819f4fece6f1a68e56a6ebedde0.png" class="fox-celebrate" alt="Rezi celebrating">
+        <h2 class="d">You're all set, Jake! 🎉</h2>
+        <p>Your booking page is live. Share it with the world and watch your calendar fill up.</p>
+        <div class="success-stats">
+          <div class="success-stat"><div class="num">0:28</div><div class="lbl">Setup time</div></div>
+          <div class="success-stat"><div class="num">Live</div><div class="lbl">Booking page</div></div>
+          <div class="success-stat"><div class="num">∞</div><div class="lbl">Potential</div></div>
+        </div>
+        <button class="welcome-btn" style="width:100%">Go to Dashboard <i class="fas fa-arrow-right" style="margin-left:8px"></i></button>
+        <button class="social-btn" style="margin-top:12px;border-color:var(--t);color:var(--t)"><i class="fas fa-share-nodes"></i> Share my booking link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Design Notes -->
+<div style="max-width:800px;margin:0 auto;padding:0 24px 80px">
+  <div style="background:#fff;border-radius:24px;padding:40px;border:1px solid #E2E8F0">
+    <h2 class="d" style="font-size:24px;font-weight:700;margin-bottom:20px">Design Notes</h2>
+    <div style="display:grid;gap:16px">
+      <div style="padding:16px;background:#E8F5F3;border-radius:16px">
+        <strong style="color:var(--t)">Phantom-inspired:</strong>
+        <span style="color:#486581;font-size:14px"> Rezi the Fox mascot greets you warmly, waves, peeks, and celebrates — turning cold corporate forms into a friendly conversation.</span>
+      </div>
+      <div style="padding:16px;background:#EDE9FE;border-radius:16px">
+        <strong style="color:#8B5CF6">Revolut-inspired:</strong>
+        <span style="color:#486581;font-size:14px"> Premium tactile feel — shimmer on CTA buttons, morphing gradient orbs, green checkmark pops on valid inputs, smooth progress bar, and fluid transitions.</span>
+      </div>
+      <div style="padding:16px;background:#FEF3E2;border-radius:16px">
+        <strong style="color:#D97706">Duolingo-inspired:</strong>
+        <span style="color:#486581;font-size:14px"> Confetti celebration on completion, emoji-based business type selection, progress dots with visual weight, encouraging copy ("Rezi's got your back"), and a celebration screen that makes finishing feel rewarding.</span>
+      </div>
+      <div style="padding:16px;background:#DBEAFE;border-radius:16px">
+        <strong style="color:#3B82F6">The Fox:</strong>
+        <span style="color:#486581;font-size:14px"> Clever, adaptable, approachable — perfect for a booking platform. Appears in 4 states: waving (welcome), peeking (form), thumbs-up (selection), celebrating (success). Each state has idle animation.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
