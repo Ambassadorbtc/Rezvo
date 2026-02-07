@@ -120,16 +120,16 @@ const ProductsPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto" data-testid="products-page">
+      <div className="p-5 md:p-8 max-w-6xl mx-auto" data-testid="products-page">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 anim-fade-up">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-            <p className="text-gray-500 mt-1">Manage your products for sale</p>
+            <h1 className="text-2xl md:text-3xl font-bold font-display text-navy-900">Products</h1>
+            <p className="text-navy-400 mt-1">Manage your products for sale</p>
           </div>
           <Button
             onClick={() => { resetForm(); setEditingProduct(null); setShowModal(true); }}
-            className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
+            className="bg-teal-500 hover:bg-teal-600 text-white rounded-full"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Product
@@ -137,7 +137,7 @@ const ProductsPage = () => {
         </div>
 
         {/* Search */}
-        <div className="relative mb-6">
+        <div className="relative mb-6 anim-fade-up anim-d1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search products..."
