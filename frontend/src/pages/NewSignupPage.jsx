@@ -562,6 +562,7 @@ export default function NewSignupPage() {
           <div className="prog" data-d="1"><div className="b a"></div><div className="b a"></div><div className="b a"></div><div className="b a"></div></div>
           <h1 className="d form-title" data-d="2">Final touches</h1>
           <p className="form-sub" data-d="2">Help us tailor your experience.</p>
+          {error && <div className="error-msg" data-d="2">{error}</div>}
           <div style={{width: '100%', maxWidth: 380, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.5, color: 'var(--n)', marginBottom: 10, display: 'flex', justifyContent: 'space-between'}} data-d="3">
             PERMISSIONS <span style={{fontWeight: 500, fontSize: 9, color: '#9FB3C8', textTransform: 'none', letterSpacing: 0}}>Optional</span>
           </div>
@@ -576,6 +577,7 @@ export default function NewSignupPage() {
             <div className={`tgl ${locationEnabled ? 'on' : ''}`} onClick={() => setLocationEnabled(!locationEnabled)}></div>
           </div>
           <div style={{flex: 1, minHeight: 40}}></div>
+          {error && <div className="error-msg" style={{marginBottom: 12}}>{error}</div>}
           <button className="btn btn-p" data-d="6" onClick={handleComplete} disabled={loading}>
             {loading ? 'Setting up...' : 'Finish Setup ✓'}
           </button>
