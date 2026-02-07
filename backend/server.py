@@ -4544,6 +4544,221 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ═══════════ FREE TOOLS API ENDPOINTS ═══════════
+import xml.etree.ElementTree as ET
+from urllib.parse import urljoin, urlparse
+
+@app.post("/api/tools/fetch-url")
+async def tools_fetch_url(request: Request):
+    """Fetch a URL and return its HTML content for client-side parsing"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            return {"status": resp.status_code, "html": resp.text[:500000], "url": str(resp.url), "headers": dict(resp.headers)}
+    except Exception as e:
+        raise HTTPException(400, f"Could not fetch URL: {str(e)}")
+
+@app.post("/api/tools/extract-links")
+async def tools_extract_links(request: Request):
+    """Extract all links from a webpage"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        from bs4 import BeautifulSoup
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            soup = BeautifulSoup(resp.text, "lxml")
+            links = []
+            seen = set()
+            for a in soup.find_all("a", href=True):
+                href = urljoin(str(resp.url), a["href"])
+                if href not in seen:
+                    seen.add(href)
+                    links.append({"url": href, "text": a.get_text(strip=True)[:100], "external": urlparse(href).netloc != urlparse(url).netloc})
+            return {"url": str(resp.url), "total": len(links), "links": links[:500]}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+@app.post("/api/tools/meta-tags")
+async def tools_meta_tags(request: Request):
+    """Extract meta tags from a URL"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        from bs4 import BeautifulSoup
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            soup = BeautifulSoup(resp.text, "lxml")
+            title = soup.title.string.strip() if soup.title and soup.title.string else ""
+            desc = ""
+            canonical = ""
+            og = {}
+            for meta in soup.find_all("meta"):
+                name = meta.get("name", "").lower()
+                prop = meta.get("property", "").lower()
+                content = meta.get("content", "")
+                if name == "description":
+                    desc = content
+                if prop.startswith("og:"):
+                    og[prop] = content
+            link_can = soup.find("link", rel="canonical")
+            if link_can:
+                canonical = link_can.get("href", "")
+            h1s = [h.get_text(strip=True) for h in soup.find_all("h1")]
+            h2s = [h.get_text(strip=True) for h in soup.find_all("h2")][:5]
+            img_count = len(soup.find_all("img"))
+            imgs_no_alt = len([img for img in soup.find_all("img") if not img.get("alt")])
+            word_count = len(soup.get_text().split())
+            return {"url": str(resp.url), "title": title, "title_length": len(title), "description": desc, "desc_length": len(desc), "canonical": canonical, "og_tags": og, "h1_tags": h1s, "h2_tags": h2s, "img_count": img_count, "imgs_without_alt": imgs_no_alt, "word_count": word_count}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+@app.post("/api/tools/robots-txt")
+async def tools_robots_txt(request: Request):
+    """Fetch and parse robots.txt"""
+    data = await request.json()
+    domain = data.get("domain", "").strip().rstrip("/")
+    if not domain:
+        raise HTTPException(400, "Domain is required")
+    if not domain.startswith("http"):
+        domain = "https://" + domain
+    parsed = urlparse(domain)
+    robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+    try:
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client_http:
+            resp = await client_http.get(robots_url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            if resp.status_code != 200:
+                return {"found": False, "url": robots_url, "status": resp.status_code}
+            content = resp.text
+            disallowed = [l.split(":", 1)[1].strip() for l in content.split("\n") if l.strip().lower().startswith("disallow:")]
+            sitemaps = [l.split(":", 1)[1].strip() for l in content.split("\n") if l.strip().lower().startswith("sitemap:")]
+            return {"found": True, "url": robots_url, "content": content[:10000], "disallowed_paths": disallowed, "sitemaps": sitemaps, "line_count": len(content.split("\n"))}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+@app.post("/api/tools/sitemap-parse")
+async def tools_sitemap_parse(request: Request):
+    """Fetch and parse a sitemap XML"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            content = resp.text
+            urls = []
+            errors = []
+            try:
+                root = ET.fromstring(content)
+                ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+                for url_el in root.findall('.//sm:url', ns) or root.findall('.//url'):
+                    loc = url_el.find('sm:loc', ns) or url_el.find('loc')
+                    lastmod = url_el.find('sm:lastmod', ns) or url_el.find('lastmod')
+                    priority = url_el.find('sm:priority', ns) or url_el.find('priority')
+                    urls.append({"loc": loc.text if loc is not None else "", "lastmod": lastmod.text if lastmod is not None else "", "priority": priority.text if priority is not None else ""})
+                # Check for sitemap index
+                for sm_el in root.findall('.//sm:sitemap', ns) or root.findall('.//sitemap'):
+                    loc = sm_el.find('sm:loc', ns) or sm_el.find('loc')
+                    if loc is not None:
+                        urls.append({"loc": loc.text, "lastmod": "", "priority": "", "type": "sitemap_index"})
+            except ET.ParseError as pe:
+                errors.append(f"XML Parse Error: {str(pe)}")
+            return {"url": url, "total_urls": len(urls), "urls": urls[:1000], "errors": errors, "is_valid_xml": len(errors) == 0, "raw_length": len(content)}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+@app.post("/api/tools/sitemap-find")
+async def tools_sitemap_find(request: Request):
+    """Find sitemaps for a domain"""
+    data = await request.json()
+    domain = data.get("domain", "").strip().rstrip("/")
+    if not domain:
+        raise HTTPException(400, "Domain is required")
+    if not domain.startswith("http"):
+        domain = "https://" + domain
+    parsed = urlparse(domain)
+    base = f"{parsed.scheme}://{parsed.netloc}"
+    candidates = [f"{base}/sitemap.xml", f"{base}/sitemap_index.xml", f"{base}/sitemap/sitemap.xml", f"{base}/wp-sitemap.xml"]
+    results = []
+    try:
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client_http:
+            # Check robots.txt first
+            try:
+                rresp = await client_http.get(f"{base}/robots.txt", headers={"User-Agent": "Rezvo-Tools/1.0"})
+                if rresp.status_code == 200:
+                    for line in rresp.text.split("\n"):
+                        if line.strip().lower().startswith("sitemap:"):
+                            sm_url = line.split(":", 1)[1].strip()
+                            if sm_url not in candidates:
+                                candidates.insert(0, sm_url)
+                    results.append({"url": f"{base}/robots.txt", "status": 200, "type": "robots.txt", "found": True})
+                else:
+                    results.append({"url": f"{base}/robots.txt", "status": rresp.status_code, "type": "robots.txt", "found": False})
+            except:
+                results.append({"url": f"{base}/robots.txt", "status": 0, "type": "robots.txt", "found": False})
+            # Check each candidate
+            for cand in candidates:
+                try:
+                    resp = await client_http.head(cand, headers={"User-Agent": "Rezvo-Tools/1.0"})
+                    ct = resp.headers.get("content-type", "")
+                    results.append({"url": cand, "status": resp.status_code, "type": "sitemap", "found": resp.status_code == 200, "content_type": ct})
+                except:
+                    results.append({"url": cand, "status": 0, "type": "sitemap", "found": False})
+        return {"domain": base, "results": results, "sitemaps_found": [r["url"] for r in results if r["found"] and r["type"] == "sitemap"]}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+@app.post("/api/tools/check-links")
+async def tools_check_links(request: Request):
+    """Check for broken links on a page"""
+    data = await request.json()
+    url = data.get("url", "").strip()
+    if not url:
+        raise HTTPException(400, "URL is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        from bs4 import BeautifulSoup
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+            resp = await client_http.get(url, headers={"User-Agent": "Rezvo-Tools/1.0"})
+            soup = BeautifulSoup(resp.text, "lxml")
+            links = set()
+            for a in soup.find_all("a", href=True):
+                href = urljoin(str(resp.url), a["href"])
+                if href.startswith("http"):
+                    links.add(href)
+            # Check first 50 links
+            results = []
+            for link in list(links)[:50]:
+                try:
+                    r = await client_http.head(link, headers={"User-Agent": "Rezvo-Tools/1.0"}, timeout=8)
+                    results.append({"url": link, "status": r.status_code, "ok": r.status_code < 400})
+                except:
+                    results.append({"url": link, "status": 0, "ok": False})
+            broken = [r for r in results if not r["ok"]]
+            return {"page_url": str(resp.url), "total_checked": len(results), "broken_count": len(broken), "results": results}
+    except Exception as e:
+        raise HTTPException(400, f"Error: {str(e)}")
+
+
 @app.on_event("startup")
 async def startup_event():
     """Start the scheduler for automated reminders"""
