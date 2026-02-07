@@ -46,13 +46,14 @@
         h1 { font-size: 20px; color: #0A1626; margin-bottom: 8px; }
         p { color: #627D98; font-size: 14px; margin-bottom: 24px; }
         .qr-container { 
-            background: #f8f9fa; 
-            padding: 24px; 
+            background: #ffffff; 
+            padding: 16px; 
             border-radius: 16px; 
             display: inline-block;
             margin-bottom: 24px;
+            border: 2px solid #e2e8f0;
         }
-        .qr-container img { display: block; width: 220px; height: 220px; image-rendering: pixelated; }
+        .qr-container canvas { display: block; }
         .expo-url {
             background: #f0fdf9;
             border: 2px solid #00BFA5;
@@ -99,6 +100,7 @@
         .instructions strong { color: #0A1626; }
         .timestamp { color: #9FB3C8; font-size: 11px; margin-top: 16px; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -113,7 +115,7 @@
         <h1>Scan to Open in Expo Go</h1>
         <p>Use your phone's camera or Expo Go app to scan</p>
         <div class="qr-container">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQAAAADAX2ykAAAClUlEQVR4nO2bTY7bMAxGH2sDXcpAD5Cj2DeYIxU9Um8gHSUHGMBaBnDwdSE5cecPHdTjxgC5CGz5LT6AIEVSionPWPr2KRycd95555133vn3eKvWlieStZA6gDx/G3bU4/zGfC9JGkHShA1hArIZ0EiStOa/Wo/zG/N5jtDUgWJusZ+asAEws3ZvPc5vw7cvF/pzC4QRJWsEeV89zm/Lv/IvgPXndrJ+7OxVd/xo+p3/2Gb/BlFiNT1NrdJpQukkrP8NSyc/mn7nP7bq32QANFh//q4av+d2Aq62px7nt+VfZmAjjOXnTfP55CF5s+5qNuQWRShFVq2ac41wG3bU4/xWPMvmNkxIYyNJE4phKu0wvabCKT6afuf/hi9ejbnF7FS7XsjfVdvhvfU4vxW/iN/yVCZZkhRpBKGulQ8evwfjb16dU3OkUd2Ex0ZAI8Uw4f49JF+qJ6XuGdLTpZTT1o8dZTsmd0Y/XvfS4/y2fPGvEcDKWxhRmUrmDvooIP+Q7aPH+W157ntttZKVa80FNCqZ2vPzcXkbwlQaXhu4Wimo4GqSLqYYLrbiv1qP81vxy/o5hnslXbve2dN4/3tMfvZvkOhHqF3R2rw/OjyfzfTrJEG4mGKoO3FpjchmdcjxqPqdf8eW+fm2FsO0jmSvrw7Ko7WVTF0m0VqNrnz/PS5/vz+peMvFyczq+VH2+1cH5VdT5/no6B7EtX4Ofn50cH6+P2nDHKvSuZ2DmEY27KrH+S/jGylmM7Ou1s/F0/9Nj/P/wL+8P6l0uhiE51bpabwNpvH51bH5oHIqaAPz6Lk/1+s6y07pUfU7/44t7+fMB/r3f6rA/eDB66sD8vX89/Zen4KANyaVD6ffeeedd95554/I/wFgFM0VVg5QOwAAAABJRU5ErkJggg==" alt="Expo QR Code">
+            <canvas id="qr-canvas"></canvas>
         </div>
         <div class="expo-url">exp://hfotbvc-anonymous-8081.exp.direct</div>
         <div class="instructions">
@@ -128,6 +130,11 @@
         <div class="timestamp" id="timestamp"></div>
     </div>
     <script>
+        QRCode.toCanvas(document.getElementById('qr-canvas'), 'exp://hfotbvc-anonymous-8081.exp.direct', {
+            width: 240,
+            margin: 2,
+            color: { dark: '#000000', light: '#ffffff' }
+        });
         document.getElementById('timestamp').textContent = 'Generated: ' + new Date().toLocaleString();
     </script>
 </body>
