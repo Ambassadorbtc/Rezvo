@@ -33,27 +33,41 @@ Build a booking application MVP for UK micro-businesses. The core platform inclu
 
 ## What's Been Implemented
 
-### Feb 6, 2026 - Session 3 (Current)
-- ✅ **FIXED: Google Auth Bug** - New users were logging into existing accounts
-  - Added `google_id` field to validate unique Google users
-  - Email/password users now blocked from Google login with clear error
-  - Different Google accounts can't access same email
-- ✅ **Complete Forgot Password Flow** - Both email and phone options
-  - Email: 6-digit code → verify → new password
-  - Phone: SMS OTP → verify → new password
-  - Clean UI with method selection screen
-- ✅ **No-Reply Email System with Action Links**
-  - Booking confirmation emails now include Cancel/Reschedule buttons
-  - Unique `cancel_token` generated for each booking
-  - New pages: `/booking/cancel/:token` and `/booking/reschedule/:token`
-- ✅ **Mobile App Feature Parity**
-  - Added ShareLinkScreen (QR code and sharing options)
-  - Added ProductsScreen (sell products to customers)
-  - Updated SettingsScreen with navigation to new features
-- ✅ **Showcase.html** - Comprehensive screenshot gallery with 96+ images
-  - Complete 8-step booking flow captured
-  - Mobile Business Type screen added
-  - All web and mobile screens documented
+### Feb 6, 2026 - Session 3 (Final P1-P3 Fixes)
+- ✅ **FIXED: Real-time Chat Sync**
+  - Reduced polling intervals (3s for conversations, 2s for messages)
+  - Near real-time message updates
+
+- ✅ **FIXED: Web Calendar Booking Position**
+  - Calendar now correctly starts at hour 6 (06:00)
+  - Position calculation: `(bookingHours - 6) * HOUR_HEIGHT`
+  
+- ✅ **FIXED: Calendar Drag-and-Drop CRITICAL**
+  - Added confirmation dialog before moving bookings
+  - Shows From/To times with visual feedback
+  - Booking is NEVER lost during move operations
+  - Backend updates date, start_time, end_time atomically
+
+- ✅ **Mobile Calendar UI Fix**
+  - Position calculation fixed (starts at hour 6)
+  - Added long-press to move functionality
+  - Move confirmation dialog on mobile
+
+- ✅ **Rezvo Logo in Support Chat**
+  - Admin messages show teal 'R' logo instead of generic icon
+  - Conversation list shows 'R' avatar for support tickets
+
+- ✅ **Google Calendar Integration (UI Ready)**
+  - Settings page shows Google Calendar section
+  - Shows "Coming Soon" when not configured
+  - Ready for OAuth credentials when provided
+
+- ✅ **Previous Session Fixes:**
+  - Google Auth Bug fixed (google_id validation)
+  - Forgot Password flow (email + phone options)
+  - No-Reply emails with Cancel/Reschedule links
+  - Mobile feature parity (ShareLink, Products screens)
+  - Showcase.html with 96+ screenshots
 
 ### Feb 6, 2026 - Session 2
 - ✅ **FIXED: Google Auth flow** - Updated AuthCallbackPage.jsx to use correct Emergent Auth endpoint
