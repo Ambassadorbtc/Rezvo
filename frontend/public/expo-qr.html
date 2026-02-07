@@ -7,7 +7,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0A1626 0%, #1a2d42 100%);
+            background: #0A1626;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -19,7 +19,8 @@
             border-radius: 24px;
             padding: 40px;
             text-align: center;
-            max-width: 400px;
+            max-width: 420px;
+            width: 100%;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
         }
         .logo {
@@ -46,22 +47,45 @@
         p { color: #627D98; font-size: 14px; margin-bottom: 24px; }
         .qr-container { 
             background: #f8f9fa; 
-            padding: 20px; 
+            padding: 24px; 
             border-radius: 16px; 
             display: inline-block;
             margin-bottom: 24px;
         }
-        .qr-container img { display: block; width: 200px; height: 200px; }
+        .qr-container img { display: block; width: 220px; height: 220px; image-rendering: pixelated; }
         .expo-url {
             background: #f0fdf9;
             border: 2px solid #00BFA5;
             border-radius: 12px;
             padding: 12px 16px;
             font-family: monospace;
-            font-size: 11px;
+            font-size: 12px;
             color: #0A1626;
             word-break: break-all;
             margin-bottom: 16px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0fdf9;
+            color: #00BFA5;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00BFA5;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
         .instructions {
             background: #f8f9fa;
@@ -72,6 +96,8 @@
         .instructions h3 { font-size: 14px; color: #0A1626; margin-bottom: 12px; }
         .instructions ol { padding-left: 20px; color: #627D98; font-size: 13px; }
         .instructions li { margin-bottom: 8px; }
+        .instructions strong { color: #0A1626; }
+        .timestamp { color: #9FB3C8; font-size: 11px; margin-top: 16px; }
     </style>
 </head>
 <body>
@@ -80,20 +106,29 @@
             <div class="logo-icon">R</div>
             <span class="logo-text">Rezvo</span>
         </div>
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            Tunnel Active
+        </div>
         <h1>Scan to Open in Expo Go</h1>
         <p>Use your phone's camera or Expo Go app to scan</p>
         <div class="qr-container">
-            <img src="data:image/png;base64,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" alt="Expo QR Code">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQAAAADAX2ykAAAClUlEQVR4nO2bTY7bMAxGH2sDXcpAD5Cj2DeYIxU9Um8gHSUHGMBaBnDwdSE5cecPHdTjxgC5CGz5LT6AIEVSionPWPr2KRycd95555133vn3eKvWlieStZA6gDx/G3bU4/zGfC9JGkHShA1hArIZ0EiStOa/Wo/zG/N5jtDUgWJusZ+asAEws3ZvPc5vw7cvF/pzC4QRJWsEeV89zm/Lv/IvgPXndrJ+7OxVd/xo+p3/2Gb/BlFiNT1NrdJpQukkrP8NSyc/mn7nP7bq32QANFh//q4av+d2Aq62px7nt+VfZmAjjOXnTfP55CF5s+5qNuQWRShFVq2ac41wG3bU4/xWPMvmNkxIYyNJE4phKu0wvabCKT6afuf/hi9ejbnF7FS7XsjfVdvhvfU4vxW/iN/yVCZZkhRpBKGulQ8evwfjb16dU3OkUd2Ex0ZAI8Uw4f49JF+qJ6XuGdLTpZTT1o8dZTsmd0Y/XvfS4/y2fPGvEcDKWxhRmUrmDvooIP+Q7aPH+W157ntttZKVa80FNCqZ2vPzcXkbwlQaXhu4Wimo4GqSLqYYLrbiv1qP81vxy/o5hnslXbve2dN4/3tMfvZvkOhHqF3R2rw/OjyfzfTrJEG4mGKoO3FpjchmdcjxqPqdf8eW+fm2FsO0jmSvrw7Ko7WVTF0m0VqNrnz/PS5/vz+peMvFyczq+VH2+1cH5VdT5/no6B7EtX4Ofn50cH6+P2nDHKvSuZ2DmEY27KrH+S/jGylmM7Ou1s/F0/9Nj/P/wL+8P6l0uhiE51bpabwNpvH51bH5oHIqaAPz6Lk/1+s6y07pUfU7/44t7+fMB/r3f6rA/eDB66sD8vX89/Zen4KANyaVD6ffeeedd95554/I/wFgFM0VVg5QOwAAAABJRU5ErkJggg==" alt="Expo QR Code">
         </div>
-        <div class="expo-url">exp://x-pynq4-anonymous-8081.exp.direct</div>
+        <div class="expo-url">exp://hfotbvc-anonymous-8081.exp.direct</div>
         <div class="instructions">
-            <h3>📱 How to connect:</h3>
+            <h3>How to connect:</h3>
             <ol>
                 <li>Download <strong>Expo Go</strong> from App Store or Play Store</li>
                 <li>Open Expo Go and tap <strong>"Scan QR Code"</strong></li>
                 <li>Point your camera at the QR code above</li>
+                <li>The Rezvo app will load on your device</li>
             </ol>
         </div>
+        <div class="timestamp" id="timestamp"></div>
     </div>
+    <script>
+        document.getElementById('timestamp').textContent = 'Generated: ' + new Date().toLocaleString();
+    </script>
 </body>
 </html>
