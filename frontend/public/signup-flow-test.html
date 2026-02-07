@@ -10,141 +10,145 @@
 :root{--t:#00BFA5;--n:#0A1626;--c:#FDFBF7;--g:#E8F5F3}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#ddd;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
 .d{font-family:'Space Grotesk',sans-serif}
-
 .phone{width:390px;height:844px;background:var(--c);border-radius:44px;box-shadow:0 40px 100px rgba(0,0,0,.18);border:6px solid #1a1a1a;position:relative;overflow:hidden}
 .phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:126px;height:32px;background:#1a1a1a;border-radius:0 0 18px 18px;z-index:100}
 
-/* EVERY screen: absolute fill, flex column, center content */
+/* Screen: fill phone, flex center */
 .s{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;opacity:0;transform:translateX(100%);transition:all .5s cubic-bezier(.4,0,.2,1);overflow-y:auto}
 .s.on{opacity:1;transform:translateX(0)}.s.off{opacity:0;transform:translateX(-100%)}
+.s.top{justify-content:flex-start;padding-top:56px}
 
-/* Fix: scrollable screens keep content at top with padding */
-.s.scroll{justify-content:flex-start;padding-top:56px}
-
+/* ANIMATIONS — only fire when .a class is on parent */
 @keyframes bounceIn{0%{transform:scale(0) rotate(-8deg);opacity:0}50%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes slideUp{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
-@keyframes peekR{0%{transform:translateX(120px);opacity:0}60%{transform:translateX(-8px);opacity:1}100%{transform:translateX(0)}}
-@keyframes peekL{0%{transform:translateX(-120px);opacity:0}60%{transform:translateX(8px);opacity:1}100%{transform:translateX(0)}}
-@keyframes popIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
-@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+@keyframes su{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes pi{0%{transform:scale(0);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes fi{0%{opacity:0}100%{opacity:1}}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes glowBtn{0%,100%{box-shadow:0 4px 16px rgba(0,191,165,.25)}50%{box-shadow:0 6px 32px rgba(0,191,165,.55)}}
-@keyframes shimmer{0%{left:-100%}100%{left:100%}}
+@keyframes glow{0%,100%{box-shadow:0 4px 16px rgba(0,191,165,.25)}50%{box-shadow:0 6px 32px rgba(0,191,165,.55)}}
+@keyframes shim{0%{left:-100%}100%{left:100%}}
+@keyframes peekR{0%{transform:translateX(120px);opacity:0}60%{transform:translateX(-8px);opacity:1}100%{transform:translateX(0)}}
+@keyframes peekL{0%{transform:translateX(-120px) scaleX(-1);opacity:0}60%{transform:translateX(8px) scaleX(-1);opacity:1}100%{transform:translateX(0) scaleX(-1)}}
 @keyframes confDrop{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(900px) rotate(720deg);opacity:0}}
 @keyframes checkDraw{0%{stroke-dashoffset:30}100%{stroke-dashoffset:0}}
-@keyframes ringPulse{0%{transform:scale(0);opacity:0}50%{opacity:.5}100%{transform:scale(2.5);opacity:0}}
+@keyframes ringP{0%{transform:scale(0);opacity:0}50%{opacity:.5}100%{transform:scale(2.5);opacity:0}}
 @keyframes morph{0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}}
-@keyframes stagger{0%{transform:translateY(16px);opacity:0}100%{transform:translateY(0);opacity:1}}
 @keyframes cardPop{0%{transform:scale(1)}30%{transform:scale(.9) rotate(-2deg)}60%{transform:scale(1.06) rotate(1deg)}100%{transform:scale(1)}}
 @keyframes inputFocus{0%{box-shadow:0 0 0 0 rgba(0,191,165,0)}50%{box-shadow:0 0 0 8px rgba(0,191,165,.15)}100%{box-shadow:0 0 0 4px rgba(0,191,165,.1)}}
 
+/* Animated children — hidden until parent gets .a */
+[data-d]{opacity:0;transform:translateY(24px)}
+.a [data-d]{opacity:1;transform:translateY(0);transition:opacity .5s,transform .5s cubic-bezier(.4,0,.2,1)}
+.a [data-d="1"]{transition-delay:.1s}.a [data-d="2"]{transition-delay:.2s}.a [data-d="3"]{transition-delay:.3s}
+.a [data-d="4"]{transition-delay:.4s}.a [data-d="5"]{transition-delay:.5s}.a [data-d="6"]{transition-delay:.6s}
+.a [data-d="7"]{transition-delay:.7s}.a [data-d="8"]{transition-delay:.8s}.a [data-d="9"]{transition-delay:.9s}
+/* Fox bounce — only when parent is .a */
+.a [data-bounce]{animation:bounceIn .8s cubic-bezier(.68,-.55,.27,1.55) both,breathe 3s ease-in-out infinite 1s}
+.a [data-peek-r]{animation:peekR .8s cubic-bezier(.68,-.55,.27,1.55) both .3s}
+.a [data-peek-l]{animation:peekL .8s cubic-bezier(.68,-.55,.27,1.55) both .3s}
+.a [data-pop]{animation:pi .5s both}
+.a [data-pop="2"]{animation-delay:.15s}.a [data-pop="3"]{animation-delay:.2s}.a [data-pop="4"]{animation-delay:.25s}
+.a [data-pop="5"]{animation-delay:.3s}.a [data-pop="6"]{animation-delay:.35s}
+.a [data-pop="7"]{animation-delay:.4s}.a [data-pop="8"]{animation-delay:.45s}
+
 .fox{pointer-events:none}
 .orb{position:absolute;opacity:.1;animation:morph 12s ease-in-out infinite;pointer-events:none}
-.prog{display:flex;gap:6px;width:100%;height:4px;margin-bottom:24px}
+.prog{display:flex;gap:6px;width:100%;height:4px;margin-bottom:20px}
 .prog .b{flex:1;height:4px;border-radius:2px;background:#E2E8F0;transition:all .5s}.prog .b.a{background:var(--t);flex:1.5}
 
-/* Buttons */
+/* Buttons — glow+shimmer always active */
 .btn{width:100%;padding:16px;border-radius:16px;border:none;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;position:relative;overflow:hidden;transition:transform .12s}
-.btn:active{transform:scale(.93)}
-.btn-p{background:var(--t);color:#fff;animation:glowBtn 2.5s ease-in-out infinite}
-.btn-p::after{content:'';position:absolute;top:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
-.btn-o{background:#fff;color:var(--n);border:2px solid #E2E8F0}
-.btn-o:active{border-color:var(--t);background:var(--g)}
+.btn:active{transform:scale(.92)!important}
+.btn-p{background:var(--t);color:#fff;animation:glow 2.5s ease-in-out infinite}
+.btn-p::after{content:'';position:absolute;top:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shim 2s infinite}
+.btn-o{background:#fff;color:var(--n);border:2px solid #E2E8F0}.btn-o:active{border-color:var(--t);background:var(--g)}
 .mt{margin-top:10px}
 
-/* ════ S1: WELCOME ════ */
-#s1 .orb1{width:200px;height:200px;background:var(--t);top:-50px;right:-50px}
-#s1 .orb2{width:160px;height:160px;background:#8B5CF6;bottom:80px;left:-50px;animation-delay:4s}
-#s1 .fox{width:220px;height:220px;animation:bounceIn .8s cubic-bezier(.68,-.55,.27,1.55) both,breathe 3s ease-in-out infinite 1s}
-#s1 .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,191,165,.08);color:var(--t);padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:8px;animation:popIn .5s both .3s}
+/* ═══ S1 ═══ */
+#s1 .o1{width:200px;height:200px;background:var(--t);top:-50px;right:-50px}
+#s1 .o2{width:160px;height:160px;background:#8B5CF6;bottom:80px;left:-50px;animation-delay:4s}
+#s1 .fox{width:220px;height:220px}
+#s1 .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,191,165,.08);color:var(--t);padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:8px}
 #s1 .badge .dot{width:6px;height:6px;background:var(--t);border-radius:50%;box-shadow:0 0 0 3px rgba(0,191,165,.2)}
-#s1 h1{font-size:30px;font-weight:800;margin-bottom:8px;animation:slideUp .6s both .4s}
+#s1 h1{font-size:30px;font-weight:800;margin-bottom:8px}
 #s1 h1 .tl{color:var(--t)}
-#s1 p{color:#627D98;font-size:15px;line-height:1.5;margin-bottom:24px;animation:slideUp .6s both .5s}
-#s1 .btn:nth-of-type(1){animation:slideUp .5s both .6s}
-#s1 .btn:nth-of-type(2){animation:slideUp .5s both .7s}
-#s1 .trust{color:#9FB3C8;font-size:10px;font-weight:600;margin-top:12px;letter-spacing:.5px;animation:fadeIn .6s both .9s}
+#s1 p{color:#627D98;font-size:15px;line-height:1.5;margin-bottom:24px}
+#s1 .trust{color:#9FB3C8;font-size:10px;font-weight:600;margin-top:12px;letter-spacing:.5px}
 
-/* ════ S3: PHONE ════ */
-#s3 .fox{position:absolute;right:-25px;top:50%;margin-top:40px;width:220px;height:220px;animation:peekR .8s cubic-bezier(.68,-.55,.27,1.55) both .3s;z-index:5}
-#s3 h2{font-size:28px;font-weight:800;margin-bottom:6px;animation:slideUp .5s both .1s;align-self:flex-start}
-#s3 .sub{color:var(--t);font-size:14px;font-weight:500;margin-bottom:28px;align-self:flex-start;animation:slideUp .5s both .2s}
-#s3 .row{display:flex;gap:10px;width:100%;margin-bottom:16px;animation:slideUp .5s both .3s}
+/* ═══ S3 PHONE ═══ */
+#s3 .fox{position:absolute;right:-25px;bottom:80px;width:240px;height:240px;z-index:5}
+#s3 h2{font-size:28px;font-weight:800;margin-bottom:6px;align-self:flex-start}
+#s3 .sub{color:var(--t);font-size:14px;font-weight:500;margin-bottom:28px;align-self:flex-start}
+#s3 .row{display:flex;gap:10px;width:100%;margin-bottom:16px}
 #s3 .cc{width:72px;padding:14px 10px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;text-align:center;font-family:inherit}
 #s3 .tel{flex:1;padding:14px 16px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:16px;font-family:inherit;outline:none;transition:all .3s}
 #s3 .tel:focus{border-color:var(--t);animation:inputFocus .6s both}
-#s3 .btn{animation:slideUp .5s both .4s}
-#s3 .note{color:#9FB3C8;font-size:11px;margin-top:10px;animation:fadeIn .5s both .6s}
+#s3 .note{color:#9FB3C8;font-size:11px;margin-top:10px}
 
-/* ════ S4: OTP ════ */
-#s4 .fox{position:absolute;left:-30px;bottom:60px;width:200px;height:200px;transform:scaleX(-1);animation:peekL .8s cubic-bezier(.68,-.55,.27,1.55) both .2s;z-index:5}
-#s4 .pill{background:var(--g);padding:8px 16px;border-radius:100px;font-size:12px;color:var(--t);font-weight:700;margin-bottom:12px;animation:popIn .4s both .3s}
-#s4 h2{font-size:28px;font-weight:800;margin-bottom:6px;animation:slideUp .5s both .1s}
-#s4 .sub{color:#627D98;font-size:14px;margin-bottom:24px;animation:slideUp .5s both .2s}
+/* ═══ S4 OTP ═══ */
+#s4 .fox{position:absolute;left:-30px;bottom:70px;width:220px;height:220px;z-index:5}
+#s4 .pill{background:var(--g);padding:8px 16px;border-radius:100px;font-size:12px;color:var(--t);font-weight:700;margin-bottom:12px}
+#s4 h2{font-size:28px;font-weight:800;margin-bottom:6px}
+#s4 .sub{color:#627D98;font-size:14px;margin-bottom:24px}
 .otp-r{display:flex;gap:10px;margin-bottom:16px}
 .otp-b{width:48px;height:58px;border-radius:14px;border:2px solid #E2E8F0;background:#fff;font-size:22px;font-weight:700;text-align:center;font-family:'Space Grotesk',sans-serif;outline:none;transition:all .3s;color:var(--n)}
-.otp-b.f{border-color:var(--t);background:#F0FDF9;animation:popIn .3s both}
-.otp-b:nth-child(1){animation:stagger .3s both .1s}.otp-b:nth-child(2){animation:stagger .3s both .15s}.otp-b:nth-child(3){animation:stagger .3s both .2s}.otp-b:nth-child(4){animation:stagger .3s both .25s}.otp-b:nth-child(5){animation:stagger .3s both .3s}.otp-b:nth-child(6){animation:stagger .3s both .35s}
+.otp-b.f{border-color:var(--t);background:#F0FDF9}
 #s4 .resend{color:var(--t);font-size:13px;font-weight:600;background:none;border:none;cursor:pointer;margin-bottom:8px}
 #s4 .resend:active{transform:scale(.9)}
 
-/* ════ S5: GOOGLE ════ */
-#s5 .fox{width:180px;height:180px;animation:bounceIn .7s both,breathe 3s ease-in-out infinite 1s}
-#s5 h2{font-size:28px;font-weight:800;margin:8px 0 6px;animation:slideUp .5s both .1s}
-#s5 .sub{color:#627D98;font-size:14px;margin-bottom:24px;animation:slideUp .5s both .2s}
-.g-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:16px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s;animation:slideUp .5s both .3s}
+/* ═══ S5 GOOGLE ═══ */
+#s5 .fox{width:200px;height:200px;margin-bottom:8px}
+#s5 h2{font-size:28px;font-weight:800;margin-bottom:6px}
+#s5 .sub{color:#627D98;font-size:14px;margin-bottom:24px}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:16px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s}
 .g-btn:active{transform:scale(.94);border-color:var(--t);background:var(--g)}
 .g-btn svg{width:22px;height:22px}
-.divider{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;color:#9FB3C8;font-size:12px;font-weight:600;animation:fadeIn .5s both .4s}
+.divider{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;color:#9FB3C8;font-size:12px;font-weight:600}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:#E2E8F0}
-/* Overlay */
 .ov{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s}
 .ov.show{opacity:1;pointer-events:auto}
 .ov-bg{position:absolute;inset:0;background:var(--t)}
-.ov .ring{position:absolute;width:140px;height:140px;border:3px solid rgba(255,255,255,.4);border-radius:50%;animation:ringPulse 1.5s infinite}
-.ov .circ{width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;z-index:1;animation:popIn .5s both .2s;backdrop-filter:blur(10px)}
+.ov .ring{position:absolute;width:140px;height:140px;border:3px solid rgba(255,255,255,.4);border-radius:50%;animation:ringP 1.5s infinite}
+.ov .circ{width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;z-index:1;animation:pi .5s both .2s;backdrop-filter:blur(10px)}
 .ov .circ svg{width:55px;height:55px;color:#fff;stroke-dasharray:30;stroke-dashoffset:30;animation:checkDraw .6s both .4s}
-.ov h3{color:#fff;font-size:24px;font-weight:800;margin-top:20px;z-index:1;animation:slideUp .4s both .5s;font-family:'Space Grotesk',sans-serif}
-.ov p{color:rgba(255,255,255,.8);z-index:1;font-size:14px;margin-top:6px;animation:fadeIn .4s both .7s}
+.ov h3{color:#fff;font-size:24px;font-weight:800;margin-top:20px;z-index:1;font-family:'Space Grotesk',sans-serif}
+.ov p{color:rgba(255,255,255,.8);z-index:1;font-size:14px;margin-top:6px}
 .ov .sp{position:absolute;width:6px;height:6px;background:#fff;border-radius:50%;animation:confDrop 2s ease-out infinite}
 
-/* ════ S6: TYPE ════ */
-#s6{position:relative}
-#s6 .fox{position:absolute;bottom:44px;left:-10px;width:110px;height:110px;animation:peekR .7s both .4s;z-index:5}
-#s6 h2{font-size:26px;font-weight:800;align-self:flex-start;animation:slideUp .5s both .1s}
-#s6 .sub{color:#627D98;font-size:14px;margin-bottom:14px;align-self:flex-start;animation:slideUp .5s both .2s}
+/* ═══ S6 TYPE ═══ */
+#s6 .fox{position:absolute;bottom:44px;left:-10px;width:110px;height:110px;z-index:5}
+#s6 h2{font-size:26px;font-weight:800;align-self:flex-start}
+#s6 .sub{color:#627D98;font-size:14px;margin-bottom:14px;align-self:flex-start}
 .tg{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-bottom:14px}
 .tc{padding:16px 10px;border-radius:18px;border:2px solid #E2E8F0;background:#fff;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .tc:active{animation:cardPop .35s}
-.tc.s{border-color:var(--t);background:var(--g)}
-.tc.s::after{content:'\2713';position:absolute;top:6px;right:6px;width:18px;height:18px;background:var(--t);border-radius:50%;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;animation:popIn .3s both}
+.tc.se{border-color:var(--t);background:var(--g)}
+.tc.se::after{content:'\2713';position:absolute;top:6px;right:6px;width:18px;height:18px;background:var(--t);border-radius:50%;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center}
 .tc .em{font-size:28px;display:block;margin-bottom:4px;transition:transform .2s}.tc:active .em{transform:scale(1.3) rotate(-10deg)}
 .tc .nm{font-weight:700;font-size:13px}
-.tc:nth-child(1){animation:stagger .35s both .1s}.tc:nth-child(2){animation:stagger .35s both .14s}.tc:nth-child(3){animation:stagger .35s both .18s}.tc:nth-child(4){animation:stagger .35s both .22s}.tc:nth-child(5){animation:stagger .35s both .26s}.tc:nth-child(6){animation:stagger .35s both .3s}.tc:nth-child(7){animation:stagger .35s both .34s}.tc:nth-child(8){animation:stagger .35s both .38s}
 
-/* ════ S7: PROFILE ════ */
-#s7 .pv{background:var(--t);border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;width:100%;position:relative;margin-bottom:16px;animation:slideUp .5s both .1s}
+/* ═══ S7 PROFILE ═══ */
+#s7 .pv{background:var(--t);border-radius:18px;padding:16px;display:flex;align-items:center;gap:14px;width:100%;position:relative;margin-bottom:16px}
 #s7 .pv .av{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;border:2px solid rgba(255,255,255,.4)}
 #s7 .pv .nm{color:#fff;font-weight:700;text-align:left}
 #s7 .pv .loc{color:rgba(255,255,255,.7);font-size:12px;text-align:left}
 #s7 .pv .fox{position:absolute;right:8px;top:-10px;width:55px;height:55px}
-#s7 h2{font-size:22px;font-weight:800;align-self:flex-start;animation:slideUp .5s both .05s}
-#s7 .sub{color:#627D98;font-size:13px;margin-bottom:12px;align-self:flex-start;animation:slideUp .5s both .1s}
-.fi{width:100%;margin-bottom:10px;text-align:left;animation:slideUp .4s both}
+#s7 h2{font-size:22px;font-weight:800;align-self:flex-start}
+#s7 .sub{color:#627D98;font-size:13px;margin-bottom:12px;align-self:flex-start}
+.fi{width:100%;margin-bottom:10px;text-align:left}
 .fi label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;margin-bottom:4px}
 .fi input{width:100%;padding:11px 14px;border-radius:14px;border:2px solid #E2E8F0;font-size:14px;font-family:inherit;background:#fff;outline:none;transition:all .3s}
 .fi input:focus{border-color:var(--t);animation:inputFocus .6s both}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
 .colors{display:flex;gap:8px;margin:8px 0 14px;width:100%}
 .cd{width:34px;height:34px;border-radius:50%;cursor:pointer;transition:all .2s;border:3px solid transparent}
-.cd.s{border-color:var(--n);transform:scale(1.15)}.cd:active{transform:scale(.8)}
+.cd.se{border-color:var(--n);transform:scale(1.15)}.cd:active{transform:scale(.8)}
 
-/* ════ S8: PREFS ════ */
-#s8 .fox{width:120px;height:120px;animation:bounceIn .7s both}
-#s8 .pill{background:var(--g);padding:6px 14px;border-radius:100px;font-size:11px;color:var(--t);font-weight:700;margin-bottom:8px;animation:popIn .4s both .2s}
-#s8 h2{font-size:22px;font-weight:800;animation:slideUp .5s both .1s}
-#s8 .sub{color:#627D98;font-size:13px;margin-bottom:14px;animation:slideUp .5s both .2s}
-.pc{background:#fff;border-radius:16px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;border:1px solid #E2E8F0;width:100%;text-align:left;animation:slideUp .4s both}
+/* ═══ S8 PREFS ═══ */
+#s8 .fox{width:120px;height:120px}
+#s8 .pill{background:var(--g);padding:6px 14px;border-radius:100px;font-size:11px;color:var(--t);font-weight:700;margin-bottom:8px}
+#s8 h2{font-size:22px;font-weight:800}
+#s8 .sub{color:#627D98;font-size:13px;margin-bottom:14px}
+.pc{background:#fff;border-radius:16px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;border:1px solid #E2E8F0;width:100%;text-align:left}
 .pc .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .pc .inf{flex:1}.pc .inf h4{font-size:13px;font-weight:700}.pc .inf p{font-size:10px;color:#627D98;margin-top:1px;line-height:1.3}
 .tgl{width:42px;height:22px;border-radius:11px;background:#E2E8F0;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0}
@@ -154,153 +158,163 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#ddd;display:flex;ali
 .sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--n);margin:12px 0 6px;width:100%;text-align:left}
 .cg{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:12px}
 .ch{padding:6px 12px;border-radius:100px;border:2px solid #E2E8F0;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;background:#fff}
-.ch:active{transform:scale(.9)}.ch.s{border-color:var(--t);background:var(--g);color:var(--t)}
+.ch:active{transform:scale(.9)}.ch.se{border-color:var(--t);background:var(--g);color:var(--t)}
 
-/* ════ S9: SUCCESS ════ */
+/* ═══ S9 SUCCESS ═══ */
 #s9{background:linear-gradient(180deg,#C6F7E9,var(--g),var(--c));position:relative;overflow:hidden}
 #s9 .confetti{position:absolute;inset:0;pointer-events:none}
 #s9 .cf{position:absolute;border-radius:2px;animation:confDrop 3s ease-out infinite}
-#s9 .fox{width:200px;height:200px;z-index:1;animation:bounceIn .8s cubic-bezier(.68,-.55,.27,1.55) both}
-#s9 h2{font-size:26px;font-weight:800;margin-top:12px;z-index:1;animation:slideUp .5s both .3s}
-#s9 .sub{color:#627D98;font-size:14px;margin-top:6px;margin-bottom:20px;z-index:1;line-height:1.5;animation:slideUp .5s both .4s}
+#s9 .fox{width:200px;height:200px;z-index:1}
+#s9 h2{font-size:26px;font-weight:800;margin-top:12px;z-index:1}
+#s9 .sub{color:#627D98;font-size:14px;margin-top:6px;margin-bottom:20px;z-index:1;line-height:1.5}
 .sr{display:flex;gap:10px;width:100%;margin-bottom:20px;z-index:1}
 .sc{background:#fff;border-radius:16px;padding:12px;text-align:center;flex:1;box-shadow:0 4px 12px rgba(0,0,0,.04)}
-.sc:nth-child(1){animation:popIn .4s both .5s}.sc:nth-child(2){animation:popIn .4s both .6s}.sc:nth-child(3){animation:popIn .4s both .7s}
 .sc .v{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:var(--t)}.sc .l{font-size:9px;color:#627D98;margin-top:2px}
 </style>
 </head>
 <body>
 <div class="phone">
 
-<!-- S1 WELCOME -->
-<div class="s on" id="s1">
-  <div class="orb orb1"></div><div class="orb orb2"></div>
-  <div class="badge"><span class="dot"></span> Rezi is live in your city!</div>
-  <img src="/showcase/rezi-wave.png" class="fox" alt="Rezi">
-  <h1 class="d">Hey there! <span class="tl">I'm Rezi.</span></h1>
-  <p>I'll help you set up your booking page in under a minute. No faff, I promise.</p>
-  <button class="btn btn-p" onclick="go(3)">Let's go! →</button>
-  <button class="btn btn-o mt" onclick="go(3)">I already have an account</button>
-  <div class="trust">🛡 SECURE · NO SPAM · FREE FOREVER</div>
+<!-- S1 -->
+<div class="s on a" id="s1">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div data-d="1" class="badge"><span class="dot"></span> Rezi is live in your city!</div>
+  <img src="/showcase/rezi-wave.png" class="fox" data-bounce alt="Rezi">
+  <h1 class="d" data-d="2">Hey there! <span class="tl">I'm Rezi.</span></h1>
+  <p data-d="3">I'll help you set up your booking page in under a minute. No faff, I promise.</p>
+  <button class="btn btn-p" data-d="4" onclick="go(3)">Let's go! →</button>
+  <button class="btn btn-o mt" data-d="5" onclick="go(3)">I already have an account</button>
+  <div class="trust" data-d="6">🛡 SECURE · NO SPAM · FREE FOREVER</div>
 </div>
 
 <!-- S3 PHONE -->
 <div class="s" id="s3">
-  <img src="/showcase/rezi-peek.png" class="fox" alt="Rezi">
-  <div class="prog"><div class="b a"></div><div class="b"></div><div class="b"></div><div class="b"></div></div>
-  <h2 class="d">What's your number?</h2>
-  <p class="sub">We'll send you a quick code to verify</p>
-  <div class="row"><input class="cc" value="+44" readonly><input class="tel" type="tel" placeholder="7700 900 000"></div>
-  <button class="btn btn-p" onclick="go(4)">Send code →</button>
-  <p class="note">We'll text you a 6-digit code. Standard rates may apply.</p>
+  <img src="/showcase/rezi-peek.png" class="fox" data-peek-r alt="Rezi">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b"></div><div class="b"></div><div class="b"></div></div>
+  <h2 class="d" data-d="2">What's your number?</h2>
+  <p class="sub" data-d="3">We'll send you a quick code to verify</p>
+  <div class="row" data-d="4"><input class="cc" value="+44" readonly><input class="tel" type="tel" placeholder="7700 900 000"></div>
+  <button class="btn btn-p" data-d="5" onclick="go(4)">Send code →</button>
+  <p class="note" data-d="6">We'll text you a 6-digit code. Standard rates may apply.</p>
 </div>
 
 <!-- S4 OTP -->
 <div class="s" id="s4">
-  <img src="/showcase/rezi-peek.png" class="fox" alt="Rezi" style="transform:scaleX(-1)">
-  <div class="prog"><div class="b a"></div><div class="b a"></div><div class="b"></div><div class="b"></div></div>
-  <div class="pill">Check your messages! 📱</div>
-  <h2 class="d">Enter the code</h2>
-  <p class="sub">Sent to +44 7700 ••• •••</p>
-  <div class="otp-r"><input class="otp-b f" value="4" readonly><input class="otp-b f" value="2" readonly><input class="otp-b f" value="8" readonly><input class="otp-b f" value="9" readonly><input class="otp-b" placeholder="·"><input class="otp-b" placeholder="·"></div>
-  <button class="resend">Resend code</button>
-  <button class="btn btn-p" onclick="go(5)">Verify →</button>
+  <img src="/showcase/rezi-peek.png" class="fox" data-peek-l alt="Rezi">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b"></div><div class="b"></div></div>
+  <div class="pill" data-d="2">Check your messages! 📱</div>
+  <h2 class="d" data-d="3">Enter the code</h2>
+  <p class="sub" data-d="4">Sent to +44 7700 ••• •••</p>
+  <div class="otp-r"><input class="otp-b f" data-pop="1" value="4" readonly><input class="otp-b f" data-pop="2" value="2" readonly><input class="otp-b f" data-pop="3" value="8" readonly><input class="otp-b f" data-pop="4" value="9" readonly><input class="otp-b" data-pop="5" placeholder="·"><input class="otp-b" data-pop="6" placeholder="·"></div>
+  <button class="resend" data-d="6">Resend code</button>
+  <button class="btn btn-p" data-d="7" onclick="go(5)">Verify →</button>
 </div>
 
 <!-- S5 GOOGLE -->
 <div class="s" id="s5">
-  <div class="prog"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
-  <img src="/showcase/rezi-thumbsup.png" class="fox" alt="Rezi">
-  <h2 class="d">One more thing</h2>
-  <p class="sub">Connect Google for a seamless experience</p>
-  <button class="g-btn" onclick="showOv()">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
+  <img src="/showcase/rezi-thumbsup.png" class="fox" data-bounce alt="Rezi">
+  <h2 class="d" data-d="2">One more thing</h2>
+  <p class="sub" data-d="3">Connect Google for a seamless experience</p>
+  <button class="g-btn" data-d="4" onclick="showOv()">
     <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
     Continue with Google
   </button>
-  <div class="divider">or</div>
-  <button class="btn btn-o" onclick="go(6)">Skip for now</button>
-  <div class="ov" id="ov"><div class="ov-bg"></div>
-    <div class="sp" style="left:10%;top:20%"></div><div class="sp" style="left:30%;top:10%;animation-delay:.3s"></div><div class="sp" style="left:50%;top:30%;animation-delay:.1s"></div><div class="sp" style="left:70%;top:15%;animation-delay:.5s"></div><div class="sp" style="left:85%;top:25%;animation-delay:.2s"></div>
-    <div class="ring"></div>
-    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <h3>Connected!</h3><p>Google account linked</p>
-  </div>
+  <div class="divider" data-d="5">or</div>
+  <button class="btn btn-o" data-d="6" onclick="go(6)">Skip for now</button>
+  <div class="ov" id="ov"><div class="ov-bg"></div><div class="sp" style="left:10%;top:20%"></div><div class="sp" style="left:30%;top:10%;animation-delay:.3s"></div><div class="sp" style="left:50%;top:30%;animation-delay:.1s"></div><div class="sp" style="left:70%;top:15%;animation-delay:.5s"></div><div class="sp" style="left:85%;top:25%;animation-delay:.2s"></div><div class="ring"></div><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Connected!</h3><p>Google account linked</p></div>
 </div>
 
 <!-- S6 TYPE -->
-<div class="s scroll" id="s6">
-  <img src="/showcase/rezi-thumbsup.png" class="fox" alt="Rezi">
-  <div class="prog"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
-  <h2 class="d">What's your vibe?</h2>
-  <p class="sub">Pick your business type so I can set things up perfectly</p>
+<div class="s top" id="s6">
+  <img src="/showcase/rezi-thumbsup.png" class="fox" data-peek-r alt="Rezi">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b"></div></div>
+  <h2 class="d" data-d="2">What's your vibe?</h2>
+  <p class="sub" data-d="3">Pick your business type so I can set things up perfectly</p>
   <div class="tg">
-    <div class="tc s" onclick="st(this)"><span class="em">✂️</span><span class="nm">Barber</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">💇‍♀️</span><span class="nm">Hair Salon</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">💅</span><span class="nm">Nails & Beauty</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">💪</span><span class="nm">Personal Trainer</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">🦷</span><span class="nm">Dentist</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">🐾</span><span class="nm">Pet Grooming</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">💆</span><span class="nm">Spa & Massage</span></div>
-    <div class="tc" onclick="st(this)"><span class="em">🎯</span><span class="nm">Other</span></div>
+    <div class="tc se" data-pop="1" onclick="st(this)"><span class="em">✂️</span><span class="nm">Barber</span></div>
+    <div class="tc" data-pop="2" onclick="st(this)"><span class="em">💇‍♀️</span><span class="nm">Hair Salon</span></div>
+    <div class="tc" data-pop="3" onclick="st(this)"><span class="em">💅</span><span class="nm">Nails & Beauty</span></div>
+    <div class="tc" data-pop="4" onclick="st(this)"><span class="em">💪</span><span class="nm">Personal Trainer</span></div>
+    <div class="tc" data-pop="5" onclick="st(this)"><span class="em">🦷</span><span class="nm">Dentist</span></div>
+    <div class="tc" data-pop="6" onclick="st(this)"><span class="em">🐾</span><span class="nm">Pet Grooming</span></div>
+    <div class="tc" data-pop="7" onclick="st(this)"><span class="em">💆</span><span class="nm">Spa & Massage</span></div>
+    <div class="tc" data-pop="8" onclick="st(this)"><span class="em">🎯</span><span class="nm">Other</span></div>
   </div>
-  <button class="btn btn-p" onclick="go(7)">That's me! →</button>
+  <button class="btn btn-p" data-d="7" onclick="go(7)">That's me! →</button>
 </div>
 
 <!-- S7 PROFILE -->
-<div class="s scroll" id="s7">
-  <div class="prog"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
-  <h2 class="d">Build your profile</h2>
-  <p class="sub" style="align-self:flex-start">How do you want to appear to customers?</p>
-  <div class="pv"><div class="av">J</div><div><div class="nm">Jake's Barbers</div><div class="loc">📍 London, UK</div></div><img src="/showcase/rezi-thumbsup.png" class="fox" alt="Rezi"></div>
-  <div class="fr"><div class="fi" style="animation-delay:.12s"><label>First name</label><input value="Jake"></div><div class="fi" style="animation-delay:.16s"><label>Last name</label><input value="Williams"></div></div>
-  <div class="fi" style="animation-delay:.2s"><label>Business name</label><input value="Jake's Barbers"></div>
-  <div class="fi" style="animation-delay:.24s"><label>Business address</label><input placeholder="123 High Street"></div>
-  <div class="fr"><div class="fi" style="animation-delay:.28s"><label>City</label><input value="London"></div><div class="fi" style="animation-delay:.32s"><label>Postcode</label><input value="E1 6AN"></div></div>
-  <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;width:100%;text-align:left">Theme accent</label>
-  <div class="colors"><div class="cd s" style="background:var(--t)" onclick="sc(this)"></div><div class="cd" style="background:#3B82F6" onclick="sc(this)"></div><div class="cd" style="background:#8B5CF6" onclick="sc(this)"></div><div class="cd" style="background:#EC4899" onclick="sc(this)"></div><div class="cd" style="background:#F59E0B" onclick="sc(this)"></div><div class="cd" style="background:var(--n)" onclick="sc(this)"></div></div>
-  <button class="btn btn-p" onclick="go(8)" style="margin-bottom:20px">Looks great! →</button>
+<div class="s top" id="s7">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
+  <h2 class="d" data-d="2">Build your profile</h2>
+  <p class="sub" data-d="3" style="align-self:flex-start">How do you want to appear to customers?</p>
+  <div class="pv" data-d="3"><div class="av">J</div><div><div class="nm">Jake's Barbers</div><div class="loc">📍 London, UK</div></div><img src="/showcase/rezi-thumbsup.png" class="fox" alt="Rezi"></div>
+  <div class="fr" data-d="4"><div class="fi"><label>First name</label><input value="Jake"></div><div class="fi"><label>Last name</label><input value="Williams"></div></div>
+  <div class="fi" data-d="5"><label>Business name</label><input value="Jake's Barbers"></div>
+  <div class="fi" data-d="5"><label>Business address</label><input placeholder="123 High Street"></div>
+  <div class="fr" data-d="6"><div class="fi"><label>City</label><input value="London"></div><div class="fi"><label>Postcode</label><input value="E1 6AN"></div></div>
+  <label data-d="7" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#627D98;width:100%;text-align:left">Theme accent</label>
+  <div class="colors" data-d="7"><div class="cd se" style="background:var(--t)" onclick="sc(this)"></div><div class="cd" style="background:#3B82F6" onclick="sc(this)"></div><div class="cd" style="background:#8B5CF6" onclick="sc(this)"></div><div class="cd" style="background:#EC4899" onclick="sc(this)"></div><div class="cd" style="background:#F59E0B" onclick="sc(this)"></div><div class="cd" style="background:var(--n)" onclick="sc(this)"></div></div>
+  <button class="btn btn-p" data-d="8" onclick="go(8)" style="margin-bottom:20px">Looks great! →</button>
 </div>
 
 <!-- S8 PREFS -->
-<div class="s scroll" id="s8">
-  <div class="prog"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
-  <img src="/showcase/rezi-thumbsup.png" class="fox" alt="Rezi">
-  <div class="pill">Just a few clicks!</div>
-  <h2 class="d">Final touches</h2>
-  <p class="sub">Help us tailor your experience.</p>
-  <div class="sl">PERMISSIONS <span style="float:right;font-weight:500;font-size:9px;color:#9FB3C8;text-transform:none;letter-spacing:0">Optional</span></div>
-  <div class="pc" style="animation-delay:.15s"><div class="ic" style="background:#DBEAFE">🔔</div><div class="inf"><h4>Notifications</h4><p>Instant updates on bookings & reminders</p></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
-  <div class="pc" style="animation-delay:.2s"><div class="ic" style="background:#EDE9FE">📍</div><div class="inf"><h4>Location Services</h4><p>Show your business to nearby customers</p></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
-  <div class="sl">FAVOURITE CATEGORIES</div>
-  <div class="cg">
-    <div class="ch s" onclick="this.classList.toggle('s')">✂️ Barber</div>
-    <div class="ch" onclick="this.classList.toggle('s')">💆 Spa & Beauty</div>
-    <div class="ch" onclick="this.classList.toggle('s')">💪 Fitness</div>
-    <div class="ch" onclick="this.classList.toggle('s')">🦷 Dentist</div>
-    <div class="ch" onclick="this.classList.toggle('s')">🐾 Pet Care</div>
-    <div class="ch" onclick="this.classList.toggle('s')">🍽 Restaurants</div>
+<div class="s top" id="s8">
+  <div class="prog" data-d="1"><div class="b a"></div><div class="b a"></div><div class="b a"></div><div class="b a"></div></div>
+  <img src="/showcase/rezi-thumbsup.png" class="fox" data-bounce alt="Rezi">
+  <div class="pill" data-d="2">Just a few clicks!</div>
+  <h2 class="d" data-d="3">Final touches</h2>
+  <p class="sub" data-d="3">Help us tailor your experience.</p>
+  <div class="sl" data-d="4">PERMISSIONS <span style="float:right;font-weight:500;font-size:9px;color:#9FB3C8;text-transform:none;letter-spacing:0">Optional</span></div>
+  <div class="pc" data-d="5"><div class="ic" style="background:#DBEAFE">🔔</div><div class="inf"><h4>Notifications</h4><p>Instant updates on bookings & reminders</p></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+  <div class="pc" data-d="6"><div class="ic" style="background:#EDE9FE">📍</div><div class="inf"><h4>Location Services</h4><p>Show your business to nearby customers</p></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+  <div class="sl" data-d="6">FAVOURITE CATEGORIES</div>
+  <div class="cg" data-d="7">
+    <div class="ch se" onclick="this.classList.toggle('se')">✂️ Barber</div>
+    <div class="ch" onclick="this.classList.toggle('se')">💆 Spa & Beauty</div>
+    <div class="ch" onclick="this.classList.toggle('se')">💪 Fitness</div>
+    <div class="ch" onclick="this.classList.toggle('se')">🦷 Dentist</div>
+    <div class="ch" onclick="this.classList.toggle('se')">🐾 Pet Care</div>
+    <div class="ch" onclick="this.classList.toggle('se')">🍽 Restaurants</div>
   </div>
-  <button class="btn btn-p" onclick="go(9)" style="margin-bottom:20px">Finish Setup ✓</button>
+  <button class="btn btn-p" data-d="8" onclick="go(9)" style="margin-bottom:20px">Finish Setup ✓</button>
 </div>
 
 <!-- S9 SUCCESS -->
 <div class="s" id="s9">
   <div class="confetti"><div class="cf" style="left:5%;width:8px;height:8px;background:var(--t)"></div><div class="cf" style="left:15%;width:6px;height:12px;background:#8B5CF6;animation-delay:.2s"></div><div class="cf" style="left:30%;width:10px;height:6px;background:#F59E0B;animation-delay:.5s"></div><div class="cf" style="left:45%;width:8px;height:8px;background:#3B82F6;animation-delay:.1s"></div><div class="cf" style="left:60%;width:6px;height:10px;background:#EF4444;animation-delay:.7s"></div><div class="cf" style="left:75%;width:10px;height:8px;background:var(--t);animation-delay:.3s"></div><div class="cf" style="left:88%;width:8px;height:6px;background:#EC4899;animation-delay:.6s"></div></div>
-  <img src="/showcase/rezi-celebrate.png" class="fox" alt="Rezi">
-  <h2 class="d">You're all set, Jake! 🎉</h2>
-  <p class="sub">Your booking page is live. Share it with the world.</p>
-  <div class="sr"><div class="sc"><div class="v">0:28</div><div class="l">Setup time</div></div><div class="sc"><div class="v">Live</div><div class="l">Booking page</div></div><div class="sc"><div class="v">∞</div><div class="l">Potential</div></div></div>
-  <button class="btn btn-p" style="z-index:1">Go to Dashboard →</button>
-  <button class="btn btn-o mt" style="border-color:var(--t);color:var(--t);z-index:1">📤 Share my booking link</button>
+  <img src="/showcase/rezi-celebrate.png" class="fox" data-bounce alt="Rezi">
+  <h2 class="d" data-d="3">You're all set, Jake! 🎉</h2>
+  <p class="sub" data-d="4">Your booking page is live. Share it with the world.</p>
+  <div class="sr" data-d="5"><div class="sc"><div class="v">0:28</div><div class="l">Setup time</div></div><div class="sc"><div class="v">Live</div><div class="l">Booking page</div></div><div class="sc"><div class="v">∞</div><div class="l">Potential</div></div></div>
+  <button class="btn btn-p" data-d="6" style="z-index:1">Go to Dashboard →</button>
+  <button class="btn btn-o mt" data-d="7" style="border-color:var(--t);color:var(--t);z-index:1">📤 Share my booking link</button>
 </div>
 
 </div>
 <script>
 let cur=1;
-function go(n){const p=document.getElementById('s'+cur),nx=document.getElementById('s'+n);if(!p||!nx)return;p.classList.remove('on');p.classList.add('off');nx.classList.remove('off');nx.classList.add('on');cur=n}
-function showOv(){document.getElementById('ov').classList.add('show');setTimeout(()=>{document.getElementById('ov').classList.remove('show');go(6)},2200)}
-function st(el){document.querySelectorAll('.tc').forEach(c=>c.classList.remove('s'));el.classList.add('s')}
-function sc(el){document.querySelectorAll('.cd').forEach(c=>c.classList.remove('s'));el.classList.add('s')}
+function go(n){
+  const p=document.getElementById('s'+cur);
+  const nx=document.getElementById('s'+n);
+  if(!p||!nx)return;
+  // Remove animations from old screen
+  p.classList.remove('on','a');
+  p.classList.add('off');
+  // Show new screen
+  nx.classList.remove('off');
+  nx.classList.add('on');
+  // Trigger animations after a tiny delay so transitions work
+  setTimeout(()=>nx.classList.add('a'),50);
+  cur=n;
+}
+function showOv(){
+  document.getElementById('ov').classList.add('show');
+  setTimeout(()=>{document.getElementById('ov').classList.remove('show');go(6)},2200);
+}
+function st(el){document.querySelectorAll('.tc').forEach(c=>c.classList.remove('se'));el.classList.add('se');el.style.animation='cardPop .35s';setTimeout(()=>el.style.animation='',350)}
+function sc(el){document.querySelectorAll('.cd').forEach(c=>c.classList.remove('se'));el.classList.add('se')}
 </script>
 </body>
 </html>
