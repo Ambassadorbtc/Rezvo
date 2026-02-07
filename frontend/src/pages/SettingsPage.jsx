@@ -68,7 +68,14 @@ const SettingsPage = () => {
 
   useEffect(() => {
     loadSettings();
-  }, []);
+    loadGoogleCalendarStatus();
+    
+    // Check for Google Calendar connection callback
+    if (searchParams.get('google') === 'connected') {
+      toast.success('Google Calendar connected successfully!');
+      loadGoogleCalendarStatus();
+    }
+  }, [searchParams]);
 
   const loadSettings = async () => {
     try {
@@ -110,6 +117,38 @@ const SettingsPage = () => {
       toast.error('Failed to load settings');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Google Calendar Functions
+  const loadGoogleCalendarStatus = async () => {
+    try {
+      const response = await api.get('/google/status');
+      setGoogleCalendarStatus(response.data);
+    } catch (error) {
+      // Not critical, just log
+      console.log('Google Calendar status unavailable');
+    }
+  };
+
+  const connectGoogleCalendar = async () => {
+    setConnectingGoogle(true);
+    try {
+      const response = await api.get('/google/auth-url');
+      window.location.href = response.data.authorization_url;
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Google Calendar not configured');
+      setConnectingGoogle(false);
+    }
+  };
+
+  const disconnectGoogleCalendar = async () => {
+    try {
+      await api.post('/google/disconnect');
+      setGoogleCalendarStatus({ connected: false, configured: googleCalendarStatus.configured });
+      toast.success('Google Calendar disconnected');
+    } catch (error) {
+      toast.error('Failed to disconnect');
     }
   };
 
