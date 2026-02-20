@@ -17,7 +17,8 @@ from routes import (
     reputation_router,
     growth_router,
     payments_router,
-    settings_router
+    settings_router,
+    support_router
 )
 
 
@@ -51,6 +52,7 @@ app.include_router(reputation_router)
 app.include_router(growth_router)
 app.include_router(payments_router)
 app.include_router(settings_router)
+app.include_router(support_router)
 
 
 @app.get("/")
