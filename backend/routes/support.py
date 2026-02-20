@@ -280,16 +280,44 @@ async def get_tickets_needing_review(
         messages_list = []
         for msg in messages:
             msg["_id"] = str(msg["_id"])
-            messages_list.append(SupportMessage(
-                id=msg["_id"],
-                conversation_id=msg["conversation_id"],
-                role=msg["role"],
-                content=msg["content"],
-                input_tokens=msg["input_tokens"],
-                output_tokens=msg["output_tokens"],
-                is_escalation=msg["is_escalation"],
-                created_at=msg["created_at"]
-            ))
+            
+            # Handle both old (user_message/assistant_message) and new (role/content) formats
+            if "role" in msg and "content" in msg:
+                # New format
+                messages_list.append(SupportMessage(
+                    id=msg["_id"],
+                    conversation_id=msg["conversation_id"],
+                    role=msg["role"],
+                    content=msg["content"],
+                    input_tokens=msg.get("input_tokens", 0),
+                    output_tokens=msg.get("output_tokens", 0),
+                    is_escalation=msg.get("is_escalation", False),
+                    created_at=msg["created_at"]
+                ))
+            else:
+                # Old format - convert to new format
+                if msg.get("user_message"):
+                    messages_list.append(SupportMessage(
+                        id=msg["_id"] + "_user",
+                        conversation_id=msg["conversation_id"],
+                        role=MessageRole.USER,
+                        content=msg["user_message"],
+                        input_tokens=msg.get("input_tokens", 0),
+                        output_tokens=0,
+                        is_escalation=False,
+                        created_at=msg["created_at"]
+                    ))
+                if msg.get("assistant_message"):
+                    messages_list.append(SupportMessage(
+                        id=msg["_id"] + "_assistant",
+                        conversation_id=msg["conversation_id"],
+                        role=MessageRole.ASSISTANT,
+                        content=msg["assistant_message"],
+                        input_tokens=0,
+                        output_tokens=msg.get("output_tokens", 0),
+                        is_escalation=msg.get("is_escalation", False),
+                        created_at=msg["created_at"]
+                    ))
         
         result.append(ConversationResponse(
             id=conv["_id"],
