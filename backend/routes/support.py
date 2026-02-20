@@ -216,14 +216,17 @@ async def list_conversations(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     status_filter: Optional[TicketStatus] = None,
+    source_filter: Optional[str] = None,
     escalated_only: bool = False
 ):
-    """List all conversations (admin dashboard)."""
+    """List all conversations (admin dashboard) with filtering."""
     db = get_database()
     
     query = {}
     if status_filter:
         query["status"] = status_filter.value
+    if source_filter:
+        query["source"] = source_filter
     if escalated_only:
         query["escalated"] = True
     
@@ -258,15 +261,106 @@ async def list_conversations(
     return result
 
 
+@router.get("/conversations/{conversation_id}")
+async def get_conversation(conversation_id: str):
+    """Get a single conversation with full message history."""
+    db = get_database()
+    
+    try:
+        conv_oid = ObjectId(conversation_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid conversation ID")
+    
+    conversation = await db.support_conversations.find_one({"_id": conv_oid})
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    # Get all messages for this conversation
+    messages_cursor = db.support_messages.find({"conversation_id": conversation_id}).sort("created_at", 1)
+    messages = await messages_cursor.to_list(length=500)
+    
+    messages_list = []
+    for msg in messages:
+        msg["_id"] = str(msg["_id"])
+        
+        # Handle both old and new message formats
+        if "role" in msg and "content" in msg:
+            messages_list.append({
+                "id": msg["_id"],
+                "role": msg["role"],
+                "content": msg["content"],
+                "input_tokens": msg.get("input_tokens", 0),
+                "output_tokens": msg.get("output_tokens", 0),
+                "is_escalation": msg.get("is_escalation", False),
+                "created_at": msg["created_at"]
+            })
+        else:
+            # Old format - convert
+            if msg.get("user_message"):
+                messages_list.append({
+                    "id": msg["_id"] + "_user",
+                    "role": "user",
+                    "content": msg["user_message"],
+                    "input_tokens": msg.get("input_tokens", 0),
+                    "output_tokens": 0,
+                    "is_escalation": False,
+                    "created_at": msg["created_at"]
+                })
+            if msg.get("assistant_message"):
+                messages_list.append({
+                    "id": msg["_id"] + "_assistant",
+                    "role": "assistant",
+                    "content": msg["assistant_message"],
+                    "input_tokens": 0,
+                    "output_tokens": msg.get("output_tokens", 0),
+                    "is_escalation": msg.get("is_escalation", False),
+                    "created_at": msg["created_at"]
+                })
+    
+    conversation["_id"] = str(conversation["_id"])
+    
+    return {
+        "id": conversation["_id"],
+        "source": conversation["source"],
+        "page_url": conversation.get("page_url"),
+        "user_agent": conversation.get("user_agent"),
+        "user_id": conversation.get("user_id"),
+        "business_id": conversation.get("business_id"),
+        "status": conversation["status"],
+        "escalated": conversation["escalated"],
+        "escalation_reason": conversation.get("escalation_reason"),
+        "summary": conversation.get("summary"),
+        "message_count": conversation["message_count"],
+        "total_input_tokens": conversation["total_input_tokens"],
+        "total_output_tokens": conversation["total_output_tokens"],
+        "estimated_cost_usd": conversation["estimated_cost_usd"] / 1_000_000,
+        "assigned_to": conversation.get("assigned_to"),
+        "notes": conversation.get("notes"),
+        "created_at": conversation["created_at"],
+        "updated_at": conversation["updated_at"],
+        "closed_at": conversation.get("closed_at"),
+        "messages": messages_list
+    }
+
+
 @router.get("/tickets", response_model=List[ConversationResponse])
 async def get_tickets_needing_review(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100)
 ):
-    """Get conversations flagged for human review."""
+    """Get conversations that need human review (support queue)."""
     db = get_database()
     
-    query = {"status": TicketStatus.NEEDS_REVIEW.value}
+    # Check multiple statuses like the SQL version
+    query = {
+        "status": {
+            "$in": [
+                TicketStatus.NEEDS_REVIEW.value,
+                TicketStatus.OPEN.value,
+                TicketStatus.IN_PROGRESS.value
+            ]
+        }
+    }
     cursor = db.support_conversations.find(query).sort("created_at", -1).skip(skip).limit(limit)
     conversations = await cursor.to_list(length=limit)
     
