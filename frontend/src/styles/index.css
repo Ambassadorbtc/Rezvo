@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-cream text-text font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-input font-medium transition-all duration-fast;
+  }
+
+  .btn-primary {
+    @apply btn bg-forest text-white hover:bg-forest-90;
+  }
+
+  .btn-secondary {
+    @apply btn bg-off text-text hover:bg-border;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-forest text-forest hover:bg-forest hover:text-white;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-input border border-border bg-white text-text placeholder:text-text-placeholder focus:outline-none focus:ring-2 focus:ring-forest-70 transition-all duration-fast;
+  }
+
+  .card {
+    @apply bg-white rounded-card shadow-card p-6;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-pill text-sm font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-forest-30 text-forest;
+  }
+
+  .badge-warning {
+    @apply badge bg-gold/20 text-gold;
+  }
+
+  .badge-error {
+    @apply badge bg-red/20 text-red;
+  }
+}
