@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, status, Query
+from fastapi import APIRouter, HTTPException, status, Query, Header
 from database import get_database
 from models.support import (
     ConversationCreate,
     ConversationUpdate,
     ConversationResponse,
-    ConversationStatus,
+    TicketStatus,
+    MessageRole,
     SupportMessageCreate,
     SupportMessage,
     AnalyticsResponse,
@@ -31,16 +32,23 @@ def calculate_cost_microcents(input_tokens: int, output_tokens: int) -> int:
 
 
 @router.post("/conversations", response_model=ConversationResponse, status_code=status.HTTP_201_CREATED)
-async def start_conversation(data: ConversationCreate):
+async def start_conversation(
+    data: ConversationCreate,
+    user_agent: Optional[str] = Header(None)
+):
     """Start a new support conversation (creates a support ticket)."""
     db = get_database()
     
     conversation = {
         "source": data.source.value,
         "page_url": data.page_url,
+        "user_agent": data.user_agent or user_agent,
         "user_id": data.user_id,
-        "status": ConversationStatus.AUTO_RESOLVED.value,
+        "business_id": data.business_id,
+        "status": TicketStatus.AUTO_RESOLVED.value,
         "escalated": False,
+        "escalation_reason": None,
+        "summary": None,
         "message_count": 0,
         "total_input_tokens": 0,
         "total_output_tokens": 0,
@@ -48,7 +56,8 @@ async def start_conversation(data: ConversationCreate):
         "assigned_to": None,
         "notes": None,
         "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow()
+        "updated_at": datetime.utcnow(),
+        "closed_at": None
     }
     
     result = await db.support_conversations.insert_one(conversation)
@@ -57,24 +66,29 @@ async def start_conversation(data: ConversationCreate):
     return ConversationResponse(
         id=conversation["_id"],
         source=conversation["source"],
-        page_url=conversation["page_url"],
-        user_id=conversation["user_id"],
+        page_url=conversation.get("page_url"),
+        user_agent=conversation.get("user_agent"),
+        user_id=conversation.get("user_id"),
+        business_id=conversation.get("business_id"),
         status=conversation["status"],
         escalated=conversation["escalated"],
+        escalation_reason=conversation.get("escalation_reason"),
+        summary=conversation.get("summary"),
         message_count=conversation["message_count"],
         total_input_tokens=conversation["total_input_tokens"],
         total_output_tokens=conversation["total_output_tokens"],
         estimated_cost_usd=conversation["estimated_cost_usd"] / 1_000_000,
-        assigned_to=conversation["assigned_to"],
-        notes=conversation["notes"],
+        assigned_to=conversation.get("assigned_to"),
+        notes=conversation.get("notes"),
         created_at=conversation["created_at"],
-        updated_at=conversation["updated_at"]
+        updated_at=conversation["updated_at"],
+        closed_at=conversation.get("closed_at")
     )
 
 
 @router.post("/conversations/{conversation_id}/messages", status_code=status.HTTP_201_CREATED)
 async def log_message(conversation_id: str, data: SupportMessageCreate):
-    """Log a Q&A pair to a conversation."""
+    """Log a message (user or assistant) to a conversation."""
     db = get_database()
     
     try:
@@ -88,8 +102,8 @@ async def log_message(conversation_id: str, data: SupportMessageCreate):
     
     message = {
         "conversation_id": conversation_id,
-        "user_message": data.user_message,
-        "assistant_message": data.assistant_message,
+        "role": data.role.value,
+        "content": data.content,
         "input_tokens": data.input_tokens,
         "output_tokens": data.output_tokens,
         "is_escalation": data.is_escalation,
@@ -112,9 +126,17 @@ async def log_message(conversation_id: str, data: SupportMessageCreate):
         }
     }
     
+    # Auto-generate summary from first user message
+    if conversation["message_count"] == 0 and data.role == MessageRole.USER:
+        summary = data.content[:255] if len(data.content) > 255 else data.content
+        update_data["$set"]["summary"] = summary
+    
+    # Handle escalation
     if data.is_escalation:
         update_data["$set"]["escalated"] = True
-        update_data["$set"]["status"] = ConversationStatus.NEEDS_REVIEW.value
+        update_data["$set"]["status"] = TicketStatus.NEEDS_REVIEW.value
+        if not conversation.get("escalation_reason"):
+            update_data["$set"]["escalation_reason"] = "Bot unable to resolve issue"
     
     await db.support_conversations.update_one(
         {"_id": conv_oid},
@@ -142,10 +164,19 @@ async def update_conversation(conversation_id: str, data: ConversationUpdate):
     
     if data.status is not None:
         update_fields["status"] = data.status.value
+        # Set closed_at when status changes to closed
+        if data.status == TicketStatus.CLOSED and not conversation.get("closed_at"):
+            update_fields["closed_at"] = datetime.utcnow()
+    
     if data.escalated is not None:
         update_fields["escalated"] = data.escalated
+    
+    if data.escalation_reason is not None:
+        update_fields["escalation_reason"] = data.escalation_reason
+    
     if data.assigned_to is not None:
         update_fields["assigned_to"] = data.assigned_to
+    
     if data.notes is not None:
         update_fields["notes"] = data.notes
     
@@ -161,9 +192,13 @@ async def update_conversation(conversation_id: str, data: ConversationUpdate):
         id=updated_conversation["_id"],
         source=updated_conversation["source"],
         page_url=updated_conversation.get("page_url"),
+        user_agent=updated_conversation.get("user_agent"),
         user_id=updated_conversation.get("user_id"),
+        business_id=updated_conversation.get("business_id"),
         status=updated_conversation["status"],
         escalated=updated_conversation["escalated"],
+        escalation_reason=updated_conversation.get("escalation_reason"),
+        summary=updated_conversation.get("summary"),
         message_count=updated_conversation["message_count"],
         total_input_tokens=updated_conversation["total_input_tokens"],
         total_output_tokens=updated_conversation["total_output_tokens"],
@@ -171,7 +206,8 @@ async def update_conversation(conversation_id: str, data: ConversationUpdate):
         assigned_to=updated_conversation.get("assigned_to"),
         notes=updated_conversation.get("notes"),
         created_at=updated_conversation["created_at"],
-        updated_at=updated_conversation["updated_at"]
+        updated_at=updated_conversation["updated_at"],
+        closed_at=updated_conversation.get("closed_at")
     )
 
 
@@ -179,7 +215,7 @@ async def update_conversation(conversation_id: str, data: ConversationUpdate):
 async def list_conversations(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    status_filter: Optional[ConversationStatus] = None,
+    status_filter: Optional[TicketStatus] = None,
     escalated_only: bool = False
 ):
     """List all conversations (admin dashboard)."""
@@ -201,9 +237,13 @@ async def list_conversations(
             id=conv["_id"],
             source=conv["source"],
             page_url=conv.get("page_url"),
+            user_agent=conv.get("user_agent"),
             user_id=conv.get("user_id"),
+            business_id=conv.get("business_id"),
             status=conv["status"],
             escalated=conv["escalated"],
+            escalation_reason=conv.get("escalation_reason"),
+            summary=conv.get("summary"),
             message_count=conv["message_count"],
             total_input_tokens=conv["total_input_tokens"],
             total_output_tokens=conv["total_output_tokens"],
@@ -211,7 +251,8 @@ async def list_conversations(
             assigned_to=conv.get("assigned_to"),
             notes=conv.get("notes"),
             created_at=conv["created_at"],
-            updated_at=conv["updated_at"]
+            updated_at=conv["updated_at"],
+            closed_at=conv.get("closed_at")
         ))
     
     return result
@@ -225,7 +266,7 @@ async def get_tickets_needing_review(
     """Get conversations flagged for human review."""
     db = get_database()
     
-    query = {"status": ConversationStatus.NEEDS_REVIEW.value}
+    query = {"status": TicketStatus.NEEDS_REVIEW.value}
     cursor = db.support_conversations.find(query).sort("created_at", -1).skip(skip).limit(limit)
     conversations = await cursor.to_list(length=limit)
     
@@ -242,8 +283,8 @@ async def get_tickets_needing_review(
             messages_list.append(SupportMessage(
                 id=msg["_id"],
                 conversation_id=msg["conversation_id"],
-                user_message=msg["user_message"],
-                assistant_message=msg["assistant_message"],
+                role=msg["role"],
+                content=msg["content"],
                 input_tokens=msg["input_tokens"],
                 output_tokens=msg["output_tokens"],
                 is_escalation=msg["is_escalation"],
@@ -254,9 +295,13 @@ async def get_tickets_needing_review(
             id=conv["_id"],
             source=conv["source"],
             page_url=conv.get("page_url"),
+            user_agent=conv.get("user_agent"),
             user_id=conv.get("user_id"),
+            business_id=conv.get("business_id"),
             status=conv["status"],
             escalated=conv["escalated"],
+            escalation_reason=conv.get("escalation_reason"),
+            summary=conv.get("summary"),
             message_count=conv["message_count"],
             total_input_tokens=conv["total_input_tokens"],
             total_output_tokens=conv["total_output_tokens"],
@@ -265,6 +310,7 @@ async def get_tickets_needing_review(
             notes=conv.get("notes"),
             created_at=conv["created_at"],
             updated_at=conv["updated_at"],
+            closed_at=conv.get("closed_at"),
             messages=messages_list
         ))
     
@@ -310,14 +356,14 @@ async def get_analytics(days: int = Query(30, ge=1, le=365)):
     avg_messages_per_conversation = (total_messages / total_conversations) if total_conversations > 0 else 0
     
     messages_cursor = db.support_messages.find(
-        {"created_at": {"$gte": cutoff_date}},
-        {"user_message": 1}
+        {"created_at": {"$gte": cutoff_date}, "role": "user"},
+        {"content": 1}
     )
     messages = await messages_cursor.to_list(length=10000)
     
     question_counter = Counter()
     for msg in messages:
-        question = msg.get("user_message", "").strip()
+        question = msg.get("content", "").strip()
         if question:
             normalized_question = re.sub(r'\s+', ' ', question)
             if len(normalized_question) > 10:

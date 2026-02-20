@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 
-class ConversationStatus(str, Enum):
+class TicketStatus(str, Enum):
     AUTO_RESOLVED = "auto_resolved"
     NEEDS_REVIEW = "needs_review"
     OPEN = "open"
@@ -19,9 +19,14 @@ class ConversationSource(str, Enum):
     DASHBOARD = "dashboard"
 
 
+class MessageRole(str, Enum):
+    USER = "user"
+    ASSISTANT = "assistant"
+
+
 class SupportMessageCreate(BaseModel):
-    user_message: str
-    assistant_message: str
+    role: MessageRole
+    content: str
     input_tokens: int = 0
     output_tokens: int = 0
     is_escalation: bool = False
@@ -30,8 +35,8 @@ class SupportMessageCreate(BaseModel):
 class SupportMessage(BaseModel):
     id: str = Field(alias="_id")
     conversation_id: str
-    user_message: str
-    assistant_message: str
+    role: MessageRole
+    content: str
     input_tokens: int
     output_tokens: int
     is_escalation: bool
@@ -44,12 +49,15 @@ class SupportMessage(BaseModel):
 class ConversationCreate(BaseModel):
     source: ConversationSource
     page_url: Optional[str] = None
+    user_agent: Optional[str] = None
     user_id: Optional[str] = None
+    business_id: Optional[str] = None
 
 
 class ConversationUpdate(BaseModel):
-    status: Optional[ConversationStatus] = None
+    status: Optional[TicketStatus] = None
     escalated: Optional[bool] = None
+    escalation_reason: Optional[str] = None
     assigned_to: Optional[str] = None
     notes: Optional[str] = None
 
@@ -58,9 +66,13 @@ class SupportConversation(BaseModel):
     id: str = Field(alias="_id")
     source: ConversationSource
     page_url: Optional[str] = None
+    user_agent: Optional[str] = None
     user_id: Optional[str] = None
-    status: ConversationStatus
+    business_id: Optional[str] = None
+    status: TicketStatus
     escalated: bool
+    escalation_reason: Optional[str] = None
+    summary: Optional[str] = None
     message_count: int
     total_input_tokens: int
     total_output_tokens: int
@@ -69,6 +81,7 @@ class SupportConversation(BaseModel):
     notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    closed_at: Optional[datetime] = None
 
     class Config:
         populate_by_name = True
@@ -78,9 +91,13 @@ class ConversationResponse(BaseModel):
     id: str
     source: ConversationSource
     page_url: Optional[str] = None
+    user_agent: Optional[str] = None
     user_id: Optional[str] = None
-    status: ConversationStatus
+    business_id: Optional[str] = None
+    status: TicketStatus
     escalated: bool
+    escalation_reason: Optional[str] = None
+    summary: Optional[str] = None
     message_count: int
     total_input_tokens: int
     total_output_tokens: int
@@ -89,6 +106,7 @@ class ConversationResponse(BaseModel):
     notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    closed_at: Optional[datetime] = None
     messages: Optional[List[SupportMessage]] = None
 
     class Config:
