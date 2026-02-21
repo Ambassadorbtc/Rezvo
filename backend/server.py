@@ -18,7 +18,8 @@ from routes import (
     growth_router,
     payments_router,
     settings_router,
-    support_router
+    support_router,
+    voice_search_router
 )
 
 
@@ -53,6 +54,7 @@ app.include_router(growth_router)
 app.include_router(payments_router)
 app.include_router(settings_router)
 app.include_router(support_router)
+app.include_router(voice_search_router)
 
 
 @app.get("/")

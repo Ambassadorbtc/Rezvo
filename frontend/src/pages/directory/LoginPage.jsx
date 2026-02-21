@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import RezvoFooter from '../../components/directory/RezvoFooter';
 import api from '../../utils/api';
 
 export default function LoginPage() {
@@ -208,6 +209,8 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+
+      <RezvoFooter />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import Navbar from '../../components/directory/Navbar';
-import Footer from '../../components/directory/Footer';
+import RezvoFooter from '../../components/directory/RezvoFooter';
 import SearchBar from '../../components/directory/SearchBar';
 import CategoryCard from '../../components/directory/CategoryCard';
 import CityCard from '../../components/directory/CityCard';
@@ -62,10 +62,11 @@ export default function DirectoryLanding() {
 
   const handleSearch = (params) => {
     const searchParams = new URLSearchParams();
+    if (params.vertical) searchParams.set('vertical', params.vertical);
     if (params.query) searchParams.set('q', params.query);
     if (params.date) searchParams.set('date', params.date);
     if (params.time) searchParams.set('time', params.time);
-    if (params.guests) searchParams.set('guests', params.guests);
+    if (params.filter3) searchParams.set('filter3', params.filter3);
     navigate(`/search?${searchParams.toString()}`);
   };
 
@@ -234,7 +235,7 @@ export default function DirectoryLanding() {
         </div>
       </section>
 
-      <Footer />
+      <RezvoFooter />
 
       {showNotifyModal && selectedListing && (
         <NotifyMeModal

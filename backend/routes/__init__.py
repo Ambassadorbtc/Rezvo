@@ -13,6 +13,7 @@ from .growth import router as growth_router
 from .payments import router as payments_router
 from .settings import router as settings_router
 from .support import router as support_router
+from .voice_search import router as voice_search_router
 
 __all__ = [
     "auth_router",
@@ -29,5 +30,6 @@ __all__ = [
     "growth_router",
     "payments_router",
     "settings_router",
-    "support_router"
+    "support_router",
+    "voice_search_router"
 ]

@@ -6,7 +6,7 @@ import {
   Sprout, Award, Accessibility, UtensilsCrossed 
 } from 'lucide-react';
 import Navbar from '../../components/directory/Navbar';
-import Footer from '../../components/directory/Footer';
+import RezvoFooter from '../../components/directory/RezvoFooter';
 import BookingWidget from '../../components/directory/BookingWidget';
 import RestaurantCard from '../../components/directory/RestaurantCard';
 import NotifyMeModal from '../../components/directory/NotifyMeModal';
@@ -461,7 +461,7 @@ export default function ListingPage() {
         </section>
       )}
 
-      <Footer />
+      <RezvoFooter />
 
       {showNotifyModal && selectedListing && (
         <NotifyMeModal

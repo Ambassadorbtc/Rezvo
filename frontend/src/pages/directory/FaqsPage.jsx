@@ -1,5 +1,5 @@
 import Navbar from '../../components/directory/Navbar';
-import Footer from '../../components/directory/Footer';
+import RezvoFooter from '../../components/directory/RezvoFooter';
 import FaqAccordion from '../../components/directory/FaqAccordion';
 
 export default function FaqsPage() {
@@ -37,7 +37,7 @@ export default function FaqsPage() {
         </div>
       </section>
 
-      <Footer />
+      <RezvoFooter />
     </div>
   );
 }
