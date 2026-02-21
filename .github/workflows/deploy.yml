@@ -1,0 +1,25 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 178.128.33.73
+          username: root
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd /opt/rezvo
+            git pull origin main
+            cd frontend
+            npm run build
+            systemctl restart rezvo-backend
+            systemctl reload nginx
+            echo "✅ DEPLOYMENT COMPLETE"
