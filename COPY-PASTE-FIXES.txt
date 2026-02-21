@@ -1,0 +1,40 @@
+=== COPY-PASTE THESE COMMANDS ===
+
+Step 1: SSH into server
+ssh root@146.190.111.28
+
+Step 2: Run diagnostics (copy-paste this entire block)
+echo "=== SSL CERTIFICATES ===" && sudo certbot certificates && echo "" && echo "=== NGINX CONFIG ===" && sudo cat /etc/nginx/sites-enabled/rezvo 2>/dev/null || sudo cat /etc/nginx/sites-enabled/default && echo "" && echo "=== BACKEND STATUS ===" && sudo systemctl status rezvo-backend --no-pager && echo "" && echo "=== PORT 8000 ===" && ss -tlnp | grep 8000 && echo "" && echo "=== NGINX ERRORS ===" && sudo tail -10 /var/log/nginx/error.log && echo "" && echo "=== NGINX TEST ===" && sudo nginx -t
+
+Step 3: Based on results, run ONE of these fixes:
+
+FIX A: If no SSL certificate (run this)
+sudo certbot --nginx -d rezvo.co.uk -d www.rezvo.co.uk
+
+FIX B: If backend not running (run this)
+sudo systemctl restart rezvo-backend && sudo systemctl status rezvo-backend --no-pager
+
+FIX C: If nginx config wrong (run this, then edit the file)
+sudo nano /etc/nginx/sites-enabled/rezvo
+
+Step 4: Add Anthropic API key (copy-paste this entire block)
+sudo nano /opt/rezvo/backend/.env
+
+# In the editor:
+# 1. Scroll to bottom
+# 2. Add line: ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE
+# 3. Press Ctrl+O, Enter, Ctrl+X to save
+
+Step 5: Restart backend (copy-paste this)
+sudo systemctl restart rezvo-backend && sudo systemctl status rezvo-backend --no-pager
+
+Step 6: Test everything (copy-paste this entire block)
+echo "=== TEST HTTPS ===" && curl -I https://rezvo.co.uk && echo "" && echo "=== TEST API ===" && curl -I https://rezvo.co.uk/api/docs && echo "" && echo "=== CHECK API KEY ===" && grep "ANTHROPIC_API_KEY" /opt/rezvo/backend/.env
+
+=== EXPECTED RESULTS ===
+✅ curl https://rezvo.co.uk → HTTP/2 200
+✅ curl https://rezvo.co.uk/api/docs → HTTP/2 200
+✅ grep ANTHROPIC_API_KEY → shows key starting with sk-ant-
+
+=== IF STILL BROKEN ===
+Send me the output from Step 2 (diagnostics) and I'll tell you exactly what to fix.

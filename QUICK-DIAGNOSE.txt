@@ -1,0 +1,66 @@
+=== QUICK DIAGNOSTIC COMMANDS ===
+Copy-paste these into your SSH session (one at a time):
+
+ssh root@146.190.111.28
+
+# === CHECK 1: SSL CERTIFICATES ===
+sudo certbot certificates
+
+# === CHECK 2: NGINX CONFIG ===
+sudo cat /etc/nginx/sites-enabled/rezvo 2>/dev/null || sudo cat /etc/nginx/sites-enabled/default
+
+# === CHECK 3: BACKEND STATUS ===
+sudo systemctl status rezvo-backend --no-pager
+
+# === CHECK 4: BACKEND PORT ===
+ss -tlnp | grep 8000
+
+# === CHECK 5: NGINX ERRORS ===
+sudo tail -30 /var/log/nginx/error.log
+
+# === CHECK 6: BACKEND LOGS ===
+sudo journalctl -u rezvo-backend -n 30 --no-pager
+
+# === CHECK 7: TEST NGINX CONFIG ===
+sudo nginx -t
+
+# === CHECK 8: ANTHROPIC API KEY ===
+grep "ANTHROPIC_API_KEY" /opt/rezvo/backend/.env
+
+# === CHECK 9: TEST HTTPS ===
+curl -I https://rezvo.co.uk
+
+# === CHECK 10: TEST API ===
+curl -I https://rezvo.co.uk/api/docs
+
+
+=== QUICK FIXES ===
+
+# FIX 1: Install SSL certificate (if missing)
+sudo certbot --nginx -d rezvo.co.uk -d www.rezvo.co.uk
+
+# FIX 2: Restart backend
+sudo systemctl restart rezvo-backend
+
+# FIX 3: Reload nginx
+sudo nginx -t && sudo systemctl reload nginx
+
+# FIX 4: Add API key (edit file)
+sudo nano /opt/rezvo/backend/.env
+# Add line: ANTHROPIC_API_KEY=sk-ant-YOUR-KEY-HERE
+# Save: Ctrl+O, Enter, Ctrl+X
+sudo systemctl restart rezvo-backend
+
+
+=== EXPECTED RESULTS ===
+
+✅ certbot certificates: Should show "rezvo.co.uk" with valid expiry date
+✅ nginx config: Should have "listen 443 ssl" block with ssl_certificate paths
+✅ backend status: Should show "active (running)" in green
+✅ port 8000: Should show "LISTEN" with python process
+✅ nginx errors: Should be empty or show only old errors
+✅ nginx -t: Should show "syntax is ok" and "test is successful"
+✅ curl https://rezvo.co.uk: Should return "HTTP/2 200"
+✅ grep API key: Should show "ANTHROPIC_API_KEY=sk-ant-..."
+
+❌ If any check fails, that's your blocker. Fix it using the commands above.
