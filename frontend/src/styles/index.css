@@ -22,11 +22,11 @@
   }
 
   .btn-primary {
-    @apply btn bg-forest text-white hover:bg-forest-90;
+    @apply btn bg-forest text-white hover:bg-sage;
   }
 
   .btn-secondary {
-    @apply btn bg-off text-text hover:bg-border;
+    @apply btn bg-off-white text-text hover:bg-border;
   }
 
   .btn-outline {
@@ -34,7 +34,7 @@
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-input border border-border bg-white text-text placeholder:text-text-placeholder focus:outline-none focus:ring-2 focus:ring-forest-70 transition-all duration-fast;
+    @apply w-full px-4 py-3 rounded-input border border-border bg-white text-text placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-mint transition-all duration-fast;
   }
 
   .card {
@@ -46,7 +46,7 @@
   }
 
   .badge-success {
-    @apply badge bg-forest-30 text-forest;
+    @apply badge bg-pale-green text-forest;
   }
 
   .badge-warning {
@@ -54,6 +54,15 @@
   }
 
   .badge-error {
-    @apply badge bg-red/20 text-red;
+    @apply badge bg-coral/20 text-coral;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

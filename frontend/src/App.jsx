@@ -5,6 +5,13 @@ import { TierProvider } from './contexts/TierContext'
 import PublicLayout from './components/layout/PublicLayout'
 import AppLayout from './components/layout/AppLayout'
 
+import DirectoryLanding from './pages/directory/DirectoryLanding'
+import SearchPage from './pages/directory/SearchPage'
+import ListingPage from './pages/directory/ListingPage'
+import LoginPage from './pages/directory/LoginPage'
+import SignupPage from './pages/directory/SignupPage'
+import FaqsPage from './pages/directory/FaqsPage'
+
 import HomePage from './pages/public/HomePage'
 import SearchResults from './pages/public/SearchResults'
 import BusinessListing from './pages/public/BusinessListing'
@@ -31,16 +38,24 @@ const App = () => {
       <AuthProvider>
         <TierProvider>
           <Routes>
+            <Route path="/" element={<DirectoryLanding />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/restaurant/:slug" element={<ListingPage />} />
+            <Route path="/venue/:slug" element={<ListingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/faqs" element={<FaqsPage />} />
+
             <Route element={<PublicLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/search" element={<SearchResults />} />
+              <Route path="/old-home" element={<HomePage />} />
+              <Route path="/old-search" element={<SearchResults />} />
               <Route path="/:category/:location/:slug" element={<BusinessListing />} />
               <Route path="/:category/:location" element={<CategoryHub />} />
               <Route path="/:category" element={<CategoryHub />} />
             </Route>
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
 
             <Route path="/onboarding" element={<Onboarding />} />
 
