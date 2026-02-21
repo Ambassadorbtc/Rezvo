@@ -1,0 +1,15 @@
+[Unit]
+Description=Rezvo FastAPI Backend
+After=network.target mongod.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/rezvo/backend
+Environment="PATH=/opt/rezvo/backend/venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/opt/rezvo/backend/venv/bin/uvicorn server:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

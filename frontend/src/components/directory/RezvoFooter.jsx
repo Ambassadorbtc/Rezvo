@@ -7,10 +7,10 @@ export default function RezvoFooter() {
       {/* Business Owner CTA Banner */}
       <div className="bg-forest py-16 sm:py-20">
         <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-heading">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
             Own a Restaurant, Salon, or Service Business?
           </h2>
-          <p className="text-white/80 text-base sm:text-lg mb-8 max-w-2xl mx-auto font-body">
+          <p className="text-white/80 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
             Join Rezvo and start accepting bookings in minutes. No per-cover fees, no contracts, just more customers.
           </p>
           
@@ -50,31 +50,18 @@ export default function RezvoFooter() {
 
       {/* Main Footer */}
       <div 
-        className="relative overflow-hidden py-16"
+        className="py-16"
         style={{ background: '#0D1F17' }}
       >
-        {/* Giant REZVO Watermark */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-          style={{ opacity: 0.03 }}
-        >
-          <div 
-            className="text-mint font-heading font-extrabold select-none"
-            style={{ fontSize: '18vw', lineHeight: 1, whiteSpace: 'nowrap' }}
-          >
-            REZVO
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
             {/* Brand Column */}
             <div className="lg:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-mint flex items-center justify-center">
-                  <span className="text-forest font-heading font-extrabold text-xl">R</span>
+                  <span className="text-forest font-extrabold text-xl">R</span>
                 </div>
-                <span className="text-white font-heading font-extrabold text-2xl tracking-tight">
+                <span className="text-white font-extrabold text-2xl tracking-tight">
                   REZVO
                 </span>
               </div>
@@ -123,7 +110,7 @@ export default function RezvoFooter() {
 
             {/* For Diners Column */}
             <div>
-              <h3 className="text-white font-heading font-bold text-sm uppercase tracking-wider mb-4">
+              <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
                 For Diners
               </h3>
               <ul className="space-y-3">
@@ -162,7 +149,7 @@ export default function RezvoFooter() {
 
             {/* For Businesses Column */}
             <div>
-              <h3 className="text-white font-heading font-bold text-sm uppercase tracking-wider mb-4">
+              <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
                 For Businesses
               </h3>
               <ul className="space-y-3">
@@ -196,7 +183,7 @@ export default function RezvoFooter() {
 
             {/* Company Column */}
             <div>
-              <h3 className="text-white font-heading font-bold text-sm uppercase tracking-wider mb-4">
+              <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">
                 Company
               </h3>
               <ul className="space-y-3">
@@ -249,6 +236,25 @@ export default function RezvoFooter() {
               </Link>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Giant REZVO Watermark Section */}
+      <div 
+        className="bg-forest overflow-hidden flex items-center justify-center"
+        style={{ paddingTop: '20px', paddingBottom: '0' }}
+      >
+        <div 
+          className="text-mint font-extrabold select-none text-center"
+          style={{ 
+            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontSize: 'clamp(120px, 15vw, 280px)',
+            lineHeight: 1,
+            opacity: 0.08,
+            letterSpacing: '-0.02em'
+          }}
+        >
+          REZVO
         </div>
       </div>
     </footer>

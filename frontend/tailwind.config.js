@@ -33,8 +33,8 @@ export default {
         subtle: '#9CA09E'
       },
       fontFamily: {
-        heading: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
-        body: ['Figtree', 'system-ui', 'sans-serif']
+        sans: ['Figtree', 'system-ui', 'sans-serif'],
+        display: ['Bricolage Grotesque', 'system-ui', 'sans-serif']
       },
       borderRadius: {
         card: '16px',

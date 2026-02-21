@@ -194,47 +194,6 @@ export default function DirectoryLanding() {
         </div>
       </section>
 
-      <section className="py-20 bg-forest-dark">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-black text-white mb-6 leading-tight">
-            Own a Restaurant, Salon,<br />or Service Business?
-          </h2>
-          <p className="text-xl text-light-green mb-10 max-w-2xl mx-auto">
-            Join Rezvo and start accepting bookings in minutes. No per-cover fees, no contracts, just more customers.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <button
-              onClick={() => navigate('/claim')}
-              className="bg-white text-forest font-bold px-8 py-4 rounded-full hover:bg-cream transition-all shadow-xl w-full sm:w-auto"
-            >
-              Claim Your Listing
-            </button>
-            <button
-              onClick={() => navigate('/for-business')}
-              className="border-2 border-white text-white font-bold px-8 py-4 rounded-full hover:bg-white hover:text-forest transition-all w-full sm:w-auto"
-            >
-              Learn More
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-light-green text-sm">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-mint w-5 h-5" />
-              <span>5-minute setup</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-mint w-5 h-5" />
-              <span>No per-cover fees</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="text-mint w-5 h-5" />
-              <span>Real-time availability</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <RezvoFooter />
 
       {showNotifyModal && selectedListing && (
