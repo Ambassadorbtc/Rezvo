@@ -1,49 +1,42 @@
 #!/bin/bash
-# Rezvo Multi-Vertical Search Bar — Quick Deploy Script
-# Run this on the production server after pushing to GitHub
+# Complete deployment script - run on server
+set -e
 
-echo "🚀 Rezvo Multi-Vertical Search Bar Deployment"
-echo "============================================================"
-
-cd /opt/rezvo || exit 1
-
+echo "=== REZVO DEPLOYMENT STARTING ==="
 echo ""
-echo "📥 Pulling latest code from GitHub..."
+
+# Pull latest code
+echo "Step 1: Pulling latest code..."
+cd /opt/rezvo
 git pull origin main
-
+echo "✓ Code updated"
 echo ""
-echo "📦 Installing Python dependencies..."
-cd backend
-pip install anthropic
-cd ..
 
-echo ""
-echo "🔨 Building frontend..."
-cd frontend
+# Build frontend
+echo "Step 2: Building frontend..."
+cd /opt/rezvo/frontend
 npm run build
-cd ..
-
+echo "✓ Frontend built"
 echo ""
-echo "🔄 Restarting backend service..."
+
+# Restart backend
+echo "Step 3: Restarting backend..."
 sudo systemctl restart rezvo-backend
-
+sleep 2
+sudo systemctl status rezvo-backend --no-pager | head -10
+echo "✓ Backend restarted"
 echo ""
-echo "♻️ Reloading nginx..."
+
+# Reload nginx
+echo "Step 4: Reloading nginx..."
+sudo nginx -t
 sudo systemctl reload nginx
-
-echo ""
-echo "🧪 Testing deployment..."
-curl -s http://localhost/ | head -c 100
+echo "✓ Nginx reloaded"
 echo ""
 
+echo "=== DEPLOYMENT COMPLETE ==="
 echo ""
-echo "✅ Deployment Complete!"
-echo "🌐 Live at: https://rezvo.co.uk/"
+echo "Test the site:"
+echo "  http://rezvo.co.uk"
+echo "  https://rezvo.co.uk"
 echo ""
-echo "⚠️  IMPORTANT: Add ANTHROPIC_API_KEY to backend/.env"
-echo "    nano backend/.env"
-echo "    Add line: ANTHROPIC_API_KEY=sk-ant-your-key-here"
-echo ""
-echo "📊 Check logs:"
-echo "    Backend: sudo journalctl -u rezvo-backend -f"
-echo "    Nginx:   sudo tail -f /var/log/nginx/error.log"
