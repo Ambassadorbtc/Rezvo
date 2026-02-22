@@ -1,4 +1,7 @@
 from .auth import router as auth_router
+from .book import router as book_router
+from .dashboard import router as dashboard_router
+from .calendar import router as calendar_router
 from .users import router as users_router
 from .businesses import router as businesses_router
 from .bookings import router as bookings_router
@@ -14,9 +17,18 @@ from .payments import router as payments_router
 from .settings import router as settings_router
 from .support import router as support_router
 from .voice_search import router as voice_search_router
+from .run4_services import router as run4_services_router
+from .run4_menu import router as run4_menu_router
+from .run5_staff import router as run5_staff_router
+from .run6_booking_page import router as run6_booking_page_router
+from .run7_clients import router as run7_clients_router
+from .run13_settings import router as run13_settings_router
 
 __all__ = [
     "auth_router",
+    "book_router",
+    "dashboard_router",
+    "calendar_router",
     "users_router",
     "businesses_router",
     "bookings_router",
@@ -31,5 +43,11 @@ __all__ = [
     "payments_router",
     "settings_router",
     "support_router",
-    "voice_search_router"
+    "voice_search_router",
+    "run4_services_router",
+    "run4_menu_router",
+    "run5_staff_router",
+    "run6_booking_page_router",
+    "run7_clients_router",
+    "run13_settings_router",
 ]

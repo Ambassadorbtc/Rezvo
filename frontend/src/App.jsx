@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { TierProvider } from './contexts/TierContext'
+import { BusinessProvider } from './contexts/BusinessContext'
 
 import PublicLayout from './components/layout/PublicLayout'
-import AppLayout from './components/layout/AppLayout'
+import DashboardLayout from './layouts/DashboardLayout'
 import RedirectToMarketing from './components/RedirectToMarketing'
 import { isRezvoApp } from './utils/domain'
 
@@ -31,8 +32,18 @@ import Services from './pages/dashboard/Services'
 import Reviews from './pages/dashboard/Reviews'
 import Analytics from './pages/dashboard/Analytics'
 import Settings from './pages/dashboard/Settings'
+import BookingLink from './pages/dashboard/BookingLink'
+import OnlineBooking from './pages/dashboard/OnlineBooking'
+import Orders from './pages/dashboard/Orders'
+import Clients from './pages/dashboard/Clients'
+import Marketing from './pages/dashboard/Marketing'
+import Payments from './pages/dashboard/Payments'
+import Help from './pages/dashboard/Help'
 
 import Onboarding from './pages/onboarding/Onboarding'
+import BookingFlow from './pages/booking/BookingFlow'
+import BookingConfirmation from './pages/booking/BookingConfirmation'
+import BookingManage from './pages/booking/BookingManage'
 
 const App = () => {
   return (
@@ -61,16 +72,32 @@ const App = () => {
 
             <Route path="/onboarding" element={<Onboarding />} />
 
-            <Route path="/dashboard" element={<AppLayout />}>
+            {/* Run 2: Public booking flow — no auth */}
+            <Route path="/book/:businessSlug" element={<BookingFlow />} />
+            <Route path="/book/:businessSlug/confirm/:bookingId" element={<BookingConfirmation />} />
+            <Route path="/book/:businessSlug/manage/:bookingId" element={<BookingManage />} />
+
+            <Route path="/dashboard" element={
+              <BusinessProvider>
+                <DashboardLayout />
+              </BusinessProvider>
+            }>
               <Route index element={<Dashboard />} />
               <Route path="bookings" element={<Bookings />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="booking-link" element={<BookingLink />} />
               <Route path="floor-plan" element={<FloorPlan />} />
               <Route path="staff" element={<Staff />} />
               <Route path="services" element={<Services />} />
+              <Route path="online-booking" element={<OnlineBooking />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="clients" element={<Clients />} />
               <Route path="reviews" element={<Reviews />} />
               <Route path="analytics" element={<Analytics />} />
+              <Route path="payments" element={<Payments />} />
+              <Route path="marketing" element={<Marketing />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="help" element={<Help />} />
             </Route>
           </Routes>
         </TierProvider>

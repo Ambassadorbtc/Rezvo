@@ -6,6 +6,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: '#1B4332',
+        'primary-hover': '#143326',
+        background: '#FEFBF4',
+        card: '#FFFFFF',
+        border: '#E8E0D4',
+        success: '#22C55E',
+        warning: '#F59E0B',
+        error: '#EF4444',
+        info: '#3B82F6',
+        text: {
+          main: '#1B4332',
+          muted: '#6B7280',
+          light: '#9CA3AF',
+        },
         forest: {
           DEFAULT: '#1B4332',
           dark: '#0A1F14',
@@ -34,7 +48,9 @@ export default {
       },
       fontFamily: {
         sans: ['Figtree', 'system-ui', 'sans-serif'],
-        display: ['Bricolage Grotesque', 'system-ui', 'sans-serif']
+        display: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
+        heading: ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
+        body: ['Figtree', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         card: '16px',

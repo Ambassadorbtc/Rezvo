@@ -56,7 +56,25 @@ const api = {
 
   delete(endpoint, options = {}) {
     return this.request(endpoint, { ...options, method: 'DELETE' })
+  },
+
+  async upload(endpoint, file) {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    formData.append('file', file)
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ detail: 'Upload failed' }))
+      throw new Error(err.detail || 'Upload failed')
+    }
+    return response.json()
   }
 }
 
 export default api
+export { API_BASE_URL }

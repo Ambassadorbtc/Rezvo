@@ -22,7 +22,7 @@ body, p, span, a, button, input, select, textarea, li, td, th, label, div {
   }
 
   body {
-    @apply bg-cream text-text antialiased;
+    @apply bg-background text-primary antialiased;
   }
 }
 

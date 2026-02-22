@@ -1,10 +1,15 @@
+from pathlib import Path
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import database
 from middleware.cors import setup_cors
 from routes import (
     auth_router,
+    book_router,
+    dashboard_router,
+    calendar_router,
     users_router,
     businesses_router,
     bookings_router,
@@ -19,7 +24,13 @@ from routes import (
     payments_router,
     settings_router,
     support_router,
-    voice_search_router
+    voice_search_router,
+    run4_services_router,
+    run4_menu_router,
+    run5_staff_router,
+    run6_booking_page_router,
+    run7_clients_router,
+    run13_settings_router,
 )
 
 
@@ -40,6 +51,9 @@ app = FastAPI(
 setup_cors(app)
 
 app.include_router(auth_router)
+app.include_router(book_router)
+app.include_router(dashboard_router)
+app.include_router(calendar_router)
 app.include_router(users_router)
 app.include_router(businesses_router)
 app.include_router(bookings_router)
@@ -55,6 +69,17 @@ app.include_router(payments_router)
 app.include_router(settings_router)
 app.include_router(support_router)
 app.include_router(voice_search_router)
+app.include_router(run4_services_router)
+app.include_router(run4_menu_router)
+app.include_router(run5_staff_router)
+app.include_router(run6_booking_page_router)
+app.include_router(run7_clients_router)
+app.include_router(run13_settings_router)
+
+# Static uploads for booking page logo/cover
+static_dir = Path(__file__).parent / "static" / "uploads"
+static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir.parent)), name="static")
 
 
 @app.get("/")
