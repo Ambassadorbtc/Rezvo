@@ -13,12 +13,8 @@ const AppLayout = () => {
   useEffect(() => {
     if (!user) {
       navigate('/login')
-    } else if (user.role !== 'owner' && user.role !== 'staff') {
-      if (isRezvoApp()) {
-        navigate('/signup') // Partner portal needs owner account - stay in app, don't dump to marketing
-      } else {
-        navigate('/')
-      }
+    } else if (!isRezvoApp() && user.role !== 'owner' && user.role !== 'staff') {
+      navigate('/') // rezvo.co.uk: diners go to directory
     }
   }, [user, navigate])
 
