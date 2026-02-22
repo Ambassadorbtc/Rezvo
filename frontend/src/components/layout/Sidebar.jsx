@@ -1,129 +1,234 @@
 /**
- * Run 1: Left sidebar — brand, business card, nav sections
+ * Fresha-style: Dark green rail, icon-only, hover to reveal labels.
+ * Main content does NOT shift when sidebar expands — sidebar overlays.
  */
 
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Calendar,
+  BookOpen,
+  Link2,
+  Scissors,
+  UtensilsCrossed,
+  Users,
+  Globe,
+  UserCircle,
+  Star,
+  BarChart3,
+  CreditCard,
+  Megaphone,
+  LayoutGrid,
+  ShoppingBag,
+  Settings,
+  HelpCircle,
+  LogOut,
+} from 'lucide-react'
 import { getNavItems } from '../../config/navigation'
-import { TIERS } from '../../config/tiers'
 import { useBusiness } from '../../contexts/BusinessContext'
-import SidebarItem from './SidebarItem'
+import { useAuth } from '../../contexts/AuthContext'
+import { isFeatureUnlocked } from '../../config/tiers'
 import UpgradeModal from './UpgradeModal'
+import { TIERS } from '../../config/tiers'
 
-const Sidebar = ({ open }) => {
-  const { business, businessType, tier, setBusinessType } = useBusiness()
+const ICON_MAP = {
+  'fa-house': LayoutDashboard,
+  'fa-calendar-days': Calendar,
+  'fa-clipboard-list': BookOpen,
+  'fa-link': Link2,
+  'fa-scissors': Scissors,
+  'fa-utensils': UtensilsCrossed,
+  'fa-users': Users,
+  'fa-globe': Globe,
+  'fa-address-book': UserCircle,
+  'fa-star': Star,
+  'fa-chart-line': BarChart3,
+  'fa-credit-card': CreditCard,
+  'fa-bullhorn': Megaphone,
+  'fa-table-cells-large': LayoutGrid,
+  'fa-bag-shopping': ShoppingBag,
+  'fa-gear': Settings,
+  'fa-circle-question': HelpCircle,
+}
+
+const Sidebar = ({ open, onNavigate }) => {
+  const { business, businessType, tier } = useBusiness()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [expanded, setExpanded] = useState(false)
   const [upgradeModal, setUpgradeModal] = useState(null)
 
   const nav = getNavItems(businessType)
-  const tierInfo = TIERS[tier] || TIERS.free
 
-  const handleLockedClick = (item) => {
-    const requiredTier = TIERS[item.minTier]
-    setUpgradeModal(requiredTier?.label || item.minTier)
+  const flattenNav = () => {
+    const out = []
+    const sections = [
+      { key: 'main', items: nav.main },
+      { key: 'management', items: nav.management },
+      { key: 'business', items: nav.business },
+      { key: 'advanced', items: nav.advanced },
+      { key: 'system', items: nav.system },
+    ]
+    for (const { key, items } of sections) {
+      if (key !== 'main' && out.length) {
+        out.push({ id: `div-${key}`, type: 'divider' })
+      }
+      ;(items || []).forEach((item) => out.push(item))
+    }
+    return out
   }
 
-  const sectionLabels = {
-    main: null,
-    management: 'MANAGEMENT',
-    business: 'BUSINESS',
-    advanced: 'ADVANCED',
-    system: null,
+  const handleClick = (item) => {
+    if (item.type === 'divider') return
+    const unlocked = isFeatureUnlocked(tier, item.minTier)
+    if (!unlocked) {
+      setUpgradeModal(TIERS[item.minTier]?.label || item.minTier)
+      return
+    }
+    navigate(item.path)
+    onNavigate?.()
   }
 
-  const renderSection = (key, items) => {
-    if (!items?.length) return null
-    const label = sectionLabels[key]
-
-    return (
-      <div key={key} className="py-2">
-        {label && (
-          <div className="px-3 py-1.5 text-[10px] uppercase tracking-wide text-muted font-medium">
-            {label}
-          </div>
-        )}
-        <div className="space-y-0.5">
-          {items.map((item) => (
-            <SidebarItem
-              key={item.id}
-              item={item}
-              currentTier={tier}
-              onLockedClick={handleLockedClick}
-            />
-          ))}
-        </div>
-      </div>
-    )
+  const handleLogout = () => {
+    logout?.()
+    navigate('/login')
+    onNavigate?.()
   }
 
-  const sidebarContent = (
-    <>
-      {/* Brand header */}
-      <div className="h-16 border-b border-border flex items-center px-6 shrink-0">
-        <Link to="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <i className="fa-solid fa-calendar-days text-white text-sm" />
-          </div>
-          <span className="font-heading font-bold text-xl text-primary">Rezvo</span>
-        </Link>
-      </div>
+  const initials = user?.name
+    ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
 
-      {/* Business card */}
-      <div className="px-6 py-3 border-b border-border">
-        <p className="font-body text-sm font-semibold text-primary">
-          {business?.name || 'Demo Business'}
-        </p>
-        <span
-          className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase"
-          style={{ color: tierInfo.color, backgroundColor: tierInfo.bg }}
-        >
-          {tierInfo.label}
-        </span>
-        <a
-          href="#"
-          className="block mt-1 text-xs text-muted hover:text-primary transition-colors"
-        >
-          View Public Page <i className="fa-solid fa-external-link text-[10px] ml-0.5" />
-        </a>
-      </div>
-
-      {/* Nav sections */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {renderSection('main', nav.main)}
-        {renderSection('management', nav.management)}
-        {renderSection('business', nav.business)}
-        {renderSection('advanced', nav.advanced)}
-        <div className="border-t border-border mt-2 pt-2">
-          {renderSection('system', nav.system)}
-        </div>
-      </nav>
-    </>
-  )
-
-  // Desktop: always visible. Mobile: overlay, slides in when open
-  const asideClasses = [
-    'w-64 bg-white border-r border-border flex flex-col shrink-0',
-    'fixed lg:relative inset-y-0 left-0 z-40',
-    'transform transition-transform duration-200 ease-out',
-    open ? 'translate-x-0' : '-translate-x-full',
-    'lg:translate-x-0',
-  ].join(' ')
+  const isExpanded = expanded
+  const sidebarWidth = isExpanded ? 220 : 64
+  const translateClass = `transition-transform duration-200 ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`
 
   return (
     <>
-      <aside className={asideClasses}>
-        {sidebarContent}
-      </aside>
+      <nav
+        className={`fixed top-0 left-0 bottom-0 z-50 flex flex-col overflow-hidden transition-[width] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${translateClass}`}
+        style={{
+          width: sidebarWidth,
+          background: '#1B4332',
+        }}
+        onMouseEnter={() => setExpanded(true)}
+        onMouseLeave={() => setExpanded(false)}
+      >
+
+        {/* Logo */}
+        <div
+          className="flex items-center gap-3 px-[18px] shrink-0 h-16 border-b border-white/10"
+        >
+          <div className="w-7 h-7 rounded-lg bg-background flex items-center justify-center shrink-0">
+            <span className="text-primary font-heading font-bold text-sm">R</span>
+          </div>
+          <span
+            className="text-background font-heading font-bold text-lg whitespace-nowrap transition-opacity duration-150"
+            style={{ opacity: isExpanded ? 1 : 0 }}
+          >
+            Rezvo
+          </span>
+        </div>
+
+        {/* Nav Items */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-3">
+          {flattenNav().map((item) => {
+            if (item.type === 'divider') {
+              return (
+                <div
+                  key={item.id}
+                  className="h-px bg-white/10 mx-3 my-2"
+                />
+              )
+            }
+
+            const isActive = location.pathname === item.path
+            const Icon = ICON_MAP[item.icon] || LayoutDashboard
+            const unlocked = isFeatureUnlocked(tier, item.minTier)
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleClick(item)}
+                className="w-full flex items-center gap-3 px-[18px] h-11 border-none cursor-pointer relative transition-colors duration-150 hover:bg-white/10"
+                style={{
+                  background: isActive ? 'rgba(255,255,255,0.12)' : 'transparent',
+                }}
+              >
+                {isActive && (
+                  <div
+                    className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r bg-background"
+                  />
+                )}
+                <Icon
+                  size={20}
+                  color={isActive ? '#FEFBF4' : 'rgba(254,251,244,0.55)'}
+                  strokeWidth={isActive ? 2.2 : 1.8}
+                  className="shrink-0"
+                />
+                <span
+                  className="text-[13.5px] font-body whitespace-nowrap transition-opacity duration-150"
+                  style={{
+                    color: isActive ? '#FEFBF4' : 'rgba(254,251,244,0.55)',
+                    fontWeight: isActive ? 600 : 400,
+                    opacity: isExpanded ? 1 : 0,
+                  }}
+                >
+                  {item.label}
+                </span>
+                {item.minTier && !unlocked && isExpanded && (
+                  <span className="ml-auto text-[10px] text-white/30">🔒</span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* User / Logout */}
+        <div className="border-t border-white/10 pt-2 pb-4 shrink-0">
+          <div className="flex items-center gap-3 px-[18px] py-3 border-t border-white/10 mt-1">
+            <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+              <span className="text-background text-[13px] font-semibold">{initials}</span>
+            </div>
+            <div
+              className="overflow-hidden whitespace-nowrap transition-opacity duration-150"
+              style={{ opacity: isExpanded ? 1 : 0 }}
+            >
+              <div className="text-background text-[13px] font-medium">
+                {business?.name || 'Demo Business'}
+              </div>
+              <div className="text-white/40 text-[11px]">
+                {user?.role === 'owner' ? 'Owner' : 'Staff'}
+              </div>
+            </div>
+            {isExpanded && (
+              <button
+                onClick={handleLogout}
+                className="ml-auto p-1 text-white/40 hover:text-white/70 transition-colors shrink-0"
+                aria-label="Log out"
+              >
+                <LogOut size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
 
       {upgradeModal && (
         <UpgradeModal
           tierName={upgradeModal}
           onClose={() => setUpgradeModal(null)}
-          onViewPlans={() => {
-            setUpgradeModal(null)
-            // TODO: navigate to plans page
-          }}
+          onViewPlans={() => setUpgradeModal(null)}
         />
       )}
+
+      {/* Spacer — main content stays at 64px offset, sidebar overlays when expanded */}
+      <div
+        className="hidden lg:block shrink-0"
+        style={{ width: 64 }}
+      />
     </>
   )
 }

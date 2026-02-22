@@ -72,7 +72,7 @@ const DashboardLayout = () => {
         />
       )}
 
-      <Sidebar open={sidebarOpen} />
+      <Sidebar open={sidebarOpen} onNavigate={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <TopBar
