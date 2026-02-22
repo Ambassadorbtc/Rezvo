@@ -113,11 +113,13 @@ async def get_saved_businesses(current_user: dict = Depends(get_current_user)):
 @router.get("/me/bookings")
 async def get_user_bookings(current_user: dict = Depends(get_current_user)):
     db = get_database()
-    
-    bookings = await db.reservations.find(
-        {"user_id": str(current_user["_id"])}
-    ).sort("date", -1).to_list(length=None)
-    
+    # Use bookings (Run 2) — match by customer email since bookings don't have user_id
+    user_email = (current_user.get("email") or "").strip().lower()
+    if not user_email:
+        return []
+    bookings = await db.bookings.find(
+        {"customer.email": {"$regex": user_email, "$options": "i"}}
+    ).sort("date", -1).sort("time", -1).limit(100).to_list(length=100)
     return bookings
 
 

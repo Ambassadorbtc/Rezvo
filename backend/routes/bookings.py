@@ -449,9 +449,10 @@ async def get_business_calendar(
             detail="Not authorized to view this calendar"
         )
     
-    reservations = await db.reservations.find({
-        "business_id": business_id,
-        "date": {"$gte": start_date, "$lte": end_date}
-    }).sort("date", 1).to_list(length=None)
-    
-    return reservations
+    start_str = start_date.isoformat() if hasattr(start_date, "isoformat") else str(start_date)
+    end_str = end_date.isoformat() if hasattr(end_date, "isoformat") else str(end_date)
+    bookings = await db.bookings.find({
+        "businessId": business_id,
+        "date": {"$gte": start_str, "$lte": end_str}
+    }).sort("date", 1).sort("time", 1).to_list(length=None)
+    return bookings

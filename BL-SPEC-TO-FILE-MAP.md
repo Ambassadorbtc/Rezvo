@@ -126,13 +126,14 @@
 
 ---
 
-### Run 8: Analytics — 🟡 PARTIAL
+### Run 8: Analytics — 🟡 PARTIAL (collection aligned)
 | What | Backend | Frontend |
 |------|---------|----------|
 | Overview | `GET /analytics/business/:id/overview` | `pages/dashboard/Analytics.jsx` |
 | Bookings by day | `GET /analytics/business/:id/bookings-by-day` | — |
-| **Gap:** | Uses `db.reservations` (legacy) | Dashboard uses `db.bookings` |
-| **Action:** | Align analytics to `bookings` collection | Extend charts per Run 8 spec |
+| Revenue, popular times | `GET .../revenue`, `.../popular-times` | — |
+| **Fixed:** | All analytics now use `db.bookings` (was reservations) | — |
+| **Action:** | Extend charts per Run 8 spec | — |
 
 ---
 

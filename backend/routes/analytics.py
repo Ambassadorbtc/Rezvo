@@ -34,26 +34,29 @@ async def get_analytics_overview(
     if not end_date:
         end_date = date.today()
     
-    total_bookings = await db.reservations.count_documents({
-        "business_id": business_id,
-        "date": {"$gte": start_date, "$lte": end_date}
+    # Use bookings collection (Run 2) — aligned with dashboard, calendar, staff
+    start_str = start_date.isoformat()
+    end_str = end_date.isoformat()
+    total_bookings = await db.bookings.count_documents({
+        "businessId": business_id,
+        "date": {"$gte": start_str, "$lte": end_str}
     })
-    
-    confirmed_bookings = await db.reservations.count_documents({
-        "business_id": business_id,
-        "date": {"$gte": start_date, "$lte": end_date},
-        "status": {"$in": ["confirmed", "completed"]}
+
+    confirmed_bookings = await db.bookings.count_documents({
+        "businessId": business_id,
+        "date": {"$gte": start_str, "$lte": end_str},
+        "status": {"$in": ["confirmed", "completed", "checked_in"]}
     })
-    
-    cancelled_bookings = await db.reservations.count_documents({
-        "business_id": business_id,
-        "date": {"$gte": start_date, "$lte": end_date},
+
+    cancelled_bookings = await db.bookings.count_documents({
+        "businessId": business_id,
+        "date": {"$gte": start_str, "$lte": end_str},
         "status": "cancelled"
     })
-    
-    no_shows = await db.reservations.count_documents({
-        "business_id": business_id,
-        "date": {"$gte": start_date, "$lte": end_date},
+
+    no_shows = await db.bookings.count_documents({
+        "businessId": business_id,
+        "date": {"$gte": start_str, "$lte": end_str},
         "status": "no_show"
     })
     
@@ -104,11 +107,13 @@ async def get_bookings_by_day(
             detail="Not authorized"
         )
     
+    start_str = start_date.isoformat()
+    end_str = end_date.isoformat()
     pipeline = [
         {
             "$match": {
-                "business_id": business_id,
-                "date": {"$gte": start_date, "$lte": end_date}
+                "businessId": business_id,
+                "date": {"$gte": start_str, "$lte": end_str}
             }
         },
         {
@@ -121,8 +126,8 @@ async def get_bookings_by_day(
             "$sort": {"_id": 1}
         }
     ]
-    
-    results = await db.reservations.aggregate(pipeline).to_list(length=None)
+
+    results = await db.bookings.aggregate(pipeline).to_list(length=None)
     
     return results
 
@@ -149,37 +154,24 @@ async def get_revenue_analytics(
             detail="Not authorized"
         )
     
+    start_str = start_date.isoformat()
+    end_str = end_date.isoformat()
     pipeline = [
-        {
-            "$match": {
-                "business_id": business_id,
-                "date": {"$gte": start_date, "$lte": end_date},
-                "deposit_amount": {"$exists": True, "$ne": None}
-            }
-        },
-        {
-            "$group": {
-                "_id": None,
-                "total_revenue": {"$sum": "$deposit_amount"},
-                "count": {"$sum": 1}
-            }
-        }
+        {"$match": {"businessId": business_id, "date": {"$gte": start_str, "$lte": end_str}, "status": {"$in": ["confirmed", "completed", "checked_in"]}}},
+        {"$group": {"_id": None, "total_revenue": {"$sum": {"$ifNull": ["$service.price", 0]}}, "count": {"$sum": 1}}}
     ]
-    
-    results = await db.reservations.aggregate(pipeline).to_list(length=None)
-    
-    if results:
+    results = await db.bookings.aggregate(pipeline).to_list(length=None)
+
+    if results and results[0].get("count", 0) > 0:
+        tot = results[0].get("total_revenue", 0) or 0
+        cnt = results[0].get("count", 0)
         return {
-            "total_revenue": results[0]["total_revenue"],
-            "total_transactions": results[0]["count"],
-            "average_transaction": round(results[0]["total_revenue"] / results[0]["count"], 2)
+            "total_revenue": tot,
+            "total_transactions": cnt,
+            "average_transaction": round(tot / cnt, 2) if cnt else 0
         }
-    
-    return {
-        "total_revenue": 0,
-        "total_transactions": 0,
-        "average_transaction": 0
-    }
+
+    return {"total_revenue": 0, "total_transactions": 0, "average_transaction": 0}
 
 
 @router.get("/business/{business_id}/popular-times")
@@ -202,27 +194,13 @@ async def get_popular_times(
             detail="Not authorized"
         )
     
-    start_date = date.today() - timedelta(days=90)
-    
+    start_str = (date.today() - timedelta(days=90)).isoformat()
+    # time is string "HH:MM" — extract hour via $substr
     pipeline = [
-        {
-            "$match": {
-                "business_id": business_id,
-                "date": {"$gte": start_date},
-                "status": {"$in": ["confirmed", "completed"]}
-            }
-        },
-        {
-            "$group": {
-                "_id": {"$hour": "$time"},
-                "count": {"$sum": 1}
-            }
-        },
-        {
-            "$sort": {"_id": 1}
-        }
+        {"$match": {"businessId": business_id, "date": {"$gte": start_str}, "status": {"$in": ["confirmed", "completed", "checked_in"]}}},
+        {"$addFields": {"hour": {"$toInt": {"$substr": [{"$ifNull": ["$time", "00:00"]}, 0, 2]}}}},
+        {"$group": {"_id": "$hour", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
     ]
-    
-    results = await db.reservations.aggregate(pipeline).to_list(length=None)
-    
+    results = await db.bookings.aggregate(pipeline).to_list(length=None)
     return results
