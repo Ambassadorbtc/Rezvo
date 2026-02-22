@@ -9,6 +9,8 @@ def setup_cors(app: FastAPI):
         "https://rezvo.co.uk",
         "https://www.rezvo.co.uk",
         "https://dashboard.rezvo.co.uk",
+        "https://rezvo.app",
+        "https://www.rezvo.app",
     ]
     
     app.add_middleware(

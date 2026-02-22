@@ -38,8 +38,8 @@ class Settings(BaseSettings):
     cloudflare_r2_bucket: Optional[str] = None
     cloudflare_r2_endpoint: Optional[str] = None
     
-    frontend_url: str = "https://rezvo.co.uk"
-    backend_url: str = "https://api.rezvo.co.uk"
+    frontend_url: str = "https://rezvo.app"
+    backend_url: str = "https://rezvo.app/api"
     
     environment: str = "production"
 
