@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await api.get('/users/me')
-      setUser(response.data)
+      const userData = await api.get('/users/me')
+      setUser(userData)
     } catch (error) {
       console.error('Failed to fetch user:', error)
       logout()
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/auth/login', { email, password })
-      const { access_token, user: userData } = response.data
+      const { access_token, user: userData } = response
       
       localStorage.setItem('token', access_token)
       setToken(access_token)
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || 'Login failed'
+        error: error.message || 'Login failed'
       }
     }
   }
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await api.post('/auth/register', userData)
-      const { access_token, user: newUser } = response.data
+      const { access_token, user: newUser } = response
       
       localStorage.setItem('token', access_token)
       setToken(access_token)
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || 'Registration failed'
+        error: error.message || 'Registration failed'
       }
     }
   }

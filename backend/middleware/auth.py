@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional, List
+from bson import ObjectId
 from config import settings
 from database import get_database
 from models.user import UserRole
@@ -38,7 +39,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     
     db = get_database()
-    user = await db.users.find_one({"_id": user_id})
+    try:
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        user = await db.users.find_one({"_id": user_id})
     if user is None:
         raise credentials_exception
     
