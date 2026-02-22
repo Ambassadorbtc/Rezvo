@@ -28,8 +28,8 @@ export const TierProvider = ({ children }) => {
   const fetchBusiness = async () => {
     try {
       const businessId = user.business_ids[0]
-      const response = await api.get(`/businesses/${businessId}`)
-      setBusiness(response.data)
+      const data = await api.get(`/businesses/${businessId}`)
+      setBusiness(data)
     } catch (error) {
       console.error('Failed to fetch business:', error)
     } finally {
