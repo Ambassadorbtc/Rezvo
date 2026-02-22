@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { isRezvoApp } from '../../utils/domain'
 import Input from '../../components/shared/Input'
 import Button from '../../components/shared/Button'
 
@@ -47,7 +48,8 @@ const Register = () => {
       if (formData.role === 'owner') {
         navigate('/onboarding')
       } else {
-        navigate('/')
+        if (isRezvoApp()) window.location.href = '/' // Marketing site, not directory
+        else navigate('/')
       }
     } else {
       setError(result.error)

@@ -4,6 +4,8 @@ import { TierProvider } from './contexts/TierContext'
 
 import PublicLayout from './components/layout/PublicLayout'
 import AppLayout from './components/layout/AppLayout'
+import RedirectToMarketing from './components/RedirectToMarketing'
+import { isRezvoApp } from './utils/domain'
 
 import DirectoryLanding from './pages/directory/DirectoryLanding'
 import SearchPage from './pages/directory/SearchPage'
@@ -38,13 +40,13 @@ const App = () => {
       <AuthProvider>
         <TierProvider>
           <Routes>
-            <Route path="/" element={<DirectoryLanding />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/restaurant/:slug" element={<ListingPage />} />
-            <Route path="/venue/:slug" element={<ListingPage />} />
+            <Route path="/" element={isRezvoApp() ? <RedirectToMarketing /> : <DirectoryLanding />} />
+            <Route path="/search" element={isRezvoApp() ? <RedirectToMarketing /> : <SearchPage />} />
+            <Route path="/restaurant/:slug" element={isRezvoApp() ? <RedirectToMarketing /> : <ListingPage />} />
+            <Route path="/venue/:slug" element={isRezvoApp() ? <RedirectToMarketing /> : <ListingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/faqs" element={<FaqsPage />} />
+            <Route path="/faqs" element={isRezvoApp() ? <RedirectToMarketing /> : <FaqsPage />} />
 
             <Route element={<PublicLayout />}>
               <Route path="/old-home" element={<HomePage />} />

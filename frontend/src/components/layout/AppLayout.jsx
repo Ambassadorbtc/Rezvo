@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTier } from '../../contexts/TierContext'
 import { useEffect } from 'react'
+import { isRezvoApp } from '../../utils/domain'
 
 const AppLayout = () => {
   const { user, logout } = useAuth()
@@ -13,7 +14,11 @@ const AppLayout = () => {
     if (!user) {
       navigate('/login')
     } else if (user.role !== 'owner' && user.role !== 'staff') {
-      navigate('/')
+      if (isRezvoApp()) {
+        window.location.href = '/' // Full reload to marketing site (no directory on rezvo.app)
+      } else {
+        navigate('/')
+      }
     }
   }, [user, navigate])
 

@@ -1,8 +1,12 @@
 import { Outlet, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { isRezvoApp } from '../../utils/domain'
+import RedirectToMarketing from '../RedirectToMarketing'
 
 const PublicLayout = () => {
   const { isAuthenticated, user } = useAuth()
+
+  if (isRezvoApp()) return <RedirectToMarketing />
 
   return (
     <div className="min-h-screen flex flex-col">
