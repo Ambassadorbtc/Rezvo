@@ -10,15 +10,17 @@ const Services = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?._id) {
+    if (business?.id) {
       fetchServices()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchServices = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/services/business/${business._id}/services`)
+      const response = await api.get(`/services/business/${business.id}/services`)
       setServices(response)
     } catch (error) {
       console.error('Failed to fetch services:', error)

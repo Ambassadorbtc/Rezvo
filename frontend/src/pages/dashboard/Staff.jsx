@@ -12,15 +12,17 @@ const Staff = () => {
   const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
-    if (business?._id && hasFeature('staff')) {
+    if (business?.id && hasFeature('staff')) {
       fetchStaff()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchStaff = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/staff/business/${business._id}/staff`)
+      const response = await api.get(`/staff/business/${business.id}/staff`)
       setStaff(response)
     } catch (error) {
       console.error('Failed to fetch staff:', error)

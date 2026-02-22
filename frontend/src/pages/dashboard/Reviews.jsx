@@ -10,16 +10,18 @@ const Reviews = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?._id) {
+    if (business?.id) {
       fetchReviews()
       fetchStats()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchReviews = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/reviews/business/${business._id}`)
+      const response = await api.get(`/reviews/business/${business.id}`)
       setReviews(response.results || [])
     } catch (error) {
       console.error('Failed to fetch reviews:', error)
@@ -30,7 +32,7 @@ const Reviews = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await api.get(`/reputation/business/${business._id}/review-stats`)
+      const response = await api.get(`/reputation/business/${business.id}/review-stats`)
       setStats(response)
     } catch (error) {
       console.error('Failed to fetch review stats:', error)

@@ -12,8 +12,10 @@ const Bookings = () => {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    if (business?._id) {
+    if (business?.id) {
       fetchBookings()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
@@ -24,7 +26,7 @@ const Bookings = () => {
       const endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
       
       const response = await api.get(
-        `/bookings/business/${business._id}/calendar?start_date=${startDate}&end_date=${endDate}`
+        `/bookings/business/${business.id}/calendar?start_date=${startDate}&end_date=${endDate}`
       )
       setBookings(response)
     } catch (error) {

@@ -12,15 +12,17 @@ const Settings = () => {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    if (business?._id) {
+    if (business?.id) {
       fetchSettings()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchSettings = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/settings/business/${business._id}`)
+      const response = await api.get(`/settings/business/${business.id}`)
       setSettings(response)
     } catch (error) {
       console.error('Failed to fetch settings:', error)
@@ -32,7 +34,7 @@ const Settings = () => {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await api.patch(`/settings/business/${business._id}`, settings)
+      await api.patch(`/settings/business/${business.id}`, settings)
       alert('Settings saved successfully')
     } catch (error) {
       console.error('Failed to save settings:', error)

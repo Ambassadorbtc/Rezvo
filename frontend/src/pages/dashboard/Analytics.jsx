@@ -9,15 +9,17 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?._id) {
+    if (business?.id) {
       fetchAnalytics()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchAnalytics = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/analytics/business/${business._id}/overview`)
+      const response = await api.get(`/analytics/business/${business.id}/overview`)
       setAnalytics(response)
     } catch (error) {
       console.error('Failed to fetch analytics:', error)

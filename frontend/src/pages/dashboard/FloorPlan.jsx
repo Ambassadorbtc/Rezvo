@@ -10,15 +10,17 @@ const FloorPlan = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?._id && hasFeature('floor_plan')) {
+    if (business?.id && hasFeature('floor_plan')) {
       fetchFloorPlan()
+    } else {
+      setLoading(false)
     }
   }, [business])
 
   const fetchFloorPlan = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/tables/business/${business._id}/floor-plan`)
+      const response = await api.get(`/tables/business/${business.id}/floor-plan`)
       setFloorPlan(response)
     } catch (error) {
       console.error('Failed to fetch floor plan:', error)
