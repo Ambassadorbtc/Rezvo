@@ -3,17 +3,13 @@
 @tailwind utilities;
 
 /* BRAND ENFORCEMENT — DO NOT REMOVE */
-* {
-  font-family: 'Figtree', system-ui, sans-serif !important;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Figtree', system-ui, sans-serif !important;
-  font-weight: 800;
-}
-
 body, p, span, a, button, input, select, textarea, li, td, th, label, div {
-  font-family: 'Figtree', sans-serif;
+  font-family: 'Figtree', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-heading, .font-display {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif !important;
 }
 
 @layer base {
