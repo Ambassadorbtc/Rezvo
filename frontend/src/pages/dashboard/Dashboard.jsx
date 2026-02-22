@@ -4,13 +4,13 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import { useAuth } from '../../contexts/AuthContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 
 const Dashboard = () => {
-  const { business } = useTier()
+  const { business } = useBusiness()
   const { user } = useAuth()
   const navigate = useNavigate()
   const [summary, setSummary] = useState(null)
@@ -19,12 +19,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchAll = async () => {
-    if (!business?.id) return
+    const bid = business?.id ?? business?._id
+    if (!bid) {
+      setLoading(false)
+      return
+    }
     try {
       const [s, t, a] = await Promise.all([
-        api.get(`/dashboard/business/${business.id}/summary`),
-        api.get(`/dashboard/business/${business.id}/today`),
-        api.get(`/dashboard/business/${business.id}/activity?limit=20`),
+        api.get(`/dashboard/business/${bid}/summary`),
+        api.get(`/dashboard/business/${bid}/today`),
+        api.get(`/dashboard/business/${bid}/activity?limit=20`),
       ])
       setSummary(s)
       setTodayBookings(t?.bookings || [])
@@ -40,7 +44,7 @@ const Dashboard = () => {
     fetchAll()
     const interval = setInterval(fetchAll, 30000)
     return () => clearInterval(interval)
-  }, [business?.id])
+  }, [business?.id ?? business?._id])
 
   const formatPounds = (pence) => {
     if (pence == null) return '£0.00'

@@ -11,6 +11,7 @@ import Card from '../../components/shared/Card'
 import Button from '../../components/shared/Button'
 import Input from '../../components/shared/Input'
 import { isFeatureUnlocked } from '../../config/tiers'
+import { getDomainConfig } from '../../utils/domain'
 
 const TABS = [
   { id: 'business', label: 'Business' },
@@ -476,7 +477,7 @@ const Settings = () => {
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-text mb-2">Booking page URL</label>
-              <p className="text-sm text-muted mb-1">rezvo.co.uk/book/</p>
+              <p className="text-sm text-muted mb-1">{getDomainConfig().baseUrl}/book/</p>
               <Input
                 value={biz.slug || ''}
                 onChange={(e) => updateBusiness('slug', e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))}

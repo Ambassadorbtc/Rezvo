@@ -1,0 +1,43 @@
+---
+description: Domain silos — rezvo.app and rezvo.co.uk are separate frontends
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Domain Silos: rezvo.app vs rezvo.co.uk
+
+Treat rezvo.app and rezvo.co.uk as **solid silos** — as if they were on different servers. Do not mix logic; do not assume both exist in one session.
+
+## Boundaries
+
+| rezvo.app | rezvo.co.uk |
+|-----------|-------------|
+| Marketing homepage + partner booking portal | Consumer directory + search + booking |
+| NO directory, search, listing pages | Full directory, search, listing, FAQs |
+| Login/signup → dashboard for businesses | Login/signup → dashboard OR directory (role-based) |
+| Booking flow at same domain | Booking flow at same domain |
+
+## Rules
+
+1. **Use `domain.js`** — Import `isRezvoApp()`, `isRezvoCoUk()`, or `getDomainConfig()` from `utils/domain.js`. Do not hardcode hostnames.
+
+2. **Never cross-link domains** — Links, redirects, and canonical URLs must stay within the current domain. Use `window.location.origin` or `getDomainConfig().baseUrl` for same-domain links.
+
+3. **Route by domain** — Routes that only exist on one domain (e.g. directory pages) must gate with `isRezvoApp()` / `isRezvoCoUk()`. If a page belongs to only one silo, the other domain must redirect or 404.
+
+4. **Domain-specific defaults** — When generating URLs (booking link, support email, etc.), use `getDomainConfig()` so each build gets the correct defaults.
+
+5. **Build-time separation** — rezvo.app builds with `VITE_API_URL=https://rezvo.app/api`; rezvo.co.uk with `VITE_API_URL=https://api.rezvo.co.uk`. Each deploy is domain-specific.
+
+## Examples
+
+```javascript
+// ✅ GOOD — use domain util
+import { isRezvoApp, getDomainConfig } from '../../utils/domain'
+const base = getDomainConfig().baseUrl
+if (isRezvoApp()) return <RedirectToMarketing />
+
+// ❌ BAD — hardcoded domain
+if (window.location.hostname === 'rezvo.app') { ... }
+const link = 'https://rezvo.co.uk/book/...'
+```

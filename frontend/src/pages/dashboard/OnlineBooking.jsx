@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useBusiness } from '../../contexts/BusinessContext'
 import api, { API_BASE_URL } from '../../utils/api'
+import { getDomainConfig } from '../../utils/domain'
 import Card from '../../components/shared/Card'
 import Button from '../../components/shared/Button'
 import { isFeatureUnlocked } from '../../config/tiers'
@@ -35,7 +36,8 @@ const OnlineBooking = () => {
 
   const imageBase = API_BASE_URL
   const slug = business?.slug || data?.share?.slug || 'your-business'
-  const bookingUrl = typeof window !== 'undefined' ? `${window.location.origin}/book/${slug}` : `https://rezvo.co.uk/book/${slug}`
+  const { baseUrl } = getDomainConfig()
+  const bookingUrl = `${baseUrl}/book/${slug}`
 
   const hasDeposits = isFeatureUnlocked(tier, 'growth')
   const hasIntegrations = isFeatureUnlocked(tier, 'scale')
@@ -574,7 +576,7 @@ const EmbedModal = ({ businessId, accentColour, onClose, onCopy }) => {
     if (!businessId) return
     api.get(`/booking-page/${businessId}/embed`).then(setEmbed)
   }, [businessId])
-  const base = typeof window !== 'undefined' ? window.location.origin : 'https://rezvo.co.uk'
+  const { baseUrl: base } = getDomainConfig()
   const iframeCode = embed?.embedCode || `<iframe src="${base}/book/your-business" width="100%" height="600" frameborder="0"></iframe>`
   const buttonCode = embed?.buttonCode || `<a href="${base}/book/your-business" style="background:${accentColour};color:#FEFBF4;padding:12px 24px;border-radius:10px;">Book Now</a>`
   return (

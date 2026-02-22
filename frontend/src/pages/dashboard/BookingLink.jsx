@@ -4,13 +4,14 @@
  */
 
 import { useTier } from '../../contexts/TierContext'
+import { getDomainConfig } from '../../utils/domain'
 import Card from '../../components/shared/Card'
 
 const BookingLink = () => {
   const { business } = useTier()
   const slug = business?.slug || 'your-business'
-  const base = typeof window !== 'undefined' ? window.location.origin : 'https://rezvo.app'
-  const bookingUrl = `${base}/book/${slug}`
+  const { baseUrl } = getDomainConfig()
+  const bookingUrl = `${baseUrl}/book/${slug}`
 
   const handleCopy = () => {
     navigator.clipboard.writeText(bookingUrl)
