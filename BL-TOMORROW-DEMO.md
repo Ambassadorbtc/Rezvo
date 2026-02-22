@@ -14,30 +14,38 @@ The **functionality is there**. Look at the sidebar: Calendar, Bookings, Booking
 
 Every page needs to match the UXPilot designs. The HTML files **are** the design spec.
 
-```
-Dashboard:      C:\Users\HP Elitebook\Downloads\uxpilot-export-Web Portal Design
-Customer:       C:\Users\HP Elitebook\Downloads\uxpilot-export-Customer Design Pages
-New dashboard:  C:\Users\HP Elitebook\Downloads\uxpilot-export-1771773108598
-```
+**Web Portal Design:** `C:\Users\HP Elitebook\Downloads\uxpilot-export-Web Portal Design`
+
+| Page | Design file |
+|------|-------------|
+| Sign In | 1-Brand Design - Sign In.html |
+| Dashboard | **5-Brand Design - Home Dashboard.html** |
+| Bookings | 4-Brand Design - Bookings.html |
+| Booking Link | 6-Brand Design - Booking Link.html |
+| Services | 7-Brand Design - Services/Menu.html |
+| Clients | 8-Brand Design - Clients (CRM).html |
+| Payments & Analytics | 9-Brand Design - Payments & Anal.html |
+| Settings | 10-Brand Design - Settings & Help.html |
+| Calendar | 13-Brand Design - Calendar.html |
 
 ---
 
 ## Demo Priorities (Tomorrow)
 
 ### 1. Dashboard
-Match `1-Brand Design.html`
+Match `5-Brand Design - Home Dashboard.html`
 - KPI cards
 - Activity feed
 - Quick actions styled
 
 ### 2. Calendar
-Match `2-Brand Design.html`
+Match `13-Brand Design - Calendar.html`
 - Day/week view
 - Staff columns
 - Colour-coded events
 
 ### 3. Services
-Match `3-Brand Design.html`
+Match `7-Brand Design - Services/Menu.html`
 - Service cards with duration, price, staff
 
 ### 4. Fix the Loading Spinner

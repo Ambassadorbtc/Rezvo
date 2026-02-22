@@ -1,0 +1,15 @@
+---
+description: Always push and deploy changes to both servers
+alwaysApply: true
+---
+
+# Always Deploy
+
+After committing code changes, **always** push to the server:
+
+1. `git add` relevant files, `git commit`, `git push origin main`
+2. Run **both** deploy scripts:
+   - `DEPLOY.bat` — rezvo.co.uk (directory)
+   - `DEPLOY-REZVO-APP.bat` — rezvo.app (portal)
+
+Do not skip deployment. Both domains must stay in sync.
