@@ -1,33 +1,24 @@
 # BL — Next 12 Hours: CSS ONLY
 
-## Direct instruction
+## You pushed markdown files. I need you to change the REACT CODE.
 
-**Stop building new features.** The next 12 hours are **CSS ONLY**. Match the UXPilot designs.
+Open `Dashboard.jsx` and make it look like `5-Brand Design - Home Dashboard.html`. **Change the actual CSS/Tailwind classes on the components.** The HTML design file is your target — the React page is what you're editing.
 
----
-
-## What you're working with
-
-**Design spec folder:** `C:\Users\HP Elitebook\Downloads\uxpilot-export-Web Portal Design`
-
-For the dashboard: **Open `5-Brand Design - Home Dashboard.html`** in a browser side-by-side with the live dashboard.
+**Open both side-by-side. Match them. Push when it looks right.**
 
 ---
 
-## What the dashboard should look like
+## NOT documentation. CODING.
 
-Right now it's functional but ugly. The design has:
-
-- **Styled KPI cards** — Icons, colour accents, clear hierarchy
-- **Activity feed** — Avatars, timestamps, visual structure
-- **Quick action buttons** — Hover states, clear CTAs
-- **Layout** — Cream background, rounded cards, shadow depth
-- **Visual hierarchy and personality** — Not a wireframe, a product
+- Edit `frontend/src/pages/dashboard/Dashboard.jsx`
+- Edit `frontend/src/components/` if needed
+- Change Tailwind classes. Add icons. Add rounded corners, shadows, hover states.
+- Do NOT create more .md files. Do NOT update rules. EDIT THE .JSX FILES.
 
 ---
 
-## The job
+## Design spec
 
-One styling pass turns it into something you're proud to show.
+`C:\Users\HP Elitebook\Downloads\uxpilot-export-Web Portal Design\5-Brand Design - Home Dashboard.html`
 
-**That's the only job between now and tomorrow.**
+The design has: KPI cards with icons and colour accents, activity feed with avatar circles, cream background, rounded cards, shadow depth. Match it.
