@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 import Button from '../../components/shared/Button'
 
 const FloorPlan = () => {
-  const { business, hasFeature } = useTier()
+  const { business, businessType, tier } = useBusiness()
   const [floorPlan, setFloorPlan] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?.id && hasFeature('floor_plan')) {
+    if (business?.id ?? business?._id && hasFeature('floor_plan')) {
       fetchFloorPlan()
     } else {
       setLoading(false)
@@ -20,7 +20,7 @@ const FloorPlan = () => {
   const fetchFloorPlan = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/tables/business/${business.id}/floor-plan`)
+      const response = await api.get(`/tables/business/${business?.id ?? business?._id ?? business?._id}/floor-plan`)
       setFloorPlan(response)
     } catch (error) {
       console.error('Failed to fetch floor plan:', error)

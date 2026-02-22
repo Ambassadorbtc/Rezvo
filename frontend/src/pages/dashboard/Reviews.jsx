@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 
 const Reviews = () => {
-  const { business } = useTier()
+  const { business, businessType } = useBusiness()
   const [reviews, setReviews] = useState([])
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?.id) {
+    if (business?.id ?? business?._id) {
       fetchReviews()
       fetchStats()
     } else {
@@ -21,7 +21,7 @@ const Reviews = () => {
   const fetchReviews = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/reviews/business/${business.id}`)
+      const response = await api.get(`/reviews/business/${business?.id ?? business?._id ?? business?._id}`)
       setReviews(response.results || [])
     } catch (error) {
       console.error('Failed to fetch reviews:', error)
@@ -32,7 +32,7 @@ const Reviews = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await api.get(`/reputation/business/${business.id}/review-stats`)
+      const response = await api.get(`/reputation/business/${business?.id ?? business?._id ?? business?._id}/review-stats`)
       setStats(response)
     } catch (error) {
       console.error('Failed to fetch review stats:', error)

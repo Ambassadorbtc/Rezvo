@@ -3,29 +3,30 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 
 const Calendar = () => {
-  const { business } = useTier()
+  const { business, businessType } = useBusiness()
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const isRestaurant = business?.type === 'restaurant' || business?.category === 'restaurant'
+  const isRestaurant = businessType === 'restaurant'
+  const bid = business?.id ?? business?._id
 
   useEffect(() => {
-    if (!business?.id) return
+    if (!bid) return
     setLoading(true)
     const endpoint = isRestaurant
-      ? `/calendar/business/${business.id}/restaurant?date=${selectedDate}&view=day`
-      : `/calendar/business/${business.id}?date=${selectedDate}&view=day`
+      ? `/calendar/business/${bid}/restaurant?date=${selectedDate}&view=day`
+      : `/calendar/business/${bid}?date=${selectedDate}&view=day`
     api.get(endpoint)
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoading(false))
-  }, [business?.id, selectedDate, isRestaurant])
+  }, [bid, selectedDate, isRestaurant])
 
   const goPrev = () => {
     const d = new Date(selectedDate)
@@ -43,7 +44,7 @@ const Calendar = () => {
     setSelectedDate(new Date().toISOString().slice(0, 10))
   }
 
-  if (!business?.id) {
+  if (!bid) {
     return (
       <div className="text-center py-12">
         <p className="text-muted">No business selected</p>

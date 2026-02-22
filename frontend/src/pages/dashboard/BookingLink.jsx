@@ -3,12 +3,12 @@
  * Run 2: Wired to /book/:slug
  */
 
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import { getDomainConfig } from '../../utils/domain'
 import Card from '../../components/shared/Card'
 
 const BookingLink = () => {
-  const { business } = useTier()
+  const { business, businessType, tier } = useBusiness()
   const slug = business?.slug || 'your-business'
   const { baseUrl } = getDomainConfig()
   const bookingUrl = `${baseUrl}/book/${slug}`

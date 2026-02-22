@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import { useBusiness } from '../../contexts/BusinessContext'
 import api, { API_BASE_URL } from '../../utils/api'
 import Card from '../../components/shared/Card'
@@ -77,7 +77,7 @@ const toImageUrl = (path) => path?.startsWith('/') ? `${API_BASE_URL}${path}` : 
 
 const Settings = () => {
   const navigate = useNavigate()
-  const { business } = useTier()
+  const { business, businessType, tier } = useBusiness()
   const { tier } = useBusiness()
   const [settings, setSettings] = useState(null)
   const [subscription, setSubscription] = useState(null)
@@ -90,7 +90,7 @@ const Settings = () => {
   const [deleteConfirmName, setDeleteConfirmName] = useState('')
   const [specialHoursForm, setSpecialHoursForm] = useState({ date: '', open: true, start: '09:00', end: '17:00', label: '' })
 
-  const bizId = business?.id
+  const bizId = business?.id ?? business?._id
 
   const fetchSettings = useCallback(async () => {
     if (!bizId) return

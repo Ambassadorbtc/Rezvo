@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 
 const Analytics = () => {
-  const { business } = useTier()
+  const { business, businessType } = useBusiness()
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (business?.id) {
+    if (business?.id ?? business?._id) {
       fetchAnalytics()
     } else {
       setLoading(false)
@@ -19,7 +19,7 @@ const Analytics = () => {
   const fetchAnalytics = async () => {
     setLoading(true)
     try {
-      const response = await api.get(`/analytics/business/${business.id}/overview`)
+      const response = await api.get(`/analytics/business/${business?.id ?? business?._id ?? business?._id}/overview`)
       setAnalytics(response)
     } catch (error) {
       console.error('Failed to fetch analytics:', error)

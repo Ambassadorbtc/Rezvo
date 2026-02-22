@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
@@ -14,7 +14,7 @@ const DIETARY_LABELS = { v: 'V', ve: 'VE', gf: 'GF', df: 'DF', nf: 'NF', h: 'H' 
 const PREP_OPTS = [5, 10, 15, 20, 25, 30]
 
 const Services = () => {
-  const { business } = useTier()
+  const { business, businessType, tier } = useBusiness()
   const { businessType } = useBusiness()
   const isRestaurant = businessType === 'restaurant'
   const [categories, setCategories] = useState([])
@@ -24,16 +24,16 @@ const Services = () => {
   const [saving, setSaving] = useState(false)
 
   const base = isRestaurant ? '/menu' : '/services-v2'
-  const fetchUrl = `${base}/business/${business?.id}`
+  const fetchUrl = `${base}/business/${business?.id ?? business?._id}`
 
   const fetchData = async () => {
-    if (!business?.id) return
+    if (!business?.id ?? business?._id) return
     setLoading(true)
     try {
       const res = await api.get(fetchUrl)
       setCategories(res.categories || [])
       if (!isRestaurant) {
-        const staffRes = await api.get(`/staff/business/${business.id}/staff`).catch(() => [])
+        const staffRes = await api.get(`/staff/business/${business?.id ?? business?._id ?? business?._id}/staff`).catch(() => [])
         setStaff(Array.isArray(staffRes) ? staffRes : [])
       }
     } catch (err) {
@@ -45,7 +45,7 @@ const Services = () => {
 
   useEffect(() => {
     fetchData()
-  }, [business?.id, isRestaurant, fetchUrl])
+  }, [business?.id ?? business?._id, isRestaurant, fetchUrl])
 
   const handleAdd = () => {
     setModal({
@@ -65,7 +65,7 @@ const Services = () => {
   }
 
   const handleSave = async () => {
-    if (!business?.id || !modal) return
+    if (!business?.id ?? business?._id || !modal) return
     setSaving(true)
     try {
       if (modal.mode === 'add') {
@@ -144,14 +144,14 @@ const Services = () => {
     const name = prompt('Category name:')
     if (!name?.trim()) return
     try {
-      await api.post(`${base}/categories/business/${business.id}`, { name: name.trim() })
+      await api.post(`${base}/categories/business/${business?.id ?? business?._id ?? business?._id}`, { name: name.trim() })
       fetchData()
     } catch (err) {
       alert(err.message || 'Failed to create category')
     }
   }
 
-  if (!business?.id) {
+  if (!business?.id ?? business?._id) {
     return (
       <div className="text-center py-12">
         <p className="text-muted">No business selected</p>

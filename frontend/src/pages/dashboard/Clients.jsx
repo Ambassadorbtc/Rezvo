@@ -27,7 +27,6 @@ const SORT_OPTS = [
 
 const Clients = () => {
   const { business, tier } = useBusiness()
-  const { business: tierBiz } = useTier()
   const navigate = useNavigate()
   const hasAccess = isFeatureUnlocked(tier, 'growth')
   const [data, setData] = useState(null)
@@ -47,19 +46,19 @@ const Clients = () => {
   }, [search])
 
   const fetchClients = useCallback(async () => {
-    if (!business?.id || !hasAccess) return
+    if (!business?.id ?? business?._id || !hasAccess) return
     setLoading(true)
     try {
       const params = new URLSearchParams({ page, limit: 20, sort, segment })
       if (searchDebounce) params.set('search', searchDebounce)
-      const res = await api.get(`/clients-v2/business/${business.id}?${params}`)
+      const res = await api.get(`/clients-v2/business/${business?.id ?? business?._id ?? business?._id}?${params}`)
       setData(res)
     } catch (err) {
       setData({ clients: [], pagination: { total: 0, pages: 0 }, segments: {} })
     } finally {
       setLoading(false)
     }
-  }, [business?.id, hasAccess, page, segment, sort, searchDebounce])
+  }, [business?.id ?? business?._id, hasAccess, page, segment, sort, searchDebounce])
 
   useEffect(() => {
     if (hasAccess) fetchClients()
@@ -69,7 +68,7 @@ const Clients = () => {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem('token')
-      const r = await fetch(`${API_BASE_URL}/clients-v2/business/${business.id}/export`, {
+      const r = await fetch(`${API_BASE_URL}/clients-v2/business/${business?.id ?? business?._id ?? business?._id}/export`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       const blob = await r.blob()
@@ -135,7 +134,7 @@ const Clients = () => {
                 const fd = new FormData()
                 fd.append('file', f)
                 const token = localStorage.getItem('token')
-                const r = await fetch(`${API_BASE_URL}/clients-v2/business/${business.id}/import`, {
+                const r = await fetch(`${API_BASE_URL}/clients-v2/business/${business?.id ?? business?._id ?? business?._id}/import`, {
                   method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: fd,
                 })
                 const res = await r.json()
@@ -225,7 +224,7 @@ const Clients = () => {
 
       {detailClient && (
         <ClientDetailPanel
-          businessId={business?.id}
+          businessId={business?.id ?? business?._id}
           clientId={detailClient}
           onClose={() => setDetailClient(null)}
           onRefresh={fetchClients}
@@ -234,7 +233,7 @@ const Clients = () => {
 
       {addModal && (
         <AddClientModal
-          businessId={business?.id}
+          businessId={business?.id ?? business?._id}
           onClose={() => setAddModal(false)}
           onSaved={() => { setAddModal(false); fetchClients() }}
           onViewClient={(id) => { setAddModal(false); setDetailClient(id) }}

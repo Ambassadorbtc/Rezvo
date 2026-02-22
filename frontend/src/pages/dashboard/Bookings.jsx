@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useTier } from '../../contexts/TierContext'
+import { useBusiness } from '../../contexts/BusinessContext'
 import api from '../../utils/api'
 import Card from '../../components/shared/Card'
 
@@ -18,7 +18,7 @@ const STATUS_LABELS = {
 }
 
 const Bookings = () => {
-  const { business } = useTier()
+  const { business, businessType } = useBusiness()
   const [searchParams, setSearchParams] = useSearchParams()
   const [bookings, setBookings] = useState([])
   const [pagination, setPagination] = useState({})
@@ -34,7 +34,7 @@ const Bookings = () => {
   const bookingId = searchParams.get('booking')
 
   const fetchBookings = async () => {
-    if (!business?.id) return
+    if (!business?.id ?? business?._id) return
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -42,7 +42,7 @@ const Bookings = () => {
       params.set('limit', '20')
       params.set('status', status)
       if (searchDebounce) params.set('search', searchDebounce)
-      const res = await api.get(`/bookings/business/${business.id}?${params}`)
+      const res = await api.get(`/bookings/business/${business?.id ?? business?._id ?? business?._id}?${params}`)
       setBookings(res.bookings || [])
       setPagination(res.pagination || {})
       setCounts(res.counts || {})
@@ -54,10 +54,10 @@ const Bookings = () => {
   }
 
   const fetchDetail = async (id) => {
-    if (!business?.id || !id) return
+    if (!business?.id ?? business?._id || !id) return
     setDetailLoading(true)
     try {
-      const res = await api.get(`/bookings/business/${business.id}/detail/${id}`)
+      const res = await api.get(`/bookings/business/${business?.id ?? business?._id ?? business?._id}/detail/${id}`)
       setDetail(res.booking)
     } catch {
       setDetail(null)
@@ -67,10 +67,10 @@ const Bookings = () => {
   }
 
   const updateStatus = async (newStatus) => {
-    if (!business?.id || !detail?.id) return
+    if (!business?.id ?? business?._id || !detail?.id) return
     setUpdating(true)
     try {
-      await api.patch(`/bookings/business/${business.id}/detail/${detail.id}/status`, { status: newStatus })
+      await api.patch(`/bookings/business/${business?.id ?? business?._id ?? business?._id}/detail/${detail.id}/status`, { status: newStatus })
       setDetail((d) => (d ? { ...d, status: newStatus } : null))
       fetchBookings()
     } catch (err) {
@@ -87,7 +87,7 @@ const Bookings = () => {
 
   useEffect(() => {
     fetchBookings()
-  }, [business?.id, status, searchDebounce])
+  }, [business?.id ?? business?._id, status, searchDebounce])
 
   useEffect(() => {
     if (bookingId) {
@@ -96,7 +96,7 @@ const Bookings = () => {
     } else {
       setDetail(null)
     }
-  }, [bookingId, business?.id])
+  }, [bookingId, business?.id ?? business?._id])
 
   const statusActions = () => {
     if (!detail || updating) return null
