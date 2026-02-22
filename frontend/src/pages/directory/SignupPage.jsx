@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Store, CheckCircle } from 'lucide-react';
 import RezvoFooter from '../../components/directory/RezvoFooter';
-import api from '../../utils/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -41,14 +42,17 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/auth/register', {
+      const result = await register({
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        business_type: formData.businessType
+        role: 'owner'
       });
-      localStorage.setItem('token', response.access_token);
-      navigate('/dashboard');
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Failed to create account');
+      }
     } catch (err) {
       setError(err.message || 'Failed to create account');
     } finally {

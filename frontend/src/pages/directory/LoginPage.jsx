@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import RezvoFooter from '../../components/directory/RezvoFooter';
-import api from '../../utils/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,12 +20,15 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.access_token);
-      if (rememberMe) {
-        localStorage.setItem('remember_me', 'true');
+      const result = await login(email, password);
+      if (result.success) {
+        if (rememberMe) {
+          localStorage.setItem('remember_me', 'true');
+        }
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Invalid email or password');
       }
-      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
     } finally {
