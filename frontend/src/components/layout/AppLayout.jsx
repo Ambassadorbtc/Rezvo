@@ -15,7 +15,7 @@ const AppLayout = () => {
       navigate('/login')
     } else if (user.role !== 'owner' && user.role !== 'staff') {
       if (isRezvoApp()) {
-        window.location.href = '/' // Full reload to marketing site (no directory on rezvo.app)
+        navigate('/signup') // Partner portal needs owner account - stay in app, don't dump to marketing
       } else {
         navigate('/')
       }
