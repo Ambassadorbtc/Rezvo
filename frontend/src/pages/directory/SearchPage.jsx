@@ -1,3 +1,4 @@
+import SEO from '../../components/seo/SEO'
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Map, SlidersHorizontal } from 'lucide-react';
@@ -104,6 +105,7 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-cream">
       <Navbar />
+      <SEO title="Search Restaurants, Salons & More" description="Search and book appointments at the best independent businesses near you. Filter by cuisine, price, location, and availability." path="/search" />
 
       <section className="pt-24 pb-6 bg-white sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

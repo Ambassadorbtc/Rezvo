@@ -1,3 +1,4 @@
+import SEO from '../../components/seo/SEO'
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
@@ -82,6 +83,7 @@ export default function DirectoryLanding() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
+      <SEO title="Discover & Book Local Favourites" description="Find and book the best independent restaurants, salons, barbers, and spas near you. Real-time availability, zero booking fees." path="/" schema={{ "@context": "https://schema.org", "@type": "WebSite", "name": "Rezvo", "url": "https://rezvo.co.uk", "potentialAction": { "@type": "SearchAction", "target": "https://rezvo.co.uk/search?q={search_term_string}", "query-input": "required name=search_term_string" }}} />
 
       <section className="pt-32 pb-16 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,3 +1,4 @@
+import SEO from '../../components/seo/SEO'
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
@@ -119,6 +120,19 @@ export default function ListingPage() {
 
   return (
     <div className="min-h-screen bg-cream">
+      <SEO
+        title={listing.name || 'Restaurant'}
+        description={listing.description || `Book a table at ${listing.name || 'this venue'} on Rezvo. Real-time availability, instant confirmation.`}
+        path={`/restaurant/${slug}`}
+        type="restaurant"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Restaurant",
+          "name": listing.name,
+          "address": { "@type": "PostalAddress", "addressLocality": listing.city },
+          "url": `https://rezvo.co.uk/restaurant/${slug}`
+        }}
+      />
       <Navbar />
 
       <section className="pt-20 bg-white">

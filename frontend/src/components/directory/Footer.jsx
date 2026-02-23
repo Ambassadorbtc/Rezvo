@@ -78,12 +78,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/account/bookings" className="hover:text-mint transition-colors">
+                <Link to="/login" className="hover:text-mint transition-colors">
                   My Bookings
                 </Link>
               </li>
               <li>
-                <Link to="/saved" className="hover:text-mint transition-colors">
+                <Link to="/search" className="hover:text-mint transition-colors">
                   Saved Venues
                 </Link>
               </li>
@@ -94,7 +94,7 @@ export default function Footer() {
             <h4 className="text-white font-heading font-black text-lg mb-4">For Businesses</h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/claim" className="hover:text-mint transition-colors">
+                <Link to="/for-business" className="hover:text-mint transition-colors">
                   Claim Your Listing
                 </Link>
               </li>

@@ -1,3 +1,5 @@
+import SEO from '../../components/seo/SEO'
+import Navbar from '../../components/directory/Navbar'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -45,7 +47,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-warm flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-warm">
+      <Navbar />
+      <SEO title="Log In" description="Log in to your Rezvo account to manage bookings, view your profile, and access your dashboard." path="/login" noindex />
+      <div className="flex items-center justify-center px-4 py-12 pt-32">
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8">
           <div className="w-12 h-12 bg-forest rounded flex items-center justify-center">
@@ -207,11 +212,13 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
             Are you a business owner?{' '}
-            <Link to="/claim" className="text-forest font-semibold hover:text-sage transition-colors">
+            <Link to="/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
             </Link>
           </p>
         </div>
+      </div>
+
       </div>
 
       <RezvoFooter />

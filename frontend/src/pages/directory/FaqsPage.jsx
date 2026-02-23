@@ -1,3 +1,4 @@
+import SEO from '../../components/seo/SEO'
 import Navbar from '../../components/directory/Navbar';
 import RezvoFooter from '../../components/directory/RezvoFooter';
 import FaqAccordion from '../../components/directory/FaqAccordion';
@@ -6,6 +7,7 @@ export default function FaqsPage() {
   return (
     <div className="min-h-screen bg-cream">
       <Navbar />
+      <SEO title="Frequently Asked Questions" description="Find answers to common questions about booking on Rezvo, managing your business listing, payments, cancellations, and more." path="/faqs" />
 
       <section className="pt-32 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

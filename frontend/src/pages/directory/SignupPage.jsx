@@ -1,3 +1,5 @@
+import SEO from '../../components/seo/SEO'
+import Navbar from '../../components/directory/Navbar'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Store, CheckCircle } from 'lucide-react';
@@ -69,7 +71,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-warm flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-warm">
+      <Navbar />
+      <SEO title="Sign Up" description="Create your free Rezvo account. Book restaurants, salons, and more — or list your business and start accepting bookings today." path="/signup" noindex />
+      <div className="flex items-center justify-center px-4 py-12 pt-32">
       <div className="w-full max-w-lg">
         <Link to="/" className="flex items-center gap-2 mb-8">
           <div className="w-12 h-12 bg-forest rounded flex items-center justify-center">
@@ -327,11 +332,13 @@ export default function SignupPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
             Already listed on Rezvo?{' '}
-            <Link to="/claim" className="text-forest font-semibold hover:text-sage transition-colors">
+            <Link to="/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
             </Link>
           </p>
         </div>
+      </div>
+
       </div>
 
       <RezvoFooter />
