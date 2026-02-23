@@ -1,0 +1,17 @@
+# Rezvo Directory (rezvo.co.uk)
+> Discover and book the best independent restaurants, salons, barbers, and spas across the UK. Zero commission booking platform.
+
+Rezvo is a UK-based directory and booking platform for independent businesses. Consumers can search, discover, and book restaurants, salons, barbers, spas, and other service businesses with real-time availability and zero booking fees.
+
+## Key Features
+- Real-time availability search
+- Zero commission for businesses
+- Restaurant table bookings
+- Salon and spa appointment booking
+- Barber shop bookings
+- UK-wide coverage
+
+## Links
+- Homepage: https://rezvo.co.uk
+- For Businesses: https://rezvo.app
+- Search: https://rezvo.co.uk/search

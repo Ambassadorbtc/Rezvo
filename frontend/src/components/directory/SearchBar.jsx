@@ -258,7 +258,7 @@ function FilterPill({ label, icon, value, options, isOpen, onToggle, onChange })
             fontSize: '13px', fontWeight: 700,
             display: 'flex', alignItems: 'center', gap: '5px',
             color: isOpen ? '#1B4332' : '#2A2A28',
-            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontFamily: "'Figtree', sans-serif",
             whiteSpace: 'nowrap',
           }}>
             {value}
@@ -317,7 +317,7 @@ function VerticalTab({ vertical, isActive, onClick }) {
       style={{
         position: 'relative', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
         borderRadius: '9999px', fontSize: '14px', whiteSpace: 'nowrap', transition: 'all 0.3s',
-        fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: isActive ? 800 : 600,
+        fontFamily: "'Figtree', sans-serif", fontWeight: isActive ? 800 : 600,
         background: isActive ? '#1B4332' : hovered ? 'rgba(27,67,50,0.04)' : '#FFFFFF',
         color: isActive ? '#FFFFFF' : '#2D6A4F',
         border: isActive ? '2px solid #1B4332' : '1.5px solid #B7BFB9', cursor: 'pointer',
@@ -700,7 +700,7 @@ export default function SearchBar({ onSearch, className = '' }) {
                   </div>
                   <span style={{
                     fontSize: '13px', fontWeight: 700, position: 'relative', zIndex: 1,
-                    fontFamily: "'Bricolage Grotesque', sans-serif", color: '#D8F3DC',
+                    fontFamily: "'Figtree', sans-serif", color: '#D8F3DC',
                   }}>
                     {processing ? 'Finding...' : 'Listening'}
                   </span>
@@ -728,7 +728,7 @@ export default function SearchBar({ onSearch, className = '' }) {
                     </div>
                   </div>
                   <div style={{ position: 'relative', zIndex: 1, animation: 'popIn 0.5s ease-out' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, fontFamily: "'Bricolage Grotesque', sans-serif", color: '#D8F3DC', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, fontFamily: "'Figtree', sans-serif", color: '#D8F3DC', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
                       Try voice
                     </div>
                     <div style={{ fontSize: '10px', color: 'rgba(149,213,178,0.6)', fontFamily: "'Figtree', sans-serif", whiteSpace: 'nowrap' }}>
@@ -738,7 +738,7 @@ export default function SearchBar({ onSearch, className = '' }) {
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: '14px', fontWeight: 700, position: 'relative', zIndex: 1, fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                  <span style={{ fontSize: '14px', fontWeight: 700, position: 'relative', zIndex: 1, fontFamily: "'Figtree', sans-serif" }}>
                     Search
                   </span>
                   {Icons.arrow()}
@@ -837,7 +837,7 @@ export default function SearchBar({ onSearch, className = '' }) {
           <span style={{
             fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '4px',
             background: '#D8F3DC', color: '#2D6A4F',
-            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontFamily: "'Figtree', sans-serif",
           }}>AI</span>
           <span style={{ fontSize: '12px', color: '#9CA09E', fontFamily: "'Figtree', sans-serif" }}>
             Try: <span style={{ fontStyle: 'italic', color: '#6B706D' }}>&ldquo;{vertical.hints[hintIndex]}&rdquo;</span>
