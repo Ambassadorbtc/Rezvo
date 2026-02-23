@@ -25,4 +25,4 @@ VITE_API_URL=http://localhost:8000 npm run dev
 - React 18 + React Router
 - Tailwind CSS
 - Vite
-- Brand: Forest #1B4332 | Cream #FEFBF4 | Bricolage Grotesque + Figtree
+- Brand: Forest #1B4332 | Cream #FEFBF4 | Figtree (all weights)
