@@ -28,6 +28,7 @@ import ContactPage from './pages/static/ContactPage'
 import PrivacyPage from './pages/static/PrivacyPage'
 import TermsPage from './pages/static/TermsPage'
 import CookiesPage from './pages/static/CookiesPage'
+import NotFoundPage from "./pages/static/NotFoundPage"
 
 /* Booking flow */
 import BookingFlow from './pages/booking/BookingFlow'
@@ -69,6 +70,7 @@ const App = () => {
           <Route path="/book/:businessSlug" element={<BookingFlow />} />
           <Route path="/book/:businessSlug/confirm/:bookingId" element={<BookingConfirmation />} />
           <Route path="/book/:businessSlug/manage/:bookingId" element={<BookingManage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </Router>
