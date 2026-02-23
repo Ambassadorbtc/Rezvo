@@ -7,6 +7,7 @@
  */
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import ScrollToTop from './components/ScrollToTop'
 
 import PublicLayout from './components/layout/PublicLayout'
 
@@ -41,6 +42,7 @@ import BookingManage from './pages/booking/BookingManage'
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <Routes>
           {/* Core directory */}
