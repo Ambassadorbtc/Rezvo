@@ -15,7 +15,7 @@ export default function AboutPage() {
 
       <section className="pt-32 pb-16 bg-cream">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-5xl sm:text-6xl font-heading font-extrabold text-forest mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-forest mb-6">
             Saving the High Street
           </h1>
           <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed font-body">
@@ -37,10 +37,10 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="bg-forest/5 rounded-3xl p-10 text-center">
-              <div className="text-6xl font-heading font-extrabold text-forest mb-2">48%</div>
+              <div className="text-4xl sm:text-6xl font-heading font-extrabold text-forest mb-2">48%</div>
               <p className="text-muted font-body">The commission some platforms charge per order</p>
               <div className="h-px bg-border my-6" />
-              <div className="text-6xl font-heading font-extrabold text-mint mb-2">£0</div>
+              <div className="text-4xl sm:text-6xl font-heading font-extrabold text-mint mb-2">£0</div>
               <p className="text-muted font-body">What Rezvo charges per booking</p>
             </div>
           </div>

@@ -88,7 +88,7 @@ export default function DirectoryLanding() {
       <section className="pt-32 pb-16 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-heading font-black text-forest mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-heading font-black text-forest mb-6 leading-tight">
               Discover & Book<br />Local Favourites
             </h1>
             <p className="text-xl sm:text-2xl text-muted font-body font-medium max-w-3xl mx-auto">
