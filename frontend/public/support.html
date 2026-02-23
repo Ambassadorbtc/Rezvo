@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rezvo: {
+                            dark: '#0A1F14',
+                            forest: '#1B4332',
+                            mint: '#52B788',
+                            gold: '#D4A017',
+                            cream: '#FAFAF7',
+                            white: '#FFFFFF',
+                            border: '#E2E5DF',
+                            text: '#1B4332'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['"Bricolage Grotesque"', 'sans-serif'],
+                        body: ['"Figtree"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(27, 67, 50, 0.08)',
+                        'glow': '0 0 20px rgba(82, 183, 136, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        .bg-grain {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+        .nav-blur {
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body class="bg-rezvo-cream font-body text-rezvo-text antialiased overflow-x-hidden">
+
+    <nav id="header" class="fixed top-0 w-full z-50 nav-blur border-b border-rezvo-border transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer">
+                    <div class="bg-rezvo-forest text-rezvo-mint w-10 h-10 rounded-lg flex items-center justify-center">
+                        <span class="font-heading font-extrabold text-2xl">R</span>
+                    </div>
+                    <span class="font-heading font-extrabold text-2xl text-rezvo-forest tracking-tight">rezvo</span>
+                </div>
+
+                <div class="hidden md:flex space-x-8">
+                    <a href="/for-business#pricing" class="text-rezvo-forest font-semibold hover:text-rezvo-mint transition-colors">Pricing</a>
+                    <a href="/faqs" class="text-rezvo-forest font-semibold hover:text-rezvo-mint transition-colors">FAQs</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="/login" class="hidden sm:block text-rezvo-forest font-semibold hover:text-rezvo-mint transition-colors">Log in</a>
+                    <a href="/signup" class="bg-rezvo-forest hover:bg-rezvo-dark text-white font-semibold py-2.5 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+                        Get Started Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero-support" class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden h-[600px] flex items-center">
+        <div class="absolute inset-0 z-0 bg-gradient-to-br from-rezvo-forest via-rezvo-dark to-rezvo-forest">
+            <div class="absolute inset-0 bg-grain opacity-30"></div>
+        </div>
+        <div class="absolute top-20 right-0 w-96 h-96 bg-rezvo-mint rounded-full filter blur-[200px] opacity-20 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-rezvo-mint rounded-full filter blur-[180px] opacity-10 pointer-events-none"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="font-heading font-extrabold text-5xl lg:text-7xl text-white leading-[1.1] mb-8">
+                How Can We Help?
+            </h1>
+            <div class="max-w-2xl mx-auto relative">
+                <input type="text" placeholder="Search for answers..." class="w-full px-6 py-5 pr-14 rounded-full text-lg bg-white text-rezvo-forest placeholder-rezvo-forest/50 border-2 border-transparent focus:border-rezvo-mint focus:outline-none shadow-xl">
+                <button class="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-rezvo-forest hover:bg-rezvo-mint text-white rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="category-cards" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="category-getting-started" class="bg-rezvo-cream p-8 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="w-16 h-16 bg-white border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-rocket text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl text-rezvo-forest mb-3">Getting Started</h3>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed mb-4">
+                        Setup, onboarding, and making your first booking
+                    </p>
+                    <div class="flex items-center gap-2 text-rezvo-mint font-semibold text-sm">
+                        <span>View guides</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div id="category-bookings" class="bg-rezvo-cream p-8 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="w-16 h-16 bg-white border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-calendar-check text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl text-rezvo-forest mb-3">Managing Bookings</h3>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed mb-4">
+                        Calendar, rescheduling, and cancellations
+                    </p>
+                    <div class="flex items-center gap-2 text-rezvo-mint font-semibold text-sm">
+                        <span>View guides</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div id="category-payments" class="bg-rezvo-cream p-8 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="w-16 h-16 bg-white border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-credit-card text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl text-rezvo-forest mb-3">Payments & Billing</h3>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed mb-4">
+                        Stripe, deposits, and subscription management
+                    </p>
+                    <div class="flex items-center gap-2 text-rezvo-mint font-semibold text-sm">
+                        <span>View guides</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+
+                <div id="category-settings" class="bg-rezvo-cream p-8 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="w-16 h-16 bg-white border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-gear text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-xl text-rezvo-forest mb-3">Account & Settings</h3>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed mb-4">
+                        Profile, team members, and integrations
+                    </p>
+                    <div class="flex items-center gap-2 text-rezvo-mint font-semibold text-sm">
+                        <span>View guides</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai-chat-section" class="py-20 bg-rezvo-cream">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rezvo-mint/20 text-rezvo-forest text-sm font-bold mb-4 border border-rezvo-mint/30">
+                    <i class="fa-solid fa-sparkles text-rezvo-mint"></i>
+                    AI-Powered Support
+                </div>
+                <h2 class="font-heading font-extrabold text-4xl lg:text-5xl text-rezvo-forest mb-4">
+                    Talk to Rezvo AI
+                </h2>
+                <p class="text-lg text-rezvo-forest/70 max-w-2xl mx-auto">
+                    Get instant answers to your questions 24/7
+                </p>
+            </div>
+
+            <div id="chat-interface" class="bg-white rounded-3xl border border-rezvo-border shadow-xl overflow-hidden">
+                <div class="bg-rezvo-forest p-6 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-rezvo-mint rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-robot text-2xl text-rezvo-forest"></i>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-white text-lg">Rezvo AI</div>
+                        <div class="flex items-center gap-2 text-rezvo-mint/80 text-sm">
+                            <span class="w-2 h-2 rounded-full bg-rezvo-mint animate-pulse"></span>
+                            Online now
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-8 space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 bg-rezvo-mint rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-robot text-lg text-rezvo-forest"></i>
+                        </div>
+                        <div class="bg-rezvo-cream p-5 rounded-3xl rounded-tl-none max-w-xl">
+                            <p class="text-rezvo-forest leading-relaxed">
+                                Hi! I'm Rezvo AI. Ask me anything about using the platform and I'll help you right away.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pl-14">
+                        <div class="text-sm text-rezvo-forest/60 mb-3 font-semibold">Popular questions:</div>
+                        <div class="flex flex-wrap gap-3">
+                            <button class="px-4 py-2.5 bg-white border-2 border-rezvo-border rounded-full text-sm text-rezvo-forest hover:border-rezvo-forest hover:bg-rezvo-cream transition-all duration-300">
+                                How do I add a new service?
+                            </button>
+                            <button class="px-4 py-2.5 bg-white border-2 border-rezvo-border rounded-full text-sm text-rezvo-forest hover:border-rezvo-forest hover:bg-rezvo-cream transition-all duration-300">
+                                How do I connect Stripe?
+                            </button>
+                            <button class="px-4 py-2.5 bg-white border-2 border-rezvo-border rounded-full text-sm text-rezvo-forest hover:border-rezvo-forest hover:bg-rezvo-cream transition-all duration-300">
+                                Can I change my booking page colours?
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-rezvo-border bg-rezvo-cream/50">
+                    <div class="flex gap-3">
+                        <input type="text" placeholder="Type your question here..." class="flex-1 px-5 py-4 rounded-full bg-white border-2 border-rezvo-border focus:border-rezvo-forest focus:outline-none text-rezvo-forest placeholder-rezvo-forest/40">
+                        <button class="w-14 h-14 bg-rezvo-forest hover:bg-rezvo-dark text-white rounded-full flex items-center justify-center flex-shrink-0 transition-colors shadow-lg">
+                            <i class="fa-solid fa-paper-plane text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="popular-articles" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-extrabold text-4xl lg:text-5xl text-rezvo-forest mb-4">
+                    Popular Articles
+                </h2>
+                <p class="text-lg text-rezvo-forest/70">
+                    Quick guides to help you get the most out of Rezvo
+                </p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="article-1" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-book-open text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Setting up your booking page
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">5 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Learn how to customize your booking page, add services, and set your availability.
+                    </p>
+                </div>
+
+                <div id="article-2" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-users text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Adding staff members
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">3 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Invite your team, set permissions, and manage individual calendars.
+                    </p>
+                </div>
+
+                <div id="article-3" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-chart-line text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Understanding your analytics
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">4 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Track bookings, revenue, and customer behavior with detailed insights.
+                    </p>
+                </div>
+
+                <div id="article-4" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-brands fa-stripe text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Connecting your payment account
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">6 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Step-by-step guide to connecting Stripe and accepting payments.
+                    </p>
+                </div>
+
+                <div id="article-5" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield-heart text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Managing client allergies and patch tests
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">4 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Store important client information and set up safety reminders.
+                    </p>
+                </div>
+
+                <div id="article-6" class="bg-rezvo-cream p-6 rounded-2xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group cursor-pointer">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="w-12 h-12 bg-white border border-rezvo-border rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-share-nodes text-xl text-rezvo-forest"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-heading font-bold text-lg text-rezvo-forest mb-2 group-hover:text-rezvo-mint transition-colors">
+                                Sharing your booking link
+                            </h3>
+                            <p class="text-sm text-rezvo-forest/60">2 min read</p>
+                        </div>
+                    </div>
+                    <p class="text-rezvo-forest/70 text-sm leading-relaxed">
+                        Get your custom booking link and share it with clients.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center mt-10">
+                <button class="bg-rezvo-forest hover:bg-rezvo-dark text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+                    View All Articles
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact-options" class="py-20 bg-rezvo-cream">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-heading font-extrabold text-4xl lg:text-5xl text-rezvo-forest mb-4">
+                    Still Need Help?
+                </h2>
+                <p class="text-lg text-rezvo-forest/70">
+                    Our team is here to support you
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div id="email-support" class="bg-white p-10 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group">
+                    <div class="w-16 h-16 bg-rezvo-cream border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-envelope text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl text-rezvo-forest mb-3">Email Us</h3>
+                    <p class="text-rezvo-forest/70 mb-6 leading-relaxed">
+                        Send us a message and we'll get back to you within 24 hours.
+                    </p>
+                    <a href="mailto:support@rezvo.co.uk" class="inline-flex items-center gap-2 text-rezvo-mint font-bold text-lg hover:gap-3 transition-all">
+                        <span>support@rezvo.co.uk</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <div class="mt-6 pt-6 border-t border-rezvo-border">
+                        <div class="flex items-center gap-2 text-sm text-rezvo-forest/60">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Response within 24 hours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="call-support" class="bg-white p-10 rounded-3xl border border-rezvo-border hover:border-rezvo-forest transition-all duration-300 shadow-sm hover:shadow-lg group">
+                    <div class="w-16 h-16 bg-rezvo-cream border border-rezvo-border rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-phone text-3xl text-rezvo-forest"></i>
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl text-rezvo-forest mb-3">Schedule a Call</h3>
+                    <p class="text-rezvo-forest/70 mb-6 leading-relaxed">
+                        Book a 15-minute setup call with our team to get personalized help.
+                    </p>
+                    <button class="bg-rezvo-forest hover:bg-rezvo-dark text-white font-bold py-3.5 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+                        Book a Call
+                    </button>
+                    <div class="mt-6 pt-6 border-t border-rezvo-border">
+                        <div class="flex items-center gap-2 text-sm text-rezvo-forest/60">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Mon-Fri, 9am-6pm GMT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="help-resources" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-rezvo-forest rounded-3xl p-10 lg:p-16 relative overflow-hidden">
+                <div class="absolute inset-0 bg-grain opacity-10"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-rezvo-mint rounded-full filter blur-[150px] opacity-20 pointer-events-none"></div>
+                
+                <div class="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="font-heading font-extrabold text-3xl lg:text-4xl text-white mb-4">
+                            More Resources
+                        </h2>
+                        <p class="text-rezvo-mint/80 text-lg mb-8">
+                            Explore additional ways to learn and get support
+                        </p>
+                        <div class="space-y-4">
+                            <a href="#" class="flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors group">
+                                <div class="w-12 h-12 bg-rezvo-mint rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-graduation-cap text-xl text-rezvo-forest"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-white mb-1">Video Tutorials</div>
+                                    <div class="text-sm text-rezvo-mint/70">Watch step-by-step guides</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </a>
+                            <a href="#" class="flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors group">
+                                <div class="w-12 h-12 bg-rezvo-mint rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-comments text-xl text-rezvo-forest"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-white mb-1">Community Forum</div>
+                                    <div class="text-sm text-rezvo-mint/70">Connect with other users</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </a>
+                            <a href="/features/integrations.html" class="flex items-center gap-4 p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-colors group">
+                                <div class="w-12 h-12 bg-rezvo-mint rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-file-lines text-xl text-rezvo-forest"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-white mb-1">API Documentation</div>
+                                    <div class="text-sm text-rezvo-mint/70">For developers and integrations</div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden lg:flex justify-center">
+                        <div class="relative">
+                            <div class="w-64 h-64 bg-rezvo-mint/20 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-headset text-[120px] text-rezvo-mint/40"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer" class="bg-rezvo-dark text-white pt-20 pb-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
+                <div class="max-w-xs">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-rezvo-forest text-rezvo-mint w-10 h-10 rounded-lg flex items-center justify-center">
+                            <span class="font-heading font-extrabold text-2xl">R</span>
+                        </div>
+                        <span class="font-heading font-extrabold text-2xl text-white tracking-tight">rezvo</span>
+                    </div>
+                    <p class="text-white/60 text-sm mb-6">The all-in-one booking platform for modern service businesses in the UK.</p>
+                    <div class="flex gap-4">
+                        <a href="https://twitter.com/rezvouk" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-rezvo-mint hover:text-rezvo-dark transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="https://instagram.com/rezvouk" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-rezvo-mint hover:text-rezvo-dark transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://linkedin.com/company/rezvo" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-rezvo-mint hover:text-rezvo-dark transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-16 w-full md:w-auto">
+                    <div>
+                        <h4 class="font-bold text-white mb-4">Product</h4>
+                        <ul class="space-y-2 text-sm text-white/60">
+                            <li><a href="/for-business" class="hover:text-rezvo-mint transition-colors">Features</a></li>
+                            <li><a href="/for-business#pricing" class="hover:text-rezvo-mint transition-colors">Pricing</a></li>
+                            <li><a href="/#testimonials" class="hover:text-rezvo-mint transition-colors">Testimonials</a></li>
+                            <li><a href="/features/integrations.html" class="hover:text-rezvo-mint transition-colors">API</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white mb-4">Company</h4>
+                        <ul class="space-y-2 text-sm text-white/60">
+                            <li><a href="/about.html" class="hover:text-rezvo-mint transition-colors">About Us</a></li>
+                            <li><a href="/about.html" class="hover:text-rezvo-mint transition-colors">Careers</a></li>
+                            <li><a href="/about.html" class="hover:text-rezvo-mint transition-colors">Blog</a></li>
+                            <li><a href="/contact.html" class="hover:text-rezvo-mint transition-colors">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white mb-4">Legal</h4>
+                        <ul class="space-y-2 text-sm text-white/60">
+                            <li><a href="/privacy.html" class="hover:text-rezvo-mint transition-colors">Privacy Policy</a></li>
+                            <li><a href="/terms.html" class="hover:text-rezvo-mint transition-colors">Terms of Service</a></li>
+                            <li><a href="/cookies.html" class="hover:text-rezvo-mint transition-colors">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-10 text-center">
+                <h1 class="font-heading font-extrabold text-[12vw] leading-none text-rezvo-mint opacity-20 select-none">REZVO</h1>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center mt-10 pt-6 border-t border-white/5 text-xs text-white/40">
+                <p>&copy; 2024 Rezvo Ltd. All rights reserved. Registered in England & Wales.</p>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle text-green-500 text-[8px]"></i>
+                        <span>Systems Operational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
