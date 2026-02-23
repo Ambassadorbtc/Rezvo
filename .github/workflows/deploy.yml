@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy Rezvo Directory to Production
 
 on:
   push:
@@ -16,10 +16,18 @@ jobs:
           username: root
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
+            set -e
             cd /opt/rezvo
             git pull origin main
+
+            # Build frontend only (backend runs from /opt/rezvo-app)
             cd frontend
+            npm install --silent
             npm run build
-            systemctl restart rezvo-backend
-            systemctl reload nginx
-            echo "✅ DEPLOYMENT COMPLETE"
+
+            # Update Nginx config
+            cp /opt/rezvo/nginx.conf /etc/nginx/sites-available/rezvo
+            ln -sf /etc/nginx/sites-available/rezvo /etc/nginx/sites-enabled/rezvo
+            nginx -t && systemctl reload nginx
+
+            echo "✅ REZVO DIRECTORY DEPLOYMENT COMPLETE"
