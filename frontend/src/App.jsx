@@ -60,12 +60,12 @@ const App = () => {
           <Route path="/faqs" element={<FaqsPage />} />
 
           {/* React fallback pages (nginx will serve .html versions first in production) */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/for-business" element={<ForBusinessPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/cookies" element={<CookiesPage />} />
+          <Route path="/about" element={<ExternalRedirect to="https://rezvo.app/about.html" />} />
+          <Route path="/for-business" element={<ExternalRedirect to="https://rezvo.app/for-business" />} />
+          <Route path="/contact" element={<ExternalRedirect to="https://rezvo.app/contact.html" />} />
+          <Route path="/privacy" element={<ExternalRedirect to="https://rezvo.app/privacy.html" />} />
+          <Route path="/terms" element={<ExternalRedirect to="https://rezvo.app/terms.html" />} />
+          <Route path="/cookies" element={<ExternalRedirect to="https://rezvo.app/cookies.html" />} />
 
           {/* Public SEO pages */}
           <Route element={<PublicLayout />}>

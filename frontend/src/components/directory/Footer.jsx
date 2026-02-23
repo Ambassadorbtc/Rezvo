@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom'
+import { Instagram, Twitter, Linkedin } from 'lucide-react'
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-forest-darker text-light-green py-16">
@@ -19,155 +19,62 @@ export default function Footer() {
               Discover and book the best independent restaurants, salons, barbers, and spas across the UK.
             </p>
             <div className="flex items-center gap-3">
-              <a
-                href="https://instagram.com/rezvo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-sage hover:bg-mint transition-colors flex items-center justify-center"
-              >
-                <Instagram className="text-white w-5 h-5" />
-              </a>
-              <a
-                href="https://facebook.com/rezvo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-sage hover:bg-mint transition-colors flex items-center justify-center"
-              >
-                <Facebook className="text-white w-5 h-5" />
-              </a>
-              <a
-                href="https://twitter.com/rezvo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-sage hover:bg-mint transition-colors flex items-center justify-center"
-              >
-                <Twitter className="text-white w-5 h-5" />
-              </a>
-              <a
-                href="https://linkedin.com/company/rezvo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-sage hover:bg-mint transition-colors flex items-center justify-center"
-              >
-                <Linkedin className="text-white w-5 h-5" />
-              </a>
+              {[
+                { Icon: Instagram, href: 'https://instagram.com/rezvouk' },
+                { Icon: Twitter, href: 'https://twitter.com/rezvouk' },
+                { Icon: Linkedin, href: 'https://linkedin.com/company/rezvo' },
+              ].map(({ Icon, href }) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-sage hover:bg-mint transition-colors flex items-center justify-center">
+                  <Icon className="text-white w-5 h-5" />
+                </a>
+              ))}
             </div>
           </div>
 
+          {/* For Diners — INTERNAL to rezvo.co.uk */}
           <div>
             <h4 className="text-white font-heading font-black text-lg mb-4">For Diners</h4>
             <ul className="space-y-3 text-sm">
-              <li>
-                <Link to="/search?vertical=restaurant" className="hover:text-mint transition-colors">
-                  Browse Restaurants
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?vertical=hair_salon" className="hover:text-mint transition-colors">
-                  Browse Salons
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?vertical=barber" className="hover:text-mint transition-colors">
-                  Browse Barbers
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?vertical=spa" className="hover:text-mint transition-colors">
-                  Browse Spas
-                </Link>
-              </li>
-              <li>
-                <a href="https://rezvo.app/login" className="hover:text-mint transition-colors">
-                  My Bookings
-                </a>
-              </li>
-              <li>
-                <Link to="/search" className="hover:text-mint transition-colors">
-                  Saved Venues
-                </Link>
-              </li>
+              <li><Link to="/search?vertical=restaurants" className="hover:text-mint transition-colors">Browse Restaurants</Link></li>
+              <li><Link to="/search?vertical=salons" className="hover:text-mint transition-colors">Browse Salons</Link></li>
+              <li><Link to="/search?vertical=barbers" className="hover:text-mint transition-colors">Browse Barbers</Link></li>
+              <li><Link to="/search?vertical=spas" className="hover:text-mint transition-colors">Browse Spas</Link></li>
+              <li><Link to="/search" className="hover:text-mint transition-colors">Browse All</Link></li>
             </ul>
           </div>
 
+          {/* For Businesses — EXTERNAL to rezvo.app */}
           <div>
             <h4 className="text-white font-heading font-black text-lg mb-4">For Businesses</h4>
             <ul className="space-y-3 text-sm">
-              <li>
-                <Link to="/for-business" className="hover:text-mint transition-colors">
-                  Claim Your Listing
-                </Link>
-              </li>
-              <li>
-                <Link to="/for-business" className="hover:text-mint transition-colors">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link to="/for-business#pricing" className="hover:text-mint transition-colors">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link to="/for-business#resources" className="hover:text-mint transition-colors">
-                  Resources
-                </Link>
-              </li>
-              <li>
-                <a href="https://rezvo.app/login" className="hover:text-mint transition-colors">
-                  Partner Login
-                </a>
-              </li>
+              <li><a href="https://rezvo.app/for-business" className="hover:text-mint transition-colors">How It Works</a></li>
+              <li><a href="https://rezvo.app/for-business#pricing" className="hover:text-mint transition-colors">Pricing</a></li>
+              <li><a href="https://rezvo.app/register" className="hover:text-mint transition-colors">Get Started</a></li>
+              <li><a href="https://rezvo.app/login" className="hover:text-mint transition-colors">Partner Login</a></li>
             </ul>
           </div>
 
+          {/* Company — EXTERNAL to rezvo.app */}
           <div>
             <h4 className="text-white font-heading font-black text-lg mb-4">Company</h4>
             <ul className="space-y-3 text-sm">
-              <li>
-                <Link to="/about" className="hover:text-mint transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/faqs" className="hover:text-mint transition-colors">
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <a href="mailto:hello@rezvo.app" className="hover:text-mint transition-colors">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <Link to="/careers" className="hover:text-mint transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/press" className="hover:text-mint transition-colors">
-                  Press
-                </Link>
-              </li>
+              <li><a href="https://rezvo.app/about.html" className="hover:text-mint transition-colors">About Us</a></li>
+              <li><Link to="/faqs" className="hover:text-mint transition-colors">FAQs</Link></li>
+              <li><a href="https://rezvo.app/support.html" className="hover:text-mint transition-colors">Support Centre</a></li>
+              <li><a href="https://rezvo.app/contact.html" className="hover:text-mint transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-sage pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <p>&copy; {currentYear} Rezvo. All rights reserved.</p>
+          <p>&copy; {currentYear} Rezvo Ltd. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="hover:text-mint transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-mint transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/cookies" className="hover:text-mint transition-colors">
-              Cookie Policy
-            </Link>
+            <a href="https://rezvo.app/privacy.html" className="hover:text-mint transition-colors">Privacy Policy</a>
+            <a href="https://rezvo.app/terms.html" className="hover:text-mint transition-colors">Terms of Service</a>
+            <a href="https://rezvo.app/cookies.html" className="hover:text-mint transition-colors">Cookie Policy</a>
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

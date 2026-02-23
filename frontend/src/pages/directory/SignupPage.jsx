@@ -205,13 +205,13 @@ export default function SignupPage() {
                 />
                 <span className="text-sm text-muted leading-relaxed">
                   I agree to Rezvo's{' '}
-                  <Link to="/terms" className="text-forest font-semibold hover:text-sage transition-colors">
+                  <a href="https://rezvo.app/terms.html" className="text-forest font-semibold hover:text-sage transition-colors">
                     Terms of Service
-                  </Link>{' '}
+                  </a>{' '}
                   and{' '}
-                  <Link to="/privacy" className="text-forest font-semibold hover:text-sage transition-colors">
+                  <a href="https://rezvo.app/privacy.html" className="text-forest font-semibold hover:text-sage transition-colors">
                     Privacy Policy
-                  </Link>
+                  </a>
                 </span>
               </label>
             </div>
@@ -332,9 +332,9 @@ export default function SignupPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
             Already listed on Rezvo?{' '}
-            <Link to="/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
+            <a href="https://rezvo.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
-            </Link>
+            </a>
           </p>
         </div>
       </div>

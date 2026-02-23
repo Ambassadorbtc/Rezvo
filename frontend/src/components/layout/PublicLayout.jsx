@@ -57,8 +57,8 @@ const PublicLayout = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">For Business</h4>
               <ul className="space-y-2">
-                <li><a href="https://rezvo.app" className="text-white/80 hover:text-white">List Your Business</a></li>
-                <li><a href="https://rezvo.app" className="text-white/80 hover:text-white">Pricing</a></li>
+                <li><a href="https://rezvo.app/for-business" className="text-white/80 hover:text-white">List Your Business</a></li>
+                <li><a href="https://rezvo.app/for-business" className="text-white/80 hover:text-white">Pricing</a></li>
               </ul>
             </div>
             <div>

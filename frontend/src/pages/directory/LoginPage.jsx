@@ -212,9 +212,9 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
             Are you a business owner?{' '}
-            <Link to="/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
+            <a href="https://rezvo.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
-            </Link>
+            </a>
           </p>
         </div>
       </div>

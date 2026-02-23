@@ -42,9 +42,9 @@ export default function ForBusinessPage() {
             <Link to="/signup" className="px-8 py-4 bg-forest text-white rounded-full font-bold hover:bg-sage transition-all shadow-lg hover:shadow-xl text-center w-full sm:w-auto">
               Get Started Free <ArrowRight className="inline ml-2 w-4 h-4" />
             </Link>
-            <Link to="/contact" className="px-8 py-4 border-2 border-forest text-forest rounded-full font-bold hover:bg-forest/5 transition-all text-center w-full sm:w-auto">
+            <a href="https://rezvo.app/contact.html" className="px-8 py-4 border-2 border-forest text-forest rounded-full font-bold hover:bg-forest/5 transition-all text-center w-full sm:w-auto">
               Talk to Sales
-            </Link>
+            </a>
           </div>
         </div>
       </section>

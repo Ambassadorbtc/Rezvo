@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Instagram, Facebook, Twitter, Linkedin, Check } from 'lucide-react'
+import { Instagram, Twitter, Linkedin, Check } from 'lucide-react'
 
 export default function RezvoFooter() {
   return (
@@ -14,10 +14,10 @@ export default function RezvoFooter() {
             Join Rezvo and start accepting bookings in minutes. No per-cover fees, no contracts, just more customers.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <Link to="/for-business" className="px-8 py-4 bg-white text-forest rounded-full font-bold border border-mint hover:bg-mint hover:text-white transition-all shadow-lg hover:shadow-xl hover:scale-105 w-full sm:w-auto text-center">
+            <a href="https://rezvo.app/for-business" className="px-8 py-4 bg-white text-forest rounded-full font-bold border border-mint hover:bg-mint hover:text-white transition-all shadow-lg hover:shadow-xl hover:scale-105 w-full sm:w-auto text-center">
               List Your Business
-            </Link>
-            <a href="/contact.html" className="px-8 py-4 bg-transparent text-white rounded-full font-bold border border-white/40 hover:bg-white/10 hover:border-white transition-all w-full sm:w-auto text-center">
+            </a>
+            <a href="https://rezvo.app/contact.html" className="px-8 py-4 bg-transparent text-white rounded-full font-bold border border-white/40 hover:bg-white/10 hover:border-white transition-all w-full sm:w-auto text-center">
               Get In Touch
             </a>
           </div>
@@ -45,14 +45,13 @@ export default function RezvoFooter() {
                 <span className="text-white font-heading font-extrabold text-2xl tracking-tight">REZVO</span>
               </div>
               <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm font-body">
-                Discover and book the best independent restaurants, salons, barbers, and spas across the UK. Zero commission for businesses.
+                The zero-commission booking &amp; ordering platform helping UK restaurants and service businesses thrive.
               </p>
               <div className="flex items-center gap-3">
                 {[
                   { Icon: Instagram, href: 'https://instagram.com/rezvouk', label: 'Instagram' },
-                  { Icon: Facebook, href: 'https://facebook.com/rezvouk', label: 'Facebook' },
-                  { Icon: Twitter, href: 'https://twitter.com/rezvouk', label: 'Twitter' },
                   { Icon: Linkedin, href: 'https://linkedin.com/company/rezvo', label: 'LinkedIn' },
+                  { Icon: Twitter, href: 'https://twitter.com/rezvouk', label: 'Twitter' },
                 ].map(({ Icon, href, label }) => (
                   <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/8 flex items-center justify-center text-white/50 hover:bg-mint hover:text-forest transition-all duration-200" aria-label={label}>
                     <Icon className="w-4 h-4" />
@@ -61,40 +60,40 @@ export default function RezvoFooter() {
               </div>
             </div>
 
-            {/* Discover */}
+            {/* Discover — INTERNAL to rezvo.co.uk */}
             <FooterCol title="Discover">
               <FooterLink to="/search?vertical=restaurants">Restaurants</FooterLink>
               <FooterLink to="/search?vertical=salons">Hair Salons</FooterLink>
               <FooterLink to="/search?vertical=barbers">Barbers</FooterLink>
-              <FooterLink to="/search?vertical=spas">Spas & Wellness</FooterLink>
+              <FooterLink to="/search?vertical=spas">Spas &amp; Wellness</FooterLink>
               <FooterLink to="/search">Browse All</FooterLink>
             </FooterCol>
 
-            {/* Features */}
+            {/* Features — EXTERNAL to rezvo.app */}
             <FooterCol title="Features">
-              <FooterExtLink href="/features/restaurants.html">For Restaurants</FooterExtLink>
-              <FooterExtLink href="/features/calendar.html">Smart Calendar</FooterExtLink>
-              <FooterExtLink href="/features/payments.html">Stripe Payments</FooterExtLink>
-              <FooterExtLink href="/features/mobile-app.html">Mobile App</FooterExtLink>
-              <FooterExtLink href="/features/integrations.html">Integrations</FooterExtLink>
-              <FooterExtLink href="/features/uber-direct.html">Uber Direct</FooterExtLink>
+              <ExtLink href="https://rezvo.app/features/restaurants.html">For Restaurants</ExtLink>
+              <ExtLink href="https://rezvo.app/features/calendar.html">Smart Calendar</ExtLink>
+              <ExtLink href="https://rezvo.app/features/payments.html">Stripe Payments</ExtLink>
+              <ExtLink href="https://rezvo.app/features/mobile-app.html">Mobile App</ExtLink>
+              <ExtLink href="https://rezvo.app/features/integrations.html">Integrations</ExtLink>
+              <ExtLink href="https://rezvo.app/features/uber-direct.html">Uber Direct</ExtLink>
             </FooterCol>
 
-            {/* For Business */}
+            {/* For Business — EXTERNAL to rezvo.app */}
             <FooterCol title="For Business">
-              <FooterLink to="/for-business">How It Works</FooterLink>
-              <FooterLink to="/for-business#pricing">Pricing</FooterLink>
-              <FooterExtLink href="/features/team-up.html">Team Up & Save</FooterExtLink>
-              <a href="https://rezvo.app/register" className="text-sm text-white/70 hover:text-white transition-colors">Get Started</a>
-              <a href="https://rezvo.app/login" className="text-sm text-white/70 hover:text-white transition-colors">Partner Login</a>
+              <ExtLink href="https://rezvo.app/for-business">How It Works</ExtLink>
+              <ExtLink href="https://rezvo.app/for-business#pricing">Pricing</ExtLink>
+              <ExtLink href="https://rezvo.app/features/team-up.html">Team Up &amp; Save</ExtLink>
+              <ExtLink href="https://rezvo.app/register">Get Started</ExtLink>
+              <ExtLink href="https://rezvo.app/login">Partner Login</ExtLink>
             </FooterCol>
 
-            {/* Company */}
+            {/* Company — EXTERNAL to rezvo.app */}
             <FooterCol title="Company">
-              <FooterExtLink href="/about.html">About Us</FooterExtLink>
+              <ExtLink href="https://rezvo.app/about.html">About Us</ExtLink>
               <FooterLink to="/faqs">FAQs</FooterLink>
-              <FooterExtLink href="/support.html">Support Center</FooterExtLink>
-              <FooterExtLink href="/contact.html">Contact</FooterExtLink>
+              <ExtLink href="https://rezvo.app/support.html">Support Centre</ExtLink>
+              <ExtLink href="https://rezvo.app/contact.html">Contact</ExtLink>
             </FooterCol>
           </div>
 
@@ -103,11 +102,11 @@ export default function RezvoFooter() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-white/35 text-xs">
             <p>&copy; {new Date().getFullYear()} Rezvo Ltd. All rights reserved.</p>
             <div className="flex items-center gap-4">
-              <a href="/privacy.html" className="hover:text-mint transition-colors">Privacy Policy</a>
+              <a href="https://rezvo.app/privacy.html" className="hover:text-mint transition-colors">Privacy Policy</a>
               <span>·</span>
-              <a href="/terms.html" className="hover:text-mint transition-colors">Terms of Service</a>
+              <a href="https://rezvo.app/terms.html" className="hover:text-mint transition-colors">Terms of Service</a>
               <span>·</span>
-              <a href="/cookies.html" className="hover:text-mint transition-colors">Cookie Policy</a>
+              <a href="https://rezvo.app/cookies.html" className="hover:text-mint transition-colors">Cookie Policy</a>
             </div>
           </div>
         </div>
@@ -131,7 +130,7 @@ function FooterLink({ to, children }) {
   )
 }
 
-function FooterExtLink({ href, children }) {
+function ExtLink({ href, children }) {
   return (
     <li><a href={href} className="text-white/50 text-sm hover:text-mint transition-colors font-body">{children}</a></li>
   )
