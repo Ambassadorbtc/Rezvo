@@ -40,7 +40,7 @@ export default function RezvoFooter() {
             <div className="col-span-2 md:col-span-3 lg:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-mint flex items-center justify-center">
-                  <span className="text-forest font-heading font-extrabold text-xl">R</span>
+                  <span className="font-heading font-extrabold text-xl" style={{ color: '#D4A017' }}>R</span>
                 </div>
                 <span className="text-white font-heading font-extrabold text-2xl tracking-tight">REZVO</span>
               </div>
