@@ -11,12 +11,16 @@ import ScrollToTop from './components/ScrollToTop'
 
 import PublicLayout from './components/layout/PublicLayout'
 
+/* External redirect helper — sends to rezvo.app for auth */
+const ExternalRedirect = ({ to }) => {
+  window.location.href = to
+  return null
+}
+
 /* Directory pages */
 import DirectoryLanding from './pages/directory/DirectoryLanding'
 import SearchPage from './pages/directory/SearchPage'
 import ListingPage from './pages/directory/ListingPage'
-import LoginPage from './pages/directory/LoginPage'
-import SignupPage from './pages/directory/SignupPage'
 import FaqsPage from './pages/directory/FaqsPage'
 
 /* Public SEO pages */
@@ -50,8 +54,9 @@ const App = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/restaurant/:slug" element={<ListingPage />} />
           <Route path="/venue/:slug" element={<ListingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          {/* Auth — redirect to rezvo.app */}
+          <Route path="/login" element={<ExternalRedirect to="https://rezvo.app/login" />} />
+          <Route path="/signup" element={<ExternalRedirect to="https://rezvo.app/register" />} />
           <Route path="/faqs" element={<FaqsPage />} />
 
           {/* React fallback pages (nginx will serve .html versions first in production) */}
