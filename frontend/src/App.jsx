@@ -8,6 +8,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ScrollToTop from './components/ScrollToTop'
+import ChatWidget from './components/ChatWidget'
 
 import PublicLayout from './components/layout/PublicLayout'
 
@@ -45,6 +46,7 @@ import BookingManage from './pages/booking/BookingManage'
 
 const App = () => {
   return (
+    <>
     <Router>
       <ScrollToTop />
       <AuthProvider>
@@ -86,6 +88,8 @@ const App = () => {
         </Routes>
       </AuthProvider>
     </Router>
+    <ChatWidget />
+    </>
   )
 }
 
