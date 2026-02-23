@@ -85,8 +85,8 @@ export default function RezvoFooter() {
               <FooterLink to="/for-business">How It Works</FooterLink>
               <FooterLink to="/for-business#pricing">Pricing</FooterLink>
               <FooterExtLink href="/features/team-up.html">Team Up & Save</FooterExtLink>
-              <FooterLink to="/signup">Get Started</FooterLink>
-              <FooterLink to="/login">Partner Login</FooterLink>
+              <a href="https://rezvo.app/register" className="text-sm text-white/70 hover:text-white transition-colors">Get Started</a>
+              <a href="https://rezvo.app/login" className="text-sm text-white/70 hover:text-white transition-colors">Partner Login</a>
             </FooterCol>
 
             {/* Company */}

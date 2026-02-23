@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Search, MapPin } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -24,7 +24,7 @@ export default function Navbar() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[72px]">
-            {/* Logo — forest green + white R */}
+            {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 shrink-0">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#1B4332' }}>
                 <span className="font-heading font-extrabold text-xl text-white">R</span>
@@ -32,21 +32,21 @@ export default function Navbar() {
               <span className="text-forest font-heading font-extrabold text-[22px] tracking-tight">REZVO</span>
             </Link>
 
-            {/* Desktop Nav — directory links only */}
+            {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-1">
               <NavLink to="/" label="Home" active={isActive('/')} />
               <NavLink to="/search" label="Find a Restaurant" active={isActive('/search')} />
               <NavLink to="/faqs" label="FAQs" active={isActive('/faqs')} />
             </div>
 
-            {/* Desktop Right */}
+            {/* Desktop Right — direct links to rezvo.app */}
             <div className="hidden lg:flex items-center gap-3">
-              <Link to="/login" className="text-forest font-semibold text-sm hover:text-sage transition-colors px-4 py-2.5">
+              <a href="https://rezvo.app/login" className="text-forest font-semibold text-sm hover:text-sage transition-colors px-4 py-2.5">
                 Log in
-              </Link>
-              <Link to="/signup" className="bg-forest text-white font-bold text-sm px-6 py-2.5 rounded-full hover:bg-sage transition-all duration-200 shadow-sm hover:shadow-md">
+              </a>
+              <a href="https://rezvo.app/register" className="bg-forest text-white font-bold text-sm px-6 py-2.5 rounded-full hover:bg-sage transition-all duration-200 shadow-sm hover:shadow-md">
                 Sign Up Free
-              </Link>
+              </a>
             </div>
 
             {/* Mobile toggle */}
@@ -67,8 +67,8 @@ export default function Navbar() {
             <Link to="/faqs" className="block px-4 py-3 rounded-xl text-base font-semibold text-forest" onClick={() => setIsMobileOpen(false)}>FAQs</Link>
             <div className="h-px bg-border my-4" />
             <div className="flex flex-col gap-3">
-              <Link to="/login" className="text-center text-forest font-bold text-sm py-3 rounded-xl border border-forest/20" onClick={() => setIsMobileOpen(false)}>Log in</Link>
-              <Link to="/signup" className="text-center bg-forest text-white font-bold text-sm py-3 rounded-full" onClick={() => setIsMobileOpen(false)}>Sign Up Free</Link>
+              <a href="https://rezvo.app/login" className="text-center text-forest font-bold text-sm py-3 rounded-xl border border-forest/20">Log in</a>
+              <a href="https://rezvo.app/register" className="text-center bg-forest text-white font-bold text-sm py-3 rounded-full">Sign Up Free</a>
             </div>
           </div>
         </div>

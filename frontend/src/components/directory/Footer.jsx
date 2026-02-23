@@ -78,9 +78,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-mint transition-colors">
+                <a href="https://rezvo.app/login" className="hover:text-mint transition-colors">
                   My Bookings
-                </Link>
+                </a>
               </li>
               <li>
                 <Link to="/search" className="hover:text-mint transition-colors">
@@ -114,9 +114,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-mint transition-colors">
+                <a href="https://rezvo.app/login" className="hover:text-mint transition-colors">
                   Partner Login
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
