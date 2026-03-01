@@ -74,7 +74,7 @@ const BookingFlow = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFBF4]">
-        <Loader2 className="w-8 h-8 text-[#1B4332] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#111111] animate-spin" />
       </div>
     )
   }
@@ -85,7 +85,7 @@ const BookingFlow = () => {
         <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
           <span className="text-red-500 text-xl">!</span>
         </div>
-        <p className="text-lg font-semibold text-[#1B4332]">{error || 'Business not found'}</p>
+        <p className="text-lg font-semibold text-[#111111]">{error || 'Business not found'}</p>
         <p className="text-sm text-gray-500 mt-1">This booking page isn't available right now</p>
       </div>
     )

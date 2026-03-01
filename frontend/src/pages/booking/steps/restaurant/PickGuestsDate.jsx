@@ -72,7 +72,7 @@ const PickGuestsDate = ({ data, onContinue }) => {
       <StepIndicator step={1} total={3} />
 
       {/* Guest count */}
-      <h2 className="text-base font-semibold text-[#1B4332] mb-3">How many guests?</h2>
+      <h2 className="text-base font-semibold text-[#111111] mb-3">How many guests?</h2>
       <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-5 px-5 mb-6">
         {GUEST_OPTIONS.map((n) => (
           <button
@@ -80,8 +80,8 @@ const PickGuestsDate = ({ data, onContinue }) => {
             onClick={() => setGuests(n)}
             className={`w-12 h-12 rounded-xl text-sm font-semibold shrink-0 transition-all ${
               guests === n
-                ? 'bg-[#1B4332] text-white shadow-sm'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]/30'
+                ? 'bg-[#111111] text-white shadow-sm'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-[#111111]/30'
             }`}
           >
             {n}
@@ -91,8 +91,8 @@ const PickGuestsDate = ({ data, onContinue }) => {
           onClick={() => setGuests(9)}
           className={`px-4 h-12 rounded-xl text-sm font-medium shrink-0 transition-all ${
             guests >= 9
-              ? 'bg-[#1B4332] text-white shadow-sm'
-              : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]/30'
+              ? 'bg-[#111111] text-white shadow-sm'
+              : 'bg-white text-gray-600 border border-gray-200 hover:border-[#111111]/30'
           }`}
         >
           9+
@@ -100,7 +100,7 @@ const PickGuestsDate = ({ data, onContinue }) => {
       </div>
 
       {/* Calendar */}
-      <h2 className="text-base font-semibold text-[#1B4332] mb-3">Pick a date</h2>
+      <h2 className="text-base font-semibold text-[#111111] mb-3">Pick a date</h2>
       <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-6">
         {/* Month navigation */}
         <div className="flex items-center justify-between mb-4">
@@ -110,7 +110,7 @@ const PickGuestsDate = ({ data, onContinue }) => {
           >
             <ChevronLeft className="w-4 h-4 text-gray-600" />
           </button>
-          <h3 className="text-sm font-semibold text-[#1B4332]">
+          <h3 className="text-sm font-semibold text-[#111111]">
             {MONTH_NAMES[month]} {year}
           </h3>
           <button
@@ -141,7 +141,7 @@ const PickGuestsDate = ({ data, onContinue }) => {
                 disabled={!day || past}
                 className={`aspect-square rounded-xl text-sm font-medium transition-all ${
                   !day ? '' :
-                  sel ? 'bg-[#1B4332] text-white shadow-sm' :
+                  sel ? 'bg-[#111111] text-white shadow-sm' :
                   past ? 'text-gray-300 cursor-not-allowed' :
                   tod ? 'bg-[#D4A373]/10 text-[#D4A373] font-semibold hover:bg-[#D4A373]/20' :
                   'text-gray-700 hover:bg-gray-100'
@@ -156,12 +156,12 @@ const PickGuestsDate = ({ data, onContinue }) => {
 
       {/* Selection summary */}
       {selectedDate && (
-        <div className="flex items-center gap-3 p-3 bg-[#1B4332]/[0.03] rounded-xl border border-[#1B4332]/10 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[#1B4332]/10 flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-[#1B4332]" />
+        <div className="flex items-center gap-3 p-3 bg-[#111111]/[0.03] rounded-xl border border-[#111111]/10 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-[#111111]/10 flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-[#111111]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#1B4332]">
+            <p className="text-sm font-semibold text-[#111111]">
               {guests} {guests === 1 ? 'guest' : 'guests'}
             </p>
             <p className="text-xs text-gray-500">
@@ -179,7 +179,7 @@ const PickGuestsDate = ({ data, onContinue }) => {
           disabled={!canContinue}
           className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
             canContinue
-              ? 'bg-[#1B4332] text-white hover:bg-[#1B4332]/90 shadow-sm'
+              ? 'bg-[#111111] text-white hover:bg-[#111111]/90 shadow-sm'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >

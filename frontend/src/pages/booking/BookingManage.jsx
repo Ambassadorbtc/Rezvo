@@ -45,7 +45,7 @@ const BookingManage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFBF4]">
-        <Loader2 className="w-8 h-8 text-[#1B4332] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#111111] animate-spin" />
       </div>
     )
   }
@@ -64,11 +64,11 @@ const BookingManage = () => {
         <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
           <XCircle className="w-7 h-7 text-gray-400" />
         </div>
-        <h1 className="text-xl font-semibold text-[#1B4332]">Booking Cancelled</h1>
+        <h1 className="text-xl font-semibold text-[#111111]">Booking Cancelled</h1>
         <p className="text-sm text-gray-500 mt-2">Your booking has been cancelled successfully.</p>
         <Link
           to={`/book/${businessSlug}`}
-          className="inline-flex items-center gap-2 mt-6 px-6 py-2.5 rounded-xl bg-[#1B4332] text-white font-medium text-sm hover:bg-[#143326] transition-colors"
+          className="inline-flex items-center gap-2 mt-6 px-6 py-2.5 rounded-xl bg-[#111111] text-white font-medium text-sm hover:bg-[#0a0a0a] transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
           Book again
@@ -83,18 +83,18 @@ const BookingManage = () => {
     <div className="min-h-screen bg-[#FEFBF4] px-5 pt-6 pb-12 max-w-xl mx-auto">
       <Link
         to={`/book/${businessSlug}/confirm/${bookingId}`}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1B4332] mb-6 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#111111] mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to confirmation
       </Link>
 
-      <h1 className="text-xl font-semibold text-[#1B4332] mb-5">Manage Booking</h1>
+      <h1 className="text-xl font-semibold text-[#111111] mb-5">Manage Booking</h1>
 
       {/* Booking details card */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-[#1B4332]">{biz.name}</h3>
+          <h3 className="font-semibold text-[#111111]">{biz.name}</h3>
           <span className="font-mono text-sm text-gray-500">{booking.reference}</span>
         </div>
         <div className="space-y-2 text-sm">
@@ -121,7 +121,7 @@ const BookingManage = () => {
       <div className="space-y-2.5">
         <Link
           to={`/book/${businessSlug}`}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#1B4332] text-[#1B4332] font-medium text-[15px] hover:bg-[#1B4332] hover:text-white transition-all"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#111111] text-[#111111] font-medium text-[15px] hover:bg-[#111111] hover:text-white transition-all"
         >
           <RotateCcw className="w-4 h-4" />
           Reschedule Booking

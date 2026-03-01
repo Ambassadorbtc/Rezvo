@@ -4,7 +4,7 @@
  */
 import { useState, useRef, useEffect, useCallback } from 'react'
 
-const FOREST = '#1B4332'
+const FOREST = '#111111'
 const MINT = '#52B788'
 
 /* ─── Knowledge Base ─── */
@@ -231,7 +231,7 @@ const ChatWidget = () => {
         position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
         width: 60, height: 60, borderRadius: '50%', background: FOREST, color: '#fff',
         border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 6px 24px rgba(27,67,50,0.4)',
+        boxShadow: '0 6px 24px rgba(17,17,17,0.4)',
         transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
         transform: isOpen ? 'scale(1)' : 'scale(1)',
       }}>

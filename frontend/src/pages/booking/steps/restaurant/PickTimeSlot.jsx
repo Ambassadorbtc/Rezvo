@@ -101,30 +101,30 @@ const PickTimeSlot = ({ data, onContinue, onBack }) => {
       {/* Back + date summary */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1B4332] mb-4 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#111111] mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
       </button>
 
-      <div className="flex items-center gap-3 p-3 bg-[#1B4332]/[0.03] rounded-xl border border-[#1B4332]/10 mb-6">
+      <div className="flex items-center gap-3 p-3 bg-[#111111]/[0.03] rounded-xl border border-[#111111]/10 mb-6">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-sm text-[#1B4332]">
+          <div className="flex items-center gap-1.5 text-sm text-[#111111]">
             <Users className="w-4 h-4" />
             <span className="font-medium">{guests} {guests === 1 ? 'guest' : 'guests'}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-sm text-[#1B4332]">
+          <div className="flex items-center gap-1.5 text-sm text-[#111111]">
             <Calendar className="w-4 h-4" />
             <span className="font-medium">{dateLabel}</span>
           </div>
         </div>
       </div>
 
-      <h2 className="text-base font-semibold text-[#1B4332] mb-4">Choose a time</h2>
+      <h2 className="text-base font-semibold text-[#111111] mb-4">Choose a time</h2>
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 text-[#1B4332] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#111111] animate-spin" />
         </div>
       ) : slots.length === 0 ? (
         <div className="text-center py-12">
@@ -134,7 +134,7 @@ const PickTimeSlot = ({ data, onContinue, onBack }) => {
           <p className="text-sm text-gray-500">No availability on this date</p>
           <button
             onClick={onBack}
-            className="text-sm text-[#1B4332] font-medium mt-2 underline"
+            className="text-sm text-[#111111] font-medium mt-2 underline"
           >
             Pick a different date
           </button>
@@ -155,8 +155,8 @@ const PickTimeSlot = ({ data, onContinue, onBack }) => {
                         onClick={() => setSelectedTime(time)}
                         className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
                           sel
-                            ? 'bg-[#1B4332] text-white shadow-sm'
-                            : 'bg-white text-gray-700 border border-gray-200 hover:border-[#1B4332]/30'
+                            ? 'bg-[#111111] text-white shadow-sm'
+                            : 'bg-white text-gray-700 border border-gray-200 hover:border-[#111111]/30'
                         }`}
                       >
                         {formatTime(time)}
@@ -176,7 +176,7 @@ const PickTimeSlot = ({ data, onContinue, onBack }) => {
           disabled={!canContinue}
           className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all ${
             canContinue
-              ? 'bg-[#1B4332] text-white hover:bg-[#1B4332]/90 shadow-sm'
+              ? 'bg-[#111111] text-white hover:bg-[#111111]/90 shadow-sm'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >

@@ -86,17 +86,17 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
           <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-emerald-600" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1B4332] mb-2">Booking Confirmed!</h1>
+          <h1 className="text-2xl font-bold text-[#111111] mb-2">Booking Confirmed!</h1>
           <p className="text-sm text-gray-500">We've sent a confirmation to {form.email}</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#1B4332]/10 flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-[#1B4332]" />
+            <div className="w-10 h-10 rounded-xl bg-[#111111]/10 flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-[#111111]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1B4332]">{business.name}</p>
+              <p className="text-sm font-semibold text-[#111111]">{business.name}</p>
               <p className="text-xs text-gray-500">{business.address}</p>
             </div>
           </div>
@@ -106,17 +106,17 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
               <Users className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-              <p className="text-sm font-semibold text-[#1B4332]">{guests}</p>
+              <p className="text-sm font-semibold text-[#111111]">{guests}</p>
               <p className="text-xs text-gray-400">{guests === 1 ? 'Guest' : 'Guests'}</p>
             </div>
             <div>
               <Calendar className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-              <p className="text-sm font-semibold text-[#1B4332]">{dateObj.getDate()} {MONTH_NAMES[dateObj.getMonth()].slice(0, 3)}</p>
+              <p className="text-sm font-semibold text-[#111111]">{dateObj.getDate()} {MONTH_NAMES[dateObj.getMonth()].slice(0, 3)}</p>
               <p className="text-xs text-gray-400">{DAY_NAMES[dateObj.getDay()].slice(0, 3)}</p>
             </div>
             <div>
               <Clock className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-              <p className="text-sm font-semibold text-[#1B4332]">{formatTime(time)}</p>
+              <p className="text-sm font-semibold text-[#111111]">{formatTime(time)}</p>
               <p className="text-xs text-gray-400">Time</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
 
         <button
           onClick={() => navigate('/')}
-          className="w-full py-3.5 rounded-xl text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#1B4332]/90 transition-all"
+          className="w-full py-3.5 rounded-xl text-sm font-semibold bg-[#111111] text-white hover:bg-[#111111]/90 transition-all"
         >
           Back to Home
         </button>
@@ -147,15 +147,15 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1B4332] mb-4 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#111111] mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
       </button>
 
       {/* Booking summary card */}
-      <div className="flex items-center gap-3 p-3 bg-[#1B4332]/[0.03] rounded-xl border border-[#1B4332]/10 mb-6">
-        <div className="flex items-center gap-4 flex-wrap text-sm text-[#1B4332]">
+      <div className="flex items-center gap-3 p-3 bg-[#111111]/[0.03] rounded-xl border border-[#111111]/10 mb-6">
+        <div className="flex items-center gap-4 flex-wrap text-sm text-[#111111]">
           <div className="flex items-center gap-1.5">
             <Users className="w-4 h-4" />
             <span className="font-medium">{guests}</span>
@@ -172,7 +172,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
       </div>
 
       {/* Form */}
-      <h2 className="text-base font-semibold text-[#1B4332] mb-4">Your details</h2>
+      <h2 className="text-base font-semibold text-[#111111] mb-4">Your details</h2>
 
       <div className="space-y-4 mb-6">
         <div className="grid grid-cols-2 gap-3">
@@ -182,7 +182,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
               type="text"
               value={form.firstName}
               onChange={(e) => update('firstName', e.target.value)}
-              className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] ${
+              className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#111111]/20 focus:border-[#111111] ${
                 errors.firstName ? 'border-red-300 bg-red-50/30' : 'border-gray-200 bg-white'
               }`}
               placeholder="John"
@@ -195,7 +195,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
               type="text"
               value={form.lastName}
               onChange={(e) => update('lastName', e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#111111]/20 focus:border-[#111111]"
               placeholder="Smith"
             />
           </div>
@@ -207,7 +207,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
             type="email"
             value={form.email}
             onChange={(e) => update('email', e.target.value)}
-            className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] ${
+            className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#111111]/20 focus:border-[#111111] ${
               errors.email ? 'border-red-300 bg-red-50/30' : 'border-gray-200 bg-white'
             }`}
             placeholder="john@example.com"
@@ -221,7 +221,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
             type="tel"
             value={form.phone}
             onChange={(e) => update('phone', e.target.value)}
-            className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] ${
+            className={`w-full px-3.5 py-2.5 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#111111]/20 focus:border-[#111111] ${
               errors.phone ? 'border-red-300 bg-red-50/30' : 'border-gray-200 bg-white'
             }`}
             placeholder="07700 900000"
@@ -231,7 +231,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
       </div>
 
       {/* Occasion */}
-      <h2 className="text-base font-semibold text-[#1B4332] mb-3">What's the occasion?</h2>
+      <h2 className="text-base font-semibold text-[#111111] mb-3">What's the occasion?</h2>
       <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-5 px-5 mb-6">
         {OCCASIONS.map((occ) => (
           <button
@@ -258,7 +258,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
           value={form.notes}
           onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
           rows={3}
-          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 focus:border-[#1B4332] resize-none"
+          className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#111111]/20 focus:border-[#111111] resize-none"
           placeholder="Allergies, dietary requirements, high chair needed..."
         />
       </div>
@@ -269,7 +269,7 @@ const YourDetailsRestaurant = ({ data, onBack, onCreate }) => {
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="w-full py-3.5 rounded-xl text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#1B4332]/90 transition-all shadow-sm disabled:opacity-60"
+          className="w-full py-3.5 rounded-xl text-sm font-semibold bg-[#111111] text-white hover:bg-[#111111]/90 transition-all shadow-sm disabled:opacity-60"
         >
           {submitting ? (
             <span className="flex items-center justify-center gap-2">

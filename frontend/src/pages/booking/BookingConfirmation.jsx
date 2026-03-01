@@ -39,7 +39,7 @@ const BookingConfirmation = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FEFBF4]">
-        <Loader2 className="w-8 h-8 text-[#1B4332] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#111111] animate-spin" />
       </div>
     )
   }
@@ -62,17 +62,17 @@ const BookingConfirmation = () => {
         <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="w-8 h-8 text-emerald-600" />
         </div>
-        <h1 className="text-2xl font-semibold text-[#1B4332]">Booking Confirmed</h1>
+        <h1 className="text-2xl font-semibold text-[#111111]">Booking Confirmed</h1>
         <p className="text-sm text-gray-500 mt-1">
           We've sent a confirmation to {booking.customer?.email}
         </p>
 
         {/* Reference code */}
         <div className="mt-4 inline-flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-4 py-2">
-          <span className="font-mono text-lg font-bold text-[#1B4332] tracking-wider">{booking.reference}</span>
+          <span className="font-mono text-lg font-bold text-[#111111] tracking-wider">{booking.reference}</span>
           <button
             onClick={handleCopy}
-            className="p-1 text-gray-400 hover:text-[#1B4332] transition-colors"
+            className="p-1 text-gray-400 hover:text-[#111111] transition-colors"
             aria-label="Copy reference"
           >
             <Copy className="w-4 h-4" />
@@ -83,7 +83,7 @@ const BookingConfirmation = () => {
 
       {/* Details card */}
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-        <h3 className="font-semibold text-[#1B4332] mb-3">{biz.name}</h3>
+        <h3 className="font-semibold text-[#111111] mb-3">{biz.name}</h3>
         <div className="space-y-2 text-sm">
           {booking.service?.name && (
             <div className="flex items-start gap-2 text-gray-600">
@@ -117,7 +117,7 @@ const BookingConfirmation = () => {
             href={booking.calendarLinks.google}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#1B4332] text-[#1B4332] font-medium text-[15px] hover:bg-[#1B4332] hover:text-white transition-all"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[#111111] text-[#111111] font-medium text-[15px] hover:bg-[#111111] hover:text-white transition-all"
           >
             <Calendar className="w-4 h-4" />
             Add to Calendar
@@ -136,7 +136,7 @@ const BookingConfirmation = () => {
         )}
         <Link
           to={`/book/${businessSlug}/manage/${bookingId}`}
-          className="block w-full py-3 text-center text-sm text-gray-500 hover:text-[#1B4332] transition-colors"
+          className="block w-full py-3 text-center text-sm text-gray-500 hover:text-[#111111] transition-colors"
         >
           Modify or Cancel Booking
         </Link>

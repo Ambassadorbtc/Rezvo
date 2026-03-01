@@ -168,7 +168,7 @@ const VERTICALS = [
       "Facial treatment Nottingham 3pm",
       "Hot stone therapy Leeds this afternoon",
     ],
-    hoverColor: "#2D6A4F",
+    hoverColor: "#1a1a1a",
   },
   {
     id: "more", label: "More", tabIcon: TabIcons.more,
@@ -236,10 +236,10 @@ function FilterPill({ label, icon, value, options, isOpen, onToggle, onChange })
           cursor: 'pointer',
           transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           boxShadow: isOpen
-            ? '0 0 0 3px rgba(82,183,136,0.12), 0 4px 16px -4px rgba(27,67,50,0.15)'
+            ? '0 0 0 3px rgba(82,183,136,0.12), 0 4px 16px -4px rgba(17,17,17,0.15)'
             : hovered
-              ? '0 4px 12px -4px rgba(27,67,50,0.12)'
-              : '0 2px 6px -2px rgba(27,67,50,0.06)',
+              ? '0 4px 12px -4px rgba(17,17,17,0.12)'
+              : '0 2px 6px -2px rgba(17,17,17,0.06)',
           transform: hovered && !isOpen ? 'translateY(-1px)' : 'translateY(0)',
         }}
       >
@@ -257,7 +257,7 @@ function FilterPill({ label, icon, value, options, isOpen, onToggle, onChange })
           <div style={{
             fontSize: '13px', fontWeight: 700,
             display: 'flex', alignItems: 'center', gap: '5px',
-            color: isOpen ? '#1B4332' : '#2A2A28',
+            color: isOpen ? '#111111' : '#2A2A28',
             fontFamily: "'Figtree', sans-serif",
             whiteSpace: 'nowrap',
           }}>
@@ -277,7 +277,7 @@ function FilterPill({ label, icon, value, options, isOpen, onToggle, onChange })
           marginTop: '8px', padding: '6px 0',
           background: 'white', borderRadius: '16px',
           border: '1px solid #E2E5DF',
-          boxShadow: '0 12px 40px -8px rgba(27,67,50,0.18), 0 4px 12px -2px rgba(27,67,50,0.08)',
+          boxShadow: '0 12px 40px -8px rgba(17,17,17,0.18), 0 4px 12px -2px rgba(17,17,17,0.08)',
           maxHeight: '240px', overflowY: 'auto', zIndex: 9999,
           animation: 'pillDrop 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         }}>
@@ -287,7 +287,7 @@ function FilterPill({ label, icon, value, options, isOpen, onToggle, onChange })
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               fontFamily: "'Figtree', sans-serif", fontSize: '13px',
               fontWeight: opt === value ? 700 : 500,
-              color: opt === value ? '#1B4332' : '#2A2A28',
+              color: opt === value ? '#111111' : '#2A2A28',
               background: opt === value ? '#D8F3DC' : 'transparent',
               border: 'none', cursor: 'pointer', transition: 'background 0.15s',
             }}
@@ -318,14 +318,14 @@ function VerticalTab({ vertical, isActive, onClick }) {
         position: 'relative', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
         borderRadius: '9999px', fontSize: '14px', whiteSpace: 'nowrap', transition: 'all 0.3s',
         fontFamily: "'Figtree', sans-serif", fontWeight: isActive ? 800 : 600,
-        background: isActive ? '#1B4332' : hovered ? 'rgba(27,67,50,0.04)' : '#FFFFFF',
-        color: isActive ? '#FFFFFF' : '#2D6A4F',
-        border: isActive ? '2px solid #1B4332' : '1.5px solid #B7BFB9', cursor: 'pointer',
+        background: isActive ? '#111111' : hovered ? 'rgba(17,17,17,0.04)' : '#FFFFFF',
+        color: isActive ? '#FFFFFF' : '#1a1a1a',
+        border: isActive ? '2px solid #111111' : '1.5px solid #B7BFB9', cursor: 'pointer',
         boxShadow: isActive
-          ? '0 4px 20px -4px rgba(27,67,50,0.35), 0 0 0 2px rgba(82,183,136,0.15)'
+          ? '0 4px 20px -4px rgba(17,17,17,0.35), 0 0 0 2px rgba(82,183,136,0.15)'
           : hovered
-            ? '0 3px 14px -3px rgba(27,67,50,0.16), 0 0 0 1px rgba(27,67,50,0.08)'
-            : '0 2px 8px -2px rgba(27,67,50,0.1), 0 0 0 1px rgba(27,67,50,0.04)',
+            ? '0 3px 14px -3px rgba(17,17,17,0.16), 0 0 0 1px rgba(17,17,17,0.08)'
+            : '0 2px 8px -2px rgba(17,17,17,0.1), 0 0 0 1px rgba(17,17,17,0.04)',
         transform: isActive ? 'scale(1.04)' : hovered ? 'scale(1.02) translateY(-1px)' : 'scale(1)',
         letterSpacing: '-0.01em', overflow: 'hidden',
       }}
@@ -341,7 +341,7 @@ function VerticalTab({ vertical, isActive, onClick }) {
         display: 'flex', transition: 'all 0.3s',
         transform: hovered && !isActive ? 'scale(1.25) rotate(-8deg)' : isActive ? 'scale(1.1)' : 'scale(1)',
       }}>
-        {vertical.tabIcon(isActive ? '#FFFFFF' : '#2D6A4F')}
+        {vertical.tabIcon(isActive ? '#FFFFFF' : '#1a1a1a')}
       </span>
       <span style={{ position: 'relative' }}>
         {vertical.label}
@@ -627,15 +627,15 @@ export default function SearchBar({ onSearch, className = '' }) {
             boxShadow: listening
               ? `0 8px 32px -4px rgba(82,183,136,${0.15 + intensity * 0.15}), 0 0 ${8 + wordCount * 2}px rgba(82,183,136,${0.05 + intensity * 0.1})`
               : isFocused
-                ? '0 8px 32px -4px rgba(82,183,136,0.18), 0 2px 8px rgba(27,67,50,0.06)'
-                : '0 4px 16px -2px rgba(27,67,50,0.08), 0 1px 4px rgba(27,67,50,0.04)',
+                ? '0 8px 32px -4px rgba(82,183,136,0.18), 0 2px 8px rgba(17,17,17,0.06)'
+                : '0 4px 16px -2px rgba(17,17,17,0.08), 0 1px 4px rgba(17,17,17,0.04)',
             padding: '4px 4px 4px 20px',
             display: 'flex', alignItems: 'center',
             transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
             position: 'relative', zIndex: 10,
           }}>
             <span style={{ flexShrink: 0, display: 'flex' }}>
-              {Icons.search(isFocused || listening ? '#2D6A4F' : '#9CA09E')}
+              {Icons.search(isFocused || listening ? '#1a1a1a' : '#9CA09E')}
             </span>
 
             <input
@@ -648,7 +648,7 @@ export default function SearchBar({ onSearch, className = '' }) {
               onKeyDown={handleKeyDown}
               placeholder="I'm looking for..."
               style={{
-                flex: 1, fontSize: '16px', fontWeight: 500, color: '#1B4332',
+                flex: 1, fontSize: '16px', fontWeight: 500, color: '#111111',
                 border: 'none', outline: 'none', background: 'transparent',
                 padding: '14px 12px', fontFamily: "'Figtree', sans-serif",
                 letterSpacing: '-0.01em', minWidth: 0,
@@ -664,18 +664,18 @@ export default function SearchBar({ onSearch, className = '' }) {
                 borderRadius: listening ? '14px' : '9999px',
                 cursor: 'pointer', flexShrink: 0,
                 background: listening
-                  ? 'linear-gradient(135deg, #0D1F17, #1B4332)'
+                  ? 'linear-gradient(135deg, #0D1F17, #111111)'
                   : micAwake
-                    ? 'linear-gradient(135deg, #1B4332, #2D6A4F)'
-                    : '#1B4332',
+                    ? 'linear-gradient(135deg, #111111, #1a1a1a)'
+                    : '#111111',
                 color: 'white',
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 position: 'relative', overflow: 'hidden', minHeight: '44px',
                 boxShadow: listening
-                  ? '0 0 20px rgba(82,183,136,0.3), 0 4px 16px rgba(27,67,50,0.3)'
+                  ? '0 0 20px rgba(82,183,136,0.3), 0 4px 16px rgba(17,17,17,0.3)'
                   : micAwake
                     ? '0 4px 16px rgba(82,183,136,0.25)'
-                    : '0 4px 14px -3px rgba(27,67,50,0.35)',
+                    : '0 4px 14px -3px rgba(17,17,17,0.35)',
               }}
             >
               {(micAwake || listening) && (
@@ -751,7 +751,7 @@ export default function SearchBar({ onSearch, className = '' }) {
           {listening && (
             <div style={{
               position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '-1px',
-              background: 'linear-gradient(180deg, #0D1F17 0%, #142B22 40%, #1B4332 100%)',
+              background: 'linear-gradient(180deg, #0D1F17 0%, #142B22 40%, #111111 100%)',
               borderRadius: '0 0 20px 20px',
               border: '1.5px solid rgba(82,183,136,0.2)', borderTop: 'none',
               boxShadow: '0 16px 48px -8px rgba(0,0,0,0.4), 0 0 30px rgba(82,183,136,0.08)',
@@ -783,7 +783,7 @@ export default function SearchBar({ onSearch, className = '' }) {
                           width: '2px', borderRadius: '1px',
                           background: processing
                             ? '#40916C'
-                            : `linear-gradient(to top, ${dist < 4 ? '#52B788' : dist < 8 ? '#40916C' : '#2D6A4F'}, ${dist < 4 ? '#D8F3DC' : dist < 8 ? '#95D5B2' : '#74C69D'})`,
+                            : `linear-gradient(to top, ${dist < 4 ? '#52B788' : dist < 8 ? '#40916C' : '#1a1a1a'}, ${dist < 4 ? '#D8F3DC' : dist < 8 ? '#95D5B2' : '#74C69D'})`,
                           height: `${Math.max(2, barHeight - dist * (0.5 + intensity * 0.5))}px`,
                           animation: processing ? 'none' : 'waveBar 0.5s ease-in-out infinite alternate',
                           animationDelay: `${i * 0.04}s`,
@@ -836,7 +836,7 @@ export default function SearchBar({ onSearch, className = '' }) {
         }}>
           <span style={{
             fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '4px',
-            background: '#D8F3DC', color: '#2D6A4F',
+            background: '#D8F3DC', color: '#1a1a1a',
             fontFamily: "'Figtree', sans-serif",
           }}>AI</span>
           <span style={{ fontSize: '12px', color: '#9CA09E', fontFamily: "'Figtree', sans-serif" }}>

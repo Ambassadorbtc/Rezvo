@@ -7,7 +7,7 @@ import { MapPin, Store } from 'lucide-react'
 
 const BookingHeader = ({ business }) => {
   if (!business) return null
-  const accent = business.accentColour || '#1B4332'
+  const accent = business.accentColour || '#111111'
 
   return (
     <div className="mb-5">
@@ -38,7 +38,7 @@ const BookingHeader = ({ business }) => {
 
         <div className="flex-1 min-w-0 pt-1">
           <div className="flex items-start justify-between gap-2">
-            <h1 className="text-lg font-semibold leading-tight text-[#1B4332]">
+            <h1 className="text-lg font-semibold leading-tight text-[#111111]">
               {business.name}
             </h1>
             {business.isOpen && (
@@ -69,7 +69,7 @@ const BookingHeader = ({ business }) => {
       {/* Address */}
       {business.address && (
         <p className="text-sm text-gray-500 mt-1.5 flex items-center gap-1.5">
-          <MapPin className="w-3.5 h-3.5 text-[#1B4332] shrink-0" />
+          <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
           {business.address}
         </p>
       )}

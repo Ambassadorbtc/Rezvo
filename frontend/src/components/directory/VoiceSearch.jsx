@@ -76,7 +76,7 @@ export default function VoiceSearch({ onTranscript, vertical }) {
         onClick={startListening}
         className="relative overflow-hidden rounded-2xl p-4 cursor-pointer group"
         style={{
-          background: 'linear-gradient(135deg, #1B4332, #2D6A4F)',
+          background: 'linear-gradient(135deg, #111111, #1a1a1a)',
           animation: 'breathe 3s ease-in-out infinite'
         }}
       >
@@ -134,7 +134,7 @@ export default function VoiceSearch({ onTranscript, vertical }) {
         className="relative rounded-2xl p-4 cursor-pointer"
         style={{
           background: '#FAFAF7',
-          border: '2px solid #2D6A4F',
+          border: '2px solid #1a1a1a',
           boxShadow: '0 0 0 4px rgba(45,106,79,0.1)'
         }}
       >
