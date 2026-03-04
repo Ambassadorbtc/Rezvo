@@ -1,13 +1,13 @@
 import SEO from '../../components/seo/SEO'
 import Navbar from '../../components/directory/Navbar';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import FaqAccordion from '../../components/directory/FaqAccordion';
 
 export default function FaqsPage() {
   return (
     <div className="min-h-screen bg-cream">
       <Navbar />
-      <SEO title="Frequently Asked Questions" description="Find answers to common questions about booking on Rezvo, managing your business listing, payments, cancellations, and more." path="/faqs" />
+      <SEO title="Frequently Asked Questions" description="Find answers to common questions about booking on Reeve Now, managing your business listing, payments, cancellations, and more." path="/faqs" />
 
       <section className="pt-32 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,7 +16,7 @@ export default function FaqsPage() {
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-muted font-medium">
-              Everything you need to know about booking with Rezvo
+              Everything you need to know about booking with Reeve Now
             </p>
           </div>
 
@@ -30,7 +30,7 @@ export default function FaqsPage() {
               Our support team is here to help. Get in touch and we'll respond within 24 hours.
             </p>
             <a
-              href="mailto:support@rezvo.app"
+              href="mailto:support@reeveos.app"
               className="inline-block bg-forest text-white font-bold px-8 py-4 rounded-full hover:bg-sage transition-all shadow-md"
             >
               Contact Support
@@ -39,7 +39,7 @@ export default function FaqsPage() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   );
 }

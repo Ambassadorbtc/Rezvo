@@ -1,11 +1,11 @@
 import Navbar from '../../components/directory/Navbar'
-import RezvoFooter from '../../components/directory/RezvoFooter'
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter'
 import SEO from '../../components/seo/SEO'
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
-      <SEO title="Privacy Policy" description="Learn how Rezvo collects, uses, and protects your personal data." path="/privacy" />
+      <SEO title="Privacy Policy" description="Learn how Reeve Now collects, uses, and protects your personal data." path="/privacy" />
       <Navbar />
       <section className="pt-32 pb-20">
         <div className="max-w-3xl mx-auto px-6">
@@ -22,18 +22,18 @@ export default function PrivacyPage() {
               We share relevant booking details with the businesses you book with. We use trusted service providers (Stripe for payments, email delivery services) who process data on our behalf under strict agreements. We may share anonymised, aggregated data for analytics purposes.
             </LegalSection>
             <LegalSection title="4. Your Rights">
-              Under UK GDPR, you have the right to access, rectify, erase, restrict processing of, and port your personal data. You can also object to processing and withdraw consent at any time. Contact us at privacy@rezvo.co.uk to exercise these rights.
+              Under UK GDPR, you have the right to access, rectify, erase, restrict processing of, and port your personal data. You can also object to processing and withdraw consent at any time. Contact us at privacy@reevenow.com to exercise these rights.
             </LegalSection>
             <LegalSection title="5. Data Security">
               We implement industry-standard security measures including encryption in transit and at rest, regular security audits, and access controls. Payment data is processed securely by Stripe and never stored on our servers.
             </LegalSection>
             <LegalSection title="6. Contact">
-              For privacy-related queries, email privacy@rezvo.co.uk. Our Data Protection Officer can be reached at the same address.
+              For privacy-related queries, email privacy@reevenow.com. Our Data Protection Officer can be reached at the same address.
             </LegalSection>
           </div>
         </div>
       </section>
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   )
 }

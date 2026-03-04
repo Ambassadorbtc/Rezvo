@@ -7,7 +7,7 @@ import {
   Sprout, Award, Accessibility, UtensilsCrossed 
 } from 'lucide-react';
 import Navbar from '../../components/directory/Navbar';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import BookingWidget from '../../components/directory/BookingWidget';
 import RestaurantCard from '../../components/directory/RestaurantCard';
 import NotifyMeModal from '../../components/directory/NotifyMeModal';
@@ -63,7 +63,7 @@ export default function ListingPage() {
     try {
       await navigator.share({
         title: listing?.name,
-        text: `Check out ${listing?.name} on Rezvo`,
+        text: `Check out ${listing?.name} on Reeve Now`,
         url: window.location.href
       });
     } catch (err) {
@@ -122,7 +122,7 @@ export default function ListingPage() {
     <div className="min-h-screen bg-cream">
       <SEO
         title={listing.name || 'Restaurant'}
-        description={listing.description || `Book a table at ${listing.name || 'this venue'} on Rezvo. Real-time availability, instant confirmation.`}
+        description={listing.description || `Book a table at ${listing.name || 'this venue'} on Reeve Now. Real-time availability, instant confirmation.`}
         path={`/restaurant/${slug}`}
         type="restaurant"
         schema={{
@@ -130,7 +130,7 @@ export default function ListingPage() {
           "@type": "Restaurant",
           "name": listing.name,
           "address": { "@type": "PostalAddress", "addressLocality": listing.city },
-          "url": `https://rezvo.co.uk/restaurant/${slug}`
+          "url": `https://reevenow.com/restaurant/${slug}`
         }}
       />
       <Navbar />
@@ -475,7 +475,7 @@ export default function ListingPage() {
         </section>
       )}
 
-      <RezvoFooter />
+      <ReeveNowFooter />
 
       {showNotifyModal && selectedListing && (
         <NotifyMeModal

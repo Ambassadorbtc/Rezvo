@@ -6,43 +6,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1B4332',
-        'primary-hover': '#143326',
-        background: '#FEFBF4',
+        /* Reeve Now brand */
+        primary: '#1A2744',
+        'primary-hover': '#0F1A2E',
+        accent: '#FFB627',
+        'accent-hover': '#E5A020',
+        background: '#FEFBF6',
         card: '#FFFFFF',
-        border: '#E8E0D4',
+        border: '#E2E5EB',
         success: '#22C55E',
         warning: '#F59E0B',
         error: '#EF4444',
         info: '#3B82F6',
         text: {
-          main: '#1B4332',
+          main: '#1A2744',
           muted: '#6B7280',
           light: '#9CA3AF',
         },
+        /* Deep Indigo spectrum */
         forest: {
-          DEFAULT: '#1B4332',
-          dark: '#0A1F14',
-          darker: '#061209'
+          DEFAULT: '#1A2744',
+          dark: '#0F1A2E',
+          darker: '#080E1A'
         },
-        sage: '#2D6A4F',
-        green: '#40916C',
-        mint: '#52B788',
-        'light-green': '#74C69D',
-        'pale-green': '#D8F3DC',
-        cream: '#FAFAF7',
-        warm: '#F4F0E8',
+        sage: '#2A3F66',
+        green: '#3A5588',
+        mint: '#FFB627',
+        'light-green': '#FFD166',
+        'pale-green': '#FFF4D6',
+        cream: '#FEFBF6',
+        warm: '#F8F5EE',
         sand: '#E8E0D0',
         latte: '#D4C5A9',
         brown: '#8B7355',
         espresso: '#5C4A32',
-        gold: '#D4A017',
-        amber: '#B8860B',
+        gold: '#FFB627',
+        amber: '#E5A020',
         coral: '#E8634A',
-        'off-white': '#F4F5F0',
-        border: '#E2E5DF',
+        'off-white': '#F5F6FA',
+        border: '#E2E5EB',
         'warm-border': '#DDD5C5',
-        text: '#2A2A28',
+        text: '#1A2744',
         muted: '#6B706D',
         subtle: '#9CA09E'
       },
@@ -58,8 +62,8 @@ export default {
         pill: '100px'
       },
       boxShadow: {
-        card: '0 4px 20px -2px rgba(27, 67, 50, 0.08)',
-        'card-hover': '0 12px 40px -4px rgba(27, 67, 50, 0.15)'
+        card: '0 4px 20px -2px rgba(26, 39, 68, 0.08)',
+        'card-hover': '0 12px 40px -4px rgba(26, 39, 68, 0.15)'
       },
       transitionDuration: {
         fast: '120ms',

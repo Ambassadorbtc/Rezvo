@@ -10,7 +10,7 @@ const PublicLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-heading font-bold text-forest">Rezvo</span>
+              <span className="text-2xl font-heading font-bold text-forest">Reeve Now</span>
             </Link>
 
             <nav className="hidden md:flex items-center space-x-8">
@@ -25,8 +25,8 @@ const PublicLayout = () => {
                 <Link to="/profile" className="text-text hover:text-forest">{user?.name}</Link>
               ) : (
                 <>
-                  <a href="https://rezvo.app/login" className="text-forest hover:text-forest-90 font-medium">Log in</a>
-                  <a href="https://rezvo.app/register" className="btn-primary">Sign up</a>
+                  <a href="https://reeveos.app/login" className="text-forest hover:text-forest-90 font-medium">Log in</a>
+                  <a href="https://reeveos.app/register" className="btn-primary">Sign up</a>
                 </>
               )}
             </div>
@@ -42,7 +42,7 @@ const PublicLayout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-heading font-bold text-xl mb-4">Rezvo</h3>
+              <h3 className="font-heading font-bold text-xl mb-4">Reeve Now</h3>
               <p className="text-white/80">Your High Street, Booked</p>
             </div>
             <div>
@@ -57,20 +57,20 @@ const PublicLayout = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">For Business</h4>
               <ul className="space-y-2">
-                <li><a href="https://rezvo.app/for-business" className="text-white/80 hover:text-white">List Your Business</a></li>
-                <li><a href="https://rezvo.app/for-business" className="text-white/80 hover:text-white">Pricing</a></li>
+                <li><a href="https://reeveos.app/for-business" className="text-white/80 hover:text-white">List Your Business</a></li>
+                <li><a href="https://reeveos.app/for-business" className="text-white/80 hover:text-white">Pricing</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-heading font-semibold mb-4">Company</h4>
               <ul className="space-y-2">
                 <li><Link to="/faqs" className="text-white/80 hover:text-white">FAQs</Link></li>
-                <li><a href="mailto:support@rezvo.app" className="text-white/80 hover:text-white">Contact</a></li>
+                <li><a href="mailto:support@reeveos.app" className="text-white/80 hover:text-white">Contact</a></li>
               </ul>
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-white/20 text-center text-white/60">
-            <p>&copy; 2026 Rezvo. All rights reserved.</p>
+            <p>&copy; 2026 Reeve Now. All rights reserved.</p>
           </div>
         </div>
       </footer>

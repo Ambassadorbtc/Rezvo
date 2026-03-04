@@ -1,5 +1,5 @@
 /**
- * Rezvo AI Support Chat Widget — React Component
+ * Reeve Now AI Support Chat Widget — React Component
  * Floating chat bubble with knowledge-base powered responses
  */
 import { useState, useRef, useEffect, useCallback } from 'react'
@@ -9,21 +9,21 @@ const MINT = '#52B788'
 
 /* ─── Knowledge Base ─── */
 const KB = {
-  greeting: "Hi! 👋 I'm Rezvo's AI assistant. I can help with pricing, features, getting started, or any questions about our platform. What would you like to know?",
-  fallback: "Great question! I want to make sure you get the best answer. You can reach our team directly at hello@rezvo.app or use our contact page. Is there anything else I can help with?",
+  greeting: "Hi! 👋 I'm Reeve Now's AI assistant. I can help with pricing, features, getting started, or any questions about our platform. What would you like to know?",
+  fallback: "Great question! I want to make sure you get the best answer. You can reach our team directly at hello@reeveos.app or use our contact page. Is there anything else I can help with?",
   topics: [
-    { keys: ['price','pricing','cost','how much','plan','plans','subscription','free','tier'], answer: "**Rezvo Pricing:**\n\n• **Free** — £0/mo · 1 staff, 100 bookings\n• **Starter** — £8.99/mo · 3 staff, reminders\n• **Growth** — £29/mo · 5 staff, deposits, CRM\n• **Scale** — £59/mo · Unlimited, floor plans, white-label\n• **Enterprise** — Custom pricing\n\nAll plans include zero commission. 30-day free trial!" },
-    { keys: ['commission','zero commission','no commission','fees','percentage'], answer: "**Zero commission, always.** Unlike platforms that take 15-30% of every booking, Rezvo charges a flat monthly rate. 100% of your revenue stays yours. Payments go directly to your bank via Stripe Connect." },
-    { keys: ['restaurant','table','floor plan','covers','seating','dining'], answer: "**Rezvo for Restaurants:**\n\n• Floor Plan View with real-time table status\n• Covers tracking by party size\n• Service period management (lunch/dinner)\n• Online booking widget\n• Orders board for kitchen\n• Analytics & revenue tracking" },
+    { keys: ['price','pricing','cost','how much','plan','plans','subscription','free','tier'], answer: "**Reeve Now Pricing:**\n\n• **Free** — £0/mo · 1 staff, 100 bookings\n• **Starter** — £8.99/mo · 3 staff, reminders\n• **Growth** — £29/mo · 5 staff, deposits, CRM\n• **Scale** — £59/mo · Unlimited, floor plans, white-label\n• **Enterprise** — Custom pricing\n\nAll plans include zero commission. 30-day free trial!" },
+    { keys: ['commission','zero commission','no commission','fees','percentage'], answer: "**Zero commission, always.** Unlike platforms that take 15-30% of every booking, Reeve Now charges a flat monthly rate. 100% of your revenue stays yours. Payments go directly to your bank via Stripe Connect." },
+    { keys: ['restaurant','table','floor plan','covers','seating','dining'], answer: "**Reeve Now for Restaurants:**\n\n• Floor Plan View with real-time table status\n• Covers tracking by party size\n• Service period management (lunch/dinner)\n• Online booking widget\n• Orders board for kitchen\n• Analytics & revenue tracking" },
     { keys: ['delivery','uber','uber direct','deliveroo','just eat','takeaway','ordering'], answer: "**Zero-Commission Delivery via Uber Direct:**\n\n• Customers order from YOUR branded page\n• Payments go directly to YOUR Stripe account\n• Uber Direct handles drivers — you pay only the delivery fee\n• No 25-30% commission like Deliveroo or JustEat" },
     { keys: ['booking','book','appointment','reserve','calendar'], answer: "**Smart Booking System:**\n\n• Online booking 24/7\n• Drag-and-drop calendar with staff columns\n• Deposit collection to reduce no-shows\n• SMS and email reminders\n• Walk-in management\n• Multi-staff support" },
-    { keys: ['salon','barber','spa','hair','beauty','service business'], answer: "**Rezvo works for all service businesses:** Salons, Barbers, Personal Trainers, Physiotherapists, Tattoo Studios, Music Teachers, Dog Groomers and more. Each gets a tailored booking flow." },
-    { keys: ['opentable','resdiary','thefork','competitor','compare','alternative','switch'], answer: "**vs OpenTable:** They charge £1-3 per seated diner. Rezvo is flat-rate, zero commission.\n**vs ResDiary:** Similar features but Rezvo includes online ordering + delivery.\n**vs TheFork:** They take commission and promote discounting. Rezvo protects your margins." },
+    { keys: ['salon','barber','spa','hair','beauty','service business'], answer: "**Reeve Now works for all service businesses:** Salons, Barbers, Personal Trainers, Physiotherapists, Tattoo Studios, Music Teachers, Dog Groomers and more. Each gets a tailored booking flow." },
+    { keys: ['opentable','resdiary','thefork','competitor','compare','alternative','switch'], answer: "**vs OpenTable:** They charge £1-3 per seated diner. Reeve Now is flat-rate, zero commission.\n**vs ResDiary:** Similar features but Reeve Now includes online ordering + delivery.\n**vs TheFork:** They take commission and promote discounting. Reeve Now protects your margins." },
     { keys: ['payment','stripe','pay','card','deposit','money'], answer: "**Stripe Connect Payments:**\n\n• Each business connects their own Stripe account\n• Payments go directly to you\n• Supports Apple Pay, Google Pay\n• Automatic deposit collection\n• Full refund management" },
     { keys: ['start','get started','sign up','signup','trial','begin','join'], answer: "**Getting started:**\n\n1. Sign up free — no credit card needed\n2. Set up your profile, services, and staff\n3. Start accepting bookings immediately\n\n30-day free trial on any plan!" },
-    { keys: ['contact','support','help','email','speak','human','team'], answer: "**Get in touch:**\n\n• Email: hello@rezvo.app\n• Contact page: rezvo.app/contact.html\n• We typically reply within a few hours" },
+    { keys: ['contact','support','help','email','speak','human','team'], answer: "**Get in touch:**\n\n• Email: hello@reeveos.app\n• Contact page: reeveos.app/contact.html\n• We typically reply within a few hours" },
     { keys: ['feature','what do','what can','include','offer'], answer: "**Key features:** Online booking, drag-and-drop calendar, floor plans, Stripe payments, CRM & analytics, SMS reminders, staff management, online ordering, Uber Direct delivery, white-label branding, directory listing." },
-    { keys: ['hello','hi','hey','good morning','good afternoon'], answer: "Hey there! 👋 Welcome to Rezvo. I can help with pricing, features, getting started, or any questions. What can I help with?" },
+    { keys: ['hello','hi','hey','good morning','good afternoon'], answer: "Hey there! 👋 Welcome to Reeve Now. I can help with pricing, features, getting started, or any questions. What can I help with?" },
     { keys: ['thank','thanks','cheers','appreciate'], answer: "You're welcome! 😊 If you have more questions, I'm here. Have a great day!" },
     { keys: ['bye','goodbye','see you','later'], answer: "Thanks for chatting! If you need anything, I'm always here. 👋" },
     { keys: ['dashboard','how to','setting','manage','staff','schedule'], answer: "**Dashboard Help:**\n\nFrom your dashboard you can manage bookings, staff, services, and settings. Use the sidebar to navigate between Calendar, Bookings, Staff, Services, Customers, and Analytics. Need help with something specific? Just ask!" },
@@ -152,7 +152,7 @@ const ChatWidget = () => {
         <div style={{ background: FOREST, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: MINT, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, color: FOREST }}>R</div>
           <div>
-            <div style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>Rezvo Support</div>
+            <div style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>Reeve Now Support</div>
             <div style={{ color: MINT, fontSize: 11, fontWeight: 600, marginTop: 2, opacity: 0.9 }}>● Online — replies instantly</div>
           </div>
         </div>
@@ -207,7 +207,7 @@ const ChatWidget = () => {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) } }}
-            placeholder="Ask anything about Rezvo..."
+            placeholder="Ask anything about Reeve Now..."
             disabled={isTyping}
             style={{
               flex: 1, border: '1.5px solid #e5e7eb', borderRadius: 12, padding: '10px 14px',
@@ -222,7 +222,7 @@ const ChatWidget = () => {
         </div>
 
         <div style={{ textAlign: 'center', padding: 6, fontSize: 9, color: '#bbb', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
-          Powered by Rezvo AI
+          Powered by Reeve Now AI
         </div>
       </div>
 

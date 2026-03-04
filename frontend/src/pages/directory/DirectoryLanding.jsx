@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import Navbar from '../../components/directory/Navbar';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import SearchBar from '../../components/directory/SearchBar';
 import CategoryCard from '../../components/directory/CategoryCard';
 import CityCard from '../../components/directory/CityCard';
@@ -83,7 +83,7 @@ export default function DirectoryLanding() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <SEO title="Discover & Book Local Favourites" description="Find and book the best independent restaurants, salons, barbers, and spas near you. Real-time availability, zero booking fees." path="/" schema={{ "@context": "https://schema.org", "@type": "WebSite", "name": "Rezvo", "url": "https://rezvo.co.uk", "potentialAction": { "@type": "SearchAction", "target": "https://rezvo.co.uk/search?q={search_term_string}", "query-input": "required name=search_term_string" }}} />
+      <SEO title="Discover & Book Local Favourites" description="Find and book the best independent restaurants, salons, barbers, and spas near you. Real-time availability, zero booking fees." path="/" schema={{ "@context": "https://schema.org", "@type": "WebSite", "name": "Reeve Now", "url": "https://reevenow.com", "potentialAction": { "@type": "SearchAction", "target": "https://reevenow.com/search?q={search_term_string}", "query-input": "required name=search_term_string" }}} />
 
       <section className="pt-32 pb-16 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -188,7 +188,7 @@ export default function DirectoryLanding() {
               Frequently Asked Questions
             </h2>
             <p className="text-lg text-muted font-medium">
-              Everything you need to know about booking with Rezvo
+              Everything you need to know about booking with Reeve Now
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export default function DirectoryLanding() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
 
       {showNotifyModal && selectedListing && (
         <NotifyMeModal

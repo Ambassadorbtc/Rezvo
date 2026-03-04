@@ -1,5 +1,5 @@
 /**
- * Rezvo Directory — rezvo.co.uk
+ * Reeve Now Directory — reevenow.com
  * Consumer-facing: search, discover, and book local businesses
  * 
  * Static marketing pages (UX Pilot designs) are served from /public/*.html
@@ -12,7 +12,7 @@ import ChatWidget from './components/ChatWidget'
 
 import PublicLayout from './components/layout/PublicLayout'
 
-/* External redirect helper — sends to rezvo.app for auth */
+/* External redirect helper — sends to reeveos.app for auth */
 const ExternalRedirect = ({ to }) => {
   window.location.href = to
   return null
@@ -56,18 +56,18 @@ const App = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/restaurant/:slug" element={<ListingPage />} />
           <Route path="/venue/:slug" element={<ListingPage />} />
-          {/* Auth — redirect to rezvo.app */}
-          <Route path="/login" element={<ExternalRedirect to="https://rezvo.app/login" />} />
-          <Route path="/signup" element={<ExternalRedirect to="https://rezvo.app/register" />} />
+          {/* Auth — redirect to reeveos.app */}
+          <Route path="/login" element={<ExternalRedirect to="https://reeveos.app/login" />} />
+          <Route path="/signup" element={<ExternalRedirect to="https://reeveos.app/register" />} />
           <Route path="/faqs" element={<FaqsPage />} />
 
           {/* React fallback pages (nginx will serve .html versions first in production) */}
-          <Route path="/about" element={<ExternalRedirect to="https://rezvo.app/about.html" />} />
-          <Route path="/for-business" element={<ExternalRedirect to="https://rezvo.app/for-business" />} />
-          <Route path="/contact" element={<ExternalRedirect to="https://rezvo.app/contact.html" />} />
-          <Route path="/privacy" element={<ExternalRedirect to="https://rezvo.app/privacy.html" />} />
-          <Route path="/terms" element={<ExternalRedirect to="https://rezvo.app/terms.html" />} />
-          <Route path="/cookies" element={<ExternalRedirect to="https://rezvo.app/cookies.html" />} />
+          <Route path="/about" element={<ExternalRedirect to="https://reeveos.app/about.html" />} />
+          <Route path="/for-business" element={<ExternalRedirect to="https://reeveos.app/for-business" />} />
+          <Route path="/contact" element={<ExternalRedirect to="https://reeveos.app/contact.html" />} />
+          <Route path="/privacy" element={<ExternalRedirect to="https://reeveos.app/privacy.html" />} />
+          <Route path="/terms" element={<ExternalRedirect to="https://reeveos.app/terms.html" />} />
+          <Route path="/cookies" element={<ExternalRedirect to="https://reeveos.app/cookies.html" />} />
 
           {/* Public SEO pages */}
           <Route element={<PublicLayout />}>

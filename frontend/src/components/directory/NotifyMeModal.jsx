@@ -43,7 +43,7 @@ export default function NotifyMeModal({ listing, onClose, onSuccess }) {
             Get Notified
           </h2>
           <p className="text-light-green text-sm leading-relaxed">
-            We'll email you when <span className="font-bold text-white">{listing?.name}</span> joins Rezvo and starts accepting bookings.
+            We'll email you when <span className="font-bold text-white">{listing?.name}</span> joins Reeve Now and starts accepting bookings.
           </p>
         </div>
 

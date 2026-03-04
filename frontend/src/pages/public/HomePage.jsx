@@ -73,7 +73,7 @@ const HomePage = () => {
                 For Business Owners
               </h2>
               <p className="text-lg text-text-secondary mb-8">
-                Get more bookings, manage your business, and grow your customer base with Rezvo's all-in-one platform.
+                Get more bookings, manage your business, and grow your customer base with Reeve Now's all-in-one platform.
               </p>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start">

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Navbar from '../../components/directory/Navbar'
-import RezvoFooter from '../../components/directory/RezvoFooter'
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter'
 import SEO from '../../components/seo/SEO'
 import { Mail, MapPin, MessageSquare } from 'lucide-react'
 
@@ -17,7 +17,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-white">
       <SEO
         title="Contact Us"
-        description="Get in touch with the Rezvo team. We'd love to hear from you — whether you're a business owner, diner, or potential partner."
+        description="Get in touch with the Reeve Now team. We'd love to hear from you — whether you're a business owner, diner, or potential partner."
         path="/contact"
       />
       <Navbar />
@@ -70,7 +70,7 @@ export default function ContactPage() {
               <div className="p-6 rounded-2xl bg-cream">
                 <Mail className="w-5 h-5 text-forest mb-3" />
                 <h3 className="font-heading font-bold text-forest text-sm mb-1">Email</h3>
-                <a href="mailto:hello@rezvo.co.uk" className="text-muted text-sm hover:text-forest transition-colors font-body">hello@rezvo.co.uk</a>
+                <a href="mailto:hello@reevenow.com" className="text-muted text-sm hover:text-forest transition-colors font-body">hello@reevenow.com</a>
               </div>
               <div className="p-6 rounded-2xl bg-cream">
                 <MapPin className="w-5 h-5 text-forest mb-3" />
@@ -82,7 +82,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   )
 }

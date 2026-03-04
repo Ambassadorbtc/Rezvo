@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Map, SlidersHorizontal } from 'lucide-react';
 import Navbar from '../../components/directory/Navbar';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import SearchBar from '../../components/directory/SearchBar';
 import SearchFilters from '../../components/directory/SearchFilters';
 import RestaurantCard from '../../components/directory/RestaurantCard';
@@ -206,7 +206,7 @@ export default function SearchPage() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
 
       {showNotifyModal && selectedListing && (
         <NotifyMeModal

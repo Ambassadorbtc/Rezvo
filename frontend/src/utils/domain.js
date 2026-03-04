@@ -1,13 +1,12 @@
 /**
- * Domain config for Rezvo directory (rezvo.co.uk).
+ * Domain config for Reeve Now directory (reevenow.com).
+ * Consumer-facing discovery & booking platform.
  */
-
-export const isRezvoApp = () => false
-export const isRezvoCoUk = () => true
-
-export const getDomainConfig = () => ({
-  domain: 'rezvo.co.uk',
-  baseUrl: 'https://rezvo.co.uk',
-  supportEmail: 'support@rezvo.app',
-  bookingPathPrefix: '/book/',
-})
+export const SITE = {
+  name: 'Reeve Now',
+  domain: 'reevenow.com',
+  baseUrl: 'https://reevenow.com',
+  supportEmail: 'support@reeveos.app',
+  portalUrl: 'https://portal.reeveos.app',
+  marketingUrl: 'https://reeveos.app',
+}

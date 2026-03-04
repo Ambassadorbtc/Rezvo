@@ -142,7 +142,7 @@ const BookingConfirmation = () => {
         </Link>
       </div>
 
-      <p className="text-center text-xs text-gray-400 mt-10">Powered by Rezvo</p>
+      <p className="text-center text-xs text-gray-400 mt-10">Powered by Reeve Now</p>
     </div>
   )
 }

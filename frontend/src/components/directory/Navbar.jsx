@@ -29,7 +29,7 @@ export default function Navbar() {
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#1B4332' }}>
                 <span className="font-heading font-extrabold text-xl text-white">R</span>
               </div>
-              <span className="text-forest font-heading font-extrabold text-[22px] tracking-tight">REZVO</span>
+              <span className="text-forest font-heading font-extrabold text-[22px] tracking-tight">REEVE NOW</span>
             </Link>
 
             {/* Desktop Nav */}
@@ -39,12 +39,12 @@ export default function Navbar() {
               <NavLink to="/faqs" label="FAQs" active={isActive('/faqs')} />
             </div>
 
-            {/* Desktop Right — direct links to rezvo.app */}
+            {/* Desktop Right — direct links to reeveos.app */}
             <div className="hidden lg:flex items-center gap-3">
-              <a href="https://rezvo.app/login" className="text-forest font-semibold text-sm hover:text-sage transition-colors px-4 py-2.5">
+              <a href="https://reeveos.app/login" className="text-forest font-semibold text-sm hover:text-sage transition-colors px-4 py-2.5">
                 Log in
               </a>
-              <a href="https://rezvo.app/register" className="bg-forest text-white font-bold text-sm px-6 py-2.5 rounded-full hover:bg-sage transition-all duration-200 shadow-sm hover:shadow-md">
+              <a href="https://reeveos.app/register" className="bg-forest text-white font-bold text-sm px-6 py-2.5 rounded-full hover:bg-sage transition-all duration-200 shadow-sm hover:shadow-md">
                 Sign Up Free
               </a>
             </div>
@@ -67,8 +67,8 @@ export default function Navbar() {
             <Link to="/faqs" className="block px-4 py-3 rounded-xl text-base font-semibold text-forest" onClick={() => setIsMobileOpen(false)}>FAQs</Link>
             <div className="h-px bg-border my-4" />
             <div className="flex flex-col gap-3">
-              <a href="https://rezvo.app/login" className="text-center text-forest font-bold text-sm py-3 rounded-xl border border-forest/20">Log in</a>
-              <a href="https://rezvo.app/register" className="text-center bg-forest text-white font-bold text-sm py-3 rounded-full">Sign Up Free</a>
+              <a href="https://reeveos.app/login" className="text-center text-forest font-bold text-sm py-3 rounded-xl border border-forest/20">Log in</a>
+              <a href="https://reeveos.app/register" className="text-center bg-forest text-white font-bold text-sm py-3 rounded-full">Sign Up Free</a>
             </div>
           </div>
         </div>

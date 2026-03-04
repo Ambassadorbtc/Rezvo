@@ -1,11 +1,11 @@
 import Navbar from '../../components/directory/Navbar'
-import RezvoFooter from '../../components/directory/RezvoFooter'
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter'
 import SEO from '../../components/seo/SEO'
 
 export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-white">
-      <SEO title="Cookie Policy" description="Learn how Rezvo uses cookies and similar technologies." path="/cookies" />
+      <SEO title="Cookie Policy" description="Learn how Reeve Now uses cookies and similar technologies." path="/cookies" />
       <Navbar />
       <section className="pt-32 pb-20">
         <div className="max-w-3xl mx-auto px-6">
@@ -27,12 +27,12 @@ export default function CookiesPage() {
             </div>
             <div>
               <h2 className="text-lg font-heading font-bold text-forest mb-2">Managing cookies</h2>
-              <p className="leading-relaxed">You can control cookies through your browser settings. Note that disabling essential cookies may affect Platform functionality. For questions, contact privacy@rezvo.co.uk.</p>
+              <p className="leading-relaxed">You can control cookies through your browser settings. Note that disabling essential cookies may affect Platform functionality. For questions, contact privacy@reevenow.com.</p>
             </div>
           </div>
         </div>
       </section>
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import Navbar from '../../components/directory/Navbar'
-import RezvoFooter from '../../components/directory/RezvoFooter'
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter'
 import SEO from '../../components/seo/SEO'
 import { Heart, Zap, Shield, Users } from 'lucide-react'
 
@@ -8,7 +8,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white">
       <SEO
         title="About Us"
-        description="Rezvo is on a mission to save the high street. We help independent restaurants, salons, and service businesses thrive with zero-commission bookings."
+        description="Reeve Now is on a mission to save the high street. We help independent restaurants, salons, and service businesses thrive with zero-commission bookings."
         path="/about"
       />
       <Navbar />
@@ -19,7 +19,7 @@ export default function AboutPage() {
             Saving the High Street
           </h1>
           <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed font-body">
-            Big platforms charge up to 48% commission, squeezing the life out of independent businesses. Rezvo gives the power back — zero-commission bookings, real-time availability, and tools that actually work.
+            Big platforms charge up to 48% commission, squeezing the life out of independent businesses. Reeve Now gives the power back — zero-commission bookings, real-time availability, and tools that actually work.
           </p>
         </div>
       </section>
@@ -33,7 +33,7 @@ export default function AboutPage() {
                 Every week, independent restaurants and service businesses close their doors — not because their food or service isn't good enough, but because the platforms they depend on take too large a cut.
               </p>
               <p className="text-muted leading-relaxed font-body">
-                Rezvo was founded with a simple belief: the best businesses on your high street deserve tools that help them grow, not ones that drain their profits. We're building the booking platform the UK's independents actually deserve.
+                Reeve Now was founded with a simple belief: the best businesses on your high street deserve tools that help them grow, not ones that drain their profits. We're building the booking platform the UK's independents actually deserve.
               </p>
             </div>
             <div className="bg-forest/5 rounded-3xl p-10 text-center">
@@ -41,7 +41,7 @@ export default function AboutPage() {
               <p className="text-muted font-body">The commission some platforms charge per order</p>
               <div className="h-px bg-border my-6" />
               <div className="text-4xl sm:text-6xl font-heading font-extrabold text-mint mb-2">£0</div>
-              <p className="text-muted font-body">What Rezvo charges per booking</p>
+              <p className="text-muted font-body">What Reeve Now charges per booking</p>
             </div>
           </div>
 
@@ -64,7 +64,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   )
 }

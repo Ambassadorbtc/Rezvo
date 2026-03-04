@@ -54,7 +54,7 @@ export default function RestaurantCard({ listing, showTimeSlots = true, onNotify
             </div>
           ) : (
             <div className="bg-espresso text-white px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wide">
-              Not Yet on Rezvo
+              Not Yet on Reeve Now
             </div>
           )}
         </div>

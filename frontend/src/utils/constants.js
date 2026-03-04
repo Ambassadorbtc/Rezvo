@@ -39,7 +39,7 @@ export const TIERS = {
   }
 }
 
-export const REZVO_TIERS = {
+export const REEVE NOW_TIERS = {
   free: {
     name: 'Free',
     price: 0,

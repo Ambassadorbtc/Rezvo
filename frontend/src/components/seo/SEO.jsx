@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async'
 
 const SITE = {
-  name: 'Rezvo',
-  url: 'https://rezvo.co.uk',
+  name: 'Reeve Now',
+  url: 'https://reevenow.com',
   tagline: 'Your High Street, Booked',
   description: 'Discover and book the best independent restaurants, salons, barbers, and spas across the UK. Zero commission. Real-time availability.',
 }

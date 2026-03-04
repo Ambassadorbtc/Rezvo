@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/directory/Navbar'
-import RezvoFooter from '../../components/directory/RezvoFooter'
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter'
 import SEO from '../../components/seo/SEO'
 import { Check, ArrowRight, Calendar, CreditCard, BarChart3, Globe, Star, Zap } from 'lucide-react'
 
@@ -14,14 +14,14 @@ const PLANS = [
 export default function ForBusinessPage() {
   const [monthlyCovers, setMonthlyCovers] = useState(1000)
   const competitorCost = monthlyCovers * 2.50
-  const rezvoCost = 29
-  const savings = competitorCost - rezvoCost
+  const reeveOsCost = 29
+  const savings = competitorCost - reeveOsCost
 
   return (
     <div className="min-h-screen bg-white">
       <SEO
         title="For Business Owners"
-        description="Stop paying 48% commission. Rezvo gives restaurants, salons, and service businesses zero-commission bookings, real-time availability, and powerful management tools."
+        description="Stop paying 48% commission. Reeve Now gives restaurants, salons, and service businesses zero-commission bookings, real-time availability, and powerful management tools."
         path="/for-business"
       />
       <Navbar />
@@ -36,13 +36,13 @@ export default function ForBusinessPage() {
             Stop paying commission.<br />Start growing your business.
           </h1>
           <p className="text-lg text-muted max-w-2xl mx-auto mb-10 font-body">
-            Rezvo replaces expensive booking platforms with a flat monthly fee. More bookings, more profit, less hassle.
+            Reeve Now replaces expensive booking platforms with a flat monthly fee. More bookings, more profit, less hassle.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/signup" className="px-8 py-4 bg-forest text-white rounded-full font-bold hover:bg-sage transition-all shadow-lg hover:shadow-xl text-center w-full sm:w-auto">
               Get Started Free <ArrowRight className="inline ml-2 w-4 h-4" />
             </Link>
-            <a href="https://rezvo.app/contact.html" className="px-8 py-4 border-2 border-forest text-forest rounded-full font-bold hover:bg-forest/5 transition-all text-center w-full sm:w-auto">
+            <a href="https://reeveos.app/contact.html" className="px-8 py-4 border-2 border-forest text-forest rounded-full font-bold hover:bg-forest/5 transition-all text-center w-full sm:w-auto">
               Talk to Sales
             </a>
           </div>
@@ -78,7 +78,7 @@ export default function ForBusinessPage() {
       <section className="py-20 bg-cream" id="pricing">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-heading font-extrabold text-forest text-center mb-4">See how much you'll save</h2>
-          <p className="text-muted text-center mb-10 font-body">Compare what you're paying now vs. Rezvo</p>
+          <p className="text-muted text-center mb-10 font-body">Compare what you're paying now vs. Reeve Now</p>
 
           <div className="bg-white rounded-3xl shadow-card p-8 sm:p-10">
             <label className="block text-sm font-bold text-forest mb-3">Monthly covers / appointments</label>
@@ -104,8 +104,8 @@ export default function ForBusinessPage() {
                 <div className="text-xs text-red-400 mt-1">~£2.50/cover commission</div>
               </div>
               <div className="p-5 rounded-2xl bg-mint/10 border border-mint/20">
-                <div className="text-sm text-forest font-bold mb-1">Rezvo Growth</div>
-                <div className="text-3xl font-extrabold text-forest">£{rezvoCost}</div>
+                <div className="text-sm text-forest font-bold mb-1">Reeve Now Growth</div>
+                <div className="text-3xl font-extrabold text-forest">£{reeveOsCost}</div>
                 <div className="text-xs text-muted mt-1">Flat monthly fee</div>
               </div>
               <div className="p-5 rounded-2xl bg-forest text-white">
@@ -166,7 +166,7 @@ export default function ForBusinessPage() {
         </div>
       </section>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   )
 }

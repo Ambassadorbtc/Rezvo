@@ -3,28 +3,28 @@ import { ChevronDown } from 'lucide-react';
 
 const DEFAULT_FAQS = [
   {
-    question: 'How do I make a booking on Rezvo?',
+    question: 'How do I make a booking on Reeve Now?',
     answer: "Simply search for your preferred venue, date, time, and party size using our smart search bar. Browse available time slots, select your preferred option, and complete your booking in just a few clicks. You'll receive instant confirmation via email."
   },
   {
     question: 'Is there a booking fee for diners?',
-    answer: "No, Rezvo is completely free for diners. You'll never pay a booking fee or service charge. We only charge businesses a small fee when you complete your visit, so you can discover and book without any hidden costs."
+    answer: "No, Reeve Now is completely free for diners. You'll never pay a booking fee or service charge. We only charge businesses a small fee when you complete your visit, so you can discover and book without any hidden costs."
   },
   {
     question: 'Can I modify or cancel my booking?',
-    answer: 'Yes, you can modify or cancel most bookings directly through your Rezvo account. Cancellation policies vary by venue, so please check the specific terms when making your reservation. We recommend canceling at least 24 hours in advance to avoid any potential fees.'
+    answer: 'Yes, you can modify or cancel most bookings directly through your Reeve Now account. Cancellation policies vary by venue, so please check the specific terms when making your reservation. We recommend canceling at least 24 hours in advance to avoid any potential fees.'
   },
   {
-    question: 'What does "Not Yet on Rezvo" mean?',
-    answer: 'Some venues you see are not yet accepting bookings through Rezvo. These are unclaimed listings that we\'ve added based on their popularity. Click "Notify Me When They Join" to receive an email as soon as they start accepting reservations on our platform.'
+    question: 'What does "Not Yet on Reeve Now" mean?',
+    answer: 'Some venues you see are not yet accepting bookings through Reeve Now. These are unclaimed listings that we\'ve added based on their popularity. Click "Notify Me When They Join" to receive an email as soon as they start accepting reservations on our platform.'
   },
   {
     question: 'How do I know if my booking is confirmed?',
-    answer: "You'll receive an instant confirmation email after completing your booking. The venue will also receive notification of your reservation. You can view all your upcoming bookings in your Rezvo account dashboard at any time."
+    answer: "You'll receive an instant confirmation email after completing your booking. The venue will also receive notification of your reservation. You can view all your upcoming bookings in your Reeve Now account dashboard at any time."
   },
   {
-    question: 'What types of venues can I book through Rezvo?',
-    answer: 'Rezvo specialises in independent UK venues including restaurants, bars, cafés, hair salons, barbershops, and spas. We focus on local, bookable businesses that offer unique experiences rather than large chains.'
+    question: 'What types of venues can I book through Reeve Now?',
+    answer: 'Reeve Now specialises in independent UK venues including restaurants, bars, cafés, hair salons, barbershops, and spas. We focus on local, bookable businesses that offer unique experiences rather than large chains.'
   }
 ];
 

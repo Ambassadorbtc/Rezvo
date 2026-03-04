@@ -3,7 +3,7 @@ import Navbar from '../../components/directory/Navbar'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
@@ -49,14 +49,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-warm">
       <Navbar />
-      <SEO title="Log In" description="Log in to your Rezvo account to manage bookings, view your profile, and access your dashboard." path="/login" noindex />
+      <SEO title="Log In" description="Log in to your Reeve Now account to manage bookings, view your profile, and access your dashboard." path="/login" noindex />
       <div className="flex items-center justify-center px-4 py-12 pt-32">
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8">
           <div className="w-12 h-12 bg-forest rounded flex items-center justify-center">
             <span className="text-white font-heading font-black text-2xl">R</span>
           </div>
-          <span className="text-forest font-heading font-black text-3xl tracking-tight">REZVO</span>
+          <span className="text-forest font-heading font-black text-3xl tracking-tight">REEVE NOW</span>
         </Link>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-10">
@@ -212,7 +212,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
             Are you a business owner?{' '}
-            <a href="https://rezvo.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
+            <a href="https://reeveos.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
             </a>
           </p>
@@ -221,7 +221,7 @@ export default function LoginPage() {
 
       </div>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   );
 }

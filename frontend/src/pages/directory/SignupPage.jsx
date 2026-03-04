@@ -3,7 +3,7 @@ import Navbar from '../../components/directory/Navbar'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Store, CheckCircle } from 'lucide-react';
-import RezvoFooter from '../../components/directory/RezvoFooter';
+import ReeveNowFooter from '../../components/directory/ReeveNowFooter';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function SignupPage() {
@@ -73,14 +73,14 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-warm">
       <Navbar />
-      <SEO title="Sign Up" description="Create your free Rezvo account. Book restaurants, salons, and more — or list your business and start accepting bookings today." path="/signup" noindex />
+      <SEO title="Sign Up" description="Create your free Reeve Now account. Book restaurants, salons, and more — or list your business and start accepting bookings today." path="/signup" noindex />
       <div className="flex items-center justify-center px-4 py-12 pt-32">
       <div className="w-full max-w-lg">
         <Link to="/" className="flex items-center gap-2 mb-8">
           <div className="w-12 h-12 bg-forest rounded flex items-center justify-center">
             <span className="text-white font-heading font-black text-2xl">R</span>
           </div>
-          <span className="text-forest font-heading font-black text-3xl tracking-tight">REZVO</span>
+          <span className="text-forest font-heading font-black text-3xl tracking-tight">REEVE NOW</span>
         </Link>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-10">
@@ -89,7 +89,7 @@ export default function SignupPage() {
               Get Started Free
             </h1>
             <p className="text-muted text-base">
-              Join Rezvo and start accepting bookings in minutes. No per-cover fees, setup in 5 minutes.
+              Join Reeve Now and start accepting bookings in minutes. No per-cover fees, setup in 5 minutes.
             </p>
           </div>
 
@@ -204,12 +204,12 @@ export default function SignupPage() {
                   required
                 />
                 <span className="text-sm text-muted leading-relaxed">
-                  I agree to Rezvo's{' '}
-                  <a href="https://rezvo.app/terms.html" className="text-forest font-semibold hover:text-sage transition-colors">
+                  I agree to Reeve Now's{' '}
+                  <a href="https://reeveos.app/terms.html" className="text-forest font-semibold hover:text-sage transition-colors">
                     Terms of Service
                   </a>{' '}
                   and{' '}
-                  <a href="https://rezvo.app/privacy.html" className="text-forest font-semibold hover:text-sage transition-colors">
+                  <a href="https://reeveos.app/privacy.html" className="text-forest font-semibold hover:text-sage transition-colors">
                     Privacy Policy
                   </a>
                 </span>
@@ -291,7 +291,7 @@ export default function SignupPage() {
 
         <div className="mt-8 bg-pale-green rounded-2xl p-6">
           <h3 className="text-forest font-heading font-black text-lg mb-4">
-            Why business owners choose Rezvo
+            Why business owners choose Reeve Now
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
@@ -331,8 +331,8 @@ export default function SignupPage() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted">
-            Already listed on Rezvo?{' '}
-            <a href="https://rezvo.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
+            Already listed on Reeve Now?{' '}
+            <a href="https://reeveos.app/for-business" className="text-forest font-semibold hover:text-sage transition-colors">
               Claim your listing
             </a>
           </p>
@@ -341,7 +341,7 @@ export default function SignupPage() {
 
       </div>
 
-      <RezvoFooter />
+      <ReeveNowFooter />
     </div>
   );
 }
