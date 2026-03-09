@@ -59,6 +59,7 @@ const PublicLayout = () => {
               <ul className="space-y-2">
                 <li><a href="https://reeveos.app/for-business" className="text-white/80 hover:text-white">List Your Business</a></li>
                 <li><a href="https://reeveos.app/for-business" className="text-white/80 hover:text-white">Pricing</a></li>
+                <li><a href="https://partners.reeveos.app" className="text-white/80 hover:text-white">Partner Programme</a></li>
               </ul>
             </div>
             <div>
